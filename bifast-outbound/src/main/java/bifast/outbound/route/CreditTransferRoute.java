@@ -5,55 +5,75 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.pojo.ChannelAccountEnquiryReq;
+import bifast.outbound.pojo.ChannelAccountEnquiryResp;
+import bifast.outbound.pojo.ChannelCreditTransferRequest;
+import bifast.outbound.pojo.ChannelCreditTransferResponse;
+import bifast.outbound.processor.AccountEnquiryProcessor;
+import bifast.outbound.processor.AccountEnquiryResponseProcessor;
+import bifast.outbound.processor.CreditTransferRequestProcessor;
+import bifast.outbound.processor.CreditTransferResponseProcessor;
+import bifast.outbound.processor.SaveAccountEnquiryProcessor;
+import bifast.outbound.processor.SaveCstmrCreditTransferProcessor;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
-import fransmz.bifast.credittransfer.AccountEnquiryProcessor;
-import fransmz.bifast.credittransfer.CTMonitorStoreDbProcessor;
-import fransmz.bifast.credittransfer.CreditTransferRequestInput;
-import fransmz.bifast.credittransfer.CreditTransferRequestProcessor;
-import fransmz.bifast.credittransfer.ResponseMsg;
-import fransmz.bifast.credittransfer.ResponseMsgProcessor;
-import fransmz.bifast.pojo.BusinessMessage;
-import fransmz.bifast.service.ExtractStatusResponseProcessor;
-
 
 
 
 @Component
 public class CreditTransferRoute extends RouteBuilder {
 
-	@Autowired
-	private CreditTransferRequestProcessor creditTransferRequestProcessor;
+	// @Autowired
+	// private CreditTransferRequestProcessor creditTransferRequestProcessor;
 	@Autowired
 	private AccountEnquiryProcessor accountEnquiryProcessor;
 	@Autowired
-	private ExtractStatusResponseProcessor extractResponseProcessor;
+	private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
 	@Autowired
-	private ResponseMsgProcessor responseMsgProcessor;
+	private CreditTransferRequestProcessor crdtTransferProcessor;
 	@Autowired
-	private CTMonitorStoreDbProcessor saveMonitorDb;
+	private CreditTransferResponseProcessor crdtTransferResponseProcessor;
+	@Autowired
+	private SaveAccountEnquiryProcessor saveAccountEnquiry;
+	@Autowired
+	private SaveCstmrCreditTransferProcessor saveCstmrCreditTransfer;
 	
-	JacksonDataFormat jsonCreditTransferRequestInputDataFormat = new JacksonDataFormat(CreditTransferRequestInput.class);
+	JacksonDataFormat jsonChnlAccountEnqrReqFormat = new JacksonDataFormat(ChannelAccountEnquiryReq.class);
+	JacksonDataFormat jsonChnlAccountEnqrRespFormat = new JacksonDataFormat(ChannelAccountEnquiryResp.class);
+	JacksonDataFormat jsonChnlCreditTransferRequestFormat = new JacksonDataFormat(ChannelCreditTransferRequest.class);
+	JacksonDataFormat jsonChnlCreditTransferResponseFormat = new JacksonDataFormat(ChannelCreditTransferResponse.class);
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
-	JacksonDataFormat jsonResponseMsgFormat = new JacksonDataFormat(ResponseMsg.class);
 
 	private void configureJsonDataFormat() {
-		jsonCreditTransferRequestInputDataFormat.setInclude("NON_NULL");
-		jsonCreditTransferRequestInputDataFormat.setInclude("NON_EMPTY");
-		jsonCreditTransferRequestInputDataFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+		jsonChnlAccountEnqrReqFormat.setInclude("NON_NULL");
+		jsonChnlAccountEnqrReqFormat.setInclude("NON_EMPTY");
+		jsonChnlAccountEnqrReqFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		jsonChnlAccountEnqrRespFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		jsonChnlAccountEnqrRespFormat.setInclude("NON_NULL");
+		jsonChnlAccountEnqrRespFormat.setInclude("NON_EMPTY");
+		jsonChnlAccountEnqrRespFormat.setPrettyPrint(true);
+		jsonChnlAccountEnqrRespFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+
+		jsonChnlCreditTransferRequestFormat.setInclude("NON_NULL");
+		jsonChnlCreditTransferRequestFormat.setInclude("NON_EMPTY");
+		jsonChnlCreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		jsonChnlCreditTransferResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		jsonChnlCreditTransferResponseFormat.setInclude("NON_NULL");
+		jsonChnlCreditTransferResponseFormat.setInclude("NON_EMPTY");
+		jsonChnlCreditTransferResponseFormat.setPrettyPrint(true);
+		jsonChnlCreditTransferResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		jsonBusinessMessageFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonBusinessMessageFormat.setInclude("NON_NULL");
 		jsonBusinessMessageFormat.setInclude("NON_EMPTY");
-		// jsonBusinessMessageFormat.setPrettyPrint(true);
 		jsonBusinessMessageFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		jsonBusinessMessageFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
-		jsonResponseMsgFormat.setInclude("NON_NULL");
-		jsonResponseMsgFormat.setInclude("NON_EMPTY");
-		jsonResponseMsgFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 	}
 	
 	@Override
@@ -62,73 +82,69 @@ public class CreditTransferRoute extends RouteBuilder {
 		configureJsonDataFormat();
 		
 		restConfiguration().component("servlet");
-		rest("/case")
-			.post("/cstmrct")
+		rest("/channel")
+			.post("/acctenquiry")
+				.consumes("application/json")
+				.to("direct:acctenqr")
+			.post("/cstmrcrdtrn")
 				.consumes("application/json")
 				.to("direct:ctreq")
 		;
 		
+		from("direct:acctenqr").routeId("direct:acctenqr")
+			.convertBodyTo(String.class)
+			.unmarshal(jsonChnlAccountEnqrReqFormat)
+			.setHeader("req_channelReq",simple("${body}"))
+			
+			// convert channel request jadi pacs008 message
+			.process(accountEnquiryProcessor)
+			.setHeader("req_objbiacctenqr", simple("${body}"))
+			.marshal(jsonBusinessMessageFormat)
+			.setHeader("req_jsonbiacctenqr", simple("${body}"))
+
+			// kirim ke CI-HUB
+			.to("rest:post:acctenqP1?host=demo3216691.mockable.io&producerComponentName=http&bridgeEndpoint=true")
+			.convertBodyTo(String.class)
+			.setHeader("resp_jsonbiacctenqr", simple("${body}"))
+			.unmarshal(jsonBusinessMessageFormat)
+			.setHeader("resp_objbiacctenqr", simple("${body}"))	
+
+			.process(saveAccountEnquiry)
+			
+			// prepare untuk response ke channel
+			.process(accountEnqrResponseProcessor)
+			.marshal(jsonChnlAccountEnqrRespFormat)
+			.removeHeaders("req_*")
+			.removeHeaders("resp_*")
+
+		;
 
 		from("direct:ctreq").routeId("cstmrcrdttrn")
 			.convertBodyTo(String.class)
-			.unmarshal(jsonCreditTransferRequestInputDataFormat)
-			.setHeader("req_orgnlReq",simple("${body}"))
+			.unmarshal(jsonChnlCreditTransferRequestFormat)
+			.setHeader("req_channelReq",simple("${body}"))
 			
-			.process(accountEnquiryProcessor)
-			.setHeader("req_acctEnqReq", simple("${body}"))
+			// convert channel request jadi pacs008 message
+			.process(crdtTransferProcessor)
+			.setHeader("req_objcrdtTrnReq", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			.to("rest:post:acctenqP1?host=demo3216691.mockable.io&producerComponentName=http&bridgeEndpoint=true")
-			.convertBodyTo(String.class)
-			.to("file:/home/fransdm/workspace/sink?fileName=accountenqr.txt&fileExist=Append")
-			// .log("Account Enquiry HttpResponse: ${header.CamelHttpResponseCode}")
-			.log("Content-Length: ${header.Content-Length} vs. ${body.length}")
-
-			// proses Account Enquiry Confirmation
-			.unmarshal(jsonBusinessMessageFormat)
-			// .log("selesai unmarshal(jsonBusinessMessageFormat)")
-			.process(extractResponseProcessor)
-			.setHeader("req_step", constant("acctEnqr"))
-			.to("seda:storedb")
-			.log("Status AcountEnquiry Response: ${header.resp_status}")
+			.setHeader("req_jsonbicrdttrn", simple("${body}"))
 			
-			.choice()
-				.when().simple("${header.resp_status} == 'ACTC'")
-					.process(creditTransferRequestProcessor)
-					.setHeader("req_crdtTrnReq", simple("${body}"))
-					.marshal(jsonBusinessMessageFormat)
-					
-					// .to("rest:post:crdttrfreqN1?host=demo3216691.mockable.io&producerComponentName=http&bridgeEndpoint=true")
-					.to("rest:post:castlemock/mock/rest/project/pta9nB/application/TuxUb1/acctenq" +
-					"?host=localhost:7010&producerComponentName=http&bridgeEndpoint=true")
-					.convertBodyTo(String.class)
-					.to("file:/home/fransdm/workspace/sink?fileName=crdttrn.txt&fileExist=Append")
-					// .log("Credit Request HttpResponse: ${header.CamelHttpResponseCode}")
-					.log("Content-Length: ${header.Content-Length} vs. ${body.length}")
-					
-					.unmarshal(jsonBusinessMessageFormat)
-					.process(extractResponseProcessor)
-					.choice()
-						.when().simple("${header.resp_status} == 'ACTC'")
-							.log("CT Accepted")
-						.otherwise()
-							.log("Credit Transfer REJECTED")
-					.endChoice()
-				.otherwise()
-					.log("Account Enquery Rejected")
-			.end()
+			// kirim ke CI-HUB
+			.to("rest:post:crdttrfreqP1?host=demo3216691.mockable.io&producerComponentName=http&bridgeEndpoint=true")
+			.convertBodyTo(String.class)
+			.setHeader("resp_jsonbicrdttrn", simple("${body}"))
+			.unmarshal(jsonBusinessMessageFormat)
+			.setHeader("resp_objbicrdttrn", simple("${body}"))	
 
-			.setHeader("req_step", constant("crdtTrn"))
-			.to("seda:storedb")
-			.process(responseMsgProcessor)
+			.process(saveCstmrCreditTransfer)
+			
+			// prepare untuk response ke channel
+			.process(crdtTransferResponseProcessor)
+			.marshal(jsonChnlCreditTransferResponseFormat)
 			.removeHeaders("resp_*")
 			.removeHeaders("req_*")
-			.marshal(jsonResponseMsgFormat)
 		;
 		
-		
-		from("seda:storedb")
-			.process(saveMonitorDb)
-		;
-
 	}
 }

@@ -17,6 +17,8 @@ public class AccountEnquiry {
 	
 	private String direction;
 	
+	private String intrRefId;
+	
 	@Column(name="ORIGN_BANK")
 	private String originatingBank;
 	@Column(name="RECPT_BANK")
@@ -24,7 +26,6 @@ public class AccountEnquiry {
 	
 	private String accountNo;
 	private String reqBizMsgId;
-	private String respBizMsgId;
 	private String respStatus;
 	private LocalDateTime creDt;
 	
@@ -44,6 +45,14 @@ public class AccountEnquiry {
 
 	public void setDirection(String direction) {
 		this.direction = direction;
+	}
+
+	public String getIntrRefId() {
+		return intrRefId;
+	}
+
+	public void setIntrRefId(String intrRefId) {
+		this.intrRefId = intrRefId;
 	}
 
 	public String getOriginatingBank() {
@@ -76,14 +85,6 @@ public class AccountEnquiry {
 
 	public void setReqBizMsgId(String reqBizMsgId) {
 		this.reqBizMsgId = reqBizMsgId;
-	}
-
-	public String getRespBizMsgId() {
-		return respBizMsgId;
-	}
-
-	public void setRespBizMsgId(String respBizMsgId) {
-		this.respBizMsgId = respBizMsgId;
 	}
 
 	public String getRespStatus() {

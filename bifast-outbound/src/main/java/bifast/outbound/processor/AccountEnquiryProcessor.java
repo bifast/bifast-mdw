@@ -1,18 +1,26 @@
-package fransmz.bifast.credittransfer;
+package bifast.outbound.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
-import fransmz.bifast.pojo.BusinessMessage;
-import fransmz.bifast.pojo.Document;
-import fransmz.bifast.service.AppHeaderService;
-import iso20022.head001.BusinessApplicationHeaderV02;
+import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.library.iso20022.custom.Document;
+import bifast.library.iso20022.head001.BusinessApplicationHeaderV02;
+import bifast.library.iso20022.service.AppHeaderService;
+import bifast.library.iso20022.service.Pacs008MessageService;
+import bifast.library.iso20022.service.Pacs008Seed;
+import bifast.outbound.config.Config;
+import bifast.outbound.pojo.ChannelAccountEnquiryReq;
 
 @Component
+@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
 public class AccountEnquiryProcessor implements Processor {
 
+	@Autowired
+	private Config config;
 	@Autowired
 	private AppHeaderService appHeaderService;
 	@Autowired
@@ -21,13 +29,23 @@ public class AccountEnquiryProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		CreditTransferRequestInput req = exchange.getIn().getHeader("req_orgnlReq",CreditTransferRequestInput.class);
+		ChannelAccountEnquiryReq chnReq = exchange.getIn().getHeader("req_channelReq",ChannelAccountEnquiryReq.class);
 
 		BusinessApplicationHeaderV02 hdr = new BusinessApplicationHeaderV02();
-		hdr = appHeaderService.initAppHdr(req.getReceivingParticipant(), "pacs.008.01.08", "510", req.getChannelType());
+		hdr = appHeaderService.initAppHdr(chnReq.getReceivingParticipant(), "pacs.008.001.08", "510", chnReq.getChannelType());
 		
+		Pacs008Seed seedAcctEnquiry = new Pacs008Seed();
+		
+		seedAcctEnquiry.setBizMsgId(hdr.getBizMsgIdr());
+		seedAcctEnquiry.setAmount(chnReq.getAmount());
+		seedAcctEnquiry.setCategoryPurpose(chnReq.getCategoryPurpose());
+		seedAcctEnquiry.setCrdtAccountNo(chnReq.getCreditorAccountNumber());
+		seedAcctEnquiry.setOrignBank(config.getBankcode());
+		seedAcctEnquiry.setRecptBank(chnReq.getReceivingParticipant());
+		seedAcctEnquiry.setTrnType("510");
+
 		Document doc = new Document();
-		doc.setFiToFICstmrCdtTrf(pacs008MessageService.accountEnquiryRequest(req, hdr.getBizMsgIdr(), "510"));
+		doc.setFiToFICstmrCdtTrf(pacs008MessageService.accountEnquiryRequest(seedAcctEnquiry));
 
 		BusinessMessage busMsg = new BusinessMessage();
 		busMsg.setAppHdr(hdr);

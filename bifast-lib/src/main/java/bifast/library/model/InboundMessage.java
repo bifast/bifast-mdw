@@ -34,6 +34,9 @@ public class InboundMessage {
 	
 	@Column(name="FULL_MSG", length=5000)
 	private String fullMessage;
+	
+	@Column(name="RESP_MSG", length=5000)
+	private String responseMessage;
 
 	public InboundMessage() {}
 	
@@ -107,6 +110,14 @@ public class InboundMessage {
 
 	public void setFullMessage(String fullMessage) {
 		this.fullMessage = fullMessage;
+	}
+
+	public String getResponseMessage() {
+		return responseMessage;
+	}
+
+	public void setResponseMessage(String responseMessage) {
+		this.responseMessage = responseMessage;
 	}
 
 	@Override

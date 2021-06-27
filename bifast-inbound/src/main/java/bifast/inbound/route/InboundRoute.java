@@ -63,7 +63,6 @@ public class InboundRoute extends RouteBuilder {
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
 			.setHeader("rcv_obj", simple("${body}"))   // pojo BusinessMessage simpan ke header
 			.setHeader("rcv_msgname", simple("${body.appHdr.msgDefIdr}"))
-			.process(storeInboundProcessor)
 			
 			.choice()
 
@@ -83,16 +82,19 @@ public class InboundRoute extends RouteBuilder {
 							.log("akan kirim response account enquiry")
 							.process(acctEnqResponseProcessor)
 							.marshal(jsonBusinessMessageDataFormat)
+							.setHeader("resp_json", simple("${body}"))
 						.when().simple("${header.rcv_msgtype} == 'CRDTTRN'")
 							.log("akan kirim response Credit Transfer Request")
 							.process(crdtTrnResponseProcessor)
 							.marshal(jsonBusinessMessageDataFormat)
+							.setHeader("resp_json", simple("${body}"))
 					.endChoice()
 					
 				.when().simple("${header.rcv_msgname} startsWith 'pacs.009'")  // FI TO FI Credit Transfer Request
 					.log("Terima pacs.009")
 					.process(fiCrdtTrnResponseProcessor)
 					.marshal(jsonBusinessMessageDataFormat)
+					.setHeader("resp_json", simple("${body}"))
 //
 				.otherwise()	
 					.log("Message tidak dikenal")
@@ -101,6 +103,8 @@ public class InboundRoute extends RouteBuilder {
 			.log("Akan remove headers")
 			.removeHeaders("apphdr_*")
 			.removeHeaders("rcv_*")
+			.process(storeInboundProcessor)
+
 		;
 
 	

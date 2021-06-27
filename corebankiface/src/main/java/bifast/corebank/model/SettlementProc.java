@@ -24,7 +24,7 @@ public class SettlementProc {
 	private String orgnlCrdtTrnReqBizMsgId;
 
 	private String ack;
-	
+	private String forReversal;
 	
 	@Column(name="REVERSAL_BIZMSGID")
 	private String reversalBizMsgId;

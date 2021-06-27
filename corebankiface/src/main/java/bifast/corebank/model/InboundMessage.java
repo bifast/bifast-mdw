@@ -25,15 +25,18 @@ public class InboundMessage {
 	
 	@Column(name="BIZSVC")
 	private String bizSvc;
-	@Column(name="COPY")
+	@Column(name="COPY_MSG")
 	private String cpyDplct;
 	@Column(name="DUPL")
 	private String pssblDplct;
 	@Column(name="RECEIVE_DT")
 	private LocalDateTime receiveDt;
 	
-	@Column(name="FULL_MSG", length=4000)
+	@Column(name="FULL_MSG", length=5000)
 	private String fullMessage;
+	
+	@Column(name="RESP_MSG", length=5000)
+	private String responseMessage;
 
 	public InboundMessage() {}
 	
@@ -107,6 +110,14 @@ public class InboundMessage {
 
 	public void setFullMessage(String fullMessage) {
 		this.fullMessage = fullMessage;
+	}
+
+	public String getResponseMessage() {
+		return responseMessage;
+	}
+
+	public void setResponseMessage(String responseMessage) {
+		this.responseMessage = responseMessage;
 	}
 
 	@Override

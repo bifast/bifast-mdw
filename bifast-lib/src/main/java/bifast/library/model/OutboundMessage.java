@@ -23,19 +23,28 @@ public class OutboundMessage {
 	@Column(name="RECPT_BANK")
 	private String toFinId;
 
-	private String sendStatus;
-	
-	@Column(length=3000)
+	@Column(length=5000)
 	private String fullMessage;
-	
+
+
 	@Column(name="SEND_TIME")
 	private LocalDateTime sendDt;
 
 	@Column(name="SAF_COUNTER")
 	private Integer safCounter;
 
-	public OutboundMessage() {}
+	@Column(name="HTTP_RESPONSE_CODE")
+	private String httpResponse;
+
+	@Column(name="RESP_BIZMSGID")
+	private String respBizMsgId;
 	
+	@Column(name="RESP_MSG", length=5000)
+	private String responseMessage;
+	
+
+	public OutboundMessage() {}
+
 	public Long getId() {
 		return Id;
 	}
@@ -68,12 +77,20 @@ public class OutboundMessage {
 		this.toFinId = toFinId;
 	}
 
-	public String getSendStatus() {
-		return sendStatus;
+	public String getResponseMessage() {
+		return responseMessage;
 	}
 
-	public void setSendStatus(String sendStatus) {
-		this.sendStatus = sendStatus;
+	public void setResponseMessage(String responseMessage) {
+		this.responseMessage = responseMessage;
+	}
+
+	public String getHttpResponse() {
+		return httpResponse;
+	}
+
+	public void setHttpResponse(String httpResponse) {
+		this.httpResponse = httpResponse;
 	}
 
 	public String getFullMessage() {
@@ -92,6 +109,14 @@ public class OutboundMessage {
 		this.sendDt = sendDt;
 	}
 
+	public String getRespBizMsgId() {
+		return respBizMsgId;
+	}
+
+	public void setRespBizMsgId(String respBizMsgId) {
+		this.respBizMsgId = respBizMsgId;
+	}
+
 	public Integer getSafCounter() {
 		return safCounter;
 	}
@@ -99,6 +124,7 @@ public class OutboundMessage {
 	public void setSafCounter(Integer safCounter) {
 		this.safCounter = safCounter;
 	}
+	
 
 	
 }

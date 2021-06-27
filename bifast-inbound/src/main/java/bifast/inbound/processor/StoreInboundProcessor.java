@@ -34,6 +34,7 @@ public class StoreInboundProcessor implements Processor {
 		
 		inboundMsg.setReceiveDt(LocalDateTime.now());
 		inboundMsg.setFullMessage(exchange.getMessage().getHeader("rcv_json",String.class));
+		inboundMsg.setResponseMessage(exchange.getMessage().getHeader("resp_json", String.class));
 		
 		inboundMessageRepo.save(inboundMsg);
 
