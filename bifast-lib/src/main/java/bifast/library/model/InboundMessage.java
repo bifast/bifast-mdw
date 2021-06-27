@@ -25,7 +25,7 @@ public class InboundMessage {
 	
 	@Column(name="BIZSVC")
 	private String bizSvc;
-	@Column(name="COPY")
+	@Column(name="COPY_MSG")
 	private String cpyDplct;
 	@Column(name="DUPL")
 	private String pssblDplct;

@@ -2,22 +2,18 @@ package bifast.library.iso20022.service;
 
 public class Pacs002Seed {
 
-	private String trnType;   
-	private String creditorName;   
-	private String creditorType;   
-	private String creditorId;    
-	private String creditorResidentialStatus;  
-	private String creditorTown;  
-	private String status;     
-	private String reason;     
-	private String additionalInfo;   
+	private String creditorName;   // CST:resp   ACCENQ:resp
+	private String creditorType;   // CST:resp
+	private String creditorId;     // CST:resp
+	private String creditorAccountNo;  // ACCENQ:resp
+	private String creditorAccountIdType;    // ACCENQ:resp
+	private String creditorResidentialStatus;  // CST:resp   ACENQ:resp
+	private String creditorTown;  // CST:resp   ACCENQ:rep
+	private String status;  // FI:resp  CST:resp  ACCENQ:resp
+	private String reason;     // FI:resp  CST:resp  ACCENQ:resp
+	private String additionalInfo;  //    CST:resp   
 	
-	public String getTrnType() {
-		return trnType;
-	}
-	public void setTrnType(String trnType) {
-		this.trnType = trnType;
-	}
+	
 	public String getCreditorName() {
 		return creditorName;
 	}
@@ -30,11 +26,23 @@ public class Pacs002Seed {
 	public void setCreditorType(String creditorType) {
 		this.creditorType = creditorType;
 	}
+	public String getCreditorAccountNo() {
+		return creditorAccountNo;
+	}
+	public void setCreditorAccountNo(String creditorAccountNo) {
+		this.creditorAccountNo = creditorAccountNo;
+	}
 	public String getCreditorId() {
 		return creditorId;
 	}
 	public void setCreditorId(String creditorId) {
 		this.creditorId = creditorId;
+	}
+	public String getCreditorAccountIdType() {
+		return creditorAccountIdType;
+	}
+	public void setCreditorAccountIdType(String creditorAccountIdType) {
+		this.creditorAccountIdType = creditorAccountIdType;
 	}
 	public String getCreditorResidentialStatus() {
 		return creditorResidentialStatus;

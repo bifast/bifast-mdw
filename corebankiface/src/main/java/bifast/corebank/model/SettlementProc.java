@@ -2,13 +2,19 @@ package bifast.corebank.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity(name="SETTLEMENT_PROC")
 public class SettlementProc {
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	
+	private String orignBank;
+	private String recptBank;
 	
 	@Column(name="SETTL_CONF_BIZMSGID")
 	private String settlConfBizMsgId;
@@ -18,6 +24,7 @@ public class SettlementProc {
 	private String orgnlCrdtTrnReqBizMsgId;
 
 	private String ack;
+	
 	
 	@Column(name="REVERSAL_BIZMSGID")
 	private String reversalBizMsgId;
@@ -32,6 +39,22 @@ public class SettlementProc {
 
 	public String getSettlConfBizMsgId() {
 		return settlConfBizMsgId;
+	}
+
+	public String getOrignBank() {
+		return orignBank;
+	}
+
+	public void setOrignBank(String orignBank) {
+		this.orignBank = orignBank;
+	}
+
+	public String getRecptBank() {
+		return recptBank;
+	}
+
+	public void setRecptBank(String recptBank) {
+		this.recptBank = recptBank;
 	}
 
 	public void setSettlConfBizMsgId(String settlConfBizMsgId) {
@@ -60,6 +83,14 @@ public class SettlementProc {
 
 	public void setAck(String ack) {
 		this.ack = ack;
+	}
+
+	public String getForReversal() {
+		return forReversal;
+	}
+
+	public void setForReversal(String forReversal) {
+		this.forReversal = forReversal;
 	}
 
 	public String getReversalBizMsgId() {

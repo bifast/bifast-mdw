@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import bifast.inbound.service.SettlementProcessor;
+import bifast.inbound.processor.SettlementProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
-//@Component
+@Component
 public class SettlementRoute extends RouteBuilder {
 
 	@Autowired
@@ -30,36 +30,30 @@ public class SettlementRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		configureJson();
 
-		from("sql:select id, SETTL_CONF_MSG_NAME as settlConfMesgName, "
-				+ "SETTL_CONF_MSG_NAME as settlConfMesgName "
+		from("sql:select id, SETTL_CONF_BIZMSGID as settlConfBizMsgId, "
+				+ "orgnl_crdt_trn_bizmsgid as orgnlCrdtTrnReqBizMsgId, "
+				+ "SETTL_CONF_MSG_NAME as settlConfMesgName, "
+				+ "orign_bank as orignBank, recpt_bank as recptBank "
 				+ "from settlement_proc where ack is null?"
 					+ "outputType=SelectOne&"
-					+ "maxMessagesPerPoll=1&"
-					+ "outputClass=bifast.library.persist.SettlementProc")
+					+ "outputHeader=rcv_qryresult&"
+					+ "outputClass=bifast.library.model.SettlementProc&"
+					+ "maxMessagesPerPoll=1")
 		
-			.log("${body}")
-//			.process(inboundProcessor)
-			.setHeader("rcv_msgid", simple("${body.bizMsgIdr}"))
-			.log("MsgId: ${header.rcv_msgid}")
-			.setHeader("rcv_bizSvc", simple("${body.bizSvc}"))
-			.setBody(simple("${body.fullMessage}"))
-			.choice()
-				.when().simple("${header.rcv_bizSvc} == 'SETTLEMENTCONFIRMATION'")
-					.to("seda:settlementconfirmation")
-					.to("sql:update inbound_message set ack ='Y' where bizmsgid = :#${header.rcv_msgid}")
-				.otherwise()
-					.log("Bukan Settlement")
-					.to("sql:update inbound_message set ack ='Y' where bizmsgid = :#${header.rcv_msgid}")
-		;
-
-
-		from("seda:settlementconfirmation")
-			.unmarshal(jsonBusinessMessageDataFormat)
-			.log("akan proses settlement")
+			.log("${header.rcv_qryresult.settlConfBizMsgId}")
+			.setHeader("rcv_msgid", simple("${body.settlConfBizMsgId}"))
 			.process(settlementProcessor)
-			.log("Ack msgid ${header.rcv_msgid}")
+//			.setBody(simple("${body.fullMessage}"))
+			.log("reversal : ${header.resp_reversal}")
+			
+			.to("sql:update settlement_proc set ack ='Y', for_reversal= :#${header.resp_reversal} "
+					+ "where id = :#${header.rcv_qryresult.id}")
+			.removeHeaders("rcv_*")
+			.removeHeaders("resp_*")
 		;
-		
+
+
+	
 	}
 
 }

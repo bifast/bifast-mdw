@@ -1,4 +1,4 @@
-package bifast.inbound.service;
+package bifast.inbound.processor;
 
 import java.time.LocalDateTime;
 
@@ -45,6 +45,7 @@ public class Pacs008Processor implements Processor{
 //			accenq.setRespStatus(null);
 			accountEnquiryRepo.save(accenq);
 			
+			exchange.getMessage().setHeader("rcv_msgtype", "ACCTENQR");
 		}
 		
 		// atau credit transfer request
@@ -72,7 +73,9 @@ public class Pacs008Processor implements Processor{
 		
 			
 			creditTrnRepo.save(crdt);
-			
+
+			exchange.getMessage().setHeader("rcv_msgtype", "CRDTTRN");
+
 		}
 		
 		

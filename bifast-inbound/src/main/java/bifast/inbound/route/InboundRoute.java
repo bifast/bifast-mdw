@@ -8,9 +8,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import bifast.inbound.service.Pacs008Processor;
-import bifast.inbound.service.SaveSettlementTableProcessor;
-import bifast.inbound.service.StoreInboundProcessor;
+import bifast.inbound.processor.AccountEnquiryResponseProcessor;
+import bifast.inbound.processor.CreditTransferResponseProcessor;
+import bifast.inbound.processor.FICrdtTrnResponseProcessor;
+import bifast.inbound.processor.Pacs008Processor;
+import bifast.inbound.processor.SaveSettlementTableProcessor;
+import bifast.inbound.processor.StoreInboundProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 
@@ -23,7 +26,13 @@ public class InboundRoute extends RouteBuilder {
 	private SaveSettlementTableProcessor saveSettlementProcessor;
 	@Autowired
 	private Pacs008Processor pacs008Processor;
-
+	@Autowired
+	private FICrdtTrnResponseProcessor fiCrdtTrnResponseProcessor;
+	@Autowired
+	private AccountEnquiryResponseProcessor acctEnqResponseProcessor;
+	@Autowired
+	private CreditTransferResponseProcessor crdtTrnResponseProcessor;
+	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
 	private void configureJson() {
@@ -67,17 +76,29 @@ public class InboundRoute extends RouteBuilder {
 				.when().simple("${header.rcv_msgname} startsWith 'pacs.008'")  // Account Enquiry or Credit Transfer PA
 					.log("Terima pacs.008")
 					.process(pacs008Processor)
-//					.marshal(jsonBusinessMessageDataFormat)
+					.log("${header.rcv_msgtype}")
+					
+					.choice()
+						.when().simple("${header.rcv_msgtype} == 'ACCTENQR'")
+							.log("akan kirim response account enquiry")
+							.process(acctEnqResponseProcessor)
+							.marshal(jsonBusinessMessageDataFormat)
+						.when().simple("${header.rcv_msgtype} == 'CRDTTRN'")
+							.log("akan kirim response Credit Transfer Request")
+							.process(crdtTrnResponseProcessor)
+							.marshal(jsonBusinessMessageDataFormat)
+					.endChoice()
 					
 				.when().simple("${header.rcv_msgname} startsWith 'pacs.009'")  // FI TO FI Credit Transfer Request
 					.log("Terima pacs.009")
-//					.to("seda:pacs009")
-//					.marshal(jsonBusinessMessageDataFormat)
+					.process(fiCrdtTrnResponseProcessor)
+					.marshal(jsonBusinessMessageDataFormat)
 //
 				.otherwise()	
 					.log("Message tidak dikenal")
 			.end()
 			
+			.log("Akan remove headers")
 			.removeHeaders("apphdr_*")
 			.removeHeaders("rcv_*")
 		;

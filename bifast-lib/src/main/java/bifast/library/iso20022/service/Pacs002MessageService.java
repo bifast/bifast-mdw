@@ -13,8 +13,11 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.PartyAddtInfo;
 import bifast.library.iso20022.custom.SupplEnvl;
 import bifast.library.iso20022.pacs002.BranchAndFinancialInstitutionIdentification6;
+import bifast.library.iso20022.pacs002.CashAccount38;
+import bifast.library.iso20022.pacs002.CashAccountType2Choice;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV11;
 import bifast.library.iso20022.pacs002.FinancialInstitutionIdentification18;
+import bifast.library.iso20022.pacs002.GenericAccountIdentification1;
 import bifast.library.iso20022.pacs002.GenericFinancialIdentification1;
 import bifast.library.iso20022.pacs002.GroupHeader91;
 import bifast.library.iso20022.pacs002.OriginalGroupHeader17;
@@ -25,15 +28,97 @@ import bifast.library.iso20022.pacs002.PaymentTransaction123;
 import bifast.library.iso20022.pacs002.StatusReason6Choice;
 import bifast.library.iso20022.pacs002.StatusReasonInformation12;
 import bifast.library.iso20022.pacs002.SupplementaryData1;
-
-
+import bifast.library.iso20022.pacs002.AccountIdentification4Choice;
 
 @Service
-public class Pacs002MessageConstructService {
+public class Pacs002MessageService {
 
 	@Autowired
 	private UtilService utilService;
 
+	public FIToFIPaymentStatusReportV11 accountEnquirtyResponse (Pacs002Seed seed, 
+				BusinessMessage orgnlMessage) throws DatatypeConfigurationException {
+		
+		FIToFIPaymentStatusReportV11 pacs002 = new FIToFIPaymentStatusReportV11();
+
+		// GrpHdr
+		GroupHeader91 grpHdr = new GroupHeader91();
+		grpHdr.setMsgId(utilService.genMessageId("510"));  // 510 transaction_type untuk Account ENquiry
+		
+		GregorianCalendar gcal = new GregorianCalendar();
+		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+		grpHdr.setCreDtTm(xcal);
+		
+		pacs002.setGrpHdr(grpHdr);
+
+		// TxInfAndSts
+		
+		PaymentTransaction123 txInfAndSts = new PaymentTransaction123();
+
+		txInfAndSts.setOrgnlEndToEndId( orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getEndToEndId() );
+		txInfAndSts.setOrgnlTxId(orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getTxId() );
+		txInfAndSts.setTxSts(seed.getStatus());
+		
+		// TxInfAndSts / StsRsnInf
+		
+		StatusReason6Choice rsn = new StatusReason6Choice();
+		rsn.setPrtry(seed.getReason());
+		StatusReasonInformation12 stsRsnInf = new StatusReasonInformation12();
+		stsRsnInf.setRsn(rsn);
+		
+		txInfAndSts.getStsRsnInf().add(stsRsnInf);
+		
+		// TxInfAndSts / OrgnlTxRef
+		OriginalTransactionReference31 orgnlTxRef = new OriginalTransactionReference31();
+		
+		orgnlTxRef.setIntrBkSttlmDt(orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmDt() );
+	
+		// TxInfAndSts / OrgnlTxRef / Cdtr
+		
+		PartyIdentification135 ptyName = new PartyIdentification135();
+		ptyName.setNm(seed.getCreditorName());
+		Party40Choice cdtr = new Party40Choice();
+		cdtr.setPty(ptyName);  
+		orgnlTxRef.setCdtr(cdtr);
+
+		// TxInfAndSts / OrgnlTxRef / CdtrAcct
+
+		GenericAccountIdentification1 acctNo = new GenericAccountIdentification1();
+		acctNo.setId(seed.getCreditorAccountNo());
+		AccountIdentification4Choice crdtAcctNo = new AccountIdentification4Choice();
+		crdtAcctNo.setOthr(acctNo);
+		CashAccount38 cdtrAcct = new CashAccount38();
+		cdtrAcct.setId(crdtAcctNo);
+	
+		CashAccountType2Choice accTp = new CashAccountType2Choice();
+		accTp.setPrtry(seed.getCreditorAccountIdType());
+		cdtrAcct.setTp(accTp);
+		
+		orgnlTxRef.setCdtrAcct(cdtrAcct);
+		
+		txInfAndSts.setOrgnlTxRef(orgnlTxRef);
+		
+		// TxInfAndSts / SplmtryData
+		
+		PartyAddtInfo supplCdtr = new PartyAddtInfo();
+		supplCdtr.setTp(seed.getCreditorType());
+		supplCdtr.setId(seed.getCreditorId());
+		supplCdtr.setRsdntSts(seed.getCreditorResidentialStatus());
+		supplCdtr.setTwnNm(seed.getCreditorTown());
+		
+		SupplEnvl supplEnv = new SupplEnvl().setCdtr(supplCdtr);
+		SupplementaryData1 splmtryData = new SupplementaryData1();
+		splmtryData.setEnvlp(supplEnv);
+
+		txInfAndSts.getSplmtryData().add(splmtryData);
+
+		
+		pacs002.getTxInfAndSts().add(txInfAndSts);
+		
+		return pacs002;
+	}
+
+	
 	public FIToFIPaymentStatusReportV11 creditTransferRequestResponse (Pacs002Seed seed, 
 							BusinessMessage orgnlMessage) throws DatatypeConfigurationException {
 		
@@ -41,7 +126,7 @@ public class Pacs002MessageConstructService {
 
 		// GrpHdr
 		GroupHeader91 grpHdr = new GroupHeader91();
-		grpHdr.setMsgId(utilService.genMessageId(seed.getTrnType()));
+		grpHdr.setMsgId(utilService.genMessageId("010"));  // 010 Transaction-Type untuk CSTMRCRDTTRN
 		
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
@@ -115,7 +200,7 @@ public class Pacs002MessageConstructService {
 
 		// GrpHdr
 		GroupHeader91 grpHdr = new GroupHeader91();
-		grpHdr.setMsgId(utilService.genMessageId(seed.getTrnType()));
+		grpHdr.setMsgId(utilService.genMessageId("019"));  // 019 transaction_type untuk FIFICRDTTRN
 		
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);

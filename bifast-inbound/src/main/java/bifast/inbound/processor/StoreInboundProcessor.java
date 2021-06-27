@@ -1,4 +1,4 @@
-package bifast.inbound.service;
+package bifast.inbound.processor;
 
 import java.time.LocalDateTime;
 
