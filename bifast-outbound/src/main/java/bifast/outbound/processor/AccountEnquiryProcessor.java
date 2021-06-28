@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV02;
+import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
@@ -31,7 +31,7 @@ public class AccountEnquiryProcessor implements Processor {
 
 		ChannelAccountEnquiryReq chnReq = exchange.getIn().getHeader("req_channelReq",ChannelAccountEnquiryReq.class);
 
-		BusinessApplicationHeaderV02 hdr = new BusinessApplicationHeaderV02();
+		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = appHeaderService.initAppHdr(chnReq.getReceivingParticipant(), "pacs.008.001.08", "510", chnReq.getChannelType());
 		
 		Pacs008Seed seedAcctEnquiry = new Pacs008Seed();
@@ -51,8 +51,6 @@ public class AccountEnquiryProcessor implements Processor {
 		busMsg.setAppHdr(hdr);
 		busMsg.setDocument(doc);
 	
-		exchange.getMessage().setHeader("req_aeBizMsgId", hdr.getBizMsgIdr());
-		exchange.getMessage().setHeader("req_aeMsgId", doc.getFiToFICstmrCdtTrf().getGrpHdr().getMsgId());
 		exchange.getIn().setBody(busMsg);
 	}
 

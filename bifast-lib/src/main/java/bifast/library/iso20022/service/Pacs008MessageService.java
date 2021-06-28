@@ -16,8 +16,8 @@ import bifast.library.iso20022.pacs008.CashAccount38;
 import bifast.library.iso20022.pacs008.CashAccountType2Choice;
 import bifast.library.iso20022.pacs008.CategoryPurpose1Choice;
 import bifast.library.iso20022.pacs008.ChargeBearerType1Code;
-import bifast.library.iso20022.pacs008.CreditTransferTransaction43;
-import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV09;
+import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
+import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.iso20022.pacs008.FinancialInstitutionIdentification18;
 import bifast.library.iso20022.pacs008.GenericAccountIdentification1;
 import bifast.library.iso20022.pacs008.GenericFinancialIdentification1;
@@ -28,7 +28,7 @@ import bifast.library.iso20022.pacs008.LocalInstrument2Choice;
 import bifast.library.iso20022.pacs008.OrganisationIdentification29;
 import bifast.library.iso20022.pacs008.Party38Choice;
 import bifast.library.iso20022.pacs008.PartyIdentification135;
-import bifast.library.iso20022.pacs008.PaymentIdentification13;
+import bifast.library.iso20022.pacs008.PaymentIdentification7;
 import bifast.library.iso20022.pacs008.PaymentTypeInformation28;
 import bifast.library.iso20022.pacs008.PersonIdentification13;
 import bifast.library.iso20022.pacs008.RemittanceInformation16;
@@ -41,10 +41,10 @@ public class Pacs008MessageService {
 	@Autowired
 	private UtilService utilService;
 
-	public FIToFICustomerCreditTransferV09 accountEnquiryRequest (Pacs008Seed seed) 
+	public FIToFICustomerCreditTransferV08 accountEnquiryRequest (Pacs008Seed seed) 
 			throws DatatypeConfigurationException {
 		
-		FIToFICustomerCreditTransferV09 pacs008 = new FIToFICustomerCreditTransferV09();
+		FIToFICustomerCreditTransferV08 pacs008 = new FIToFICustomerCreditTransferV08();
 		String msgId = utilService.genMessageId(seed.getTrnType());
 		
 		// GrpHdr
@@ -64,11 +64,11 @@ public class Pacs008MessageService {
 		pacs008.setGrpHdr(grpHdr);
 
 		// list of CdtTrfTxInf
-		CreditTransferTransaction43 cdtTrfTxInf = new CreditTransferTransaction43();
+		CreditTransferTransaction39 cdtTrfTxInf = new CreditTransferTransaction39();
 		
 		// CdtTrfTxInf / PmtId
 		
-		PaymentIdentification13 PmtId = new PaymentIdentification13();
+		PaymentIdentification7 PmtId = new PaymentIdentification7();
 		PmtId.setEndToEndId(seed.getBizMsgId());
 		PmtId.setTxId(grpHdr.getMsgId());
 		
@@ -131,10 +131,10 @@ public class Pacs008MessageService {
 		return pacs008;
 	}
 
-	public FIToFICustomerCreditTransferV09 creditTransferRequest (Pacs008Seed seed) 
+	public FIToFICustomerCreditTransferV08 creditTransferRequest (Pacs008Seed seed) 
 			throws DatatypeConfigurationException {
 		
-		FIToFICustomerCreditTransferV09 pacs008 = new FIToFICustomerCreditTransferV09();
+		FIToFICustomerCreditTransferV08 pacs008 = new FIToFICustomerCreditTransferV08();
 		String msgId = utilService.genMessageId(seed.getTrnType());
 
 		// GrpHdr
@@ -154,11 +154,11 @@ public class Pacs008MessageService {
 		pacs008.setGrpHdr(grpHdr);
 
 		// list of CdtTrfTxInf
-		CreditTransferTransaction43 cdtTrfTxInf = new CreditTransferTransaction43();
+		CreditTransferTransaction39 cdtTrfTxInf = new CreditTransferTransaction39();
 		
 		// CdtTrfTxInf / PmtId
 		
-		PaymentIdentification13 PmtId = new PaymentIdentification13();
+		PaymentIdentification7 PmtId = new PaymentIdentification7();
 		PmtId.setEndToEndId(seed.getBizMsgId());
 		PmtId.setTxId(msgId);
 		

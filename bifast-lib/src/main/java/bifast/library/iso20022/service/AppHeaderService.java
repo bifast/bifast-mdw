@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.library.config.LibConfig;
-import bifast.library.iso20022.head001.BranchAndFinancialInstitutionIdentification6;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV02;
-import bifast.library.iso20022.head001.FinancialInstitutionIdentification18;
+import bifast.library.iso20022.head001.BranchAndFinancialInstitutionIdentification5;
+import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
+import bifast.library.iso20022.head001.FinancialInstitutionIdentification8;
 import bifast.library.iso20022.head001.GenericFinancialIdentification1;
-import bifast.library.iso20022.head001.Party44Choice;
+import bifast.library.iso20022.head001.Party9Choice;
 
 
 
@@ -29,21 +29,21 @@ public class AppHeaderService {
 	
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-	public BusinessApplicationHeaderV02 initAppHdr(String bicTo, String msgType, String trxType, String channel) {
+	public BusinessApplicationHeaderV01 initAppHdr(String bicTo, String msgType, String trxType, String channel) {
 		
         		
-		BusinessApplicationHeaderV02 appHdr = new BusinessApplicationHeaderV02();
+		BusinessApplicationHeaderV01 appHdr = new BusinessApplicationHeaderV01();
 		
-		Party44Choice fr = new Party44Choice();
-		fr.setFIId(new BranchAndFinancialInstitutionIdentification6());
-		fr.getFIId().setFinInstnId(new FinancialInstitutionIdentification18());
+		Party9Choice fr = new Party9Choice();
+		fr.setFIId(new BranchAndFinancialInstitutionIdentification5());
+		fr.getFIId().setFinInstnId(new FinancialInstitutionIdentification8());
 		fr.getFIId().getFinInstnId().setOthr(new GenericFinancialIdentification1());
 		fr.getFIId().getFinInstnId().getOthr().setId(config.getBankcode());
 		appHdr.setFr(fr);
 
-		Party44Choice to = new Party44Choice();
-		to.setFIId(new BranchAndFinancialInstitutionIdentification6());
-		to.getFIId().setFinInstnId(new FinancialInstitutionIdentification18());
+		Party9Choice to = new Party9Choice();
+		to.setFIId(new BranchAndFinancialInstitutionIdentification5());
+		to.getFIId().setFinInstnId(new FinancialInstitutionIdentification8());
 		to.getFIId().getFinInstnId().setOthr(new GenericFinancialIdentification1());
 		to.getFIId().getFinInstnId().getOthr().setId(bicTo);
 		appHdr.setTo(to);

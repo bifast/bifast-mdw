@@ -5,7 +5,7 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs002.PaymentTransaction123;
+import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.outbound.pojo.ChannelAccountEnquiryReq;
 import bifast.outbound.pojo.ChannelAccountEnquiryResp;
 
@@ -16,7 +16,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		BusinessMessage busMesg = exchange.getIn().getBody(BusinessMessage.class);
-		PaymentTransaction123 biResp = busMesg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
+		PaymentTransaction110 biResp = busMesg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 		
 		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("req_channelReq",ChannelAccountEnquiryReq.class);
 		

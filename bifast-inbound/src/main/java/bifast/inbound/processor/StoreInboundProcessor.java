@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV02;
+import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.model.InboundMessage;
 import bifast.library.repository.InboundMessageRepository;
 
@@ -22,7 +22,7 @@ public class StoreInboundProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		 
 		BusinessMessage busMesg = exchange.getMessage().getHeader("rcv_obj",BusinessMessage.class);
-		BusinessApplicationHeaderV02 hdr = busMesg.getAppHdr();
+		BusinessApplicationHeaderV01 hdr = busMesg.getAppHdr();
 		
 		InboundMessage inboundMsg = new InboundMessage();
 		

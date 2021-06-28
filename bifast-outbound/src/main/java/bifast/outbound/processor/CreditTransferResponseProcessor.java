@@ -5,7 +5,7 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs002.PaymentTransaction123;
+import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.outbound.pojo.ChannelCreditTransferRequest;
 import bifast.outbound.pojo.ChannelCreditTransferResponse;
 
@@ -16,7 +16,7 @@ public class CreditTransferResponseProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		
 		BusinessMessage obj_crdtrnResp = exchange.getMessage().getHeader("resp_objbicrdttrn", BusinessMessage.class);
-		PaymentTransaction123 biResp = obj_crdtrnResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
+		PaymentTransaction110 biResp = obj_crdtrnResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 		
 		ChannelCreditTransferRequest chnRequest = exchange.getMessage().getHeader("req_channelReq", ChannelCreditTransferRequest.class);
 

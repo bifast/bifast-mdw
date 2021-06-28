@@ -4,23 +4,24 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV02;
+import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
+
 
 
 @JsonRootName(value = "BusMsg")
 public class BusinessMessage {
 
     @XmlElement(name = "AppHdr", required = true)
-    private BusinessApplicationHeaderV02 appHdr;
+    private BusinessApplicationHeaderV01 appHdr;
     
     @XmlElement(name = "Document", required = true)
     private Document document;
 
-	public BusinessApplicationHeaderV02 getAppHdr() {
+	public BusinessApplicationHeaderV01 getAppHdr() {
 		return appHdr;
 	}
 
-	public void setAppHdr(BusinessApplicationHeaderV02 appHdr) {
+	public void setAppHdr(BusinessApplicationHeaderV01 appHdr) {
 		this.appHdr = appHdr;
 	}
 

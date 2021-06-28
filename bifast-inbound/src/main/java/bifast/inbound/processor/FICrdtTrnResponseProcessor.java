@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV02;
-import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV11;
+import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
+import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
@@ -38,8 +38,8 @@ public class FICrdtTrnResponseProcessor implements Processor{
 		String orignBank = reqBusMesg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
 		
 		// construct response message
-		BusinessApplicationHeaderV02 appHdr = appHdrService.initAppHdr(orignBank, "pacs002.001.10", "019", "99");
-		FIToFIPaymentStatusReportV11 respMsg = pacs002Service.fIFICreditTransferRequestResponse(resp, reqBusMesg);
+		BusinessApplicationHeaderV01 appHdr = appHdrService.initAppHdr(orignBank, "pacs002.001.10", "019", "99");
+		FIToFIPaymentStatusReportV10 respMsg = pacs002Service.fIFICreditTransferRequestResponse(resp, reqBusMesg);
 		BusinessMessage respBusMesg = new BusinessMessage();
 		respBusMesg.setAppHdr(appHdr);
 

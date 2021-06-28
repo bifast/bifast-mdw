@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs008.CreditTransferTransaction43;
+import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
 import bifast.library.model.AccountEnquiry;
 import bifast.library.model.CreditTransfer;
 import bifast.library.repository.AccountEnquiryRepository;
@@ -26,7 +26,7 @@ public class Pacs008Processor implements Processor{
 	public void process(Exchange exchange) throws Exception {
 
 		BusinessMessage busMesg = exchange.getIn().getBody(BusinessMessage.class);
-		CreditTransferTransaction43 cdtTrfInf = busMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
+		CreditTransferTransaction39 cdtTrfInf = busMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
 
 		//cek apakah account enq
 		if (null == cdtTrfInf.getPmtTpInf()) {

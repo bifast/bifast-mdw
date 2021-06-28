@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV02;
+import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
@@ -29,7 +29,7 @@ public class CreditTransferRequestProcessor implements Processor {
 
 		ChannelCreditTransferRequest chnReq = exchange.getIn().getHeader("req_channelReq",ChannelCreditTransferRequest.class);
 		
-		BusinessApplicationHeaderV02 hdr = new BusinessApplicationHeaderV02();
+		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = appHeaderService.initAppHdr(chnReq.getRecptBank(), "pacs.008.001.08", "010", chnReq.getChannel());
 
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();

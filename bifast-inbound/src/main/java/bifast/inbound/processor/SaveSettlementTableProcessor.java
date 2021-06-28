@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV02;
+import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.model.SettlementProc;
 import bifast.library.repository.SettlementProcRepository;
 
@@ -20,7 +20,7 @@ public class SaveSettlementTableProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		BusinessMessage rcvMessage = exchange.getIn().getBody(BusinessMessage.class);
-		BusinessApplicationHeaderV02 sttlHeader = rcvMessage.getAppHdr();
+		BusinessApplicationHeaderV01 sttlHeader = rcvMessage.getAppHdr();
 		
 		String sttlBizMsgId = sttlHeader.getBizMsgIdr();
 		String orglBizMsgId = rcvMessage.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).getOrgnlMsgId();

@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import bifast.library.iso20022.head001.CopyDuplicate1Code;
+
 @Entity(name="INBOUND_MESSAGE")
 public class InboundMessage {
 
@@ -26,7 +28,7 @@ public class InboundMessage {
 	@Column(name="BIZSVC")
 	private String bizSvc;
 	@Column(name="COPY_MSG")
-	private String cpyDplct;
+	private CopyDuplicate1Code cpyDplct;
 	@Column(name="DUPL")
 	private String pssblDplct;
 	@Column(name="RECEIVE_DT")
@@ -80,11 +82,11 @@ public class InboundMessage {
 		this.bizSvc = bizSvc;
 	}
 
-	public String getCpyDplct() {
+	public CopyDuplicate1Code getCpyDplct() {
 		return cpyDplct;
 	}
 
-	public void setCpyDplct(String cpyDplct) {
+	public void setCpyDplct(CopyDuplicate1Code cpyDplct) {
 		this.cpyDplct = cpyDplct;
 	}
 

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV02;
-import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV11;
+import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
+import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
@@ -39,12 +39,12 @@ public class CreditTransferResponseProcessor implements Processor {
 		resp.setCreditorType("01");
 		resp.setCreditorId("234433");
 		
-		FIToFIPaymentStatusReportV11 respMsg = pacs002Service.creditTransferRequestResponse(resp, reqBusMesg);
+		FIToFIPaymentStatusReportV10 respMsg = pacs002Service.creditTransferRequestResponse(resp, reqBusMesg);
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(respMsg);
 		
 		String orignBank = reqBusMesg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
-		BusinessApplicationHeaderV02 appHdr = appHdrService.initAppHdr(orignBank, "pacs002.001.10", "010", "99");
+		BusinessApplicationHeaderV01 appHdr = appHdrService.initAppHdr(orignBank, "pacs002.001.10", "010", "99");
 
 		BusinessMessage respBusMesg = new BusinessMessage();
 		respBusMesg.setAppHdr(appHdr);

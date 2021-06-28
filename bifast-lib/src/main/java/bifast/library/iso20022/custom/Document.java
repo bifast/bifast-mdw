@@ -5,9 +5,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV11;
-import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV09;
-import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV10;
+import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
+import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
+import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -17,35 +17,35 @@ import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV10;
 public class Document {
 
 	@XmlElement(name = "FIToFICstmrCdtTrf", required = false)
-    protected FIToFICustomerCreditTransferV09 fiToFICstmrCdtTrf;
+    protected FIToFICustomerCreditTransferV08 fiToFICstmrCdtTrf;
 
     @XmlElement(name = "FIToFIPmtStsRpt", required = false)
-    protected FIToFIPaymentStatusReportV11 fiToFIPmtStsRpt;
+    protected FIToFIPaymentStatusReportV10 fiToFIPmtStsRpt;
 
     @XmlElement(name = "FICdtTrf", required = false)
-    protected FinancialInstitutionCreditTransferV10 fiCdtTrf;
+    protected FinancialInstitutionCreditTransferV09 fiCdtTrf;
 
-	public FIToFICustomerCreditTransferV09 getFiToFICstmrCdtTrf() {
+	public FIToFICustomerCreditTransferV08 getFiToFICstmrCdtTrf() {
 		return fiToFICstmrCdtTrf;
 	}
 
-	public void setFiToFICstmrCdtTrf(FIToFICustomerCreditTransferV09 fiToFICstmrCdtTrf) {
+	public void setFiToFICstmrCdtTrf(FIToFICustomerCreditTransferV08 fiToFICstmrCdtTrf) {
 		this.fiToFICstmrCdtTrf = fiToFICstmrCdtTrf;
 	}
 
-	public FIToFIPaymentStatusReportV11 getFiToFIPmtStsRpt() {
+	public FIToFIPaymentStatusReportV10 getFiToFIPmtStsRpt() {
 		return fiToFIPmtStsRpt;
 	}
 
-	public void setFiToFIPmtStsRpt(FIToFIPaymentStatusReportV11 fiToFIPmtStsRpt) {
+	public void setFiToFIPmtStsRpt(FIToFIPaymentStatusReportV10 fiToFIPmtStsRpt) {
 		this.fiToFIPmtStsRpt = fiToFIPmtStsRpt;
 	}
 
-	public FinancialInstitutionCreditTransferV10 getFiCdtTrf() {
+	public FinancialInstitutionCreditTransferV09 getFiCdtTrf() {
 		return fiCdtTrf;
 	}
 
-	public void setFiCdtTrf(FinancialInstitutionCreditTransferV10 fiCdtTrf) {
+	public void setFiCdtTrf(FinancialInstitutionCreditTransferV09 fiCdtTrf) {
 		this.fiCdtTrf = fiCdtTrf;
 	}
 
