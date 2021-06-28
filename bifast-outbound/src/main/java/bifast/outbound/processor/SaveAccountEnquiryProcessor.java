@@ -51,7 +51,6 @@ public class SaveAccountEnquiryProcessor implements Processor {
 		// save Account_Enquiry Table
 
 		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("req_channelReq", ChannelAccountEnquiryReq.class); 
-		BusinessMessage biAcctEnqrResponse = exchange.getIn().getBody(BusinessMessage.class);
 		
 		AccountEnquiry accountEnquiry = new AccountEnquiry();
 		accountEnquiry.setAccountNo(chnReq.getCreditorAccountNumber());

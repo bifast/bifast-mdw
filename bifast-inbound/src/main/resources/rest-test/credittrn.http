@@ -1,0 +1,143 @@
+# CREDIT TRANSFER REQUEST INBOUND
+POST http://localhost:9001/services/api/inbound HTTP/1.1
+Content-Type: application/json
+
+{
+    "BusMsg" : {
+        "AppHdr" : {
+            "Fr" : {
+                "FIId" : {
+                    "FinInstnId" : {
+                        "Othr" : {
+                        "Id" : "FASTIDJA"
+                        }
+                    }
+                }
+            },
+            "To" : {
+                "FIId" : {
+                "FinInstnId" : {
+                    "Othr" : {
+                        "Id" : "INDOIDJA"
+                        }
+                    }
+                }
+            },
+            "BizMsgIdr" : "20210628FASTIDJA010O0174254063",
+            "MsgDefIdr" : "pacs.008.001.08",
+            "CreDt" : "2021-06-28T20:06:59"
+        },
+        "Document" : {
+            "FIToFICstmrCdtTrf" : {
+                "GrpHdr" : {
+                    "MsgId" : "20210626FASTIDJA01074109248",
+                    "CreDtTm" : "2021-06-26T20:06:59.820",
+                    "NbOfTxs" : "1",
+                    "SttlmInf" : {
+                        "SttlmMtd" : "CLRG"
+                    }
+                },
+                "CdtTrfTxInf" : [ {
+                    "PmtId" : {
+                        "EndToEndId" : "20210616FASTIDJA010O0100004001",
+                        "TxId" : "20210616FASTIDJA01000004002"
+                    },
+                    "PmtTpInf" : {
+                        "LclInstrm" : {
+                            "Prtry" : "01"
+                        },
+                        "CtgyPurp" : {
+                            "Prtry" : "02"
+                        }
+                    },
+                    "IntrBkSttlmAmt" : {
+                        "Value" : "20000000.20",
+                        "Ccy" : "IDR"
+                    },
+                    "IntrBkSttlmDt" : "2021-06-25",
+                    "ChrgBr" : "DEBT",
+                    "Dbtr" : {
+                        "Nm" : "JAMES BROWN",
+                        "Id" : {
+                            "PrvtId" : {
+                                "Othr" : [ {
+                                    "Id" : "01203030444060708"
+                                } ]
+                            }
+                        }
+                    },
+                    "DbtrAcct" : {
+                        "Id" : {
+                            "Othr" : {
+                                "Id" : "123456789"
+                            }
+                        },
+                        "Tp" : {
+                            "Prtry" : "CACC"
+                        }
+                    },
+                    "DbtrAgt" : {
+                        "FinInstnId" : {
+                            "Othr" : {
+                                "Id" : "FASTIDJA"
+                            }
+                        }
+                    },
+                    "CdtrAgt" : {
+                        "FinInstnId" : {
+                            "Othr" : {
+                                "Id" : "INDOIDJA"
+                            }
+                        }
+                    },
+                    "Cdtr" : { 
+                        "Nm" : "JOHN SMITH",
+                        "Id" : {
+                            "PrvtId" : {
+                                "Othr" : [ {
+                                    "Id" : "0102030405060708"
+                                } ]
+                            }
+                        }
+                    },
+                    "CdtrAcct" : {
+                        "Id" : {
+                            "Othr" : {
+                                "Id" : "500030312244"
+                            }
+                        },
+                        "Tp" : {
+                            "Prtry" : "SVGS"
+                        },
+                        "Prxy" : {
+                            "Tp" : {
+                                "Prtry" : "02"
+                            },
+                            "Id" : "john.smith@example.com"
+                        }
+                    },
+                    "RmtInf" : {
+                        "Ustrd" : [ "Payment Description or notes, up to 140 characters in the line" ]
+                    },
+                    "SplmtryData" : [ {
+                        "Envlp" : {
+                            "Dbtr" : {
+                                "Tp" : "01",
+                                "RsdntSts" : "01",
+                                "TwnNm" : "0300"
+                            },
+                            "Cdtr" : {
+                                "Tp" : "01",
+                                "RsdntSts" : "01",
+                                "TwnNm" : "0300"
+                            }
+                        }
+                    } ]
+                } ]
+            }
+        }
+    }
+}
+
+###
+

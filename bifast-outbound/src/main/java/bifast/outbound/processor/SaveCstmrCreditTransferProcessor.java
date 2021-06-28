@@ -8,12 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.model.AccountEnquiry;
 import bifast.library.model.CreditTransfer;
 import bifast.library.model.OutboundMessage;
 import bifast.library.repository.CreditTransferRepository;
 import bifast.library.repository.OutboundMessageRepository;
-import bifast.outbound.pojo.ChannelAccountEnquiryReq;
 import bifast.outbound.pojo.ChannelCreditTransferRequest;
 
 @Component

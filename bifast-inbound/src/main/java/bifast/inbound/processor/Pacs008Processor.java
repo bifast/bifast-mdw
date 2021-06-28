@@ -30,7 +30,6 @@ public class Pacs008Processor implements Processor{
 
 		//cek apakah account enq
 		if (null == cdtTrfInf.getPmtTpInf()) {
-			System.out.println("ini adalah account enquiry");
       
 			AccountEnquiry accenq = new AccountEnquiry();
 			accenq.setDirection("INBOUND");
@@ -52,8 +51,6 @@ public class Pacs008Processor implements Processor{
 		else {
 			
 			// TODO Disini panggil corebank untuk check account
-			
-			System.out.println("ini adalah credit transfer request");
 			
 			CreditTransfer crdt = new CreditTransfer();
 		

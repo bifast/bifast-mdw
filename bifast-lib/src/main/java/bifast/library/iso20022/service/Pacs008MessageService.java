@@ -197,7 +197,7 @@ public class Pacs008MessageService {
 //			dbtr.setNm(seed.getDebtorName());
 
 		Party38Choice dbtrId = new Party38Choice();
-		if (seed.getDbtrIdType().equals("Private")) {
+		if (seed.getDbtrIdType().equals("01")) {
 			GenericPersonIdentification1 debtId = new GenericPersonIdentification1();
 			debtId.setId(seed.getDbtrId());
 			PersonIdentification13 personIdentification13 = new PersonIdentification13();
@@ -258,7 +258,7 @@ public class Pacs008MessageService {
 //			cdtr.setNm(seed.getCreditorName());
 			
 		Party38Choice cdtrId = new Party38Choice();
-		if (seed.getCrdtIdType().equals("Private")) {
+		if (seed.getCrdtIdType().equals("01")) {
 			GenericPersonIdentification1 cdtrPrvOthrId = new GenericPersonIdentification1();
 			cdtrPrvOthrId.setId(seed.getCrdtId());
 			PersonIdentification13 personId = new PersonIdentification13();
@@ -288,13 +288,7 @@ public class Pacs008MessageService {
 		cdtrAcctTp.setPrtry(seed.getCrdtAccountType());
 		cdtrAcct.setTp(cdtrAcctTp);
 		
-//		ProxyAccountType1Choice prxyTp = new ProxyAccountType1Choice();
-//		prxyTp.setPrtry(seed.getCreditorAccountProxyIdType());
-//		ProxyAccountIdentification1 prxy = new ProxyAccountIdentification1();
-//		prxy.setTp(prxyTp);
-//		prxy.setId(seed.getCreditorAccountProxyId());
-//		cdtrAcct.setPrxy(prxy);
-		
+	
 		cdtTrfTxInf.setCdtrAcct(cdtrAcct);
 		
 		// CdtTrfTxInf / RmtInf

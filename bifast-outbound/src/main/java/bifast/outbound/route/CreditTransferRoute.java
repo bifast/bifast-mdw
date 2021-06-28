@@ -2,6 +2,7 @@ package bifast.outbound.route;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.model.rest.RestParamType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -81,12 +82,52 @@ public class CreditTransferRoute extends RouteBuilder {
 
 		configureJsonDataFormat();
 		
-		restConfiguration().component("servlet");
+		restConfiguration().component("servlet")
+        	.apiContextPath("/api-doc")
+	            .apiProperty("api.title", "KOMI API Documentation").apiProperty("api.version", "1.0.0")
+	            .apiProperty("cors", "true");
+
+        ;
+		
 		rest("/channel")
 			.post("/acctenquiry")
+				.description("Pengiriman instruksi Account Enquiry ke bank lain melalui BI-FAST")
+				.param()
+					.name("IntrnRefId")
+					.description("Kode ID Internal dari channel")
+					.type(RestParamType.body).dataType("String")
+					.endParam()
+				.param()
+					.name("ChannelType")
+					.description("Kode channel")
+					.type(RestParamType.body).dataType("String")
+					.endParam()
+				.param()
+					.name("ReceivingParticipant")
+					.description("Kode Swift dari bank tujuan")
+					.type(RestParamType.body).dataType("String")
+					.endParam()
+				.param()
+					.name("Amount")
+					.description("Nilai yang akan ditransfer")
+					.type(RestParamType.body).dataType("Decimal")
+					.endParam()
+				.param()
+					.name("categoryPurpose")
+					.description("Kode CategoryPurpose sesuai acuan BI")
+					.type(RestParamType.body).dataType("String")
+					.endParam()
+				.param()
+					.name("CreditorAccountNumber")
+					.description("Nomor Rekening tujuan")
+					.type(RestParamType.body).dataType("String")
+					.endParam()
+					
 				.consumes("application/json")
 				.to("direct:acctenqr")
+				
 			.post("/cstmrcrdtrn")
+				.description("Pengiriman instruksi Credit Transfer ke bank lain melalui BI-FAST")
 				.consumes("application/json")
 				.to("direct:ctreq")
 		;

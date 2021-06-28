@@ -52,6 +52,7 @@ public class InboundRoute extends RouteBuilder {
 			
 		rest("/api")
 			.post("/inbound")
+				.description("REST listener untuk terima message")
 				.consumes("application/json")
 				.to("direct:receive")
 			;
@@ -59,11 +60,12 @@ public class InboundRoute extends RouteBuilder {
 		
 		from("direct:receive").routeId("receive")
 			.convertBodyTo(String.class)
-			.setHeader("rcv_json", simple("${body}"))  // simpan versi json dari inputan
+//			.setHeader("rcv_json", simple("${body}"))  // simpan versi json dari inputan
+
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
 			.setHeader("rcv_obj", simple("${body}"))   // pojo BusinessMessage simpan ke header
 			.setHeader("rcv_msgname", simple("${body.appHdr.msgDefIdr}"))
-			
+
 			.choice()
 
 				.when().simple("${header.rcv_msgname} startsWith 'pacs.002'")   // terima settlement
@@ -75,7 +77,6 @@ public class InboundRoute extends RouteBuilder {
 				.when().simple("${header.rcv_msgname} startsWith 'pacs.008'")  // Account Enquiry or Credit Transfer PA
 					.log("Terima pacs.008")
 					.process(pacs008Processor)
-					.log("${header.rcv_msgtype}")
 					
 					.choice()
 						.when().simple("${header.rcv_msgtype} == 'ACCTENQR'")
@@ -100,10 +101,9 @@ public class InboundRoute extends RouteBuilder {
 					.log("Message tidak dikenal")
 			.end()
 			
-			.log("Akan remove headers")
-			.removeHeaders("apphdr_*")
-			.removeHeaders("rcv_*")
 			.process(storeInboundProcessor)
+			.removeHeaders("rcv_*")
+			.removeHeaders("resp_*")
 
 		;
 

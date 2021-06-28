@@ -28,6 +28,11 @@
 			<artifactId>bifast-lib</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.camel</groupId>
+		    <artifactId>camel-openapi-java</artifactId>
+		    <version>${camel.version}</version>
+		</dependency>
 	
 	</dependencies>
 

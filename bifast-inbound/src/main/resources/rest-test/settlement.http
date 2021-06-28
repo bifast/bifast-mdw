@@ -1,0 +1,293 @@
+# CREDIT TRANSFER SETTLEMENT CONFIRMATION 
+# as Originating of Credit Transfer Request to FASTIDJA
+# Credit Transfer Request was ACTC
+POST http://localhost:9001/services/api/inbound HTTP/1.1
+Content-Type: application/json
+
+{
+	"BusMsg": {
+		"AppHdr": {
+			"Fr": {
+				"FIId": {
+					"FinInstnId": {
+						"Othr": {
+							"Id": "INDOIDJA"
+						}
+					}
+				}
+			},
+			"To": {
+				"FIId": {
+					"FinInstnId": {
+						"Othr": {
+							"Id": "FASTIDJA"
+						}
+					}
+				}
+			},
+			"BizMsgIdr": "20210627INDOIDJA010HRB10049528",
+			"MsgDefIdr": "pacs.002.001.10",
+			"BizSvc": "SETTLEMENTCONFIRMATION",
+			"CreDt": "2021-06-20T20:00:00"
+		},
+		"Document": {
+			"FIToFIPmtStsRpt": {
+				"GrpHdr": {
+					"MsgId": "20210620INDOIDJA01010045008",
+					"CreDtTm": "2021-03-01T19:00:00"
+				},
+				"OrgnlGrpInfAndSts": [
+					{
+						"OrgnlMsgId": "20210620INDOIDJA01010045008",
+						"OrgnlMsgNmId": "pacs.008.001.08",
+						"OrgnlCreDtTm": "2021-03-01T19:00:00"
+					}
+				],
+				"TxInfAndSts": [
+					{
+						"OrgnlEndToEndId": "20210301INDOIDJA010ORB12345678",
+						"OrgnlTxId": "20210301INDOIDJA01012345678",
+						"TxSts": "ACTC",
+						"StsRsnInf": [
+							{
+								"Rsn": {
+									"Prtry": "U000"
+								},
+								"AddtlInf": [
+									"O 1234"
+								]
+							}
+						],
+						"OrgnlTxRef": {
+							"IntrBkSttlmDt": "2021-03-01T00:00:00",
+							"Dbtr": {
+								"Pty": {
+									"Nm": "JAMES BROWN"
+								}
+							},
+							"DbtrAcct": {
+								"Id": {
+									"Othr": {
+										"Id": "123456789"
+									}
+								},
+								"Tp": {
+									"Prtry": "CACC"
+								}
+							},
+							"DbtrAgt": {
+								"FinInstnId": {
+									"Othr": {
+										"Id": "INDOIDJA"
+									}
+								}
+							},
+							"CdtrAgt": {
+								"FinInstnId": {
+									"Othr": {
+										"Id": "CENAIDJA"
+									}
+								}
+							},
+							"Cdtr": {
+								"Pty": {
+									"Nm": "JOHN SMITH"
+								}
+							},
+							"CdtrAcct": {
+								"Id": {
+									"Othr": {
+										"Id": "987654321"
+									}
+								},
+								"Tp": {
+									"Prtry": "SVGS"
+								}
+							}
+						},
+						"SplmtryData": [
+							{
+								"Envlp": {
+									"Dbtr": {
+										"Tp": "01",
+										"Id": "0102030405060708",
+										"RsdntSts": "01",
+										"TwnNm": "0300"
+									},
+									"Cdtr": {
+										"Tp": "01",
+										"Id": "0807060504030201",
+										"RsdntSts": "01",
+										"TwnNm": "0300"
+									},
+									"DbtrAgtAcct": {
+										"Id": {
+											"Othr": {
+												"Id": "654321098"
+											}
+										}
+									},
+									"CdtrAgtAcct": {
+										"Id": {
+											"Othr": {
+												"Id": "890123456"
+											}
+										}
+									}
+								}
+							}
+						]
+					}
+				]
+			}
+		}
+	}
+}
+
+###
+
+# CREDIT TRANSFER SETTLEMENT CONFIRMATION 
+# as Recipient of Credit Transfer Request from FASTIDJA
+# Credit Transfer Request was RJCT
+POST http://localhost:8888/services/api/inbound HTTP/1.1
+Content-Type: application/json
+
+{
+	"BusMsg": {
+		"AppHdr": {
+			"Fr": {
+				"FIId": {
+					"FinInstnId": {
+						"Othr": {
+							"Id": "INDOIDJA"
+						}
+					}
+				}
+			},
+			"To": {
+				"FIId": {
+					"FinInstnId": {
+						"Othr": {
+							"Id": "FASTIDJA"
+						}
+					}
+				}
+			},
+			"BizMsgIdr": "20210620INDOIDJA010HRB12349018",
+			"MsgDefIdr": "pacs.002.001.10",
+			"BizSvc": "SETTLEMENTCONFIRMATION",
+			"CreDt": "2021-06-20T20:00:00"
+		},
+		"Document": {
+			"FIToFIPmtStsRpt": {
+				"GrpHdr": {
+					"MsgId": "20210620INDOIDJA01010045008",
+					"CreDtTm": "2021-03-01T19:00:00"
+				},
+				"OrgnlGrpInfAndSts": [
+					{
+						"OrgnlMsgId": "20210620INDOIDJA01010045008",
+						"OrgnlMsgNmId": "pacs.008.001.08",
+						"OrgnlCreDtTm": "2021-03-01T19:00:00"
+					}
+				],
+				"TxInfAndSts": [
+					{
+						"OrgnlEndToEndId": "20210301INDOIDJA010ORB12345678",
+						"OrgnlTxId": "20210301INDOIDJA01012345678",
+						"TxSts": "ACTC",
+						"StsRsnInf": [
+							{
+								"Rsn": {
+									"Prtry": "U000"
+								},
+								"AddtlInf": [
+									"O 1234"
+								]
+							}
+						],
+						"OrgnlTxRef": {
+							"IntrBkSttlmDt": "2021-03-01T00:00:00",
+							"Dbtr": {
+								"Pty": {
+									"Nm": "JAMES BROWN"
+								}
+							},
+							"DbtrAcct": {
+								"Id": {
+									"Othr": {
+										"Id": "123456789"
+									}
+								},
+								"Tp": {
+									"Prtry": "CACC"
+								}
+							},
+							"DbtrAgt": {
+								"FinInstnId": {
+									"Othr": {
+										"Id": "INDOIDJA"
+									}
+								}
+							},
+							"CdtrAgt": {
+								"FinInstnId": {
+									"Othr": {
+										"Id": "CENAIDJA"
+									}
+								}
+							},
+							"Cdtr": {
+								"Pty": {
+									"Nm": "JOHN SMITH"
+								}
+							},
+							"CdtrAcct": {
+								"Id": {
+									"Othr": {
+										"Id": "987654321"
+									}
+								},
+								"Tp": {
+									"Prtry": "SVGS"
+								}
+							}
+						},
+						"SplmtryData": [
+							{
+								"Envlp": {
+									"Dbtr": {
+										"Tp": "01",
+										"Id": "0102030405060708",
+										"RsdntSts": "01",
+										"TwnNm": "0300"
+									},
+									"Cdtr": {
+										"Tp": "01",
+										"Id": "0807060504030201",
+										"RsdntSts": "01",
+										"TwnNm": "0300"
+									},
+									"DbtrAgtAcct": {
+										"Id": {
+											"Othr": {
+												"Id": "654321098"
+											}
+										}
+									},
+									"CdtrAgtAcct": {
+										"Id": {
+											"Othr": {
+												"Id": "890123456"
+											}
+										}
+									}
+								}
+							}
+						]
+					}
+				]
+			}
+		}
+	}
+}

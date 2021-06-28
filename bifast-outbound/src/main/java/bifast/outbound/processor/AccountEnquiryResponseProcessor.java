@@ -5,7 +5,6 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV11;
 import bifast.library.iso20022.pacs002.PaymentTransaction123;
 import bifast.outbound.pojo.ChannelAccountEnquiryReq;
 import bifast.outbound.pojo.ChannelAccountEnquiryResp;

@@ -9,12 +9,12 @@ Content-Type: application/json
     "categoryPurpose" : "03",
     "amount" : 35000030,
     "dbtrId" : "KTP-2004-323",
-    "dbtrIdType" : "Organization",
+    "dbtrIdType" : "01",    // 01: PRIVATE
     "dbtrAccountNo" : "00933494",
     "dbtrAccountType" : "CACC",
     "recptBank" : "FASTIDJA",
     "crdtId" : "SIM-AAAA0403",
-    "crdtIdType" : "Private",
+    "crdtIdType" : "02",   // 02: ORGANIZATION
     "crdtAccountNo" : "90003488399",
     "crdtAccountType" : "SVGS",
     "paymentInfo" : "Payment Description or notes, up to 140 characters in the line"
