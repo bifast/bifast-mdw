@@ -19,6 +19,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		PaymentTransaction110 biResp = busMesg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 		
 		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("req_channelReq",ChannelAccountEnquiryReq.class);
+		System.out.println(chnReq.getIntrnRefId());
 		
 		ChannelAccountEnquiryResp chnResp = new ChannelAccountEnquiryResp();
 		chnResp.setAmount(chnReq.getAmount());

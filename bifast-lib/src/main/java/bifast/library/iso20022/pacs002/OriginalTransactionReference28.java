@@ -13,7 +13,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.datatype.XMLGregorianCalendar;
+
+import bifast.library.adapter.GregorianCalendarXMLAdapterExclMillis;
+
 
 
 /**
@@ -89,6 +93,7 @@ public class OriginalTransactionReference28 {
     protected AmountType4Choice amt;
     @XmlElement(name = "IntrBkSttlmDt")
     @XmlSchemaType(name = "date")
+    @XmlJavaTypeAdapter(value=GregorianCalendarXMLAdapterExclMillis.class, type=XMLGregorianCalendar.class)
     protected XMLGregorianCalendar intrBkSttlmDt;
     @XmlElement(name = "ReqdColltnDt")
     @XmlSchemaType(name = "date")

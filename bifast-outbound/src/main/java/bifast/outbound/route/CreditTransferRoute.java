@@ -11,6 +11,7 @@ import bifast.outbound.pojo.ChannelAccountEnquiryReq;
 import bifast.outbound.pojo.ChannelAccountEnquiryResp;
 import bifast.outbound.pojo.ChannelCreditTransferRequest;
 import bifast.outbound.pojo.ChannelCreditTransferResponse;
+import bifast.outbound.processor.AccountEnquiryAggregator;
 import bifast.outbound.processor.AccountEnquiryProcessor;
 import bifast.outbound.processor.AccountEnquiryResponseProcessor;
 import bifast.outbound.processor.CreditTransferRequestProcessor;
@@ -41,6 +42,8 @@ public class CreditTransferRoute extends RouteBuilder {
 	private SaveAccountEnquiryProcessor saveAccountEnquiry;
 	@Autowired
 	private SaveCstmrCreditTransferProcessor saveCstmrCreditTransfer;
+	@Autowired
+	private AccountEnquiryAggregator accountEnquiryAggregator;
 	
 	JacksonDataFormat jsonChnlAccountEnqrReqFormat = new JacksonDataFormat(ChannelAccountEnquiryReq.class);
 	JacksonDataFormat jsonChnlAccountEnqrRespFormat = new JacksonDataFormat(ChannelAccountEnquiryResp.class);
@@ -130,8 +133,17 @@ public class CreditTransferRoute extends RouteBuilder {
 				.description("Pengiriman instruksi Credit Transfer ke bank lain melalui BI-FAST")
 				.consumes("application/json")
 				.to("direct:ctreq")
-		;
+
+			.post("/pymtstatus")
+				.description("Check status instruksi Credit Transfer")
+				.consumes("application/json")
+				.to("direct:pymtstatus")
 		
+		;
+
+		from("direct:pymtstatus")
+			.to("log:foo");
+
 		from("direct:acctenqr").routeId("direct:acctenqr")
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlAccountEnqrReqFormat)
@@ -144,27 +156,29 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setHeader("req_jsonbiacctenqr", simple("${body}"))
 
 			// kirim ke CI-HUB
-			.to("rest:post:acctenqP1?host=demo3216691.mockable.io&producerComponentName=http&bridgeEndpoint=true")
+			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", accountEnquiryAggregator)
 			.convertBodyTo(String.class)
+
 			.setHeader("resp_jsonbiacctenqr", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbiacctenqr", simple("${body}"))	
 
 			.process(saveAccountEnquiry)
 			
-			// prepare untuk response ke channel
+//			// prepare untuk response ke channel
 			.process(accountEnqrResponseProcessor)
 			.marshal(jsonChnlAccountEnqrRespFormat)
-			.removeHeaders("req_*")
+			.removeHeaders("req*")
 			.removeHeaders("resp_*")
 
 		;
 
+		
 		from("direct:ctreq").routeId("cstmrcrdttrn")
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlCreditTransferRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
-			
+
 			// convert channel request jadi pacs008 message
 			.process(crdtTransferProcessor)
 			.setHeader("req_objcrdtTrnReq", simple("${body}"))
@@ -172,7 +186,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setHeader("req_jsonbicrdttrn", simple("${body}"))
 			
 			// kirim ke CI-HUB
-			.to("rest:post:crdttrfreqP1?host=demo3216691.mockable.io&producerComponentName=http&bridgeEndpoint=true")
+			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", accountEnquiryAggregator)
 			.convertBodyTo(String.class)
 			.setHeader("resp_jsonbicrdttrn", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)

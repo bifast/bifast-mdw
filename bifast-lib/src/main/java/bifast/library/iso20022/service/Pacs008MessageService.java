@@ -299,6 +299,7 @@ public class Pacs008MessageService {
 		}
 		
 		// CdtTrfTxInf / SplmtryData
+		// unt credit transfer tidak digunakan
 		
 		pacs008.getCdtTrfTxInf().add(cdtTrfTxInf);
 		

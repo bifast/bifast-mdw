@@ -29,7 +29,7 @@ public class AccountEnquiryProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelAccountEnquiryReq chnReq = exchange.getIn().getHeader("req_channelReq",ChannelAccountEnquiryReq.class);
+		ChannelAccountEnquiryReq chnReq = exchange.getIn().getBody(ChannelAccountEnquiryReq.class);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = appHeaderService.initAppHdr(chnReq.getReceivingParticipant(), "pacs.008.001.08", "510", chnReq.getChannelType());

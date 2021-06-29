@@ -29,10 +29,10 @@ public class SaveAccountEnquiryProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		String jsonRequest = exchange.getMessage().getHeader("req_jsonbiacctenqr", String.class);
-		String jsonResponse = exchange.getMessage().getHeader("resp_jsonbiacctenqr", String.class);
-
-		BusinessMessage objResponse = exchange.getMessage().getHeader("resp_objbiacctenqr", BusinessMessage.class);
 		BusinessMessage objRequest = exchange.getMessage().getHeader("req_objbiacctenqr", BusinessMessage.class);
+
+		String jsonResponse = exchange.getMessage().getHeader("resp_jsonbiacctenqr", String.class);
+		BusinessMessage objResponse = exchange.getMessage().getHeader("resp_objbiacctenqr", BusinessMessage.class);
 		
 		OutboundMessage outboundMessage = new OutboundMessage();
 		

@@ -14,11 +14,13 @@ public class ChannelCreditTransferRequest {
 	private String categoryPurpose; //  CrdtTrn
 	
 	private String dbtrId;   // CrdtTrn
+	private String dbtrName;  //optional
 	private String dbtrIdType;  // CrdtTrn
 	private String dbtrAccountNo;  // CrdtTrn
 	private String dbtrAccountType; // CrdtTrn
 	
 	private String crdtId;  // CrdtTrn
+	private String crdtName; //optional
 	private String crdtIdType; // CrdtTrn
 	private String crdtAccountNo;   // AcctEnq CrdtTrn
 	private String crdtAccountType;  // CrdtTrn
@@ -67,6 +69,14 @@ public class ChannelCreditTransferRequest {
 		this.categoryPurpose = categoryPurpose;
 	}
 
+	public String getDbtrName() {
+		return dbtrName;
+	}
+
+	public void setDbtrName(String dbtrName) {
+		this.dbtrName = dbtrName;
+	}
+
 	public String getDbtrId() {
 		return dbtrId;
 	}
@@ -105,6 +115,14 @@ public class ChannelCreditTransferRequest {
 
 	public void setCrdtId(String crdtId) {
 		this.crdtId = crdtId;
+	}
+
+	public String getCrdtName() {
+		return crdtName;
+	}
+
+	public void setCrdtName(String crdtName) {
+		this.crdtName = crdtName;
 	}
 
 	public String getCrdtIdType() {

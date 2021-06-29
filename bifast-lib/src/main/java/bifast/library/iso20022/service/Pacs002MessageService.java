@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-//import bifast.library.iso20022.custom.PartyAddtInfo;
-//import bifast.library.iso20022.custom.SupplEnvl;
 import bifast.library.iso20022.pacs002.BranchAndFinancialInstitutionIdentification6;
 import bifast.library.iso20022.pacs002.CashAccount38;
 import bifast.library.iso20022.pacs002.CashAccountType2Choice;
@@ -27,8 +25,6 @@ import bifast.library.iso20022.pacs002.PartyIdentification135;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.pacs002.StatusReason6Choice;
 import bifast.library.iso20022.pacs002.StatusReasonInformation12;
-import bifast.library.iso20022.pacs002.SupplementaryData1;
-import bifast.library.iso20022.pacs002.SupplementaryDataEnvelope1;
 import bifast.library.iso20022.pacs002.AccountIdentification4Choice;
 import bifast.library.iso20022.pacs002.BIAddtlCstmrInf;
 import bifast.library.iso20022.pacs002.BISupplementaryData1;
@@ -40,7 +36,7 @@ public class Pacs002MessageService {
 	@Autowired
 	private UtilService utilService;
 
-	public FIToFIPaymentStatusReportV10 accountEnquirtyResponse (Pacs002Seed seed, 
+	public FIToFIPaymentStatusReportV10 accountEnquiryResponse (Pacs002Seed seed, 
 				BusinessMessage orgnlMessage) throws DatatypeConfigurationException {
 		
 		FIToFIPaymentStatusReportV10 pacs002 = new FIToFIPaymentStatusReportV10();
@@ -59,8 +55,8 @@ public class Pacs002MessageService {
 		
 		PaymentTransaction110 txInfAndSts = new PaymentTransaction110();
 
-		txInfAndSts.setOrgnlEndToEndId( orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getEndToEndId() );
-		txInfAndSts.setOrgnlTxId(orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getTxId() );
+		txInfAndSts.setOrgnlEndToEndId( orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getEndToEndId() );
+		txInfAndSts.setOrgnlTxId(orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getTxId() );
 		txInfAndSts.setTxSts(seed.getStatus());
 		
 		// TxInfAndSts / StsRsnInf
@@ -75,7 +71,7 @@ public class Pacs002MessageService {
 		// TxInfAndSts / OrgnlTxRef
 		OriginalTransactionReference28 orgnlTxRef = new OriginalTransactionReference28();
 		
-		orgnlTxRef.setIntrBkSttlmDt(orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmDt() );
+		orgnlTxRef.setIntrBkSttlmDt(orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmDt() );
 	
 		// TxInfAndSts / OrgnlTxRef / Cdtr
 		
@@ -170,12 +166,13 @@ public class Pacs002MessageService {
 		orgnlTxRef.setIntrBkSttlmDt(orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmDt() );
 
 		// TxInfAndSts / OrgnlTxRef / Cdtr
-		PartyIdentification135 pty = new PartyIdentification135();
-		pty.setNm(seed.getCreditorName());
 		Party40Choice cdtr = new Party40Choice();
-		cdtr.setPty(pty);
+		if (!(null == orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm())) {
+			PartyIdentification135 pty = new PartyIdentification135();
+			pty.setNm(orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
+			cdtr.setPty(pty);
+		}
 		orgnlTxRef.setCdtr(cdtr);
-		
 		txInfAndSts.setOrgnlTxRef(orgnlTxRef);
 		
 		// TxInfAndSts / SplmtryData

@@ -103,5 +103,6 @@
 	    <module>corebankiface</module>
 	    <module>channeliface</module>
 	    <module>bifast-dashboard</module>
+	    <module>bifast-mock</module>
   </modules>
 </project>

@@ -33,12 +33,13 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		resp.setCreditorName("UJANG");
 		resp.setCreditorAccountNo("999999992");  
 		resp.setCreditorAccountIdType("CACC");
+		resp.setCreditorType("01");
 		resp.setCreditorResidentialStatus("01");  // 01 RESIDENT
 		resp.setCreditorTown("0300");  
 		resp.setStatus("ACTC"); 
 		resp.setReason("U001");     
 		
-		FIToFIPaymentStatusReportV10 respMsg = pacs002Service.accountEnquirtyResponse(resp, reqBusMesg);
+		FIToFIPaymentStatusReportV10 respMsg = pacs002Service.accountEnquiryResponse(resp, reqBusMesg);
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(respMsg);
 		
