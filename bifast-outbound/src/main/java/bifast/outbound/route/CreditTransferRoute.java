@@ -11,6 +11,7 @@ import bifast.outbound.pojo.ChannelAccountEnquiryReq;
 import bifast.outbound.pojo.ChannelAccountEnquiryResp;
 import bifast.outbound.pojo.ChannelCreditTransferRequest;
 import bifast.outbound.pojo.ChannelCreditTransferResponse;
+import bifast.outbound.pojo.ChannelFICreditTransferReq;
 import bifast.outbound.processor.AccountEnquiryAggregator;
 import bifast.outbound.processor.AccountEnquiryProcessor;
 import bifast.outbound.processor.AccountEnquiryResponseProcessor;
@@ -49,6 +50,8 @@ public class CreditTransferRoute extends RouteBuilder {
 	JacksonDataFormat jsonChnlAccountEnqrRespFormat = new JacksonDataFormat(ChannelAccountEnquiryResp.class);
 	JacksonDataFormat jsonChnlCreditTransferRequestFormat = new JacksonDataFormat(ChannelCreditTransferRequest.class);
 	JacksonDataFormat jsonChnlCreditTransferResponseFormat = new JacksonDataFormat(ChannelCreditTransferResponse.class);
+	JacksonDataFormat jsonChnlFICreditTransferRequestFormat = new JacksonDataFormat(ChannelFICreditTransferReq.class);
+
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
 
 	private void configureJsonDataFormat() {
@@ -71,6 +74,10 @@ public class CreditTransferRoute extends RouteBuilder {
 		jsonChnlCreditTransferResponseFormat.setInclude("NON_EMPTY");
 		jsonChnlCreditTransferResponseFormat.setPrettyPrint(true);
 		jsonChnlCreditTransferResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+
+		jsonChnlFICreditTransferRequestFormat.setInclude("NON_NULL");
+		jsonChnlFICreditTransferRequestFormat.setInclude("NON_EMPTY");
+		jsonChnlFICreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonBusinessMessageFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonBusinessMessageFormat.setInclude("NON_NULL");
@@ -134,6 +141,11 @@ public class CreditTransferRoute extends RouteBuilder {
 				.consumes("application/json")
 				.to("direct:ctreq")
 
+			.post("/ficrdtrn")
+				.description("Pengiriman instruksi Credit Transfer melalui BI-FAST")
+				.consumes("application/json")
+				.to("direct:fictreq")
+
 			.post("/pymtstatus")
 				.description("Check status instruksi Credit Transfer")
 				.consumes("application/json")
@@ -144,6 +156,13 @@ public class CreditTransferRoute extends RouteBuilder {
 		from("direct:pymtstatus")
 			.to("log:foo");
 
+		
+		from("direct:fictreq").routeId("fictreq")
+			.convertBodyTo(String.class)
+			.unmarshal(jsonChnlFICreditTransferRequestFormat)
+			.setHeader("req_channelReq",simple("${body}"))
+		;
+		
 		from("direct:acctenqr").routeId("direct:acctenqr")
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlAccountEnqrReqFormat)

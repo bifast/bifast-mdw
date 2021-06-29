@@ -1,40 +1,29 @@
-package bifast.library.iso20022.service;
+package bifast.outbound.pojo;
 
 import java.math.BigDecimal;
 
-public class Pacs009Seed {
+import com.fasterxml.jackson.annotation.JsonRootName;
 
-	private String trnType;   
-	private String bizMsgId; 
+@JsonRootName("FICreditTransferRequest")
+public class ChannelFICreditTransferReq {
+
+	private String intrnRefId;
 	private BigDecimal amount; 
-	private String orignBank;
 	private String recptBank; 
 	private String channel; 
 	private String paymentInfo;
 	
-	public String getTrnType() {
-		return trnType;
+	public String getIntrnRefId() {
+		return intrnRefId;
 	}
-	public void setTrnType(String trnType) {
-		this.trnType = trnType;
-	}
-	public String getBizMsgId() {
-		return bizMsgId;
-	}
-	public void setBizMsgId(String bizMsgId) {
-		this.bizMsgId = bizMsgId;
+	public void setIntrnRefId(String intrnRefId) {
+		this.intrnRefId = intrnRefId;
 	}
 	public BigDecimal getAmount() {
 		return amount;
 	}
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
-	}
-	public String getOrignBank() {
-		return orignBank;
-	}
-	public void setOrignBank(String orignBank) {
-		this.orignBank = orignBank;
 	}
 	public String getRecptBank() {
 		return recptBank;
@@ -53,8 +42,9 @@ public class Pacs009Seed {
 	}
 	public void setPaymentInfo(String paymentInfo) {
 		this.paymentInfo = paymentInfo;
-	}  
+	}
 
 	
+
 	
 }
