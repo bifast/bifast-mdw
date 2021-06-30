@@ -17,7 +17,7 @@ import bifast.outbound.pojo.ChannelFICreditTransferReq;
 
 @Component
 //@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
-public class FICreditTransferProcessor implements Processor {
+public class FICreditTransferRequestProcessor implements Processor {
 
 	@Autowired
 	private Config config;

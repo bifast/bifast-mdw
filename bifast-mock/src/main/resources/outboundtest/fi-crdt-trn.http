@@ -1,0 +1,15 @@
+# FI Credit Transfer Request from channel
+POST http://localhost:9002/services/channel/ficrdtrn HTTP/1.1
+Content-Type: application/json
+
+{
+  "FICreditTransferRequest" : {
+    "intrnRefId" : "ad22.204202-355",
+    "channel" : "01",
+    "amount" : 35000030,
+    "recptBank" : "FASTIDJA",
+    "paymentInfo" : "Untuk jalan jalan"
+  }
+}
+
+###

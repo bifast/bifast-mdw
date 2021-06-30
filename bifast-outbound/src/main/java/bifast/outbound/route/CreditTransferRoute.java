@@ -17,8 +17,11 @@ import bifast.outbound.processor.AccountEnquiryProcessor;
 import bifast.outbound.processor.AccountEnquiryResponseProcessor;
 import bifast.outbound.processor.CreditTransferRequestProcessor;
 import bifast.outbound.processor.CreditTransferResponseProcessor;
+import bifast.outbound.processor.FICreditTransferRequestProcessor;
+import bifast.outbound.processor.FICreditTransferResponseProcessor;
 import bifast.outbound.processor.SaveAccountEnquiryProcessor;
 import bifast.outbound.processor.SaveCstmrCreditTransferProcessor;
+import bifast.outbound.processor.SaveOutboundMesgProcessor;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -40,9 +43,16 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired
 	private CreditTransferResponseProcessor crdtTransferResponseProcessor;
 	@Autowired
+	private FICreditTransferRequestProcessor fiCrdtTransferRequestProcessor;
+	@Autowired
+	private FICreditTransferResponseProcessor fiCrdtTransferResponseProcessor;
+	@Autowired
 	private SaveAccountEnquiryProcessor saveAccountEnquiry;
 	@Autowired
 	private SaveCstmrCreditTransferProcessor saveCstmrCreditTransfer;
+	@Autowired
+	private SaveOutboundMesgProcessor saveOutboundMesg;
+
 	@Autowired
 	private AccountEnquiryAggregator accountEnquiryAggregator;
 	
@@ -51,6 +61,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	JacksonDataFormat jsonChnlCreditTransferRequestFormat = new JacksonDataFormat(ChannelCreditTransferRequest.class);
 	JacksonDataFormat jsonChnlCreditTransferResponseFormat = new JacksonDataFormat(ChannelCreditTransferResponse.class);
 	JacksonDataFormat jsonChnlFICreditTransferRequestFormat = new JacksonDataFormat(ChannelFICreditTransferReq.class);
+	JacksonDataFormat jsonChnlFICreditTransferResponseFormat = new JacksonDataFormat(ChannelFICreditTransferReq.class);
 
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -78,6 +89,12 @@ public class CreditTransferRoute extends RouteBuilder {
 		jsonChnlFICreditTransferRequestFormat.setInclude("NON_NULL");
 		jsonChnlFICreditTransferRequestFormat.setInclude("NON_EMPTY");
 		jsonChnlFICreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		jsonChnlFICreditTransferResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		jsonChnlFICreditTransferResponseFormat.setInclude("NON_NULL");
+		jsonChnlFICreditTransferResponseFormat.setInclude("NON_EMPTY");
+		jsonChnlFICreditTransferResponseFormat.setPrettyPrint(true);
+		jsonChnlFICreditTransferResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		jsonBusinessMessageFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonBusinessMessageFormat.setInclude("NON_NULL");
@@ -161,6 +178,31 @@ public class CreditTransferRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlFICreditTransferRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
+			
+			// convert channel request jadi pacs009 message
+			.process(fiCrdtTransferRequestProcessor)
+			.setHeader("req_objbi", simple("${body}"))
+			.marshal(jsonBusinessMessageFormat)
+			.setHeader("req_jsonbi", simple("${body}"))
+
+			// kirim ke CI-HUB
+			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", accountEnquiryAggregator)
+			.convertBodyTo(String.class)
+			.log("${body}")
+			.setHeader("resp_jsonbi", simple("${body}"))
+			.unmarshal(jsonBusinessMessageFormat)
+			.setHeader("resp_objbi", simple("${body}"))	
+			.setHeader("resp_bizMsgId", simple("${body.appHdr.bizMsgIdr}"))
+			.log("Bizmsgid: ${header.resp_bizMsgId}")
+
+			.process(saveOutboundMesg)
+
+//			// prepare untuk response ke channel
+			.process(fiCrdtTransferResponseProcessor)
+			.marshal(jsonChnlFICreditTransferResponseFormat)
+			.removeHeaders("req*")
+			.removeHeaders("resp_*")
+
 		;
 		
 		from("direct:acctenqr").routeId("direct:acctenqr")
@@ -170,19 +212,19 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			// convert channel request jadi pacs008 message
 			.process(accountEnquiryProcessor)
-			.setHeader("req_objbiacctenqr", simple("${body}"))
+			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			.setHeader("req_jsonbiacctenqr", simple("${body}"))
+			.setHeader("req_jsonbi", simple("${body}"))
 
 			// kirim ke CI-HUB
 			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", accountEnquiryAggregator)
 			.convertBodyTo(String.class)
 
-			.setHeader("resp_jsonbiacctenqr", simple("${body}"))
+			.setHeader("resp_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbiacctenqr", simple("${body}"))	
+			.setHeader("resp_objbi", simple("${body}"))	
 
-			.process(saveAccountEnquiry)
+			.process(saveOutboundMesg)
 			
 //			// prepare untuk response ke channel
 			.process(accountEnqrResponseProcessor)
@@ -200,18 +242,18 @@ public class CreditTransferRoute extends RouteBuilder {
 
 			// convert channel request jadi pacs008 message
 			.process(crdtTransferProcessor)
-			.setHeader("req_objcrdtTrnReq", simple("${body}"))
+			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			.setHeader("req_jsonbicrdttrn", simple("${body}"))
+			.setHeader("req_jsonbi", simple("${body}"))
 			
 			// kirim ke CI-HUB
 			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", accountEnquiryAggregator)
 			.convertBodyTo(String.class)
-			.setHeader("resp_jsonbicrdttrn", simple("${body}"))
+			.setHeader("resp_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbicrdttrn", simple("${body}"))	
+			.setHeader("resp_objbi", simple("${body}"))	
 
-			.process(saveCstmrCreditTransfer)
+			.process(saveOutboundMesg)
 			
 			// prepare untuk response ke channel
 			.process(crdtTransferResponseProcessor)

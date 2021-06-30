@@ -21,6 +21,7 @@ public class OnRequestProcessor implements Processor {
 		}
 		
 		else if (req.getAppHdr().getMsgDefIdr().startsWith("pacs.009")) {
+			if (trnType.equals("019")) exchange.getMessage().setHeader("msgType", "FICreditTransferRequest");
 			
 		} 
 		

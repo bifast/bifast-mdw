@@ -13,6 +13,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.mock.processor.AccountEnquiryResponseProcessor;
 import bifast.mock.processor.CreditTransferResponseProcessor;
+import bifast.mock.processor.FICreditTransferResponseProcessor;
 import bifast.mock.processor.OnRequestProcessor;
 
 @Component
@@ -24,6 +25,8 @@ public class CiHubRoute extends RouteBuilder {
 	private AccountEnquiryResponseProcessor accountEnquiryResponseProcessor;
 	@Autowired
 	private CreditTransferResponseProcessor creditTransferResponseProcessor;
+	@Autowired
+	private FICreditTransferResponseProcessor fICreditTransferResponseProcessor;
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -61,10 +64,15 @@ public class CiHubRoute extends RouteBuilder {
 			.choice()
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")
 					.process(accountEnquiryResponseProcessor)
-//				.when().simple("${header.msgType} == 'CreditTransferRequest'")
+					
+				.when().simple("${header.msgType} == 'CreditTransferRequest'")
+					.process(creditTransferResponseProcessor)
+				
+				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
+					.process(fICreditTransferResponseProcessor)
+					
 				.otherwise()	
 					.log("CreditTranfsr")
-					.process(creditTransferResponseProcessor)
 			.end()
 				
 			.log("Selesai dari mock")

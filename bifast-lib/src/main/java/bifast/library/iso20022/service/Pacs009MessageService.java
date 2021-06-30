@@ -29,7 +29,7 @@ public class Pacs009MessageService {
 	@Autowired
 	private UtilService utilService;
 
-	public FinancialInstitutionCreditTransferV09 creditTransferRequest (Pacs008Seed seed) 
+	public FinancialInstitutionCreditTransferV09 creditTransferRequest (Pacs009Seed seed) 
 			throws DatatypeConfigurationException {
 		
 		FinancialInstitutionCreditTransferV09 pacs009 = new FinancialInstitutionCreditTransferV09();
