@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
@@ -13,7 +14,11 @@ import bifast.library.iso20022.pacs028.FIToFIPaymentStatusRequestV04;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Document", propOrder = {
-    "fiToFICstmrCdtTrf", "fiToFIPmtStsRpt", "fiCdtTrf", "fiToFIPmtStsReq"
+    "fiToFICstmrCdtTrf", 
+    "fiToFIPmtStsRpt", 
+    "fiCdtTrf", 
+    "fiToFIPmtStsReq",
+    "messageReject"
 })
 public class Document {
 
@@ -26,9 +31,14 @@ public class Document {
     @XmlElement(name = "FICdtTrf", required = false)
     protected FinancialInstitutionCreditTransferV09 fiCdtTrf;
 
+    // unt Payment Status Request
     @XmlElement(name = "FIToFIPmtStsReq", required = false)
     protected FIToFIPaymentStatusRequestV04 fiToFIPmtStsReq;
 
+    // unt Message Reject
+    @XmlElement(name = "MessageReject", required = false)
+    protected MessageRejectV01 messageReject;
+   
 	public FIToFICustomerCreditTransferV08 getFiToFICstmrCdtTrf() {
 		return fiToFICstmrCdtTrf;
 	}
@@ -60,6 +70,22 @@ public class Document {
     public void setFIToFIPmtStsReq(FIToFIPaymentStatusRequestV04 value) {
         this.fiToFIPmtStsReq = value;
     }
+
+	public FIToFIPaymentStatusRequestV04 getFiToFIPmtStsReq() {
+		return fiToFIPmtStsReq;
+	}
+
+	public void setFiToFIPmtStsReq(FIToFIPaymentStatusRequestV04 fiToFIPmtStsReq) {
+		this.fiToFIPmtStsReq = fiToFIPmtStsReq;
+	}
+
+	public MessageRejectV01 getMessageReject() {
+		return messageReject;
+	}
+
+	public void setMessageReject(MessageRejectV01 messageReject) {
+		this.messageReject = messageReject;
+	}
 
 
     

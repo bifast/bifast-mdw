@@ -29,24 +29,23 @@ public class CreditTransferResponseProcessor implements Processor{
 		
 		Random rand = new Random();
 		Pacs002Seed seed = new Pacs002Seed();
+		
         int posbl4 = rand.nextInt(4);
 		if (posbl4 == 0) {
 			seed.setStatus("RJCT");
 			seed.setReason("U001");
+			seed.setAdditionalInfo("Haati hati banyak penipuan");
 		}
 		else {
-			seed.setStatus("AJCT");
+			seed.setStatus("ACTC");
 			seed.setReason("U000");
-			
+
+			seed.setCreditorName("Wawan Setiawan");
+			seed.setCreditorType("01");
+			seed.setCreditorId("KTP-2004384");
+			seed.setCreditorResidentialStatus("01");
+			seed.setCreditorTown("0300");
 		}
-
-		seed.setAdditionalInfo("Haati hati banyak penipuan");
-
-		seed.setCreditorName("Wawan Setiawan");
-		seed.setCreditorType("01");
-		seed.setCreditorId("KTP-2004384");
-		seed.setCreditorResidentialStatus("01");
-		seed.setCreditorTown("0300");
 
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
 
@@ -55,6 +54,8 @@ public class CreditTransferResponseProcessor implements Processor{
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.initAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"pacs.002.001.10", "010", "02");
+		hdr.setBizSvc("CTRESPONSE");
+		
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);
 		BusinessMessage busMesg = new BusinessMessage();

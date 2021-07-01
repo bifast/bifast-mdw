@@ -5,7 +5,7 @@ import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AccountEnquiryAggregator implements AggregationStrategy {
+public class EnrichmentAggregator implements AggregationStrategy {
 
 	@Override
 	public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {

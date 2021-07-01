@@ -4,12 +4,12 @@ Content-Type: application/json
 
 {
   "AccountEnquiryRequest" : {
-    "intrnRefId" : "V26414332-111",
+    "intrnRefId" : "585442-61",
     "channelType" : "01",
     "receivingParticipant" : "FASTIDJA",
-    "amount" : 610000,
-    "categoryPurpose" : "03",
-    "creditorAccountNumber" : "72682141631"
+    "amount" : 10200000,
+    "categoryPurpose" : "02",
+    "creditorAccountNumber" : "14555231"
   }
 }
 

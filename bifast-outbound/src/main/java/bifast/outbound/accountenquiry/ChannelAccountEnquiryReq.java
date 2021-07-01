@@ -1,4 +1,4 @@
-package bifast.outbound.pojo;
+package bifast.outbound.accountenquiry;
 
 import java.math.BigDecimal;
 

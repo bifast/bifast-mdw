@@ -40,7 +40,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			seed.setReason("U001");
 		}
 		else {
-			seed.setStatus("AJCT");
+			seed.setStatus("ACTC");
 			seed.setReason("U000");
 			
 		}
@@ -48,7 +48,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		seed.setCreditorAccountNo("977004883004");
 		seed.setCreditorAccountIdType("CACC");
 		seed.setCreditorType("01");
-		seed.setCreditorId("KTP-2004384");
+		seed.setCreditorId(String.format("KTP-2%08d", rand.nextInt(9999999)));
 		seed.setCreditorTown("0300");
 		seed.setCreditorResidentialStatus("01");
 		
@@ -60,6 +60,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);
+		
 		BusinessMessage busMesg = new BusinessMessage();
 		busMesg.setAppHdr(hdr);
 		busMesg.setDocument(doc);

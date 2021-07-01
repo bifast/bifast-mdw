@@ -7,33 +7,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.pojo.ChannelAccountEnquiryReq;
-import bifast.outbound.pojo.ChannelAccountEnquiryResp;
-import bifast.outbound.pojo.ChannelCreditTransferRequest;
-import bifast.outbound.pojo.ChannelCreditTransferResponse;
-import bifast.outbound.pojo.ChannelFICreditTransferReq;
-import bifast.outbound.processor.AccountEnquiryAggregator;
-import bifast.outbound.processor.AccountEnquiryProcessor;
-import bifast.outbound.processor.AccountEnquiryResponseProcessor;
-import bifast.outbound.processor.CreditTransferRequestProcessor;
-import bifast.outbound.processor.CreditTransferResponseProcessor;
-import bifast.outbound.processor.FICreditTransferRequestProcessor;
-import bifast.outbound.processor.FICreditTransferResponseProcessor;
-import bifast.outbound.processor.SaveAccountEnquiryProcessor;
-import bifast.outbound.processor.SaveCstmrCreditTransferProcessor;
+import bifast.outbound.accountenquiry.AccountEnquiryProcessor;
+import bifast.outbound.accountenquiry.AccountEnquiryResponseProcessor;
+import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
+import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
+import bifast.outbound.credittransfer.CreditTransferRequestProcessor;
+import bifast.outbound.credittransfer.CreditTransferResponseProcessor;
+import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
+import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor;
+import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor;
+import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
+import bifast.outbound.paymentstatus.PaymentStatusRequestProcessor;
+import bifast.outbound.paymentstatus.PaymentStatusResponseProcessor;
+import bifast.outbound.pojo.ChannelResponseMessage;
+import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.SaveOutboundMesgProcessor;
+import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
+import bifast.outbound.reversect.ReverseCreditTrnRequestProcessor;
+import bifast.outbound.reversect.ReverseCreditTrnResponseProcessor;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-
-
 @Component
-public class CreditTransferRoute extends RouteBuilder {
+public class OutboundRoute extends RouteBuilder {
 
-	// @Autowired
-	// private CreditTransferRequestProcessor creditTransferRequestProcessor;
 	@Autowired
 	private AccountEnquiryProcessor accountEnquiryProcessor;
 	@Autowired
@@ -47,21 +46,26 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired
 	private FICreditTransferResponseProcessor fiCrdtTransferResponseProcessor;
 	@Autowired
-	private SaveAccountEnquiryProcessor saveAccountEnquiry;
+	private PaymentStatusRequestProcessor paymentStatusRequestProcessor;
 	@Autowired
-	private SaveCstmrCreditTransferProcessor saveCstmrCreditTransfer;
+	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
+	@Autowired
+	private ReverseCreditTrnRequestProcessor reverseCTRequestProcessor;
+	@Autowired
+	private ReverseCreditTrnResponseProcessor reverseCTResponseProcessor;
 	@Autowired
 	private SaveOutboundMesgProcessor saveOutboundMesg;
 
 	@Autowired
-	private AccountEnquiryAggregator accountEnquiryAggregator;
+	private EnrichmentAggregator enrichmentAggregator;
 	
 	JacksonDataFormat jsonChnlAccountEnqrReqFormat = new JacksonDataFormat(ChannelAccountEnquiryReq.class);
-	JacksonDataFormat jsonChnlAccountEnqrRespFormat = new JacksonDataFormat(ChannelAccountEnquiryResp.class);
 	JacksonDataFormat jsonChnlCreditTransferRequestFormat = new JacksonDataFormat(ChannelCreditTransferRequest.class);
-	JacksonDataFormat jsonChnlCreditTransferResponseFormat = new JacksonDataFormat(ChannelCreditTransferResponse.class);
 	JacksonDataFormat jsonChnlFICreditTransferRequestFormat = new JacksonDataFormat(ChannelFICreditTransferReq.class);
-	JacksonDataFormat jsonChnlFICreditTransferResponseFormat = new JacksonDataFormat(ChannelFICreditTransferReq.class);
+	JacksonDataFormat jsonChnlReverseCTRequestFormat = new JacksonDataFormat(ChannelReverseCreditTransferRequest.class);
+	JacksonDataFormat jsonChnlResponseFormat = new JacksonDataFormat(ChannelResponseMessage.class);
+	
+	JacksonDataFormat jsonChnlPaymentStatusRequestFormat = new JacksonDataFormat(ChannelPaymentStatusRequest.class);
 
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -70,31 +74,27 @@ public class CreditTransferRoute extends RouteBuilder {
 		jsonChnlAccountEnqrReqFormat.setInclude("NON_EMPTY");
 		jsonChnlAccountEnqrReqFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
-		jsonChnlAccountEnqrRespFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		jsonChnlAccountEnqrRespFormat.setInclude("NON_NULL");
-		jsonChnlAccountEnqrRespFormat.setInclude("NON_EMPTY");
-		jsonChnlAccountEnqrRespFormat.setPrettyPrint(true);
-		jsonChnlAccountEnqrRespFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-
 		jsonChnlCreditTransferRequestFormat.setInclude("NON_NULL");
 		jsonChnlCreditTransferRequestFormat.setInclude("NON_EMPTY");
 		jsonChnlCreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-
-		jsonChnlCreditTransferResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		jsonChnlCreditTransferResponseFormat.setInclude("NON_NULL");
-		jsonChnlCreditTransferResponseFormat.setInclude("NON_EMPTY");
-		jsonChnlCreditTransferResponseFormat.setPrettyPrint(true);
-		jsonChnlCreditTransferResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		jsonChnlFICreditTransferRequestFormat.setInclude("NON_NULL");
 		jsonChnlFICreditTransferRequestFormat.setInclude("NON_EMPTY");
 		jsonChnlFICreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
-		jsonChnlFICreditTransferResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		jsonChnlFICreditTransferResponseFormat.setInclude("NON_NULL");
-		jsonChnlFICreditTransferResponseFormat.setInclude("NON_EMPTY");
-		jsonChnlFICreditTransferResponseFormat.setPrettyPrint(true);
-		jsonChnlFICreditTransferResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+		jsonChnlPaymentStatusRequestFormat.setInclude("NON_NULL");
+		jsonChnlPaymentStatusRequestFormat.setInclude("NON_EMPTY");
+		jsonChnlPaymentStatusRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		jsonChnlReverseCTRequestFormat.setInclude("NON_NULL");
+		jsonChnlReverseCTRequestFormat.setInclude("NON_EMPTY");
+		jsonChnlReverseCTRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		jsonChnlResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		jsonChnlResponseFormat.setInclude("NON_NULL");
+		jsonChnlResponseFormat.setInclude("NON_EMPTY");
+		jsonChnlResponseFormat.setPrettyPrint(true);
+		jsonChnlResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		jsonBusinessMessageFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonBusinessMessageFormat.setInclude("NON_NULL");
@@ -167,12 +167,80 @@ public class CreditTransferRoute extends RouteBuilder {
 				.description("Check status instruksi Credit Transfer")
 				.consumes("application/json")
 				.to("direct:pymtstatus")
+
+			.post("/reversect")
+				.description("Pengiriman Instrusi Reverse Credit Transfer")
+				.consumes("application/json")
+				.to("direct:reversect")
 		
 		;
 
-		from("direct:pymtstatus")
-			.to("log:foo");
+		// Untuk Proses Account Enquiry Request
 
+		from("direct:acctenqr").routeId("direct:acctenqr")
+			.convertBodyTo(String.class)
+			.unmarshal(jsonChnlAccountEnqrReqFormat)
+			.setHeader("req_channelReq",simple("${body}"))
+			
+			// convert channel request jadi pacs008 message
+			.process(accountEnquiryProcessor)
+			.setHeader("req_objbi", simple("${body}"))
+			.marshal(jsonBusinessMessageFormat)
+			.log("${body}")
+			.setHeader("req_jsonbi", simple("${body}"))
+
+			// kirim ke CI-HUB
+			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
+			.convertBodyTo(String.class)
+			.log("${body}")
+
+			.setHeader("resp_jsonbi", simple("${body}"))
+			.unmarshal(jsonBusinessMessageFormat)
+			.setHeader("resp_objbi", simple("${body}"))	
+
+			.process(saveOutboundMesg)
+			
+//			// prepare untuk response ke channel
+			.process(accountEnqrResponseProcessor)
+			.marshal(jsonChnlResponseFormat)
+			.removeHeaders("req*")
+			.removeHeaders("resp_*")
+
+		;
+
+		// Untuk Proses Credit Transfer Request
+
+		from("direct:ctreq").routeId("cstmrcrdttrn")
+			.convertBodyTo(String.class)
+			.unmarshal(jsonChnlCreditTransferRequestFormat)
+			.setHeader("req_channelReq",simple("${body}"))
+
+			// convert channel request jadi pacs008 message
+			.process(crdtTransferProcessor)
+			.setHeader("req_objbi", simple("${body}"))
+			.marshal(jsonBusinessMessageFormat)
+			.log("${body}")
+			.setHeader("req_jsonbi", simple("${body}"))
+			
+			// kirim ke CI-HUB
+			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
+			.convertBodyTo(String.class)
+			.log("${body}")
+			.setHeader("resp_jsonbi", simple("${body}"))
+			.unmarshal(jsonBusinessMessageFormat)
+			.setHeader("resp_objbi", simple("${body}"))	
+
+			.process(saveOutboundMesg)
+			
+			// prepare untuk response ke channel
+			.process(crdtTransferResponseProcessor)
+			.marshal(jsonChnlResponseFormat)
+			.removeHeaders("resp_*")
+			.removeHeaders("req_*")
+		;
+
+		
+		// Untuk Proses FI Credit Transfer Request
 		
 		from("direct:fictreq").routeId("fictreq")
 			.convertBodyTo(String.class)
@@ -183,84 +251,87 @@ public class CreditTransferRoute extends RouteBuilder {
 			.process(fiCrdtTransferRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
+			.log("${body}")
+	
 			.setHeader("req_jsonbi", simple("${body}"))
-
+	
 			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", accountEnquiryAggregator)
+			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
 			.convertBodyTo(String.class)
 			.log("${body}")
 			.setHeader("resp_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
 			.setHeader("resp_bizMsgId", simple("${body.appHdr.bizMsgIdr}"))
-			.log("Bizmsgid: ${header.resp_bizMsgId}")
-
+	
 			.process(saveOutboundMesg)
-
-//			// prepare untuk response ke channel
+	
+			// prepare untuk response ke channel
 			.process(fiCrdtTransferResponseProcessor)
-			.marshal(jsonChnlFICreditTransferResponseFormat)
+			.marshal(jsonChnlResponseFormat)
 			.removeHeaders("req*")
 			.removeHeaders("resp_*")
-
-		;
-		
-		from("direct:acctenqr").routeId("direct:acctenqr")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlAccountEnqrReqFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			
-			// convert channel request jadi pacs008 message
-			.process(accountEnquiryProcessor)
-			.setHeader("req_objbi", simple("${body}"))
-			.marshal(jsonBusinessMessageFormat)
-			.setHeader("req_jsonbi", simple("${body}"))
-
-			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", accountEnquiryAggregator)
-			.convertBodyTo(String.class)
-
-			.setHeader("resp_jsonbi", simple("${body}"))
-			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbi", simple("${body}"))	
-
-			.process(saveOutboundMesg)
-			
-//			// prepare untuk response ke channel
-			.process(accountEnqrResponseProcessor)
-			.marshal(jsonChnlAccountEnqrRespFormat)
-			.removeHeaders("req*")
-			.removeHeaders("resp_*")
-
 		;
 
-		
-		from("direct:ctreq").routeId("cstmrcrdttrn")
+		// Untuk Proses Payment Status Request
+
+		from("direct:pymtstatus")
 			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlCreditTransferRequestFormat)
+			.unmarshal(jsonChnlPaymentStatusRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
 
-			// convert channel request jadi pacs008 message
-			.process(crdtTransferProcessor)
+			// convert channel request jadi pacs028 message
+			.process(paymentStatusRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
 			.setHeader("req_jsonbi", simple("${body}"))
 			
 			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", accountEnquiryAggregator)
+			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
 			.convertBodyTo(String.class)
 			.setHeader("resp_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
-
+			
 			.process(saveOutboundMesg)
 			
 			// prepare untuk response ke channel
-			.process(crdtTransferResponseProcessor)
-			.marshal(jsonChnlCreditTransferResponseFormat)
+			.process(paymentStatusResponseProcessor)
+			.marshal(jsonChnlResponseFormat)
 			.removeHeaders("resp_*")
 			.removeHeaders("req_*")
 		;
+		
+
+		// Untuk Proses Reverse Credit Transfer
+	
+		from("direct:reversect")
+			.convertBodyTo(String.class)
+			.unmarshal(jsonChnlReverseCTRequestFormat)
+			.setHeader("req_channelReq",simple("${body}"))
+	
+			// convert channel request jadi pacs008 message
+			.process(reverseCTRequestProcessor)
+			.setHeader("req_objbi", simple("${body}"))
+			.marshal(jsonBusinessMessageFormat)
+			.setHeader("req_jsonbi", simple("${body}"))
+			
+			// kirim ke CI-HUB
+			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
+			.convertBodyTo(String.class)
+			.setHeader("resp_jsonbi", simple("${body}"))
+			.unmarshal(jsonBusinessMessageFormat)
+			.setHeader("resp_objbi", simple("${body}"))	
+			
+			.process(saveOutboundMesg)
+			
+			// prepare untuk response ke channel
+			.process(reverseCTResponseProcessor)
+			.marshal(jsonChnlResponseFormat)
+			.removeHeaders("resp_*")
+			.removeHeaders("req_*")
+		;
+
 		
 	}
 }

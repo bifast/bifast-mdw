@@ -19,8 +19,12 @@ public class GregorianCalendarXMLAdapterExclMillis extends XmlAdapter<String, XM
 
 	@Override
 	public String marshal(XMLGregorianCalendar v) throws Exception {
-		return v.getYear()+"-"+v.getMonth()+"-"+v.getDay()+ 
-				"T" + v.getHour() + ":" + v.getMinute() + ":" + v.getSecond() ;
+		
+		String strTime = String.format("%04d-%02d-%02dT%02d:%02d:%02d", 
+				v.getYear(),v.getMonth(), v.getDay(),
+				v.getHour(), v.getMinute(), v.getSecond());
+
+		return strTime;
 	}
 
 }

@@ -193,8 +193,8 @@ public class Pacs008MessageService {
 		// CdtTrfTxInf / Dbtr
 		PartyIdentification135 dbtr = new PartyIdentification135();
 		
-//		if (!(null==seed.getDebtorName())) 
-//			dbtr.setNm(seed.getDebtorName());
+		if (!(null==seed.getDbtrName()))
+			dbtr.setNm(seed.getDbtrName());
 
 		Party38Choice dbtrId = new Party38Choice();
 		if (seed.getDbtrIdType().equals("01")) {
@@ -254,8 +254,8 @@ public class Pacs008MessageService {
 		// CdtTrfTxInf / Cdtr 
 		PartyIdentification135 cdtr = new PartyIdentification135();
 		
-//		if (!(null==seed.getCreditorName())); 
-//			cdtr.setNm(seed.getCreditorName());
+		if (!(null==seed.getCrdtName())); 
+			cdtr.setNm(seed.getCrdtName());
 			
 		Party38Choice cdtrId = new Party38Choice();
 		if (seed.getCrdtIdType().equals("01")) {

@@ -12,7 +12,7 @@ import bifast.library.model.CreditTransfer;
 import bifast.library.model.OutboundMessage;
 import bifast.library.repository.CreditTransferRepository;
 import bifast.library.repository.OutboundMessageRepository;
-import bifast.outbound.pojo.ChannelCreditTransferRequest;
+import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 
 @Component
 public class SaveCstmrCreditTransferProcessor implements Processor {

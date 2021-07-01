@@ -35,7 +35,7 @@ public class FICreditTransferResponseProcessor implements Processor{
 			seed.setReason("U001");
 		}
 		else {
-			seed.setStatus("AJCT");
+			seed.setStatus("ACTC");
 			seed.setReason("U000");
 			
 		}

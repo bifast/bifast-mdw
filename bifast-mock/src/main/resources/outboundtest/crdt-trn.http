@@ -4,20 +4,20 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "intrnRefId" : "ad22.204202-355",
+    "intrnRefId" : "236.57473-34",
     "channel" : "01",
     "categoryPurpose" : "01",
-    "amount" : 35000030,
+    "amount" : 204400,
     "dbtrIdType" : "01",    
     "dbtrId"  : "KTP-2004050",
-    "dbtrAccountNo" : "9100004374",
+    "dbtrAccountNo" : "111434374",
     "dbtrAccountType" : "CACC",
     "recptBank" : "FASTIDJA",
     "crdtIdType" : "02",
     "crdtId" : "PT-A403",
-    "crdtAccountNo" : "934008199",
+    "crdtAccountNo" : "93722269",
     "crdtAccountType" : "SVGS",
-    "paymentInfo" : "Untuk beli makan sayang"
+    "paymentInfo" : "Untuk belikungin sayang"
   }
 }
 

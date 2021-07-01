@@ -1,4 +1,4 @@
-package bifast.outbound.pojo;
+package bifast.outbound.ficredittransfer;
 
 import java.math.BigDecimal;
 

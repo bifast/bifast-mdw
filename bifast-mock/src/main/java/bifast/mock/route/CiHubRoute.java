@@ -15,6 +15,8 @@ import bifast.mock.processor.AccountEnquiryResponseProcessor;
 import bifast.mock.processor.CreditTransferResponseProcessor;
 import bifast.mock.processor.FICreditTransferResponseProcessor;
 import bifast.mock.processor.OnRequestProcessor;
+import bifast.mock.processor.PaymentStatusResponseProcessor;
+import bifast.mock.processor.RejectMessageProcessor;
 
 @Component
 public class CiHubRoute extends RouteBuilder {
@@ -27,6 +29,11 @@ public class CiHubRoute extends RouteBuilder {
 	private CreditTransferResponseProcessor creditTransferResponseProcessor;
 	@Autowired
 	private FICreditTransferResponseProcessor fICreditTransferResponseProcessor;
+	@Autowired
+	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
+	@Autowired
+	private RejectMessageProcessor rejectMessageProcessor;
+	
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -70,13 +77,20 @@ public class CiHubRoute extends RouteBuilder {
 				
 				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
 					.process(fICreditTransferResponseProcessor)
-					
+
+				.when().simple("${header.msgType} == 'PaymentStatusRequest'")
+					.process(paymentStatusResponseProcessor)
+
+				.when().simple("${header.msgType} == 'ReverseCreditTransferRequest'")
+					.process(creditTransferResponseProcessor)
+
 				.otherwise()	
 					.log("CreditTranfsr")
 			.end()
 				
+			// .process(rejectMessageProcessor)
+			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
 			.log("Selesai dari mock")
-			.marshal(jsonBusinessMessageDataFormat)
 			.removeHeader("msgType")
 		;
 

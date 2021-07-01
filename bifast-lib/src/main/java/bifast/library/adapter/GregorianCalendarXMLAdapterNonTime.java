@@ -19,7 +19,11 @@ public class GregorianCalendarXMLAdapterNonTime extends XmlAdapter<String, XMLGr
 
 	@Override
 	public String marshal(XMLGregorianCalendar v) throws Exception {
-		return v.getYear()+"-"+v.getMonth()+"-"+v.getDay();
+		
+		String strTime = String.format("%04d-%02d-%02d", 
+				v.getYear(),v.getMonth(), v.getDay());
+
+		return strTime;
 	}
 
 }

@@ -2,21 +2,25 @@ package bifast.outbound.pojo;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonRootName("CreditTransferResponse")
-public class ChannelCreditTransferResponse {
+@JsonRootName("Response")
+public class ChannelResponse {
 
 	private String bizMsgId;
+	private String responseType;
+
 	private String status;
 	private String reason;
 	private String addtInfo;
+	
+	private String creditorAccountType;
 	private String creditorName;
-	private String creditorType;
 	private String creditorId;
+	private String creditorType;
 	private String creditorResidentStatus;
 	private String creditorTownName;
 	
 
-	public ChannelCreditTransferResponse () {}
+	public ChannelResponse () {}
 
 
 	public String getBizMsgId() {
@@ -49,6 +53,16 @@ public class ChannelCreditTransferResponse {
 	}
 
 
+	public String getResponseType() {
+		return responseType;
+	}
+
+
+	public void setResponseType(String responseType) {
+		this.responseType = responseType;
+	}
+
+
 	public String getAddtInfo() {
 		return addtInfo;
 	}
@@ -76,6 +90,16 @@ public class ChannelCreditTransferResponse {
 
 	public void setCreditorType(String creditorType) {
 		this.creditorType = creditorType;
+	}
+
+
+	public String getCreditorAccountType() {
+		return creditorAccountType;
+	}
+
+
+	public void setCreditorAccountType(String creditorAccountType) {
+		this.creditorAccountType = creditorAccountType;
 	}
 
 

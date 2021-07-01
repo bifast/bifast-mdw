@@ -1,4 +1,4 @@
-package bifast.outbound.processor;
+package bifast.outbound.credittransfer;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -12,7 +12,6 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.outbound.config.Config;
-import bifast.outbound.pojo.ChannelCreditTransferRequest;
 
 @Component
 public class CreditTransferRequestProcessor implements Processor {
@@ -42,10 +41,12 @@ public class CreditTransferRequestProcessor implements Processor {
 		seedCreditTrn.setCrdtAccountNo(chnReq.getCrdtAccountNo());		
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
 		seedCreditTrn.setCrdtId(chnReq.getCrdtId());
+		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
 		seedCreditTrn.setCrdtIdType(chnReq.getCrdtIdType());
 		
 		seedCreditTrn.setDbtrAccountNo(chnReq.getDbtrAccountNo());
 		seedCreditTrn.setDbtrAccountType(chnReq.getDbtrAccountType());
+		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
 		seedCreditTrn.setDbtrId(chnReq.getDbtrId());
 		seedCreditTrn.setDbtrIdType(chnReq.getDbtrIdType());
 		seedCreditTrn.setOrignBank(config.getBankcode());

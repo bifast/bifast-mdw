@@ -18,12 +18,16 @@ public class OnRequestProcessor implements Processor {
 		if (req.getAppHdr().getMsgDefIdr().startsWith("pacs.008")) {
 			if (trnType.equals("510")) exchange.getMessage().setHeader("msgType", "AccountEnquiryRequest");
 			else if (trnType.equals("010")) exchange.getMessage().setHeader("msgType", "CreditTransferRequest");
+			else if (trnType.equals("011")) exchange.getMessage().setHeader("msgType", "ReverseCreditTransferRequest");
 		}
 		
 		else if (req.getAppHdr().getMsgDefIdr().startsWith("pacs.009")) {
 			if (trnType.equals("019")) exchange.getMessage().setHeader("msgType", "FICreditTransferRequest");
-			
-		} 
+		}
+		
+		else if (req.getAppHdr().getMsgDefIdr().startsWith("pacs.028")) {
+			exchange.getMessage().setHeader("msgType", "PaymentStatusRequest");		
+		}
 		
 	}
 

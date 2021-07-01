@@ -12,8 +12,8 @@ import bifast.library.model.AccountEnquiry;
 import bifast.library.model.OutboundMessage;
 import bifast.library.repository.AccountEnquiryRepository;
 import bifast.library.repository.OutboundMessageRepository;
+import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
 import bifast.outbound.config.Config;
-import bifast.outbound.pojo.ChannelAccountEnquiryReq;
 
 @Component
 public class SaveAccountEnquiryProcessor implements Processor {
