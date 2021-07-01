@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-public class GregorianCalendarXMLAdapterNonTime extends XmlAdapter<String, XMLGregorianCalendar> {
+public class GregorianCalendarXMLAdapterExclTime extends XmlAdapter<String, XMLGregorianCalendar> {
 
 	@Override
 	public XMLGregorianCalendar unmarshal(String v) throws Exception {

@@ -1,8 +1,6 @@
 package bifast.mock.processor;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -21,7 +19,6 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
 import bifast.library.model.OutboundMessage;
-import bifast.library.repository.CreditTransferRepository;
 import bifast.library.repository.OutboundMessageRepository;
 
 @Component

@@ -42,6 +42,9 @@ public class OutboundMessage {
 	@Column(name="RESP_MSG", length=5000)
 	private String responseMessage;
 	
+//	@Column(name="REJCT_MSG", length=3000)
+//	private String rejectMessage;
+	
 
 	public OutboundMessage() {}
 
@@ -124,6 +127,14 @@ public class OutboundMessage {
 	public void setSafCounter(Integer safCounter) {
 		this.safCounter = safCounter;
 	}
+
+//	public String getRejectMessage() {
+//		return rejectMessage;
+//	}
+//
+//	public void setRejectMessage(String rejectMessage) {
+//		this.rejectMessage = rejectMessage;
+//	}
 	
 
 	

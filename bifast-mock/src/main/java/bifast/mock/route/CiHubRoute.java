@@ -89,6 +89,7 @@ public class CiHubRoute extends RouteBuilder {
 			.end()
 				
 			// .process(rejectMessageProcessor)
+			.log("${body}")
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
 			.log("Selesai dari mock")
 			.removeHeader("msgType")

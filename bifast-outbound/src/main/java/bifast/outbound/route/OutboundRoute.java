@@ -20,6 +20,7 @@ import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
 import bifast.outbound.paymentstatus.PaymentStatusRequestProcessor;
 import bifast.outbound.paymentstatus.PaymentStatusResponseProcessor;
 import bifast.outbound.pojo.ChannelResponseMessage;
+import bifast.outbound.processor.CombineMessageProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.SaveOutboundMesgProcessor;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
@@ -53,6 +54,8 @@ public class OutboundRoute extends RouteBuilder {
 	private ReverseCreditTrnRequestProcessor reverseCTRequestProcessor;
 	@Autowired
 	private ReverseCreditTrnResponseProcessor reverseCTResponseProcessor;
+	@Autowired
+	private CombineMessageProcessor combineMessageProcessor;
 	@Autowired
 	private SaveOutboundMesgProcessor saveOutboundMesg;
 
@@ -181,31 +184,29 @@ public class OutboundRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlAccountEnqrReqFormat)
 			.setHeader("req_channelReq",simple("${body}"))
-			
+			.setHeader("req_msgType", constant("AccountEnquiry"))
+
 			// convert channel request jadi pacs008 message
 			.process(accountEnquiryProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			.log("${body}")
-			.setHeader("req_jsonbi", simple("${body}"))
 
 			// kirim ke CI-HUB
 			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
 			.convertBodyTo(String.class)
-			.log("${body}")
-
-			.setHeader("resp_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
-
-			.process(saveOutboundMesg)
 			
-//			// prepare untuk response ke channel
+			// prepare untuk response ke channel
 			.process(accountEnqrResponseProcessor)
+			.setHeader("resp_channel", simple("${body}"))
+			
+			.to("seda:endlog")
+			
+			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
 			.removeHeaders("req*")
 			.removeHeaders("resp_*")
-
 		;
 
 		// Untuk Proses Credit Transfer Request
@@ -214,122 +215,128 @@ public class OutboundRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlCreditTransferRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
+			.setHeader("req_msgType", constant("CreditTransfer"))
 
 			// convert channel request jadi pacs008 message
 			.process(crdtTransferProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			.log("${body}")
-			.setHeader("req_jsonbi", simple("${body}"))
 			
 			// kirim ke CI-HUB
 			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
 			.convertBodyTo(String.class)
-			.log("${body}")
-			.setHeader("resp_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
-
-			.process(saveOutboundMesg)
 			
 			// prepare untuk response ke channel
 			.process(crdtTransferResponseProcessor)
+			.setHeader("resp_channel", simple("${body}"))
+					
+			.to("seda:endlog")
+
+			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
 			.removeHeaders("resp_*")
 			.removeHeaders("req_*")
 		;
 
-		
 		// Untuk Proses FI Credit Transfer Request
 		
 		from("direct:fictreq").routeId("fictreq")
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlFICreditTransferRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
-			
+			.setHeader("req_msgType", constant("FICreditTransfer"))
+
 			// convert channel request jadi pacs009 message
 			.process(fiCrdtTransferRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			.log("${body}")
-	
-			.setHeader("req_jsonbi", simple("${body}"))
 	
 			// kirim ke CI-HUB
 			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
 			.convertBodyTo(String.class)
-			.log("${body}")
-			.setHeader("resp_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
-			.setHeader("resp_bizMsgId", simple("${body.appHdr.bizMsgIdr}"))
-	
-			.process(saveOutboundMesg)
+
+			.process(fiCrdtTransferResponseProcessor)
+			.setHeader("resp_channel", simple("${body}"))
+
+			.to("seda:endlog")
 	
 			// prepare untuk response ke channel
-			.process(fiCrdtTransferResponseProcessor)
+			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
 			.removeHeaders("req*")
 			.removeHeaders("resp_*")
 		;
 
+		
 		// Untuk Proses Payment Status Request
 
 		from("direct:pymtstatus")
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlPaymentStatusRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
+			.setHeader("req_msgType", constant("PaymentStatus"))
 
 			// convert channel request jadi pacs028 message
 			.process(paymentStatusRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			.setHeader("req_jsonbi", simple("${body}"))
 			
 			// kirim ke CI-HUB
 			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
 			.convertBodyTo(String.class)
-			.setHeader("resp_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
 			
-			.process(saveOutboundMesg)
-			
 			// prepare untuk response ke channel
 			.process(paymentStatusResponseProcessor)
+			.setHeader("resp_channel", simple("${body}"))
+			
+			.to("seda:endlog")
+
+			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
 			.removeHeaders("resp_*")
 			.removeHeaders("req_*")
 		;
 		
-
 		// Untuk Proses Reverse Credit Transfer
-	
 		from("direct:reversect")
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlReverseCTRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
-	
+			.setHeader("msgType", constant("ReverseCreditTransfer"))
+			
 			// convert channel request jadi pacs008 message
 			.process(reverseCTRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			.setHeader("req_jsonbi", simple("${body}"))
 			
 			// kirim ke CI-HUB
 			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
 			.convertBodyTo(String.class)
-			.setHeader("resp_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
-			
-			.process(saveOutboundMesg)
-			
-			// prepare untuk response ke channel
+
 			.process(reverseCTResponseProcessor)
+			.setHeader("resp_channel", simple("${body}"))
+
+			.to("seda:endlog")
+			
+			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
 			.removeHeaders("resp_*")
 			.removeHeaders("req_*")
+		;
+
+		from("seda:endlog")
+	//		.delay(5000)
+			.process(saveOutboundMesg)
+			.process(combineMessageProcessor)
+			.toD("file:/home/fransdm/workspace/bifast-log/outbound?fileName=${header.req_fileName}")
 		;
 
 		

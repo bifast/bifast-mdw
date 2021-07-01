@@ -11,7 +11,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import bifast.inbound.processor.SettlementProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
-@Component
+//@Component
 public class SettlementRoute extends RouteBuilder {
 
 	@Autowired

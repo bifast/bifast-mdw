@@ -23,7 +23,7 @@ Content-Type: application/json
                     }
                 }
             },
-            "BizMsgIdr" : "20210628FASTIDJA010O0174254433",
+            "BizMsgIdr" : "20210628FASTIDJA010O0174274733",
             "MsgDefIdr" : "pacs.008.001.08",
             "CreDt" : "2021-06-28T20:06:59"
         },
@@ -31,7 +31,7 @@ Content-Type: application/json
             "FIToFICstmrCdtTrf" : {
                 "GrpHdr" : {
                     "MsgId" : "20210626FASTIDJA01074109248",
-                    "CreDtTm" : "2021-06-26T20:06:59.820",
+                    "CreDtTm" : "2021-06-26T20:06:59",
                     "NbOfTxs" : "1",
                     "SttlmInf" : {
                         "SttlmMtd" : "CLRG"

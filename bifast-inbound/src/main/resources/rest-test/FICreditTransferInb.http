@@ -52,7 +52,7 @@ Content-Type: application/json
 							"Value": "123456.78",
 							"Ccy": "IDR"
 						},
-						"IntrBkSttlmDt": "2021-03-01",
+						"IntrBkSttlmDt": "2021-03-01T00:00:00",
 						"Dbtr": {
 							"FinInstnId": {
 								"Othr": {

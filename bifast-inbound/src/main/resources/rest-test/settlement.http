@@ -25,22 +25,22 @@ Content-Type: application/json
 					}
 				}
 			},
-			"BizMsgIdr": "20210627INDOIDJA010HRB10049528",
+			"BizMsgIdr": "20210627INDOIDJA010ORB12340641",
 			"MsgDefIdr": "pacs.002.001.10",
 			"BizSvc": "SETTLEMENTCONFIRMATION",
-			"CreDt": "2021-06-20T20:00:00"
+			"CreDt": "2021-06-20T20:00:00.000"
 		},
 		"Document": {
 			"FIToFIPmtStsRpt": {
 				"GrpHdr": {
-					"MsgId": "20210620INDOIDJA01010045008",
-					"CreDtTm": "2021-03-01T19:00:00"
+					"MsgId": "20210620INDOIDJA01010340641",
+					"CreDtTm": "2021-03-01T19:00:00.000"
 				},
 				"OrgnlGrpInfAndSts": [
 					{
 						"OrgnlMsgId": "20210620INDOIDJA01010045008",
 						"OrgnlMsgNmId": "pacs.008.001.08",
-						"OrgnlCreDtTm": "2021-03-01T19:00:00"
+						"OrgnlCreDtTm": "2021-03-01T19:00:00.000"
 					}
 				],
 				"TxInfAndSts": [
@@ -149,7 +149,7 @@ Content-Type: application/json
 # CREDIT TRANSFER SETTLEMENT CONFIRMATION 
 # as Recipient of Credit Transfer Request from FASTIDJA
 # Credit Transfer Request was RJCT
-POST http://localhost:8888/services/api/inbound HTTP/1.1
+POST http://localhost:9001/services/api/inbound HTTP/1.1
 Content-Type: application/json
 
 {
@@ -159,7 +159,7 @@ Content-Type: application/json
 				"FIId": {
 					"FinInstnId": {
 						"Othr": {
-							"Id": "INDOIDJA"
+							"Id": "FASTIDJA"
 						}
 					}
 				}
@@ -168,27 +168,27 @@ Content-Type: application/json
 				"FIId": {
 					"FinInstnId": {
 						"Othr": {
-							"Id": "FASTIDJA"
+							"Id": "INDOIDJA"
 						}
 					}
 				}
 			},
-			"BizMsgIdr": "20210620INDOIDJA010HRB12349018",
+			"BizMsgIdr": "20210620INDOIDJA010ORB12340030",
 			"MsgDefIdr": "pacs.002.001.10",
 			"BizSvc": "SETTLEMENTCONFIRMATION",
-			"CreDt": "2021-06-20T20:00:00"
+			"CreDt": "2021-06-20T20:00:00.000"
 		},
 		"Document": {
 			"FIToFIPmtStsRpt": {
 				"GrpHdr": {
-					"MsgId": "20210620INDOIDJA01010045008",
-					"CreDtTm": "2021-03-01T19:00:00"
+					"MsgId": "20210620INDOIDJA01010045039",
+					"CreDtTm": "2021-03-01T19:00:00.000"
 				},
 				"OrgnlGrpInfAndSts": [
 					{
 						"OrgnlMsgId": "20210620INDOIDJA01010045008",
 						"OrgnlMsgNmId": "pacs.008.001.08",
-						"OrgnlCreDtTm": "2021-03-01T19:00:00"
+						"OrgnlCreDtTm": "2021-03-01T19:00:00.000"
 					}
 				],
 				"TxInfAndSts": [
