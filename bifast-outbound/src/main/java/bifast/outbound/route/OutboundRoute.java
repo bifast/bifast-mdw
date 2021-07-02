@@ -107,6 +107,8 @@ public class OutboundRoute extends RouteBuilder {
 					.to("direct:reversect")
 
 			.end()
+			
+			.removeHeaders("rcv_*")
 			.log("Selesai")
 		;
 	
