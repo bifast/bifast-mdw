@@ -24,7 +24,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("rcv_obj", BusinessMessage.class);
+		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("rcv_bi", BusinessMessage.class);
 
 		// TODO cek account ke core banking
 
@@ -49,7 +49,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		BusinessMessage respBusMesg = new BusinessMessage();
 		respBusMesg.setAppHdr(appHdr);
 		respBusMesg.setDocument(doc);
-		
+				
 		exchange.getIn().setBody(respBusMesg);
 
 	}

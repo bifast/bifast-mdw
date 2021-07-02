@@ -19,7 +19,7 @@ public class SaveSettlementTableProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage rcvMessage = exchange.getIn().getBody(BusinessMessage.class);
+		BusinessMessage rcvMessage = exchange.getMessage().getHeader("rcv_bi", BusinessMessage.class);
 		BusinessApplicationHeaderV01 sttlHeader = rcvMessage.getAppHdr();
 		
 		String sttlBizMsgId = sttlHeader.getBizMsgIdr();

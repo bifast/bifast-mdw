@@ -22,17 +22,17 @@ import bifast.library.iso20022.pacs028.FIToFIPaymentStatusRequestV04;
 })
 public class Document {
 
-	@XmlElement(name = "FIToFICstmrCdtTrf", required = false)
+	@XmlElement(name = "FitoFICstmrCdtTrf", required = false)
     protected FIToFICustomerCreditTransferV08 fiToFICstmrCdtTrf;
 
-    @XmlElement(name = "FIToFIPmtStsRpt", required = false)
-    protected FIToFIPaymentStatusReportV10 fiToFIPmtStsRpt;
+    @XmlElement(name = "FitoFIPmtStsRpt", required = false)
+    protected FIToFIPaymentStatusReportV10 fiToFIPmtStsRpt;   // SettlementConfirmation
 
-    @XmlElement(name = "FICdtTrf", required = false)
-    protected FinancialInstitutionCreditTransferV09 fiCdtTrf;
+    @XmlElement(name = "FicdtTrf", required = false)
+    protected FinancialInstitutionCreditTransferV09 fiCdtTrf;   // FI Credit Transfer
 
-    // unt Payment Status Request
-    @XmlElement(name = "FIToFIPmtStsReq", required = false)
+    // unt Payment Status Request 
+    @XmlElement(name = "FitoFIPmtStsReq", required = false)
     protected FIToFIPaymentStatusRequestV04 fiToFIPmtStsReq;
 
     // unt Message Reject

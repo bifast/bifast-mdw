@@ -25,20 +25,15 @@ public class SaveCstmrCreditTransferProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		String jsonRequest = exchange.getMessage().getHeader("req_jsonbicrdttrn", String.class);
-		String jsonResponse = exchange.getMessage().getHeader("resp_jsonbicrdttrn", String.class);
 		BusinessMessage objRequest = exchange.getMessage().getHeader("req_objcrdtTrnReq", BusinessMessage.class);
 		BusinessMessage objResponse = exchange.getMessage().getHeader("resp_objbicrdttrn", BusinessMessage.class);
 				
 		OutboundMessage outboundMessage = new OutboundMessage();
 		
 		outboundMessage.setBizMsgIdr(objRequest.getAppHdr().getBizMsgIdr());
-		outboundMessage.setFullMessage(jsonRequest);
 		outboundMessage.setMsgDefIdr(objRequest.getAppHdr().getMsgDefIdr());
-//		outboundMessage.setSafCounter(null);
 		outboundMessage.setSendDt(LocalDateTime.now());
 		outboundMessage.setToFinId(objRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-		outboundMessage.setResponseMessage(jsonResponse);
 		
 		outboundMessage.setHttpResponse("200");
 		

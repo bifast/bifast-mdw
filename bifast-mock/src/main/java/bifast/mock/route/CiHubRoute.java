@@ -65,6 +65,8 @@ public class CiHubRoute extends RouteBuilder {
 			.setExchangePattern(ExchangePattern.InOut)
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
+			.log("${body}")
+
 			.unmarshal(jsonBusinessMessageDataFormat)
 			.process(checkMessageTypeProcessor)
 
@@ -89,9 +91,10 @@ public class CiHubRoute extends RouteBuilder {
 			.end()
 				
 			// .process(rejectMessageProcessor)
-			.log("${body}")
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
-			.log("Selesai dari mock")
+
+			.log("Response dari mock")
+			.log("${body}")
 			.removeHeader("msgType")
 		;
 

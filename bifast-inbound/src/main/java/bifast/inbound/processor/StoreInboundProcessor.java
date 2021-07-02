@@ -21,10 +21,12 @@ public class StoreInboundProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		 
-		BusinessMessage busMesg = exchange.getMessage().getHeader("rcv_obj",BusinessMessage.class);
-		BusinessApplicationHeaderV01 hdr = busMesg.getAppHdr();
-		
+		BusinessMessage rcvBi = exchange.getMessage().getHeader("rcv_bi",BusinessMessage.class);
+
 		InboundMessage inboundMsg = new InboundMessage();
+
+		
+		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
 		
 		inboundMsg.setFrFinId(hdr.getFr().getFIId().getFinInstnId().getOthr().getId());
 		inboundMsg.setBizMsgIdr(hdr.getBizMsgIdr());
@@ -33,10 +35,16 @@ public class StoreInboundProcessor implements Processor {
 		inboundMsg.setCpyDplct(hdr.getCpyDplct());
 		
 		inboundMsg.setReceiveDt(LocalDateTime.now());
-		inboundMsg.setFullMessage(exchange.getMessage().getHeader("rcv_json",String.class));
-		inboundMsg.setResponseMessage(exchange.getMessage().getHeader("resp_json", String.class));
+
+		if (!(null == exchange.getMessage().getHeader("resp_bi"))) {
+			BusinessMessage respBi = new BusinessMessage();
+			respBi = exchange.getMessage().getHeader("resp_bi",BusinessMessage.class);
+			inboundMsg.setRespStatus(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			inboundMsg.setRespBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
+		}
 		
 		inboundMessageRepo.save(inboundMsg);
+		
 
 	}
 }

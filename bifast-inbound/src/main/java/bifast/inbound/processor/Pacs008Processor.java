@@ -28,8 +28,10 @@ public class Pacs008Processor implements Processor{
 		BusinessMessage busMesg = exchange.getIn().getBody(BusinessMessage.class);
 		CreditTransferTransaction39 cdtTrfInf = busMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
 
+		String trnType = busMesg.getAppHdr().getBizMsgIdr().substring(16, 19);
+
 		//cek apakah account enq
-		if (null == cdtTrfInf.getPmtTpInf()) {
+		if (trnType.equals("510")) {
       
 			AccountEnquiry accenq = new AccountEnquiry();
 			accenq.setDirection("INBOUND");
@@ -48,7 +50,7 @@ public class Pacs008Processor implements Processor{
 		}
 		
 		// atau credit transfer request
-		else {
+		else if (trnType.equals("010")) {
 			
 			// TODO Disini panggil corebank untuk check account
 			
@@ -75,7 +77,13 @@ public class Pacs008Processor implements Processor{
 
 		}
 		
-		
+		// atau credit transfer request
+		else if (trnType.equals("011")) {
+			// TODO Disini panggil corebank untuk Reversal CT
+			exchange.getMessage().setHeader("rcv_msgtype", "REVCRDTTRN");
+
+		}
+
 	}
 
 }

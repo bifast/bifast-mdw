@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.library.iso20022.custom.BusinessMessageWrap;
 import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
 import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
@@ -60,10 +61,13 @@ public class CombineMessageProcessor implements Processor {
 		}
 		
 		BusinessMessage outboundMesg = exchange.getMessage().getHeader("req_objbi", BusinessMessage.class);
+		BusinessMessageWrap outbMesgWr = new BusinessMessageWrap(outboundMesg);
 		BusinessMessage responseMesg = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
+		BusinessMessageWrap inbMesgWr = new BusinessMessageWrap(responseMesg);
+
 		
-		fullMesg.setOutboundMessage(outboundMesg);
-		fullMesg.setResponseMessage(responseMesg);
+		fullMesg.setOutboundMessage(outbMesgWr);
+		fullMesg.setResponseMessage(inbMesgWr);
 
 		
 		ObjectMapper mapper = new ObjectMapper();

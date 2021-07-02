@@ -1,5 +1,6 @@
 package bifast.outbound.route;
 
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.rest.RestParamType;
@@ -32,7 +33,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 @Component
-public class OutboundRoute extends RouteBuilder {
+public class TransactionRoute extends RouteBuilder {
 
 	@Autowired
 	private AccountEnquiryProcessor accountEnquiryProcessor;
@@ -162,17 +163,17 @@ public class OutboundRoute extends RouteBuilder {
 				.to("direct:ctreq")
 
 			.post("/ficrdtrn")
-				.description("Pengiriman instruksi Credit Transfer melalui BI-FAST")
+				.description("Pengiriman instruksi Financial Institution Credit Transfer melalui BI-FAST")
 				.consumes("application/json")
 				.to("direct:fictreq")
 
 			.post("/pymtstatus")
-				.description("Check status instruksi Credit Transfer")
+				.description("Check status instruksi Credit Transfer yang pernah dikirim sebelumnya")
 				.consumes("application/json")
 				.to("direct:pymtstatus")
 
 			.post("/reversect")
-				.description("Pengiriman Instrusi Reverse Credit Transfer")
+				.description("Pengiriman Instruksi Reverse Credit Transfer")
 				.consumes("application/json")
 				.to("direct:reversect")
 		
@@ -201,6 +202,7 @@ public class OutboundRoute extends RouteBuilder {
 			.process(accountEnqrResponseProcessor)
 			.setHeader("resp_channel", simple("${body}"))
 			
+			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:endlog")
 			
 			.setBody(simple("${header.resp_channel}"))
@@ -232,6 +234,7 @@ public class OutboundRoute extends RouteBuilder {
 			.process(crdtTransferResponseProcessor)
 			.setHeader("resp_channel", simple("${body}"))
 					
+			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:endlog")
 
 			.setBody(simple("${header.resp_channel}"))
@@ -262,6 +265,7 @@ public class OutboundRoute extends RouteBuilder {
 			.process(fiCrdtTransferResponseProcessor)
 			.setHeader("resp_channel", simple("${body}"))
 
+			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:endlog")
 	
 			// prepare untuk response ke channel
@@ -295,6 +299,7 @@ public class OutboundRoute extends RouteBuilder {
 			.process(paymentStatusResponseProcessor)
 			.setHeader("resp_channel", simple("${body}"))
 			
+			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:endlog")
 
 			.setBody(simple("${header.resp_channel}"))
@@ -308,7 +313,7 @@ public class OutboundRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlReverseCTRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("msgType", constant("ReverseCreditTransfer"))
+			.setHeader("req_msgType", constant("ReverseCreditTransfer"))
 			
 			// convert channel request jadi pacs008 message
 			.process(reverseCTRequestProcessor)
@@ -324,6 +329,7 @@ public class OutboundRoute extends RouteBuilder {
 			.process(reverseCTResponseProcessor)
 			.setHeader("resp_channel", simple("${body}"))
 
+			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:endlog")
 			
 			.setBody(simple("${header.resp_channel}"))
@@ -333,11 +339,10 @@ public class OutboundRoute extends RouteBuilder {
 		;
 
 		from("seda:endlog")
-	//		.delay(5000)
 			.process(saveOutboundMesg)
 			.process(combineMessageProcessor)
-			.toD("file:/home/fransdm/workspace/bifast-log/outbound?fileName=${header.req_fileName}")
-		;
+			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.req_fileName}")
+			;
 
 		
 	}

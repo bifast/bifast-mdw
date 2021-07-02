@@ -1,5 +1,6 @@
 package bifast.outbound.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -19,14 +20,21 @@ import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 					"rejection"})
 public class ChannelResponseMessage {
 
+	@JsonProperty("AccountEnquiryRequest")
 	private ChannelAccountEnquiryReq accountEnquiryRequest;
+	@JsonProperty("CreditTransferRequest")
 	private ChannelCreditTransferRequest creditTransferRequest ;
+	@JsonProperty("FICreditTransferRequest")
 	private ChannelFICreditTransferReq fICreditTransferRequest ;
+	@JsonProperty("PaymentStatusRequest")
 	private ChannelPaymentStatusRequest paymentStatusRequest;
+	@JsonProperty("ReverseCreditTransferRequest")
 	private ChannelReverseCreditTransferRequest reverseCreditTransferRequest;
 	
+	@JsonProperty("Response")
 	private ChannelResponse response;
 	
+	@JsonProperty("Rejection")
 	private ChannelReject rejection;
 	
 	public ChannelAccountEnquiryReq getAccountEnquiryRequest() {

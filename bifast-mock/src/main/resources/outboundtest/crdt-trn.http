@@ -4,13 +4,13 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "intrnRefId" : "236.2473-34",
+    "intrnRefId" : "236.463-34",
     "channel" : "01",
     "categoryPurpose" : "01",
     "amount" : 204400,
     "dbtrIdType" : "01",    
     "dbtrId"  : "KTP-2004050",
-    "dbtrAccountNo" : "1434374",
+    "dbtrAccountNo" : "1431374",
     "dbtrAccountType" : "CACC",
     "recptBank" : "FASTIDJA",
     "crdtIdType" : "02",

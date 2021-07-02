@@ -1,0 +1,11 @@
+# Credit Transfer Request from channel untuk personal
+POST http://localhost:9002/services/channel/pymtstatus HTTP/1.1
+Content-Type: application/json
+
+{
+    "PaymentStatusRequest" : {
+        "intrnRefId" : "246.463-34",
+	    "endToEndId" : "222000444.00",
+	    "recptBank" : "FASTIDJA"
+    }
+}

@@ -23,8 +23,8 @@ public class OutboundMessage {
 	@Column(name="RECPT_BANK")
 	private String toFinId;
 
-	@Column(length=5000)
-	private String fullMessage;
+//	@Column(length=5000)
+//	private String fullMessage;
 
 
 	@Column(name="SEND_TIME")
@@ -39,8 +39,8 @@ public class OutboundMessage {
 	@Column(name="RESP_BIZMSGID")
 	private String respBizMsgId;
 	
-	@Column(name="RESP_MSG", length=5000)
-	private String responseMessage;
+//	@Column(name="RESP_MSG", length=5000)
+//	private String responseMessage;
 	
 //	@Column(name="REJCT_MSG", length=3000)
 //	private String rejectMessage;
@@ -80,13 +80,13 @@ public class OutboundMessage {
 		this.toFinId = toFinId;
 	}
 
-	public String getResponseMessage() {
-		return responseMessage;
-	}
-
-	public void setResponseMessage(String responseMessage) {
-		this.responseMessage = responseMessage;
-	}
+//	public String getResponseMessage() {
+//		return responseMessage;
+//	}
+//
+//	public void setResponseMessage(String responseMessage) {
+//		this.responseMessage = responseMessage;
+//	}
 
 	public String getHttpResponse() {
 		return httpResponse;
@@ -96,14 +96,14 @@ public class OutboundMessage {
 		this.httpResponse = httpResponse;
 	}
 
-	public String getFullMessage() {
-		return fullMessage;
-	}
-
-	public void setFullMessage(String fullMessage) {
-		this.fullMessage = fullMessage;
-	}
-
+//	public String getFullMessage() {
+//		return fullMessage;
+//	}
+//
+//	public void setFullMessage(String fullMessage) {
+//		this.fullMessage = fullMessage;
+//	}
+//
 	public LocalDateTime getSendDt() {
 		return sendDt;
 	}

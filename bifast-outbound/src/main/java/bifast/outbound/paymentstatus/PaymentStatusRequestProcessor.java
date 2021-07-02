@@ -39,6 +39,7 @@ public class PaymentStatusRequestProcessor implements Processor {
 		BusinessMessage busMsg = new BusinessMessage();
 		busMsg.setAppHdr(hdr);
 		busMsg.setDocument(doc);
+		
 	
 		exchange.getIn().setBody(busMsg);
 	}

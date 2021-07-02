@@ -34,12 +34,16 @@ public class InboundMessage {
 	@Column(name="RECEIVE_DT")
 	private LocalDateTime receiveDt;
 	
-	@Column(name="FULL_MSG", length=5000)
-	private String fullMessage;
-	
-	@Column(name="RESP_MSG", length=5000)
-	private String responseMessage;
+//	@Column(name="FULL_MSG", length=5000)
+//	private String fullMessage;
+//	
+//	@Column(name="RESP_MSG", length=5000)
+//	private String responseMessage;
 
+	@Column (name="RESP_BIZMSGIDR")
+	private String respBizMsgIdr;
+	private String respStatus;
+	
 	public InboundMessage() {}
 	
 	public Long getId() {
@@ -106,20 +110,36 @@ public class InboundMessage {
 		this.receiveDt = receiveDt;
 	}
 
-	public String getFullMessage() {
-		return fullMessage;
+//	public String getFullMessage() {
+//		return fullMessage;
+//	}
+//
+//	public void setFullMessage(String fullMessage) {
+//		this.fullMessage = fullMessage;
+//	}
+//
+//	public String getResponseMessage() {
+//		return responseMessage;
+//	}
+//
+//	public void setResponseMessage(String responseMessage) {
+//		this.responseMessage = responseMessage;
+//	}
+
+	public String getRespBizMsgIdr() {
+		return respBizMsgIdr;
 	}
 
-	public void setFullMessage(String fullMessage) {
-		this.fullMessage = fullMessage;
+	public void setRespBizMsgIdr(String respBizMsgIdr) {
+		this.respBizMsgIdr = respBizMsgIdr;
 	}
 
-	public String getResponseMessage() {
-		return responseMessage;
+	public String getRespStatus() {
+		return respStatus;
 	}
 
-	public void setResponseMessage(String responseMessage) {
-		this.responseMessage = responseMessage;
+	public void setRespStatus(String respStatus) {
+		this.respStatus = respStatus;
 	}
 
 	@Override

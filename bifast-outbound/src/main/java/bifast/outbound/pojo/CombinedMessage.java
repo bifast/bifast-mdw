@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.library.iso20022.custom.BusinessMessageWrap;
 import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
 import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
@@ -33,9 +33,9 @@ public class CombinedMessage {
 	private ChannelReverseCreditTransferRequest reverseCreditTransferRequest;
 	
 	@JsonProperty("OutboundMessage")
-	private BusinessMessage outboundMessage;
+	private BusinessMessageWrap outboundMessage;
 	@JsonProperty("ResponseMessage")
-	private BusinessMessage responseMessage;
+	private BusinessMessageWrap responseMessage;
 
 	public ChannelAccountEnquiryReq getAccountEnquiryRequest() {
 		return accountEnquiryRequest;
@@ -67,16 +67,16 @@ public class CombinedMessage {
 	public void setReverseCreditTransferRequest(ChannelReverseCreditTransferRequest reverseCreditTransferRequest) {
 		this.reverseCreditTransferRequest = reverseCreditTransferRequest;
 	}
-	public BusinessMessage getOutboundMessage() {
+	public BusinessMessageWrap getOutboundMessage() {
 		return outboundMessage;
 	}
-	public void setOutboundMessage(BusinessMessage outboundMessage) {
+	public void setOutboundMessage(BusinessMessageWrap outboundMessage) {
 		this.outboundMessage = outboundMessage;
 	}
-	public BusinessMessage getResponseMessage() {
+	public BusinessMessageWrap getResponseMessage() {
 		return responseMessage;
 	}
-	public void setResponseMessage(BusinessMessage responseMessage) {
+	public void setResponseMessage(BusinessMessageWrap responseMessage) {
 		this.responseMessage = responseMessage;
 	}
 
