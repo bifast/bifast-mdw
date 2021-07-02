@@ -66,33 +66,33 @@ public class TransactionRoute extends RouteBuilder {
 	JacksonDataFormat jsonChnlAccountEnqrReqFormat = new JacksonDataFormat(ChannelAccountEnquiryReq.class);
 	JacksonDataFormat jsonChnlCreditTransferRequestFormat = new JacksonDataFormat(ChannelCreditTransferRequest.class);
 	JacksonDataFormat jsonChnlFICreditTransferRequestFormat = new JacksonDataFormat(ChannelFICreditTransferReq.class);
+	JacksonDataFormat jsonChnlPaymentStatusRequestFormat = new JacksonDataFormat(ChannelPaymentStatusRequest.class);
 	JacksonDataFormat jsonChnlReverseCTRequestFormat = new JacksonDataFormat(ChannelReverseCreditTransferRequest.class);
 	JacksonDataFormat jsonChnlResponseFormat = new JacksonDataFormat(ChannelResponseMessage.class);
 	
-	JacksonDataFormat jsonChnlPaymentStatusRequestFormat = new JacksonDataFormat(ChannelPaymentStatusRequest.class);
 
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
 
 	private void configureJsonDataFormat() {
 		jsonChnlAccountEnqrReqFormat.setInclude("NON_NULL");
 		jsonChnlAccountEnqrReqFormat.setInclude("NON_EMPTY");
-		jsonChnlAccountEnqrReqFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+//		jsonChnlAccountEnqrReqFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonChnlCreditTransferRequestFormat.setInclude("NON_NULL");
 		jsonChnlCreditTransferRequestFormat.setInclude("NON_EMPTY");
-		jsonChnlCreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+//		jsonChnlCreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonChnlFICreditTransferRequestFormat.setInclude("NON_NULL");
 		jsonChnlFICreditTransferRequestFormat.setInclude("NON_EMPTY");
-		jsonChnlFICreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+//		jsonChnlFICreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonChnlPaymentStatusRequestFormat.setInclude("NON_NULL");
 		jsonChnlPaymentStatusRequestFormat.setInclude("NON_EMPTY");
-		jsonChnlPaymentStatusRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+//		jsonChnlPaymentStatusRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonChnlReverseCTRequestFormat.setInclude("NON_NULL");
 		jsonChnlReverseCTRequestFormat.setInclude("NON_EMPTY");
-		jsonChnlReverseCTRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+//		jsonChnlReverseCTRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonChnlResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonChnlResponseFormat.setInclude("NON_NULL");
