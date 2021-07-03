@@ -23,7 +23,7 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr" : "20210301FASTIDJA010HRB12345010",
+      "BizMsgIdr" : "20210301FASTIDJA010HRB12368894",
       "MsgDefIdr" : "pacs.002.001.10",
       "BizSvc" : "SETTLEMENTCONFIRMATION",
       "CreDt" : "2021-03-01T20:00:00"
@@ -40,7 +40,7 @@ Content-Type: application/json
           "OrgnlCreDtTm" : "2021-03-01T19:00:00"
         } ],
         "TxInfAndSts" : [ {
-          "OrgnlEndToEndId" : "20210301INDOIDJA010ORB12345678",
+          "OrgnlEndToEndId" : "20210301FASTIDJA010ORB92224455",
           "OrgnlTxId" : "20210301INDOIDJA01012345678",
           "TxSts" : "ACTC",
           "StsRsnInf" : [ {

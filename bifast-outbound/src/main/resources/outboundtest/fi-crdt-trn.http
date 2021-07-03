@@ -3,9 +3,9 @@ POST http://localhost:9002/services/channel/ficrdtrn HTTP/1.1
 Content-Type: application/json
 
 {
-    "intrnRefId" : "O42.04202-372",
+    "intrnRefId" : "O42.0453-372",
     "channel" : "01",
-    "amount" : 35003000,
+    "amount" : 35003700,
     "recptBank" : "FASTIDJA",
     "paymentInfo" : "Untuk jalan jalan"
 }
@@ -18,9 +18,9 @@ Content-Type: application/json
 
 {
   "FICreditTransferRequest" : {
-    "intrnRefId" : "O42.04202-372",
+    "intrnRefId" : "542.04272-372",
     "channel" : "01",
-    "amount" : 35003000,
+    "amount" : 6003070,
     "recptBank" : "FASTIDJA",
     "paymentInfo" : "Untuk jalan jalan"
   }

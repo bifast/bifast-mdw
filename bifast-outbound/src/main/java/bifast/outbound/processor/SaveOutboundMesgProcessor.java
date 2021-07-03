@@ -31,10 +31,23 @@ public class SaveOutboundMesgProcessor implements Processor {
 		outboundMessage.setSendDt(LocalDateTime.now());
 		outboundMessage.setToFinId(objRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		outboundMessage.setRespBizMsgId(objResponse.getAppHdr().getBizMsgIdr());
-		outboundMessage.setHttpResponse("200");
+
+		
+		if (null == objResponse.getDocument().getMessageReject())
+			outboundMessage.setRespStatus(objResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+		
+		else {
+				
+			String rjctMesg = objResponse.getDocument().getMessageReject().getRsn().getRsnDesc();
+			if (rjctMesg.length() > 400)
+				rjctMesg = rjctMesg.substring(0, 400);
+			
+			outboundMessage.setRespStatus("FAILURE");
+			outboundMessage.setFailureMessage(rjctMesg);
+		}
 	
 		outboundRepo.save(outboundMessage);
-
+		
 	}
 
 }

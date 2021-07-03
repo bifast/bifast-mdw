@@ -24,6 +24,7 @@ import bifast.outbound.pojo.ChannelResponseMessage;
 import bifast.outbound.processor.CombineMessageProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.SaveOutboundMesgProcessor;
+import bifast.outbound.processor.SaveTracingTableProcessor;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 import bifast.outbound.reversect.ReverseCreditTrnRequestProcessor;
 import bifast.outbound.reversect.ReverseCreditTrnResponseProcessor;
@@ -59,6 +60,8 @@ public class TransactionRoute extends RouteBuilder {
 	private CombineMessageProcessor combineMessageProcessor;
 	@Autowired
 	private SaveOutboundMesgProcessor saveOutboundMesg;
+	@Autowired
+	private SaveTracingTableProcessor saveTracingTable;
 
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
@@ -340,6 +343,7 @@ public class TransactionRoute extends RouteBuilder {
 
 		from("seda:endlog")
 			.process(saveOutboundMesg)
+			.process(saveTracingTable)
 			.process(combineMessageProcessor)
 			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.req_fileName}")
 			;

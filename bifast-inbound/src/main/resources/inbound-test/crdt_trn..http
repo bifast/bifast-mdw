@@ -9,7 +9,7 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "INDOIDJA"
+              "Id" : "FASTIDJA"
             }
           }
         }
@@ -18,19 +18,19 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "FASTIDJA"
+              "Id" : "INDOIDJA"
             }
           }
         }
       },
-      "BizMsgIdr" : "20210301INDOIDJA010ORB42345678",
+      "BizMsgIdr" : "20210301FASTIDJA010ORB98314455",
       "MsgDefIdr" : "pacs.008.001.08",
-      "CreDt" : "2021-03-01T20:00:00"
+      "CreDt" : "2021-07-03T20:00:00"
     },
     "Document" : {
       "FitoFICstmrCdtTrf" : {
         "GrpHdr" : {
-          "MsgId" : "20210301INDOIDJA01012345678",
+          "MsgId" : "20210301FASTIDJA01012345628",
           "CreDtTm" : "2021-03-01T19:00:00",
           "NbOfTxs" : "1",
           "SttlmInf" : {
@@ -39,8 +39,8 @@ Content-Type: application/json
         },
         "CdtTrfTxInf" : [ {
           "PmtId" : {
-            "EndToEndId" : "20210301INDOIDJA010ORB12345678",
-            "TxId" : "20210301INDOIDJA01012345678"
+            "EndToEndId" : "20210301FASTIDJA010ORB12114378",
+            "TxId" : "20210301FASTIDJA01012345678"
           },
           "PmtTpInf" : {
             "LclInstrm" : {

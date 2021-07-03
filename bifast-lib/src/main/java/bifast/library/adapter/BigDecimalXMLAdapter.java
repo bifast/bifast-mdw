@@ -9,8 +9,9 @@ public class BigDecimalXMLAdapter extends XmlAdapter<String, BigDecimal> {
 
 	@Override
 	public BigDecimal unmarshal(String v) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		BigDecimal bd = new BigDecimal(v);
+		
+		return bd;
 	}
 
 	@Override

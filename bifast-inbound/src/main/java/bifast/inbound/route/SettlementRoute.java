@@ -30,14 +30,16 @@ public class SettlementRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		configureJson();
 
-		from("sql:select id, SETTL_CONF_BIZMSGID as settlConfBizMsgId, "
-				+ "orgnl_crdt_trn_bizmsgid as orgnlCrdtTrnReqBizMsgId, "
-				+ "SETTL_CONF_MSG_NAME as settlConfMesgName, "
-				+ "orign_bank as orignBank, recpt_bank as recptBank "
-				+ "from settlement_proc where ack is null?"
+		from("sql:select id, "
+				+ "SETTL_CONF_BIZMSGID 		as settlConfBizMsgId, "
+				+ "orgnl_crdt_trn_bizmsgid 	as orgnlCrdtTrnReqBizMsgId, "
+				+ "SETTL_CONF_MSG_NAME 		as settlConfMesgName, "
+				+ "orign_bank 				as orignBank, "
+				+ "recpt_bank 				as recptBank "
+				+ "from settlement where ack is null?"
 					+ "outputType=SelectOne&"
 					+ "outputHeader=rcv_qryresult&"
-					+ "outputClass=bifast.library.model.SettlementProc&"
+					+ "outputClass=bifast.library.model.Settlement&"
 					+ "maxMessagesPerPoll=1")
 		
 			.log("${header.rcv_qryresult.settlConfBizMsgId}")

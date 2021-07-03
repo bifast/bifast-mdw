@@ -12,12 +12,11 @@ import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
 import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
 import bifast.outbound.pojo.ChannelRequest;
-import bifast.outbound.pojo.ChannelResponseMessage;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 
 @Component
-public class OutboundRoute extends RouteBuilder {
+public class GenericOutboundRoute extends RouteBuilder {
 
 	@Autowired
 	private CheckChannelRequestTypeProcessor checkChannelRequest;

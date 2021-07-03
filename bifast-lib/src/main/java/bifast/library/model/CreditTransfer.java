@@ -16,7 +16,7 @@ public class CreditTransfer {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	private String direction;
+//	private String direction;
 	
 	@Column(name="ORIGN_BANK")
 	private String originatingBank;
@@ -36,17 +36,10 @@ public class CreditTransfer {
 
 	private LocalDateTime creDt;
 
-	@Column(name="ACCTENQ_REQ_BISMSGID")
-	private String acctEnqRequestBisMsgId;
-	@Column(name="ACCT_ENQR_RESP_BIZMSGID")
-	private String acctEnqResponseBisMsgId;
-	@Column(name="ACCT_ENQR_RESP_STATUS")
-	private String acctEnqResponseStatus;
-
 	@Column(name="CRDTTRN_REQ_BIZMSGID")
-	private String crdtTrnRequestBisMsgId;
+	private String crdtTrnRequestBizMsgIdr;
 	@Column(name="CRDTTRN_RESP_BIZMSGID")
-	private String crdtTrnResponseBisMsgId;
+	private String crdtTrnResponseBizMsgIdr;
 	@Column(name="CRDTTRN_RESP_STATUS")
 	private String crdtTrnResponseStatus;
 	
@@ -63,13 +56,13 @@ public class CreditTransfer {
 		this.id = id;
 	}
 
-	public String getDirection() {
-		return direction;
-	}
-
-	public void setDirection(String direction) {
-		this.direction = direction;
-	}
+//	public String getDirection() {
+//		return direction;
+//	}
+//
+//	public void setDirection(String direction) {
+//		this.direction = direction;
+//	}
 
 	public String getOriginatingBank() {
 		return originatingBank;
@@ -135,44 +128,20 @@ public class CreditTransfer {
 		this.creDt = creDt;
 	}
 
-	public String getAcctEnqRequestBisMsgId() {
-		return acctEnqRequestBisMsgId;
+	public String getCrdtTrnRequestBizMsgIdr() {
+		return crdtTrnRequestBizMsgIdr;
 	}
 
-	public void setAcctEnqRequestBisMsgId(String acctEnqRequestBisMsgId) {
-		this.acctEnqRequestBisMsgId = acctEnqRequestBisMsgId;
+	public void setCrdtTrnRequestBizMsgIdr(String crdtTrnRequestBizMsgIdr) {
+		this.crdtTrnRequestBizMsgIdr = crdtTrnRequestBizMsgIdr;
 	}
 
-	public String getAcctEnqResponseBisMsgId() {
-		return acctEnqResponseBisMsgId;
+	public String getCrdtTrnResponseBizMsgIdr() {
+		return crdtTrnResponseBizMsgIdr;
 	}
 
-	public void setAcctEnqResponseBisMsgId(String acctEnqResponseBisMsgId) {
-		this.acctEnqResponseBisMsgId = acctEnqResponseBisMsgId;
-	}
-
-	public String getAcctEnqResponseStatus() {
-		return acctEnqResponseStatus;
-	}
-
-	public void setAcctEnqResponseStatus(String acctEnqResponseStatus) {
-		this.acctEnqResponseStatus = acctEnqResponseStatus;
-	}
-
-	public String getCrdtTrnRequestBisMsgId() {
-		return crdtTrnRequestBisMsgId;
-	}
-
-	public void setCrdtTrnRequestBisMsgId(String crdtTrnRequestBisMsgId) {
-		this.crdtTrnRequestBisMsgId = crdtTrnRequestBisMsgId;
-	}
-
-	public String getCrdtTrnResponseBisMsgId() {
-		return crdtTrnResponseBisMsgId;
-	}
-
-	public void setCrdtTrnResponseBisMsgId(String crdtTrnResponseBisMsgId) {
-		this.crdtTrnResponseBisMsgId = crdtTrnResponseBisMsgId;
+	public void setCrdtTrnResponseBizMsgIdr(String crdtTrnResponseBizMsgIdr) {
+		this.crdtTrnResponseBizMsgIdr = crdtTrnResponseBizMsgIdr;
 	}
 
 	public String getCrdtTrnResponseStatus() {
@@ -190,6 +159,7 @@ public class CreditTransfer {
 	public void setSettlementBizMsgId(String settlementBizMsgId) {
 		SettlementBizMsgId = settlementBizMsgId;
 	}
+
 	
 	
 	

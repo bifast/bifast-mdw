@@ -86,7 +86,4 @@ public class Document {
 	public void setMessageReject(MessageRejectV01 messageReject) {
 		this.messageReject = messageReject;
 	}
-
-
-    
 }

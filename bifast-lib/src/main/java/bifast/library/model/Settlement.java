@@ -6,8 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name="SETTLEMENT_PROC")
-public class SettlementProc {
+@Entity(name="SETTLEMENT")
+public class Settlement {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)

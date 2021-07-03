@@ -10,11 +10,12 @@ public class RejectMessageProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		String str =  "{\n"
+		
+		String str = "{\n"
 				+ "  \"BusMsg\" : {\n"
 				+ "    \"AppHdr\" : {\n"
 				+ "      \"Fr\" : {\n"
-				+ "        \"FIId\" : {\n"
+				+ "        \"Fiid\" : {\n"
 				+ "          \"FinInstnId\" : {\n"
 				+ "            \"Othr\" : {\n"
 				+ "              \"Id\" : \"FASTIDJA\"\n"
@@ -23,7 +24,7 @@ public class RejectMessageProcessor implements Processor {
 				+ "        }\n"
 				+ "      },\n"
 				+ "      \"To\" : {\n"
-				+ "        \"FIId\" : {\n"
+				+ "        \"Fiid\" : {\n"
 				+ "          \"FinInstnId\" : {\n"
 				+ "            \"Othr\" : {\n"
 				+ "              \"Id\" : \"INDOIDJA\"\n"
@@ -33,7 +34,7 @@ public class RejectMessageProcessor implements Processor {
 				+ "      },\n"
 				+ "      \"BizMsgIdr\" : \"20210301FASTIDJA000ORB12345678\",\n"
 				+ "      \"MsgDefIdr\" : \"admi.002.001.01\",\n"
-				+ "      \"CreDt\" : \"2021-03-01T20:00:00.000\"\n"
+				+ "      \"CreDt\" : \"2021-03-01T20:00:00\"\n"
 				+ "    },\n"
 				+ "    \"Document\" : {\n"
 				+ "      \"MessageReject\" : {\n"
@@ -50,8 +51,7 @@ public class RejectMessageProcessor implements Processor {
 				+ "      }\n"
 				+ "    }\n"
 				+ "  }\n"
-				+ "}"
-			;	
+				+ "}";
 		
 		exchange.getIn().setBody(str);
 		

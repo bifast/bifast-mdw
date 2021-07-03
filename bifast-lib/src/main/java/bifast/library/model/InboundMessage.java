@@ -22,6 +22,7 @@ public class InboundMessage {
 	
 	@Column(name="MSG_NAME")
 	private String msgDefIdr;
+	
 	@Column(name="ORGN_BANK")
 	private String frFinId;
 	
@@ -34,12 +35,6 @@ public class InboundMessage {
 	@Column(name="RECEIVE_DT")
 	private LocalDateTime receiveDt;
 	
-//	@Column(name="FULL_MSG", length=5000)
-//	private String fullMessage;
-//	
-//	@Column(name="RESP_MSG", length=5000)
-//	private String responseMessage;
-
 	@Column (name="RESP_BIZMSGIDR")
 	private String respBizMsgIdr;
 	private String respStatus;

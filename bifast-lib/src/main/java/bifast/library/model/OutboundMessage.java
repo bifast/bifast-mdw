@@ -17,15 +17,12 @@ public class OutboundMessage {
 	
 	@Column(name="BIZMSGID")
 	private String bizMsgIdr;
+	
 	@Column(name="MESSAGE_NAME")
 	private String msgDefIdr;
 	
 	@Column(name="RECPT_BANK")
 	private String toFinId;
-
-//	@Column(length=5000)
-//	private String fullMessage;
-
 
 	@Column(name="SEND_TIME")
 	private LocalDateTime sendDt;
@@ -33,109 +30,105 @@ public class OutboundMessage {
 	@Column(name="SAF_COUNTER")
 	private Integer safCounter;
 
-	@Column(name="HTTP_RESPONSE_CODE")
-	private String httpResponse;
-
 	@Column(name="RESP_BIZMSGID")
 	private String respBizMsgId;
 	
-//	@Column(name="RESP_MSG", length=5000)
-//	private String responseMessage;
-	
-//	@Column(name="REJCT_MSG", length=3000)
-//	private String rejectMessage;
-	
+	private String respStatus;
+
+	@Column(name="REJCT_MSG")
+	private String failureMessage;
 
 	public OutboundMessage() {}
+
 
 	public Long getId() {
 		return Id;
 	}
 
+
 	public void setId(Long id) {
 		Id = id;
 	}
+
 
 	public String getBizMsgIdr() {
 		return bizMsgIdr;
 	}
 
+
 	public void setBizMsgIdr(String bizMsgIdr) {
 		this.bizMsgIdr = bizMsgIdr;
 	}
+
 
 	public String getMsgDefIdr() {
 		return msgDefIdr;
 	}
 
+
 	public void setMsgDefIdr(String msgDefIdr) {
 		this.msgDefIdr = msgDefIdr;
 	}
+
 
 	public String getToFinId() {
 		return toFinId;
 	}
 
+
 	public void setToFinId(String toFinId) {
 		this.toFinId = toFinId;
 	}
 
-//	public String getResponseMessage() {
-//		return responseMessage;
-//	}
-//
-//	public void setResponseMessage(String responseMessage) {
-//		this.responseMessage = responseMessage;
-//	}
 
-	public String getHttpResponse() {
-		return httpResponse;
-	}
-
-	public void setHttpResponse(String httpResponse) {
-		this.httpResponse = httpResponse;
-	}
-
-//	public String getFullMessage() {
-//		return fullMessage;
-//	}
-//
-//	public void setFullMessage(String fullMessage) {
-//		this.fullMessage = fullMessage;
-//	}
-//
 	public LocalDateTime getSendDt() {
 		return sendDt;
 	}
+
 
 	public void setSendDt(LocalDateTime sendDt) {
 		this.sendDt = sendDt;
 	}
 
-	public String getRespBizMsgId() {
-		return respBizMsgId;
-	}
-
-	public void setRespBizMsgId(String respBizMsgId) {
-		this.respBizMsgId = respBizMsgId;
-	}
 
 	public Integer getSafCounter() {
 		return safCounter;
 	}
 
+
 	public void setSafCounter(Integer safCounter) {
 		this.safCounter = safCounter;
 	}
 
-//	public String getRejectMessage() {
-//		return rejectMessage;
-//	}
-//
-//	public void setRejectMessage(String rejectMessage) {
-//		this.rejectMessage = rejectMessage;
-//	}
-	
+
+	public String getRespBizMsgId() {
+		return respBizMsgId;
+	}
+
+
+	public void setRespBizMsgId(String respBizMsgId) {
+		this.respBizMsgId = respBizMsgId;
+	}
+
+
+	public String getRespStatus() {
+		return respStatus;
+	}
+
+
+	public void setRespStatus(String respStatus) {
+		this.respStatus = respStatus;
+	}
+
+
+	public String getFailureMessage() {
+		return failureMessage;
+	}
+
+
+	public void setFailureMessage(String failureMessage) {
+		this.failureMessage = failureMessage;
+	}
 
 	
 }

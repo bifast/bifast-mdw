@@ -3,9 +3,9 @@ package bifast.library.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import bifast.library.model.SettlementProc;
+import bifast.library.model.Settlement;
 
 @Repository
-public interface SettlementProcRepository extends JpaRepository<SettlementProc, Long> {
+public interface SettlementRepository extends JpaRepository<Settlement, Long> {
 
 }

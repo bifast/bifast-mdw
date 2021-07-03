@@ -13,7 +13,7 @@ import bifast.library.model.InboundMessage;
 import bifast.library.repository.InboundMessageRepository;
 
 @Component
-public class StoreInboundProcessor implements Processor {
+public class SaveInboundMessageProcessor implements Processor {
 
 	@Autowired
 	private InboundMessageRepository inboundMessageRepo;

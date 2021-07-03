@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.config.Config;
 import bifast.library.model.CreditTransfer;
-import bifast.library.model.SettlementProc;
+import bifast.library.model.Settlement;
 import bifast.library.repository.CreditTransferRepository;
 import bifast.library.repository.InboundMessageRepository;
 
@@ -26,11 +26,11 @@ public class SettlementProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		SettlementProc settlProc = exchange.getMessage().getHeader("rcv_qryresult", SettlementProc.class);
+		Settlement settlProc = exchange.getMessage().getHeader("rcv_qryresult", Settlement.class);
 	
 		if ( settlProc.getOrignBank().equals(config.getBankcode())) {  // outbound msg from us
 			System.out.println ("Settlement outbound from us");
-			Optional<CreditTransfer> optCt = creditTransferRepo.findByCrdtTrnRequestBisMsgId(settlProc.getOrgnlCrdtTrnReqBizMsgId());
+			Optional<CreditTransfer> optCt = creditTransferRepo.findByCrdtTrnRequestBizMsgIdr(settlProc.getOrgnlCrdtTrnReqBizMsgId());
 			if (optCt.isPresent()) {
 				CreditTransfer ct = optCt.get();
 				ct.setSettlementBizMsgId(settlProc.getSettlConfBizMsgId());
@@ -47,7 +47,7 @@ public class SettlementProcessor implements Processor {
 		} else if (settlProc.getRecptBank().equals(config.getBankcode())) {   // inbound for us
 			
 			System.out.println("Stellment inbound for us");
-			Optional<CreditTransfer> optCt = creditTransferRepo.findByCrdtTrnRequestBisMsgId(settlProc.getOrgnlCrdtTrnReqBizMsgId());
+			Optional<CreditTransfer> optCt = creditTransferRepo.findByCrdtTrnRequestBizMsgIdr(settlProc.getOrgnlCrdtTrnReqBizMsgId());
 
 			// check status dari inbound CreditTrnRequest ini
 			if (optCt.isPresent()) {

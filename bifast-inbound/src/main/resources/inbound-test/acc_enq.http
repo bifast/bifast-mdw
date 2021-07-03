@@ -1,4 +1,4 @@
-# FI TO FI CREDIT TRANSFER FROM CI-HUB
+# ACCOUNT ENQUIRY FROM CI-HUB
 POST http://localhost:9001/services/api/inbound HTTP/1.1
 Content-Type: application/json
 
@@ -9,7 +9,7 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "INDOIDJA"
+              "Id" : "FASTIDJA"
             }
           }
         }
@@ -18,19 +18,19 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "FASTIDJA"
+              "Id" : "INDOIDJA"
             }
           }
         }
       },
-      "BizMsgIdr" : "20210301INDOIDJA019ORB12345678",
-      "MsgDefIdr" : "pacs.009.001.09",
+      "BizMsgIdr" : "20210301FASTIDJA510ORB12300120",
+      "MsgDefIdr" : "pacs.008.001.08",
       "CreDt" : "2021-03-01T20:00:00"
     },
     "Document" : {
-      "FicdtTrf" : {
+      "FitoFICstmrCdtTrf" : {
         "GrpHdr" : {
-          "MsgId" : "20210301INDOIDJA01912345678",
+          "MsgId" : "20210301INDOIDJA51012005678",
           "CreDtTm" : "2021-03-01T19:00:00",
           "NbOfTxs" : "1",
           "SttlmInf" : {
@@ -39,40 +39,39 @@ Content-Type: application/json
         },
         "CdtTrfTxInf" : [ {
           "PmtId" : {
-            "EndToEndId" : "20210301INDOIDJA019ORB12345678",
-            "TxId" : "20210301INDOIDJA01912345678"
-          },
-          "PmtTpInf" : {
-            "CtgyPurp" : {
-              "Prtry" : "99"
-            }
+            "EndToEndId" : "20210301INDOIDJA510ORB12311442",
+            "TxId" : "20210301INDOIDJA11012345673"
           },
           "IntrBkSttlmAmt" : {
-            "Value" : "123456.78",
+            "Value" : "1234.56",
             "Ccy" : "IDR"
           },
-          "IntrBkSttlmDt" : "2021-03-01T00:00:00",
-          "Dbtr" : {
+          "ChrgBr" : "DEBT",
+          "Dbtr" : { },
+          "DbtrAgt" : {
             "FinInstnId" : {
               "Othr" : {
                 "Id" : "INDOIDJA"
               }
             }
           },
-          "Cdtr" : {
+          "CdtrAgt" : {
             "FinInstnId" : {
               "Othr" : {
                 "Id" : "CENAIDJA"
               }
             }
           },
-          "RmtInf" : {
-            "Ustrd" : [ "A line of free text up to 140 characters, should contain a description or purpose info of this FI to FI credit transfer" ]
+          "Cdtr" : { },
+          "CdtrAcct" : {
+            "Id" : {
+              "Othr" : {
+                "Id" : "987654321"
+              }
+            }
           }
         } ]
       }
     }
   }
 }
-
-###
