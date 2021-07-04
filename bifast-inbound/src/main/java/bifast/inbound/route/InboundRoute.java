@@ -124,9 +124,9 @@ public class InboundRoute extends RouteBuilder {
 		;
 
 		from("seda:logandsave")
-			.log("tes delay 5s").
-			.delay(5000)
-			.log("   after 5s")
+			.log("tes delay 4s")
+			.delay(4000)
+			.log("   after 4s")
 			.process(saveInboundMessageProcessor)
 			.process(saveTracingTableProcessor)
 			.process(combineMesgProcessor)
