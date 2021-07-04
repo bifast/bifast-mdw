@@ -1,5 +1,7 @@
 package bifast.outbound.route;
 
+import java.net.SocketTimeoutException;
+
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -23,6 +25,7 @@ import bifast.outbound.paymentstatus.PaymentStatusResponseProcessor;
 import bifast.outbound.pojo.ChannelResponseMessage;
 import bifast.outbound.processor.CombineMessageProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
+import bifast.outbound.processor.FaultProcessor;
 import bifast.outbound.processor.SaveOutboundMesgProcessor;
 import bifast.outbound.processor.SaveTracingTableProcessor;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
@@ -62,6 +65,8 @@ public class TransactionRoute extends RouteBuilder {
 	private SaveOutboundMesgProcessor saveOutboundMesg;
 	@Autowired
 	private SaveTracingTableProcessor saveTracingTable;
+	@Autowired
+	private FaultProcessor faultProcessor;
 
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
@@ -115,6 +120,15 @@ public class TransactionRoute extends RouteBuilder {
 	public void configure() throws Exception {
 
 		configureJsonDataFormat();
+		
+		onException(SocketTimeoutException.class)
+			.log("Timeout Exception")
+		    .handled(true)
+		    .process(faultProcessor)
+			.marshal(jsonChnlResponseFormat)
+			.removeHeaders("resp_*")
+			.removeHeaders("req_*")
+		;
 		
 		restConfiguration().component("servlet")
         	.apiContextPath("/api-doc")
@@ -194,9 +208,11 @@ public class TransactionRoute extends RouteBuilder {
 			.process(accountEnquiryProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-
+			
 			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
+//			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
+			.setHeader("HttpMethod", constant("POST"))
+			.enrich("http:localhost:9006/mock/cihub?bridgeEndpoint=true&socketTimeout=6000", enrichmentAggregator)
 			.convertBodyTo(String.class)
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
@@ -342,6 +358,7 @@ public class TransactionRoute extends RouteBuilder {
 		;
 
 		from("seda:endlog")
+			.log("Save log and trace")
 			.process(saveOutboundMesg)
 			.process(saveTracingTable)
 			.process(combineMessageProcessor)

@@ -3,7 +3,7 @@ POST http://localhost:9002/services/channel/cstmrcrdtrn HTTP/1.1
 Content-Type: application/json
 
 {
-    "intrnRefId" : "36.443-44",
+    "intrnRefId" : "36.44664",
     "channel" : "01",
     "categoryPurpose" : "01",
     "amount" : 204660,

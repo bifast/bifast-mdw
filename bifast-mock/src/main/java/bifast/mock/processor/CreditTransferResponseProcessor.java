@@ -23,6 +23,8 @@ public class CreditTransferResponseProcessor implements Processor{
 	private AppHeaderService hdrService;
 	@Autowired
 	private Pacs002MessageService pacs002Service;
+	@Autowired
+	private MessageHistory messageHistory;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -61,6 +63,9 @@ public class CreditTransferResponseProcessor implements Processor{
 		BusinessMessage busMesg = new BusinessMessage();
 		busMesg.setAppHdr(hdr);
 		busMesg.setDocument(doc);
+
+		messageHistory.save(hdr.getBizMsgIdr(), busMesg);
+		messageHistory.listKey();
 
 		exchange.getMessage().setBody(busMesg);
 

@@ -108,7 +108,6 @@ public class GenericOutboundRoute extends RouteBuilder {
 			.end()
 			
 			.removeHeaders("rcv_*")
-			.log("Selesai")
 		;
 	
 	}

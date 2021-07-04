@@ -45,6 +45,7 @@ public class CiHubRoute extends RouteBuilder {
 		jsonBusinessMessageDataFormat.setInclude("NON_EMPTY");
 	}
 
+
 	@Override
 	public void configure() throws Exception {
 
@@ -62,10 +63,13 @@ public class CiHubRoute extends RouteBuilder {
 	
 
 		from("direct:receive").routeId("receive")
+
 			.setExchangePattern(ExchangePattern.InOut)
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
 			.log("${body}")
+			.delay(1000)
+			.log("end-delay")
 
 			.unmarshal(jsonBusinessMessageDataFormat)
 			.process(checkMessageTypeProcessor)
