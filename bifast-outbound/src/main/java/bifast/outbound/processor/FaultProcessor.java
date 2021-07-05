@@ -11,9 +11,10 @@ import bifast.outbound.pojo.ChannelResponseMessage;
 @Component
 public class FaultProcessor implements Processor {
 
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
-
+		
 		Exception cause = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
 
 		ChannelReject reject = new ChannelReject();

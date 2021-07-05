@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 @Component
-public class TransactionRoute extends RouteBuilder {
+public class ProxyRoute extends RouteBuilder {
 
 	@Autowired
 	private AccountEnquiryProcessor accountEnquiryProcessor;
@@ -122,46 +122,11 @@ public class TransactionRoute extends RouteBuilder {
 		configureJsonDataFormat();
 		
 		restConfiguration().component("servlet")
-        	.apiContextPath("/api-doc")
-	            .apiProperty("api.title", "KOMI API Documentation").apiProperty("api.version", "1.0.0")
-	            .apiProperty("cors", "true");
 
         ;
 		
 		rest("/channel")
-			.post("/acctenquiry")
-				.description("Pengiriman instruksi Account Enquiry ke bank lain melalui BI-FAST")
-				.param()
-					.name("IntrnRefId")
-					.description("Kode ID Internal dari channel")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-				.param()
-					.name("ChannelType")
-					.description("Kode channel")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-				.param()
-					.name("ReceivingParticipant")
-					.description("Kode Swift dari bank tujuan")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-				.param()
-					.name("Amount")
-					.description("Nilai yang akan ditransfer")
-					.type(RestParamType.body).dataType("Decimal")
-					.endParam()
-				.param()
-					.name("categoryPurpose")
-					.description("Kode CategoryPurpose sesuai acuan BI")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-				.param()
-					.name("CreditorAccountNumber")
-					.description("Nomor Rekening tujuan")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-					
+			.post("/prxyregister")
 				.consumes("application/json")
 				.to("direct:acctenqr")
 				
@@ -170,21 +135,6 @@ public class TransactionRoute extends RouteBuilder {
 				.consumes("application/json")
 				.to("direct:ctreq")
 
-			.post("/ficrdtrn")
-				.description("Pengiriman instruksi Financial Institution Credit Transfer melalui BI-FAST")
-				.consumes("application/json")
-				.to("direct:fictreq")
-
-			.post("/pymtstatus")
-				.description("Check status instruksi Credit Transfer yang pernah dikirim sebelumnya")
-				.consumes("application/json")
-				.to("direct:pymtstatus")
-
-			.post("/reversect")
-				.description("Pengiriman Instruksi Reverse Credit Transfer")
-				.consumes("application/json")
-				.to("direct:reversect")
-		
 		;
 
 		// Untuk Proses Account Enquiry Request
@@ -223,136 +173,7 @@ public class TransactionRoute extends RouteBuilder {
 
 		// Untuk Proses Credit Transfer Request
 
-		from("direct:ctreq").routeId("cstmrcrdttrn")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlCreditTransferRequestFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("CreditTransfer"))
 
-			// convert channel request jadi pacs008 message
-			.process(crdtTransferProcessor)
-			.setHeader("req_objbi", simple("${body}"))
-			.marshal(jsonBusinessMessageFormat)
-			
-			// kirim ke CI-HUB
-			.doTry()
-				.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
-			
-			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-				.process(paymentStatusProcessor)
-			.end()
-			
-			.convertBodyTo(String.class)
-			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbi", simple("${body}"))	
-			
-			// prepare untuk response ke channel
-			.process(crdtTransferResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-					
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-
-			.setBody(simple("${header.resp_channel}"))
-			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("resp_*")
-			.removeHeaders("req_*")
-		;
-
-		// Untuk Proses FI Credit Transfer Request
-		
-		from("direct:fictreq").routeId("fictreq")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlFICreditTransferRequestFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("FICreditTransfer"))
-
-			// convert channel request jadi pacs009 message
-			.process(fiCrdtTransferRequestProcessor)
-			.setHeader("req_objbi", simple("${body}"))
-			.marshal(jsonBusinessMessageFormat)
-	
-			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
-			.convertBodyTo(String.class)
-			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbi", simple("${body}"))	
-
-			.process(fiCrdtTransferResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-	
-			// prepare untuk response ke channel
-			.setBody(simple("${header.resp_channel}"))
-			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("req*")
-			.removeHeaders("resp_*")
-		;
-
-		
-		// Untuk Proses Payment Status Request
-
-		from("direct:pymtstatus")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlPaymentStatusRequestFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("PaymentStatus"))
-
-			// convert channel request jadi pacs028 message
-			.process(paymentStatusRequestProcessor)
-			.setHeader("req_objbi", simple("${body}"))
-			.marshal(jsonBusinessMessageFormat)
-			
-			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
-			.convertBodyTo(String.class)
-			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbi", simple("${body}"))	
-			
-			// prepare untuk response ke channel
-			.process(paymentStatusResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-			
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-
-			.setBody(simple("${header.resp_channel}"))
-			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("resp_*")
-			.removeHeaders("req_*")
-		;
-		
-		// Untuk Proses Reverse Credit Transfer
-		from("direct:reversect")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlReverseCTRequestFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("ReverseCreditTransfer"))
-			
-			// convert channel request jadi pacs008 message
-			.process(reverseCTRequestProcessor)
-			.setHeader("req_objbi", simple("${body}"))
-			.marshal(jsonBusinessMessageFormat)
-			
-			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
-			.convertBodyTo(String.class)
-			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbi", simple("${body}"))	
-
-			.process(reverseCTResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-			
-			.setBody(simple("${header.resp_channel}"))
-			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("resp_*")
-			.removeHeaders("req_*")
-		;
 
 		from("seda:endlog")
 			.log("Save log and trace")
