@@ -16,6 +16,7 @@ import bifast.mock.processor.CreditTransferResponseProcessor;
 import bifast.mock.processor.FICreditTransferResponseProcessor;
 import bifast.mock.processor.OnRequestProcessor;
 import bifast.mock.processor.PaymentStatusResponseProcessor;
+import bifast.mock.processor.ProxyRegistrationResponseProcessor;
 import bifast.mock.processor.RejectMessageProcessor;
 
 @Component
@@ -34,6 +35,8 @@ public class CiHubRoute extends RouteBuilder {
 	@Autowired
 	private RejectMessageProcessor rejectMessageProcessor;
 	
+	@Autowired
+	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -57,8 +60,12 @@ public class CiHubRoute extends RouteBuilder {
 		
 		rest("/")
 			.post("/cihub")
-			.consumes("application/json")
-			.to("direct:receive")
+				.consumes("application/json")
+				.to("direct:receive")
+			.post("/cihub-proxy-regitrastion")
+				.description("Pengiriman instruksi Proxy Registration BI-FAST")
+				.consumes("application/json")
+				.to("direct:proxyRegistration")
 		;
 	
 
@@ -101,6 +108,23 @@ public class CiHubRoute extends RouteBuilder {
 			.log("${body}")
 			.removeHeader("msgType")
 		;
+		
+		from("direct:proxyRegistration").routeId("proxyRegistration")
+
+		.setExchangePattern(ExchangePattern.InOut)
+		.convertBodyTo(String.class)
+		.log("Terima di mock")
+		.log("${body}")
+		.delay(1000)
+		.log("end-delay")
+		.unmarshal(jsonBusinessMessageDataFormat)
+		.process(proxyRegistrationResponseProcessor)
+		.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
+		.log("Response dari mock")
+		.log("${body}")
+		.removeHeader("msgType")
+	;
+
 
 	}
 

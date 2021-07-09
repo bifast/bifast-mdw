@@ -34,8 +34,12 @@ public class SaveOutboundMesgProcessor implements Processor {
 
 		
 		if (null == objResponse.getDocument().getMessageReject())
-			outboundMessage.setRespStatus(objResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
-		
+			if(objResponse.getDocument().getFiToFIPmtStsRpt() != null) {
+				outboundMessage.setRespStatus(objResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			}else {
+				outboundMessage.setRespStatus(objResponse.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().toString());
+			}
+
 		else {
 				
 			String rjctMesg = objResponse.getDocument().getMessageReject().getRsn().getRsnDesc();

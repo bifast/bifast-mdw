@@ -10,6 +10,8 @@ import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 import bifast.library.iso20022.pacs028.FIToFIPaymentStatusRequestV04;
+import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
+import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -18,6 +20,8 @@ import bifast.library.iso20022.pacs028.FIToFIPaymentStatusRequestV04;
     "fiToFIPmtStsRpt", 
     "fiCdtTrf", 
     "fiToFIPmtStsReq",
+    "prxyRegn",
+    "prxyRegnRspn",
     "messageReject"
 })
 public class Document {
@@ -34,11 +38,17 @@ public class Document {
     // unt Payment Status Request 
     @XmlElement(name = "FitoFIPmtStsReq", required = false)
     protected FIToFIPaymentStatusRequestV04 fiToFIPmtStsReq;
+    
+    @XmlElement(name = "PrxyRegn", required = false)
+    protected ProxyRegistrationV01 prxyRegn;
 
+    @XmlElement(name = "PrxyRegnRspn", required = true)
+    protected ProxyRegistrationResponseV01 prxyRegnRspn;
+    
     // unt Message Reject
     @XmlElement(name = "MessageReject", required = false)
     protected MessageRejectV01 messageReject;
-   
+    
 	public FIToFICustomerCreditTransferV08 getFiToFICstmrCdtTrf() {
 		return fiToFICstmrCdtTrf;
 	}
@@ -85,5 +95,21 @@ public class Document {
 
 	public void setMessageReject(MessageRejectV01 messageReject) {
 		this.messageReject = messageReject;
+	}
+
+	public ProxyRegistrationV01 getPrxyRegn() {
+		return prxyRegn;
+	}
+
+	public void setPrxyRegn(ProxyRegistrationV01 prxyRegn) {
+		this.prxyRegn = prxyRegn;
+	}
+
+	public ProxyRegistrationResponseV01 getPrxyRegnRspn() {
+		return prxyRegnRspn;
+	}
+
+	public void setPrxyRegnRspn(ProxyRegistrationResponseV01 prxyRegnRspn) {
+		this.prxyRegnRspn = prxyRegnRspn;
 	}
 }
