@@ -111,6 +111,10 @@ public class InboundRoute extends RouteBuilder {
 					.marshal(jsonBusinessMessageDataFormat)
 					.setHeader("resp_jsonbi",simple("${body}"))
 
+//				.when().simple("${header.rcv_msgtype} == 'SYSNOTIF'")
+//					.log("akan proses System Notification")
+//					.to("direct:sysnotif")
+
 				.otherwise()	
 					.log("Message tidak dikenal")
 			.end()
@@ -124,9 +128,6 @@ public class InboundRoute extends RouteBuilder {
 		;
 
 		from("seda:logandsave")
-			.log("tes delay 4s")
-			.delay(4000)
-			.log("   after 4s")
 			.process(saveInboundMessageProcessor)
 			.process(saveTracingTableProcessor)
 			.process(combineMesgProcessor)
