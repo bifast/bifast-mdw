@@ -26,6 +26,7 @@ public class Config {
 	public void setBicode(String bicode) {
 		this.bicode = bicode;
 	}
+	
 	public Map<String, String> getCiConnector() {
 		return ciConnector;
 	}
