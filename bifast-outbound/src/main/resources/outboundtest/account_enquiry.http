@@ -3,12 +3,12 @@ POST http://localhost:9002/services/channel/acctenquiry HTTP/1.1
 Content-Type: application/json
 
 {
-    "intrnRefId" : "584464",
+    "intrnRefId" : "538851",
     "channelType" : "01",
     "receivingParticipant" : "FASTIDJA",
     "amount" : 10200000,
     "categoryPurpose" : "02",
-    "creditorAccountNumber" : "14522361"
+    "creditorAccountNumber" : "14523661"
 }
 
 ###

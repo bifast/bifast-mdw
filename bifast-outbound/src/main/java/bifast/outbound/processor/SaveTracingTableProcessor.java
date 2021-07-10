@@ -64,7 +64,12 @@ public class SaveTracingTableProcessor implements Processor {
 		cdtTrn.setAmount(reqCdtTrn.getIntrBkSttlmAmt().getValue());	
 		
 		cdtTrn.setCrdtTrnRequestBizMsgIdr(reqBi.getAppHdr().getBizMsgIdr());
-		cdtTrn.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
+		
+		if (respBi.getAppHdr().getBizSvc().equals("SETTLEMENTCONFIRMATION"))
+			cdtTrn.setSettlementBizMsgId(respBi.getAppHdr().getBizMsgIdr());
+		else
+			cdtTrn.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
+		
 		cdtTrn.setCrdtTrnResponseStatus(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
 		
 		cdtTrn.setCreDt(LocalDateTime.now());

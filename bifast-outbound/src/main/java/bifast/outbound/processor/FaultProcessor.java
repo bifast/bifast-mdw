@@ -11,15 +11,18 @@ import bifast.outbound.pojo.ChannelResponseMessage;
 @Component
 public class FaultProcessor implements Processor {
 
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
+		
+		Exception e = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
 
-		Exception cause = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
-
+		System.out.println("cause : " + e.getMessage());
+		
 		ChannelReject reject = new ChannelReject();
 		reject.setLocation("Internal/TransactionRoute");
-		reject.setReason(cause.getMessage());
-		reject.setDescription(cause.getStackTrace()[0].toString());
+		reject.setReason(e.getMessage());
+		reject.setDescription(e.getStackTrace()[0].toString());
 
 		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("req_channelReq",ChannelAccountEnquiryReq.class);
 		

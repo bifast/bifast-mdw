@@ -54,6 +54,11 @@ public class CreditTransferRequestProcessor implements Processor {
 		seedCreditTrn.setRecptBank(chnReq.getRecptBank());
 		seedCreditTrn.setTrnType("010");
 		
+		if (!(null == chnReq.getCrdtProxyIdType())) {
+			seedCreditTrn.setCrdtProxyIdType(chnReq.getCrdtProxyIdType());
+			seedCreditTrn.setCrdtProxyIdValue(chnReq.getCrdtProxyIdValue());
+		}
+			
 		Document doc = new Document();
 		doc.setFiToFICstmrCdtTrf(pacs008MessageService.creditTransferRequest(seedCreditTrn));
 

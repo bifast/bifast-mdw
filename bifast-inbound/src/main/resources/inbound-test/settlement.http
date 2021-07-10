@@ -9,7 +9,7 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "FASTIDJA"
+              "Id" : "INDOIDJA"
             }
           }
         }
@@ -18,12 +18,12 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "INDOIDJA"
+              "Id" : "FASTIDJA"
             }
           }
         }
       },
-      "BizMsgIdr" : "20210301FASTIDJA010HRB12368894",
+      "BizMsgIdr" : "20210710INDOIDJA010HRB12361194",
       "MsgDefIdr" : "pacs.002.001.10",
       "BizSvc" : "SETTLEMENTCONFIRMATION",
       "CreDt" : "2021-03-01T20:00:00"

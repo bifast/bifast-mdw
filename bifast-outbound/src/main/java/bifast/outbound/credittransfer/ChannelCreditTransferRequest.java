@@ -25,6 +25,10 @@ public class ChannelCreditTransferRequest {
 	private String crdtAccountNo;   // AcctEnq CrdtTrn
 	private String crdtAccountType;  // CrdtTrn
 	
+	private String crdtProxyIdType;
+	private String crdtProxyIdValue;
+	
+	
 	private String paymentInfo;  // CrdtTrn
 	
 	public ChannelCreditTransferRequest() {}
@@ -147,6 +151,22 @@ public class ChannelCreditTransferRequest {
 
 	public void setCrdtAccountType(String crdtAccountType) {
 		this.crdtAccountType = crdtAccountType;
+	}
+
+	public String getCrdtProxyIdType() {
+		return crdtProxyIdType;
+	}
+
+	public void setCrdtProxyIdType(String crdtProxyIdType) {
+		this.crdtProxyIdType = crdtProxyIdType;
+	}
+
+	public String getCrdtProxyIdValue() {
+		return crdtProxyIdValue;
+	}
+
+	public void setCrdtProxyIdValue(String crdtProxyIdValue) {
+		this.crdtProxyIdValue = crdtProxyIdValue;
 	}
 
 	public String getPaymentInfo() {

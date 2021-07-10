@@ -31,6 +31,8 @@ import bifast.library.iso20022.pacs008.PartyIdentification135;
 import bifast.library.iso20022.pacs008.PaymentIdentification7;
 import bifast.library.iso20022.pacs008.PaymentTypeInformation28;
 import bifast.library.iso20022.pacs008.PersonIdentification13;
+import bifast.library.iso20022.pacs008.ProxyAccountIdentification1;
+import bifast.library.iso20022.pacs008.ProxyAccountType1Choice;
 import bifast.library.iso20022.pacs008.RemittanceInformation16;
 import bifast.library.iso20022.pacs008.SettlementInstruction7;
 import bifast.library.iso20022.pacs008.SettlementMethod1Code;
@@ -288,7 +290,18 @@ public class Pacs008MessageService {
 		cdtrAcctTp.setPrtry(seed.getCrdtAccountType());
 		cdtrAcct.setTp(cdtrAcctTp);
 		
-	
+		if (!(null == seed.getCrdtProxyIdType())) {
+			ProxyAccountType1Choice prxyTp = new ProxyAccountType1Choice();
+			
+			prxyTp.setPrtry(seed.getCrdtProxyIdType());
+			ProxyAccountIdentification1 prxyAcct = new ProxyAccountIdentification1();
+			
+			prxyAcct.setTp(prxyTp);
+			prxyAcct.setId(seed.getCrdtProxyIdValue());
+
+			cdtrAcct.setPrxy(prxyAcct);
+		}
+		
 		cdtTrfTxInf.setCdtrAcct(cdtrAcct);
 		
 		// CdtTrfTxInf / RmtInf
