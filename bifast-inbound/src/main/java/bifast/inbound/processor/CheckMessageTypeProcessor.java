@@ -35,6 +35,10 @@ public class CheckMessageTypeProcessor implements Processor{
 			msgType = "FICDTTRN";
 		}
 
+		else if (msgIdr.startsWith("admi.004")) {
+			msgType = "SYSNOTIF";
+		}
+
 		exchange.getMessage().setHeader("rcv_msgType", msgType);
 		
 	}

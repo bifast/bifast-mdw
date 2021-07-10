@@ -58,12 +58,10 @@ public class SaveTracingTableProcessor implements Processor {
 		
 		String sttlBizMsgId = sttlHeader.getBizMsgIdr();
 		String orglBizMsgId = busMesg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlEndToEndId();
-		String sttlMsgName = sttlHeader.getMsgDefIdr();
 	
 		Settlement sttl = new Settlement();
 		sttl.setOrgnlCrdtTrnReqBizMsgId(orglBizMsgId);
 		sttl.setSettlConfBizMsgId(sttlBizMsgId);
-		sttl.setSettlConfMesgName(sttlMsgName);
 		sttl.setOrignBank(sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
 		sttl.setRecptBank(sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
 		sttl.setFullMessage(strMesg);

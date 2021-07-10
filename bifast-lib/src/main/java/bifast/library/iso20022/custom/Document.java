@@ -40,7 +40,6 @@ public class Document {
     @XmlElement(name = "PrxyRegn", required = false)
     protected ProxyRegistrationV01 prxyRegn;
 
-    
     // unt Message Reject
     @XmlElement(name = "MessageReject", required = false)
     protected MessageRejectV01 messageReject;
