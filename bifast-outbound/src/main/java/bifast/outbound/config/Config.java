@@ -10,14 +10,26 @@ import org.springframework.context.annotation.Configuration;
 public class Config {
 
 	private String bankcode;
+	private String bicode;
+
 	private Map<String,String> ciConnector; 
 	private Map<String,String> corebank;
+
 	public String getBankcode() {
 		return bankcode;
 	}
 	public void setBankcode(String bankcode) {
 		this.bankcode = bankcode;
 	}
+
+	
+	public String getBicode() {
+		return bicode;
+	}
+	public void setBicode(String bicode) {
+		this.bicode = bicode;
+	}
+	
 	public Map<String, String> getCiConnector() {
 		return ciConnector;
 	}

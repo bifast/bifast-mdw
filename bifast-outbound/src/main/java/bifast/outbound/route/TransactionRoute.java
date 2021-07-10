@@ -242,7 +242,7 @@ public class TransactionRoute extends RouteBuilder {
 
 		// Untuk Proses Credit Transfer Request
 
-		from("direct:ctreq").routeId("cstmrcrdttrn")
+		from("direct:ctreq").routeId("crdt_trnsf")
 			.convertBodyTo(String.class)
 			.unmarshal(jsonChnlCreditTransferRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
