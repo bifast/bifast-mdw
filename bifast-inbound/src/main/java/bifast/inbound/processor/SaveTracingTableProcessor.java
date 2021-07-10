@@ -1,7 +1,6 @@
 package bifast.inbound.processor;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -29,12 +28,12 @@ public class SaveTracingTableProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		BusinessMessage rcvMessage = exchange.getMessage().getHeader("rcv_bi", BusinessMessage.class);
-//		System.out.println("amount: " + rcvMessage.getDocument().getf.getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
+		String strMessage = exchange.getMessage().getHeader("rcv_jsonbi", String.class);
 		
 		String msgType = exchange.getMessage().getHeader("rcv_msgType", String.class);
 		
 		if (msgType.equals("SETTLEMENT")) {
-			saveSettlement(rcvMessage);
+			saveSettlement(rcvMessage, strMessage);
 		}
 
 		if (msgType.equals("CRDTTRN")) {
@@ -54,7 +53,7 @@ public class SaveTracingTableProcessor implements Processor {
 		
 	}
 
-	public void saveSettlement (BusinessMessage busMesg) {
+	public void saveSettlement (BusinessMessage busMesg, String strMesg) {
 		BusinessApplicationHeaderV01 sttlHeader = busMesg.getAppHdr();
 		
 		String sttlBizMsgId = sttlHeader.getBizMsgIdr();
@@ -67,23 +66,23 @@ public class SaveTracingTableProcessor implements Processor {
 		sttl.setSettlConfMesgName(sttlMsgName);
 		sttl.setOrignBank(sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
 		sttl.setRecptBank(sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
-	
+		sttl.setFullMessage(strMesg);
 		// check apakah harus reversal ?
-		Optional<CreditTransfer> optCreditTrn = creditTrnRepo.findByCrdtTrnRequestBizMsgIdr(orglBizMsgId);
-
-		if (optCreditTrn.isPresent()) {
-			System.out.print("Present, dan ");
-			if (optCreditTrn.get().getCrdtTrnResponseStatus().equals("ACTC")) {
-				sttl.setForReversal("N");
-			}
-			else {
-				sttl.setForReversal("Y");
-			}
-		}
-		
-		else {
-			sttl.setForReversal("Y");
-		}
+//		Optional<CreditTransfer> optCreditTrn = creditTrnRepo.findByCrdtTrnRequestBizMsgIdr(orglBizMsgId);
+//
+//		if (optCreditTrn.isPresent()) {
+//			System.out.print("Present, dan ");
+//			if (optCreditTrn.get().getCrdtTrnResponseStatus().equals("ACTC")) {
+//				sttl.setForReversal("N");
+//			}
+//			else {
+//				sttl.setForReversal("Y");
+//			}
+//		}
+//		
+//		else {
+//			sttl.setForReversal("Y");
+//		}
 		
 		settlementRepo.save(sttl);
 

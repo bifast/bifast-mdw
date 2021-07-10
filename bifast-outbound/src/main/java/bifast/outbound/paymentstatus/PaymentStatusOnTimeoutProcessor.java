@@ -11,12 +11,9 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs028MessageService;
 import bifast.library.iso20022.service.Pacs028Seed;
-import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
-import bifast.outbound.pojo.ChannelReject;
-import bifast.outbound.pojo.ChannelResponseMessage;
 
 @Component
-public class PaymentStatusFaultProcessor implements Processor {
+public class PaymentStatusOnTimeoutProcessor implements Processor {
 
 	@Autowired
 	private AppHeaderService appHeaderService;

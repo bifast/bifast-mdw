@@ -68,7 +68,8 @@ public class CiHubRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
 			.log("${body}")
-			.delay(1000)
+			.setHeader("delay", simple("${random(1000,3000)}"))
+			.delay(simple("${header.delay}"))
 			.log("end-delay")
 
 			.unmarshal(jsonBusinessMessageDataFormat)
@@ -80,7 +81,7 @@ public class CiHubRoute extends RouteBuilder {
 					
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
 					.process(creditTransferResponseProcessor)
-				
+
 				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
 					.process(fICreditTransferResponseProcessor)
 
@@ -99,7 +100,9 @@ public class CiHubRoute extends RouteBuilder {
 
 			.log("Response dari mock")
 			.log("${body}")
+			.log("delay selama ${header.delay}s")
 			.removeHeader("msgType")
+			.removeHeader("delay")
 		;
 
 	}

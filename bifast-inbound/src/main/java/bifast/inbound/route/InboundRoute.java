@@ -68,7 +68,7 @@ public class InboundRoute extends RouteBuilder {
 		
 		from("direct:receive").routeId("receive")
 			.convertBodyTo(String.class)
-
+			.setHeader("rcv_jsonbi", simple("${body}"))
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
 			
 			.setHeader("rcv_bi", simple("${body}"))   // pojo BusinessMessage simpan ke header

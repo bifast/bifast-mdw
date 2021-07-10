@@ -3,19 +3,21 @@ POST http://localhost:9002/services/channel/cstmrcrdtrn HTTP/1.1
 Content-Type: application/json
 
 {
-    "intrnRefId" : "36.44664",
+    "intrnRefId" : "377724",
     "channel" : "01",
     "categoryPurpose" : "01",
     "amount" : 204660,
     "dbtrIdType" : "01",    
-    "dbtrId"  : "KTP-2044050",
-    "dbtrAccountNo" : "14122374",
+    "dbtrId"  : "KTP-2564050",
+    "dbtrAccountNo" : "14822221",
     "dbtrAccountType" : "CACC",
     "recptBank" : "FASTIDJA",
     "crdtIdType" : "02",
     "crdtId" : "PT-A403",
-    "crdtAccountNo" : "93682269",
+    "crdtAccountNo" : "93114169",
     "crdtAccountType" : "SVGS",
+    "crdtProxyIdType" : "02",
+    "crdtProxyIdValue" : "frans.mazhar@gmail.com",
     "paymentInfo" : "Untuk belikungin sayang"
 }
 

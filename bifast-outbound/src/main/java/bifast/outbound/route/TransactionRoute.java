@@ -20,12 +20,14 @@ import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
 import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor;
 import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor;
 import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
-import bifast.outbound.paymentstatus.PaymentStatusFaultProcessor;
+import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor;
 import bifast.outbound.paymentstatus.PaymentStatusRequestProcessor;
 import bifast.outbound.paymentstatus.PaymentStatusResponseProcessor;
 import bifast.outbound.pojo.ChannelResponseMessage;
+import bifast.outbound.processor.CheckSettlementProcessor;
 import bifast.outbound.processor.CombineMessageProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
+import bifast.outbound.processor.FaultProcessor;
 import bifast.outbound.processor.SaveOutboundMesgProcessor;
 import bifast.outbound.processor.SaveTracingTableProcessor;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
@@ -44,9 +46,15 @@ public class TransactionRoute extends RouteBuilder {
 	@Autowired
 	private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
 	@Autowired
+	private CheckSettlementProcessor checkSettlementProcessor;
+	@Autowired
+	private CombineMessageProcessor combineMessageProcessor;
+	@Autowired
 	private CreditTransferRequestProcessor crdtTransferProcessor;
 	@Autowired
 	private CreditTransferResponseProcessor crdtTransferResponseProcessor;
+	@Autowired
+	private FaultProcessor faultProcessor;
 	@Autowired
 	private FICreditTransferRequestProcessor fiCrdtTransferRequestProcessor;
 	@Autowired
@@ -56,17 +64,15 @@ public class TransactionRoute extends RouteBuilder {
 	@Autowired
 	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
 	@Autowired
+	private PaymentStatusOnTimeoutProcessor paymentStatusTimeoutProcessor;
+	@Autowired
 	private ReverseCreditTrnRequestProcessor reverseCTRequestProcessor;
 	@Autowired
 	private ReverseCreditTrnResponseProcessor reverseCTResponseProcessor;
 	@Autowired
-	private CombineMessageProcessor combineMessageProcessor;
-	@Autowired
 	private SaveOutboundMesgProcessor saveOutboundMesg;
 	@Autowired
 	private SaveTracingTableProcessor saveTracingTable;
-	@Autowired
-	private PaymentStatusFaultProcessor paymentStatusProcessor;
 
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
@@ -201,16 +207,29 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonBusinessMessageFormat)
 			
 			// kirim ke CI-HUB
-//			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
-			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:localhost:9006/mock/cihub?bridgeEndpoint=true&socketTimeout=6000", enrichmentAggregator)
-			.convertBodyTo(String.class)
-			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbi", simple("${body}"))	
+			.doTry()
+
+				.setHeader("HttpMethod", constant("POST"))
+				.enrich("http:{{bifast.outbound.ciconnector-url}}?"
+						+ "socketTimeout=2000&" 
+						+ "bridgeEndpoint=true",
+						enrichmentAggregator)
+				.convertBodyTo(String.class)
+
+				.unmarshal(jsonBusinessMessageFormat)
+
+				.setHeader("resp_objbi", simple("${body}"))	
+				// prepare untuk response ke channel
+				.process(accountEnqrResponseProcessor)
+				.setHeader("resp_channel", simple("${body}"))
 			
-			// prepare untuk response ke channel
-			.process(accountEnqrResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
+			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
+				.log("Timeout")
+				.process(faultProcessor)
+				.setHeader("resp_channel", simple("${body}"))
+
+			.end()
+
 			
 			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:endlog")
@@ -236,13 +255,31 @@ public class TransactionRoute extends RouteBuilder {
 			
 			// kirim ke CI-HUB
 			.doTry()
-				.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
-			
+				.log("Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}")
+				.setHeader("HttpMethod", constant("POST"))
+				.enrich("http:{{bifast.outbound.ciconnector-url}}?"
+						+ "socketTimeout=2000&" 
+						+ "bridgeEndpoint=true",
+						enrichmentAggregator)
+				.log("CT Request")
+
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-				.process(paymentStatusProcessor)
+				.log("Timeout")
+				// cek settlement dulu, kalo ga ada baru payment status
+				.process(checkSettlementProcessor)
+				.choice()
+					.when().simple("${body} == ''")
+						.log("Payment Status")
+						.process(paymentStatusTimeoutProcessor)
+						.marshal(jsonBusinessMessageFormat)
+						.setHeader("HttpMethod", constant("POST"))
+						.enrich("http:{{bifast.outbound.ciconnector-url}}?bridgeEndpoint=true", enrichmentAggregator)
+						.convertBodyTo(String.class)
+					.otherwise()
+						.log("Nemu settlement")
+				.end()
 			.end()
 			
-			.convertBodyTo(String.class)
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
 			
@@ -273,7 +310,11 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonBusinessMessageFormat)
 	
 			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
+			.setHeader("HttpMethod", constant("POST"))
+			.enrich("http:{{bifast.outbound.ciconnector-url}}?"
+					+ "bridgeEndpoint=true",
+					enrichmentAggregator)
+
 			.convertBodyTo(String.class)
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
@@ -306,7 +347,12 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonBusinessMessageFormat)
 			
 			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
+			.setHeader("HttpMethod", constant("POST"))
+			.enrich("http:{{bifast.outbound.ciconnector-url}}?"
+					+ "socketTimeout=2000&" 
+					+ "bridgeEndpoint=true",
+					enrichmentAggregator)
+
 			.convertBodyTo(String.class)
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
@@ -337,8 +383,13 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonBusinessMessageFormat)
 			
 			// kirim ke CI-HUB
-			.enrich("rest:post:mock/cihub?host=localhost:9006&producerComponentName=http&bridgeEndpoint=true", enrichmentAggregator)
+			.setHeader("HttpMethod", constant("POST"))
+			.enrich("http:{{bifast.outbound.ciconnector-url}}?"
+					+ "socketTimeout=2000&" 
+					+ "bridgeEndpoint=true",
+					enrichmentAggregator)
 			.convertBodyTo(String.class)
+			
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
 

@@ -64,7 +64,7 @@ public class CreditTransferResponseProcessor implements Processor{
 		busMesg.setAppHdr(hdr);
 		busMesg.setDocument(doc);
 
-		messageHistory.save(hdr.getBizMsgIdr(), busMesg);
+		messageHistory.save(msg.getAppHdr().getBizMsgIdr(), busMesg);
 		messageHistory.listKey();
 
 		exchange.getMessage().setBody(busMesg);

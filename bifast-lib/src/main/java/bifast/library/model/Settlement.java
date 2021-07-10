@@ -18,16 +18,17 @@ public class Settlement {
 	
 	@Column(name="SETTL_CONF_BIZMSGID")
 	private String settlConfBizMsgId;
-	@Column(name="SETTL_CONF_MSG_NAME")
-	private String settlConfMesgName;
 	@Column(name="ORGNL_CRDT_TRN_BIZMSGID")
 	private String orgnlCrdtTrnReqBizMsgId;
+	@Column(name="REVERSAL_BIZMSGID")
+	private String reversalBizMsgId;
 
 	private String ack;
 	private String forReversal;
+
+	@Column(name="FULL_MESG", length=6000)
+	private String fullMessage;
 	
-	@Column(name="REVERSAL_BIZMSGID")
-	private String reversalBizMsgId;
 
 	public Long getId() {
 		return id;
@@ -59,14 +60,6 @@ public class Settlement {
 
 	public void setSettlConfBizMsgId(String settlConfBizMsgId) {
 		this.settlConfBizMsgId = settlConfBizMsgId;
-	}
-
-	public String getSettlConfMesgName() {
-		return settlConfMesgName;
-	}
-
-	public void setSettlConfMesgName(String settlConfMesgName) {
-		this.settlConfMesgName = settlConfMesgName;
 	}
 
 	public String getOrgnlCrdtTrnReqBizMsgId() {
@@ -101,5 +94,13 @@ public class Settlement {
 		this.reversalBizMsgId = reversalBizMsgId;
 	}
 	
-	
+	public String getFullMessage() {
+		return fullMessage;
+	}
+
+	public void setFullMessage(String fullMessage) {
+		this.fullMessage = fullMessage;
+	}
+
+
 }
