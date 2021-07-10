@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.outbound.pojo.ChannelReject;
 import bifast.outbound.pojo.ChannelResponse;
@@ -23,7 +22,7 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		ChannelProxyRegistrationReq chnRequest = exchange.getMessage().getHeader("req_channelReq", ChannelProxyRegistrationReq.class);
 
 		ChannelResponseMessage ctResponse = new ChannelResponseMessage();
-		ctResponse.setReverseProxyRegistrationRequest(chnRequest);
+		ctResponse.setProxyRegistrationRequest(chnRequest);
 
 		ChannelResponse chnResponse = new ChannelResponse();
 

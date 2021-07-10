@@ -10,12 +10,8 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs002MessageService;
-import bifast.library.iso20022.service.Pacs002Seed;
-import bifast.library.iso20022.service.Proxy001MessageService;
 import bifast.library.iso20022.service.Proxy002MessageService;
 import bifast.library.iso20022.service.Proxy002Seed;
 

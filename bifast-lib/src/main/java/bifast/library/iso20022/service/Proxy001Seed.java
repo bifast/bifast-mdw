@@ -1,14 +1,5 @@
 package bifast.library.iso20022.service;
 
-import java.math.BigDecimal;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import bifast.library.iso20022.prxy001.BranchAndFinancialInstitutionIdentification5;
-import bifast.library.iso20022.prxy001.CashAccount40;
-import bifast.library.iso20022.prxy001.Party30Choice;
-import bifast.library.iso20022.prxy001.ScndIdDefinition1;
-
 public class Proxy001Seed {
 	
 	private String trnType; 

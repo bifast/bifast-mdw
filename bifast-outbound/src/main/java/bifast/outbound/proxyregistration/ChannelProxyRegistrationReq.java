@@ -7,21 +7,20 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("ProxyRegistrationRequest")
 public class ChannelProxyRegistrationReq {
 	
-	private String recptBank; 
+//	private String recptBank; 
 	private String channel; 
 	
-	private String trnType; 
-	private String bizMsgId;
+//	private String trnType; 
 	
 	private String proxyTp;
 	private String proxyVal;
 	
 	protected String regnTp;
     protected String regnId;
-    protected String dsplNm;
+    protected String displayName;
     
     protected String accNumber;
-    protected String accTpPrtry;
+    protected String accType;
     protected String accName;
     
     protected String scndIdTp;
@@ -32,29 +31,17 @@ public class ChannelProxyRegistrationReq {
     protected String cstmrRsdntSts;
     protected String cstmrTwnNm;
     
-	public String getRecptBank() {
-		return recptBank;
-	}
-	public void setRecptBank(String recptBank) {
-		this.recptBank = recptBank;
-	}
+//	public String getRecptBank() {
+//		return recptBank;
+//	}
+//	public void setRecptBank(String recptBank) {
+//		this.recptBank = recptBank;
+//	}
 	public String getChannel() {
 		return channel;
 	}
 	public void setChannel(String channel) {
 		this.channel = channel;
-	}
-	public String getTrnType() {
-		return trnType;
-	}
-	public void setTrnType(String trnType) {
-		this.trnType = trnType;
-	}
-	public String getBizMsgId() {
-		return bizMsgId;
-	}
-	public void setBizMsgId(String bizMsgId) {
-		this.bizMsgId = bizMsgId;
 	}
 	public String getProxyTp() {
 		return proxyTp;
@@ -80,11 +67,11 @@ public class ChannelProxyRegistrationReq {
 	public void setRegnId(String regnId) {
 		this.regnId = regnId;
 	}
-	public String getDsplNm() {
-		return dsplNm;
+	public String getDisplayName() {
+		return displayName;
 	}
-	public void setDsplNm(String dsplNm) {
-		this.dsplNm = dsplNm;
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 	public String getAccNumber() {
 		return accNumber;
@@ -92,11 +79,11 @@ public class ChannelProxyRegistrationReq {
 	public void setAccNumber(String accNumber) {
 		this.accNumber = accNumber;
 	}
-	public String getAccTpPrtry() {
-		return accTpPrtry;
+	public String getAccType() {
+		return accType;
 	}
-	public void setAccTpPrtry(String accTpPrtry) {
-		this.accTpPrtry = accTpPrtry;
+	public void setAccType(String accType) {
+		this.accType = accType;
 	}
 	public String getAccName() {
 		return accName;

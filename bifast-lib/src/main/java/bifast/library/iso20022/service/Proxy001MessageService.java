@@ -9,31 +9,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import bifast.library.iso20022.pacs008.AccountIdentification4Choice;
-import bifast.library.iso20022.pacs008.ActiveCurrencyAndAmount;
-import bifast.library.iso20022.pacs008.BranchAndFinancialInstitutionIdentification6;
-import bifast.library.iso20022.pacs008.CashAccount38;
-import bifast.library.iso20022.pacs008.CashAccountType2Choice;
-import bifast.library.iso20022.pacs008.CategoryPurpose1Choice;
-import bifast.library.iso20022.pacs008.ChargeBearerType1Code;
-import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
-import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
-import bifast.library.iso20022.pacs008.FinancialInstitutionIdentification18;
-import bifast.library.iso20022.pacs008.GenericAccountIdentification1;
-import bifast.library.iso20022.pacs008.GenericFinancialIdentification1;
-import bifast.library.iso20022.pacs008.GenericOrganisationIdentification1;
-import bifast.library.iso20022.pacs008.GenericPersonIdentification1;
-import bifast.library.iso20022.pacs008.GroupHeader93;
-import bifast.library.iso20022.pacs008.LocalInstrument2Choice;
-import bifast.library.iso20022.pacs008.OrganisationIdentification29;
-import bifast.library.iso20022.pacs008.Party38Choice;
-import bifast.library.iso20022.pacs008.PartyIdentification135;
-import bifast.library.iso20022.pacs008.PaymentIdentification7;
-import bifast.library.iso20022.pacs008.PaymentTypeInformation28;
-import bifast.library.iso20022.pacs008.PersonIdentification13;
-import bifast.library.iso20022.pacs008.RemittanceInformation16;
-import bifast.library.iso20022.pacs008.SettlementInstruction7;
-import bifast.library.iso20022.pacs008.SettlementMethod1Code;
 import bifast.library.iso20022.prxy001.BIAddtlCstmrInf;
 import bifast.library.iso20022.prxy001.BISupplementaryData1;
 import bifast.library.iso20022.prxy001.BISupplementaryDataEnvelope1;
@@ -56,7 +31,7 @@ public class Proxy001MessageService {
 			throws DatatypeConfigurationException {
 		
 		ProxyRegistrationV01 proxy001 = new ProxyRegistrationV01();
-		String msgId = utilService.genMessageId(seed.getBizMsgId());
+		String msgId = utilService.genMessageId(seed.getTrnType());
 		
 		// GrpHdr
 		GroupHeader59 grpHdr = new GroupHeader59();
