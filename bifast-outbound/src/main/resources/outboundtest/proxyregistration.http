@@ -13,5 +13,7 @@ Content-Type: application/json
     "scndIdTp" : "01",
     "scndIdVal" : "44443333",
     "cstmrTp" : "01",
-    "cstmrId" : "220000022"
+    "cstmrId" : "220000022",
+    "cstmrRsdntSts" : "01",
+    "cstmrTwnNm" : "0300"
 }

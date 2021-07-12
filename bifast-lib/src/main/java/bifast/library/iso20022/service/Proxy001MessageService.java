@@ -9,11 +9,19 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import bifast.library.config.LibConfig;
+import bifast.library.iso20022.prxy001.AccountIdentification4Choice;
 import bifast.library.iso20022.prxy001.BIAddtlCstmrInf;
 import bifast.library.iso20022.prxy001.BISupplementaryData1;
 import bifast.library.iso20022.prxy001.BISupplementaryDataEnvelope1;
+import bifast.library.iso20022.prxy001.BranchAndFinancialInstitutionIdentification5;
 import bifast.library.iso20022.prxy001.CashAccount40;
+import bifast.library.iso20022.prxy001.CashAccountType2ChoiceProxy;
+import bifast.library.iso20022.prxy001.FinancialInstitutionIdentification8;
+import bifast.library.iso20022.prxy001.GenericAccountIdentification1;
+import bifast.library.iso20022.prxy001.GenericFinancialIdentification1;
 import bifast.library.iso20022.prxy001.GroupHeader59;
+import bifast.library.iso20022.prxy001.Party12Choice;
 import bifast.library.iso20022.prxy001.ProxyDefinition1;
 import bifast.library.iso20022.prxy001.ProxyRegistration1;
 import bifast.library.iso20022.prxy001.ProxyRegistrationAccount1;
@@ -26,6 +34,9 @@ public class Proxy001MessageService {
 
 	@Autowired
 	private UtilService utilService;
+	
+	@Autowired
+	private LibConfig config;
 
 	public ProxyRegistrationV01 proxyRegistrationRequest (Proxy001Seed seed) 
 			throws DatatypeConfigurationException {
@@ -41,18 +52,23 @@ public class Proxy001MessageService {
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
 		grpHdr.setCreDtTm(xcal);
 		
-		proxy001.setGrpHdr(grpHdr);
-
+		proxy001.setGrpHdr(grpHdr);	
+		
+		Party12Choice msgSndr = new Party12Choice();
+		msgSndr.setAgt(new BranchAndFinancialInstitutionIdentification5());
+		msgSndr.getAgt().setFinInstnId(new FinancialInstitutionIdentification8());
+		msgSndr.getAgt().getFinInstnId().setOthr(new GenericFinancialIdentification1());
+		msgSndr.getAgt().getFinInstnId().getOthr().setId(config.getBicode());
+		grpHdr.setMsgSndr(msgSndr);
 		///
 		ProxyRegistration1 pRegistration = new ProxyRegistration1();
-		pRegistration.setRegnTp(ProxyRegistrationType1Code.NEWR);
-		
+		pRegistration.setRegnTp(ProxyRegistrationType1Code.NEWR);		
 		
 		///
-		ProxyDefinition1 pDefinition = new ProxyDefinition1();
-		pDefinition.setTp(seed.getProxyTp());
-		pDefinition.setVal(seed.getProxyVal());
-		pRegistration.setPrxy(pDefinition);
+		ProxyDefinition1 prxy = new ProxyDefinition1();
+		prxy.setTp(seed.getProxyTp());
+		prxy.setVal(seed.getProxyVal());
+		pRegistration.setPrxy(prxy);
 		
 		///
 		ScndIdDefinition1 scndIdDefinition1 = new ScndIdDefinition1();
@@ -63,12 +79,24 @@ public class Proxy001MessageService {
 		ProxyRegistrationAccount1 pRegistrationaccount = new ProxyRegistrationAccount1();
 		pRegistrationaccount.setRegnId(seed.getRegnId());
 		pRegistrationaccount.setDsplNm(seed.getDsplNm());
-		pRegistrationaccount.setRegnSts(seed.getCstmrRsdntSts());
+		pRegistrationaccount.setRegnSts(ProxyRegistrationType1Code.ACTV.toString());
 		pRegistrationaccount.setScndId(scndIdDefinition1);
+		
+		pRegistrationaccount.setAgt(new BranchAndFinancialInstitutionIdentification5());
+		pRegistrationaccount.getAgt().setFinInstnId(new FinancialInstitutionIdentification8());
+		pRegistrationaccount.getAgt().getFinInstnId().setOthr(new GenericFinancialIdentification1());
+		pRegistrationaccount.getAgt().getFinInstnId().getOthr().setId(config.getBicode());
 		
 		///
 		CashAccount40 cashAccount40 = new CashAccount40();
 		cashAccount40.setNm(seed.getAccName());
+		cashAccount40.setId(new AccountIdentification4Choice());
+		cashAccount40.getId().setOthr(new GenericAccountIdentification1());
+		cashAccount40.getId().getOthr().setId(seed.getAccNumber());
+		
+		cashAccount40.setTp(new CashAccountType2ChoiceProxy());
+		cashAccount40.getTp().setPrtry(seed.getAccTpPrtry());
+		
 		pRegistrationaccount.setAcct(cashAccount40);
 		
 		///
@@ -76,7 +104,7 @@ public class Proxy001MessageService {
 		bIAddtlCstmrInf.setId(seed.getCstmrId());
 		bIAddtlCstmrInf.setTp(seed.getCstmrTp());
 		bIAddtlCstmrInf.setTwnNm(seed.getCstmrTwnNm());
-		
+		bIAddtlCstmrInf.setRsdntSts(seed.getCstmrRsdntSts());
 		///
 		BISupplementaryDataEnvelope1 biSupplementaryDataEnvelope1 =  new BISupplementaryDataEnvelope1();
 		biSupplementaryDataEnvelope1.setCstmr(bIAddtlCstmrInf);
@@ -87,7 +115,7 @@ public class Proxy001MessageService {
 		biSupplementaryData1.setEnvlp(biSupplementaryDataEnvelope1);
 		
 		///
-		pRegistration.setPrxy(pDefinition);
+		pRegistration.setPrxy(prxy);
 		pRegistration.setPrxyRegn(pRegistrationaccount);
 		
 		///

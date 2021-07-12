@@ -10,8 +10,10 @@ import org.springframework.context.annotation.Configuration;
 public class LibConfig {
 
 	private String bankcode;
+	private String bicode;
 	private Map<String,String> ciConnector; 
 	private Map<String,String> corebank;
+	
 	public String getBankcode() {
 		return bankcode;
 	}
@@ -30,4 +32,11 @@ public class LibConfig {
 	public void setCorebank(Map<String, String> corebank) {
 		this.corebank = corebank;
 	}
+	public String getBicode() {
+		return bicode;
+	}
+	public void setBicode(String bicode) {
+		this.bicode = bicode;
+	}
+	
 }

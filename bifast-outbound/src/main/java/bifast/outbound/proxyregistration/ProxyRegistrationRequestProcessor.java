@@ -36,9 +36,20 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		Proxy001Seed seedProxyRegis = new Proxy001Seed();
 		
 		seedProxyRegis.setBizMsgId(hdr.getBizMsgIdr());
-		
 		seedProxyRegis.setTrnType("710");
-
+		seedProxyRegis.setProxyTp(chnReq.getProxyTp());
+		seedProxyRegis.setProxyVal(chnReq.getProxyVal());
+		seedProxyRegis.setDsplNm(chnReq.getDisplayName());
+		seedProxyRegis.setAccTpPrtry(chnReq.getAccType());
+		seedProxyRegis.setAccName(chnReq.getAccName());
+		seedProxyRegis.setAccNumber(chnReq.getAccNumber());
+		seedProxyRegis.setScndIdTp(chnReq.getScndIdTp());
+		seedProxyRegis.setScndIdVal(chnReq.getScndIdVal());
+		seedProxyRegis.setCstmrTp(chnReq.getCstmrTp());
+		seedProxyRegis.setCstmrId(chnReq.getCstmrId());
+		seedProxyRegis.setCstmrRsdntSts(chnReq.getCstmrRsdntSts());
+		seedProxyRegis.setCstmrTwnNm(chnReq.getCstmrTwnNm());
+		
 		Document doc = new Document();
 		doc.setPrxyRegn(proxy001MessageService.proxyRegistrationRequest(seedProxyRegis));
 
