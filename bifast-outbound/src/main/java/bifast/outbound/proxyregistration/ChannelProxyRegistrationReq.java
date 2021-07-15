@@ -1,16 +1,11 @@
 package bifast.outbound.proxyregistration;
 
-import java.math.BigDecimal;
-
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("ProxyRegistrationRequest")
 public class ChannelProxyRegistrationReq {
 	
-//	private String recptBank; 
 	private String channel; 
-	
-//	private String trnType; 
 	
 	private String proxyTp;
 	private String proxyVal;
@@ -30,14 +25,8 @@ public class ChannelProxyRegistrationReq {
     protected String cstmrTp;
     protected String cstmrRsdntSts;
     protected String cstmrTwnNm;
-    
-//	public String getRecptBank() {
-//		return recptBank;
-//	}
-//	public void setRecptBank(String recptBank) {
-//		this.recptBank = recptBank;
-//	}
-	public String getChannel() {
+
+    public String getChannel() {
 		return channel;
 	}
 	public void setChannel(String channel) {

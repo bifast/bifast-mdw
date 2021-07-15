@@ -16,6 +16,7 @@ import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
 import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
 import bifast.outbound.pojo.CombinedMessage;
+import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 
 @Component
@@ -59,6 +60,13 @@ public class CombineMessageProcessor implements Processor {
 			ChannelReverseCreditTransferRequest revCT = exchange.getMessage().getHeader("req_channelReq", ChannelReverseCreditTransferRequest.class);
 			fullMesg.setReverseCreditTransferRequest(revCT);
 		}
+
+		else if (msgType.equals("ProxyRegistration")) {
+			fileName = "prxy.001.";
+			ChannelProxyRegistrationReq prxReg = exchange.getMessage().getHeader("req_channelReq", ChannelProxyRegistrationReq.class);
+			fullMesg.setProxyRegistrationRequest(prxReg);
+		}
+
 		
 		BusinessMessage outboundMesg = exchange.getMessage().getHeader("req_objbi", BusinessMessage.class);
 		BusinessMessageWrap outbMesgWr = new BusinessMessageWrap(outboundMesg);

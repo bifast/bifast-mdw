@@ -34,25 +34,32 @@ public class SaveOutboundMesgProcessor implements Processor {
 		if (null == objResponse) {  // tidak terima response dari BI berarti timeout
 			outboundMessage.setRespStatus("TIMEOUT");
 			outboundMessage.setFailureMessage("Timeout terima message dari CI-HUB");
-
-		} else {
+		}
+		
+		else if (!(null == objResponse.getDocument().getFiToFIPmtStsRpt())) {
 		
 			outboundMessage.setRespBizMsgId(objResponse.getAppHdr().getBizMsgIdr());
-			if (null == objResponse.getDocument().getMessageReject())
-				outboundMessage.setRespStatus(objResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
-			
-			else {  // msg Reject is not nul
-					
-				String rjctMesg = objResponse.getDocument().getMessageReject().getRsn().getRsnDesc();
-				if (rjctMesg.length() > 400)
-					rjctMesg = rjctMesg.substring(0, 400);
-				
-				outboundMessage.setRespStatus("FAILURE");
-				outboundMessage.setFailureMessage(rjctMesg);
-			}
+			outboundMessage.setRespStatus(objResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+		
+		}			
 
+		else if (!(null == objResponse.getDocument().getPrxyRegnRspn())) {    // Response dari Proxy Registration
+			outboundMessage.setRespBizMsgId(objResponse.getAppHdr().getBizMsgIdr());
+			outboundMessage.setRespStatus(objResponse.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().name());
+		
+		}
+
+		else {  // msg Reject is not nul
+					
+			String rjctMesg = objResponse.getDocument().getMessageReject().getRsn().getRsnDesc();
+			if (rjctMesg.length() > 400)
+				rjctMesg = rjctMesg.substring(0, 400);
+			
+			outboundMessage.setRespStatus("FAILURE");
+			outboundMessage.setFailureMessage(rjctMesg);
 
 		}
+
 		outboundRepo.save(outboundMessage);
 		
 	}

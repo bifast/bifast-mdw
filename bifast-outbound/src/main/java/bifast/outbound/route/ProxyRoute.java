@@ -2,19 +2,16 @@ package bifast.outbound.route;
 
 import java.net.SocketTimeoutException;
 
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
-import org.apache.camel.model.rest.RestParamType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.pojo.ChannelResponseMessage;
-import bifast.outbound.processor.CombineMessageProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultProcessor;
-import bifast.outbound.processor.SaveOutboundMesgProcessor;
-import bifast.outbound.processor.SaveTracingTableProcessor;
 import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
 import bifast.outbound.proxyregistration.ProxyRegistrationRequestProcessor;
 import bifast.outbound.proxyregistration.ProxyRegistrationResponseProcessor;
@@ -32,12 +29,6 @@ public class ProxyRoute extends RouteBuilder {
 	@Autowired
 	private ProxyRegistrationResponseProcessor ProxyRegistrationResponseProcessor;
 	
-	@Autowired
-	private CombineMessageProcessor combineMessageProcessor;
-	@Autowired
-	private SaveOutboundMesgProcessor saveOutboundMesg;
-	@Autowired
-	private SaveTracingTableProcessor saveTracingTable;
 	@Autowired
 	private FaultProcessor faultProcessor;
 
@@ -95,7 +86,7 @@ public class ProxyRoute extends RouteBuilder {
 		
 		;
 
-		// Untuk Proses Account Enquiry Request
+		// Untuk Proses Proxy Registration Request
 
 		from("direct:proxyregistration").routeId("direct:proxyregistration")
 			.convertBodyTo(String.class)
@@ -119,8 +110,8 @@ public class ProxyRoute extends RouteBuilder {
 			.process(ProxyRegistrationResponseProcessor)
 			.setHeader("resp_channel", simple("${body}"))
 			
-//			.setExchangePattern(ExchangePattern.InOnly)
-//			.to("seda:endlog")
+			.setExchangePattern(ExchangePattern.InOnly)
+			.to("seda:endlog")
 			
 			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
