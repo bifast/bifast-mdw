@@ -35,3 +35,5 @@ build/
 ### DBeaver ###
 .dbeaver
 
+### test docker ###
+docker

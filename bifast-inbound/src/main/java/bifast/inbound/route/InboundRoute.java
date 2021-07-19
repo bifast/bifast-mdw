@@ -131,6 +131,7 @@ public class InboundRoute extends RouteBuilder {
 			.process(saveInboundMessageProcessor)
 			.process(saveTracingTableProcessor)
 			.process(combineMesgProcessor)
+			.log("akan simpan log ke {{bifast.inbound-log-folder}}")
 			.toD("file:{{bifast.inbound-log-folder}}?fileName=${header.rcv_fileName}")
 		;
 

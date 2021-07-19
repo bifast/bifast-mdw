@@ -18,7 +18,7 @@ public class SettlementRoute extends RouteBuilder {
 				+ "where st.ack is null?"
 					+ "outputType=SelectList&"
 					+ "outputHeader=rcv_qryresult&"
-					+ "maxMessagesPerPoll=3")
+					+ "maxMessagesPerPoll=3").routeId("QuerySttlement")
 
 			.log("${header.rcv_qryresult}")
 			
