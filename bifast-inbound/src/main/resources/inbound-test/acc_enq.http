@@ -23,7 +23,7 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr" : "20210301FASTIDJA510ORB12300120",
+      "BizMsgIdr" : "20210701FASTIDJA510ORB12300245",
       "MsgDefIdr" : "pacs.008.001.08",
       "CreDt" : "2021-03-01T20:00:00"
     },

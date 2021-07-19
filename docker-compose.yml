@@ -1,0 +1,90 @@
+version: '3.7'
+services:
+    komidb:
+      build: bifast-lib
+      image: fransmzh/komidb:latest
+      container_name: komidb
+      restart: always
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=komidb
+      expose: 
+        - "5432"
+      logging:
+        options:
+          max-size: 10m
+          max-file: "3"
+      ports:
+        - '5433:5432'
+      volumes: 
+        - komidb:/var/lib/postgresql/data
+      networks: 
+        - docnet
+
+    inbound:
+      # build: bifast-inbound/Dockerfile
+      image: fransmzh/komi-inbound:latest
+      restart: always
+      depends_on: 
+        - komidb
+      expose: 
+        - "9001"
+      ports: 
+        - "9001:9001"
+      environment: 
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
+        - SPRING.DATASOURCE.USERNAME=postgres 
+        - SPRING.DATASOURCE.PASSWORD=postgres 
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        - BIFAST.INBOUND-LOG-FOLDER=/home/logs
+      volumes: 
+        - /home/fransdm/workspace/bifast-log/inbound:/home/logs 
+      networks: 
+        - docnet
+
+    outbound:
+      # build: bifast-outbound/Dockerfile
+      image: fransmzh/komi-outbound:latest
+      restart: always
+      depends_on: 
+        - komidb
+      expose: 
+        - "9002"
+      ports: 
+        - "9002:9002"
+      environment: 
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
+        - SPRING.DATASOURCE.USERNAME=postgres 
+        - SPRING.DATASOURCE.PASSWORD=postgres 
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        - BIFAST.INBOUND-LOG-FOLDER=/home/logs
+      volumes: 
+        - /home/fransdm/workspace/bifast-log/outbound:/home/logs 
+      networks: 
+        - docnet
+
+    mock:
+      # build: bifast-mock/Dockerfile
+      image: fransmzh/komi-mock:latest
+      restart: always
+      depends_on: 
+        - komidb
+      expose: 
+        - "9006"
+      ports: 
+        - "9006:9006"
+      environment: 
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
+        - SPRING.DATASOURCE.USERNAME=postgres 
+        - SPRING.DATASOURCE.PASSWORD=postgres 
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        - BIFAST.INBOUND-LOG-FOLDER=/home/logs
+      networks: 
+        - docnet
+    
+volumes:
+  komidb: {}
+
+networks: 
+  docnet: {}

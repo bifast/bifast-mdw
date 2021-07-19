@@ -1,6 +1,6 @@
 FROM openjdk:11 
 COPY target/*.jar /usr/src/komi-inbound.jar 
-RUN mkdir -p /home/logs/inbound 
+RUN mkdir -p /home/logs 
 VOLUME /home/logs
 WORKDIR /usr/src 
 EXPOSE 9001

@@ -6,12 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.custom.Document;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs002MessageService;
-import bifast.library.iso20022.service.Pacs002Seed;
 
 @Component
 public class PaymentStatusResponseProcessor implements Processor{
