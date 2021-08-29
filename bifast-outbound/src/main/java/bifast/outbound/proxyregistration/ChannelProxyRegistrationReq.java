@@ -10,21 +10,21 @@ public class ChannelProxyRegistrationReq {
 	private String proxyTp;
 	private String proxyVal;
 	
-	protected String regnTp;
-    protected String regnId;
-    protected String displayName;
+	private String regnTp;
+	private String regnId;
+	private String displayName;
     
-    protected String accNumber;
-    protected String accType;
-    protected String accName;
+	private String accNumber;
+	private String accType;
+	private String accName;
     
-    protected String scndIdTp;
-    protected String scndIdVal;
+	private String scndIdTp;
+	private String scndIdVal;
     
-    protected String cstmrId;
-    protected String cstmrTp;
-    protected String cstmrRsdntSts;
-    protected String cstmrTwnNm;
+	private String cstmrId;
+	private String cstmrTp;
+	private String residentialStatus;
+	private String townName;
 
     public String getChannel() {
 		return channel;
@@ -104,17 +104,17 @@ public class ChannelProxyRegistrationReq {
 	public void setCstmrTp(String cstmrTp) {
 		this.cstmrTp = cstmrTp;
 	}
-	public String getCstmrRsdntSts() {
-		return cstmrRsdntSts;
+	public String getResidentialStatus() {
+		return residentialStatus;
 	}
-	public void setCstmrRsdntSts(String cstmrRsdntSts) {
-		this.cstmrRsdntSts = cstmrRsdntSts;
+	public void setResidentialStatus(String residentialStatus) {
+		this.residentialStatus = residentialStatus;
 	}
-	public String getCstmrTwnNm() {
-		return cstmrTwnNm;
+	public String getTownName() {
+		return townName;
 	}
-	public void setCstmrTwnNm(String cstmrTwnNm) {
-		this.cstmrTwnNm = cstmrTwnNm;
+	public void settownName(String townName) {
+		this.townName = townName;
 	}
     
 }

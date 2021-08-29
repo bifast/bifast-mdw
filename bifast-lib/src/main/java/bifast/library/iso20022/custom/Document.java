@@ -12,6 +12,8 @@ import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 import bifast.library.iso20022.pacs028.FIToFIPaymentStatusRequestV04;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
+import bifast.library.iso20022.prxy003.ProxyLookUpV01;
+import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -22,6 +24,8 @@ import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
     "fiToFIPmtStsReq",
     "prxyRegn",
     "prxyRegnRspn",
+    "prxyLookUp",
+    "prxyLookUpRspn",
     "messageReject"
 })
 public class Document {
@@ -42,9 +46,15 @@ public class Document {
     @XmlElement(name = "PrxyRegn", required = false)
     protected ProxyRegistrationV01 prxyRegn;
 
-    @XmlElement(name = "PrxyRegnRspn", required = true)
+    @XmlElement(name = "PrxyRegnRspn", required = false)
     protected ProxyRegistrationResponseV01 prxyRegnRspn;
     
+    @XmlElement(name = "PrxyLookUp", required = false)
+    protected ProxyLookUpV01 prxyLookUp;
+
+    @XmlElement(name = "PrxyLookUpRspn", required = false)
+    protected ProxyLookUpResponseV01 prxyLookUpRspn;
+
     // unt Message Reject
     @XmlElement(name = "MessageReject", required = false)
     protected MessageRejectV01 messageReject;
@@ -87,6 +97,22 @@ public class Document {
 
 	public void setFiToFIPmtStsReq(FIToFIPaymentStatusRequestV04 fiToFIPmtStsReq) {
 		this.fiToFIPmtStsReq = fiToFIPmtStsReq;
+	}
+
+	public ProxyLookUpV01 getPrxyLookUp() {
+		return prxyLookUp;
+	}
+
+	public void setPrxyLookUp(ProxyLookUpV01 prxyLookUp) {
+		this.prxyLookUp = prxyLookUp;
+	}
+
+	public ProxyLookUpResponseV01 getPrxyLookUpRspn() {
+		return prxyLookUpRspn;
+	}
+
+	public void setPrxyLookUpRspn(ProxyLookUpResponseV01 prxyLookUpRspn) {
+		this.prxyLookUpRspn = prxyLookUpRspn;
 	}
 
 	public MessageRejectV01 getMessageReject() {

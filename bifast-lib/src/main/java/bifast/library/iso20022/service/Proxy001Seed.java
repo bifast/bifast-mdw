@@ -23,6 +23,7 @@ public class Proxy001Seed {
     protected String cstmrTp;
     protected String cstmrRsdntSts;
     protected String cstmrTwnNm;
+    
 	public String getTrnType() {
 		return trnType;
 	}

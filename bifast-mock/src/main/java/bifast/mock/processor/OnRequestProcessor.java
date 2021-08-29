@@ -28,7 +28,11 @@ public class OnRequestProcessor implements Processor {
 		else if (req.getAppHdr().getMsgDefIdr().startsWith("pacs.028")) {
 			exchange.getMessage().setHeader("msgType", "PaymentStatusRequest");		
 		}
-		
+
+		else if (req.getAppHdr().getMsgDefIdr().startsWith("prxy.001")) {
+			exchange.getMessage().setHeader("msgType", "ProxyRegistrationRequest");		
+		}
+
 	}
 
 }

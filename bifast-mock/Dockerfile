@@ -1,4 +1,4 @@
-FROM openjdk:11 
+FROM adoptopenjdk:11-jre-hotspot 
 COPY target/*.jar /usr/src/komi-mock.jar 
 WORKDIR /usr/src 
 EXPOSE 9006

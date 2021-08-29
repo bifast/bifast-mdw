@@ -1,4 +1,4 @@
-FROM openjdk:11 
+FROM adoptopenjdk:11-jre-hotspot 
 COPY target/*.jar /usr/src/komi-outbound.jar 
 RUN mkdir -p /home/logs
 VOLUME /home/logs

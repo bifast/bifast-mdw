@@ -28,8 +28,8 @@ public class ChannelRequest {
 	@JsonProperty("ReverseCreditTransferRequest")
 	private ChannelReverseCreditTransferRequest reverseCreditTransferRequest;
 
-	@JsonProperty("reverseProxyRegistrationRequest")
-	private ChannelProxyRegistrationReq reverseProxyRegistrationRequest;
+	@JsonProperty("ProxyRegistrationRequest")
+	private ChannelProxyRegistrationReq proxyRegistrationReq;
 	
 	public ChannelAccountEnquiryReq getAccountEnquiryRequest() {
 		return accountEnquiryRequest;
@@ -71,13 +71,14 @@ public class ChannelRequest {
 		this.reverseCreditTransferRequest = reverseCreditTransferRequest;
 	}
 
-	public ChannelProxyRegistrationReq getReverseProxyRegistrationRequest() {
-		return reverseProxyRegistrationRequest;
+	public ChannelProxyRegistrationReq getProxyRegistrationReq() {
+		return proxyRegistrationReq;
 	}
 
-	public void setReverseProxyRegistrationRequest(ChannelProxyRegistrationReq reverseProxyRegistrationRequest) {
-		this.reverseProxyRegistrationRequest = reverseProxyRegistrationRequest;
+	public void setProxyRegistrationReq(ChannelProxyRegistrationReq proxyRegistrationReq) {
+		this.proxyRegistrationReq = proxyRegistrationReq;
 	}
+
 
 
 }

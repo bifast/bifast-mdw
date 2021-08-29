@@ -134,7 +134,7 @@ public class TransactionRoute extends RouteBuilder {
 
         ;
 		
-		rest("/channel")
+		rest("/komi")
 			.post("/acctenquiry")
 				.description("Pengiriman instruksi Account Enquiry ke bank lain melalui BI-FAST")
 				.param()
@@ -210,8 +210,8 @@ public class TransactionRoute extends RouteBuilder {
 			.doTry()
 
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{bifast.outbound.ciconnector-url}}?"
-						+ "socketTimeout=2000&" 
+				.enrich("http:{{bifast.ciconnector-url}}?"
+						+ "socketTimeout={{bifast.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
@@ -257,10 +257,11 @@ public class TransactionRoute extends RouteBuilder {
 			.doTry()
 				.log("Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}")
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{bifast.outbound.ciconnector-url}}?"
-						+ "socketTimeout=2000&" 
+				.enrich("http:{{bifast.ciconnector-url}}?"
+						+ "socketTimeout={{bifast.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
+				.convertBodyTo(String.class)
 				.log("CT Request")
 
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
@@ -273,13 +274,15 @@ public class TransactionRoute extends RouteBuilder {
 						.process(paymentStatusTimeoutProcessor)
 						.marshal(jsonBusinessMessageFormat)
 						.setHeader("HttpMethod", constant("POST"))
-						.enrich("http:{{bifast.outbound.ciconnector-url}}?bridgeEndpoint=true", enrichmentAggregator)
+						.enrich("http:{{bifast.ciconnector-url}}?bridgeEndpoint=true", enrichmentAggregator)
 						.convertBodyTo(String.class)
 					.otherwise()
 						.log("Nemu settlement")
 				.end()
+			.endDoTry()
 			.end()
 			
+			.log("Akan unmarshal")
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
 			
@@ -289,11 +292,13 @@ public class TransactionRoute extends RouteBuilder {
 					
 			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:endlog")
-
+			
 			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
+			.log("akan remove headers")
 			.removeHeaders("resp_*")
 			.removeHeaders("req_*")
+			
 		;
 
 		// Untuk Proses FI Credit Transfer Request
@@ -311,7 +316,7 @@ public class TransactionRoute extends RouteBuilder {
 	
 			// kirim ke CI-HUB
 			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:{{bifast.outbound.ciconnector-url}}?"
+			.enrich("http:{{bifast.ciconnector-url}}?"
 					+ "bridgeEndpoint=true",
 					enrichmentAggregator)
 
@@ -348,8 +353,8 @@ public class TransactionRoute extends RouteBuilder {
 			
 			// kirim ke CI-HUB
 			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:{{bifast.outbound.ciconnector-url}}?"
-					+ "socketTimeout=2000&" 
+			.enrich("http:{{bifast.ciconnector-url}}?"
+					+ "socketTimeout={{bifast.timeout}}&" 
 					+ "bridgeEndpoint=true",
 					enrichmentAggregator)
 
@@ -384,8 +389,8 @@ public class TransactionRoute extends RouteBuilder {
 			
 			// kirim ke CI-HUB
 			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:{{bifast.outbound.ciconnector-url}}?"
-					+ "socketTimeout=2000&" 
+			.enrich("http:{{bifast.ciconnector-url}}?"
+					+ "socketTimeout={{bifast.timeout}}&" 
 					+ "bridgeEndpoint=true",
 					enrichmentAggregator)
 			.convertBodyTo(String.class)

@@ -1,8 +1,7 @@
 version: '3.7'
 services:
     komidb:
-      build: bifast-lib
-      image: fransmzh/komidb:latest
+      image: postgres:12.7
       container_name: komidb
       restart: always
       environment:
@@ -23,8 +22,9 @@ services:
         - docnet
 
     inbound:
-      # build: bifast-inbound/Dockerfile
+      build: bifast-inbound
       image: fransmzh/komi-inbound:latest
+      container_name: bifast-inbound
       restart: always
       depends_on: 
         - komidb
@@ -44,8 +44,9 @@ services:
         - docnet
 
     outbound:
-      # build: bifast-outbound/Dockerfile
+      build: bifast-outbound
       image: fransmzh/komi-outbound:latest
+      container_name: bifast-outbound
       restart: always
       depends_on: 
         - komidb
@@ -59,13 +60,15 @@ services:
         - SPRING.DATASOURCE.PASSWORD=postgres 
         - SPRING_JPA_HIBERNATE_DDL_AUTO=update
         - BIFAST.INBOUND-LOG-FOLDER=/home/logs
+        - BIFAST.OUTBOUND.CICONNECTOR-URL=bifast-mock:9006/mock/cihub
       volumes: 
         - /home/fransdm/workspace/bifast-log/outbound:/home/logs 
       networks: 
         - docnet
 
     mock:
-      # build: bifast-mock/Dockerfile
+      build: bifast-mock
+      container_name: bifast-mock
       image: fransmzh/komi-mock:latest
       restart: always
       depends_on: 

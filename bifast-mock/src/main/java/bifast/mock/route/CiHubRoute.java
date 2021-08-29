@@ -37,6 +37,8 @@ public class CiHubRoute extends RouteBuilder {
 	
 	@Autowired
 	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
+//	@Autowired
+//	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -75,7 +77,7 @@ public class CiHubRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
 			.log("${body}")
-			.setHeader("delay", simple("${random(1000,3000)}"))
+			.setHeader("delay", simple("${random(500,2000)}"))
 			.delay(simple("${header.delay}"))
 			.log("end-delay")
 
@@ -98,8 +100,14 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'ReverseCreditTransferRequest'")
 					.process(creditTransferResponseProcessor)
 
+				.when().simple("${header.msgType} == 'ProxyRegistrationRequest'")
+					.process(proxyRegistrationResponseProcessor)
+
+//				.when().simple("${header.msgType} == 'ProxyResolutionRequest'")
+//					.process(proxyResolutionResponseProcessor)
+
 				.otherwise()	
-					.log("CreditTranfsr")
+					.log("Other message")
 			.end()
 				
 			// .process(rejectMessageProcessor)

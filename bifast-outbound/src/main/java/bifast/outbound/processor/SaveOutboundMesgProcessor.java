@@ -1,5 +1,6 @@
 package bifast.outbound.processor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.apache.camel.Exchange;
@@ -30,6 +31,10 @@ public class SaveOutboundMesgProcessor implements Processor {
 		outboundMessage.setMsgDefIdr(objRequest.getAppHdr().getMsgDefIdr());
 		outboundMessage.setSendDt(LocalDateTime.now());
 		outboundMessage.setToFinId(objRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		outboundMessage.setTransactionType(objRequest.getAppHdr().getBizMsgIdr().substring(16, 19));
+		
+//		BigDecimal amount = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue();
+//		outboundMessage.setAmount(amount);
 
 		if (null == objResponse) {  // tidak terima response dari BI berarti timeout
 			outboundMessage.setRespStatus("TIMEOUT");
@@ -48,7 +53,12 @@ public class SaveOutboundMesgProcessor implements Processor {
 			outboundMessage.setRespStatus(objResponse.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().name());
 		
 		}
-
+		
+		else if (!(null == objResponse.getDocument().getPrxyLookUpRspn())) {    // Response dari Proxy Resolution
+			outboundMessage.setRespBizMsgId(objResponse.getAppHdr().getBizMsgIdr());
+			outboundMessage.setRespStatus(objResponse.getDocument().getPrxyLookUpRspn().getLkUpRspn().getRegnRspn().getPrxRspnSts().name());
+		}
+		
 		else {  // msg Reject is not nul
 					
 			String rjctMesg = objResponse.getDocument().getMessageReject().getRsn().getRsnDesc();

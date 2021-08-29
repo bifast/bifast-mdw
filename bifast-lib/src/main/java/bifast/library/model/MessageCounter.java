@@ -3,14 +3,15 @@ package bifast.library.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+@Entity(name="MESSAGE_COUNTER")
 public class MessageCounter {
 
 	@Id
 	private Integer tanggal;
 	private Integer lastNumber;
 	
-	public MessageCounter() {}
+	public MessageCounter() {
+	}
 	
 	public MessageCounter(Integer tanggal, Integer lastNumber) {
 		this.tanggal = tanggal;

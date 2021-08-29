@@ -63,7 +63,7 @@ public class GenericOutboundRoute extends RouteBuilder {
 		
 		restConfiguration().component("servlet");
 		
-		rest("/channel")
+		rest("/komi")
 			.post("/outbound")
 			.consumes("application/json")
 			.to("direct:outbound")

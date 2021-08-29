@@ -1,5 +1,6 @@
 package bifast.library.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -18,11 +19,17 @@ public class OutboundMessage {
 	@Column(name="BIZMSGID")
 	private String bizMsgIdr;
 	
+	@Column(name="TRX_TYPE")
+	private String transactionType;
+	
 	@Column(name="MESSAGE_NAME")
 	private String msgDefIdr;
 	
 	@Column(name="RECPT_BANK")
 	private String toFinId;
+	
+//	@Column(name="AMOUNT")
+//	private BigDecimal amount;
 
 	@Column(name="SEND_TIME")
 	private LocalDateTime sendDt;
@@ -61,6 +68,16 @@ public class OutboundMessage {
 	}
 
 
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
+	}
+
+
 	public String getMsgDefIdr() {
 		return msgDefIdr;
 	}
@@ -79,6 +96,16 @@ public class OutboundMessage {
 	public void setToFinId(String toFinId) {
 		this.toFinId = toFinId;
 	}
+
+
+//	public BigDecimal getAmount() {
+//		return amount;
+//	}
+//
+//
+//	public void setAmount(BigDecimal amount) {
+//		this.amount = amount;
+//	}
 
 
 	public LocalDateTime getSendDt() {

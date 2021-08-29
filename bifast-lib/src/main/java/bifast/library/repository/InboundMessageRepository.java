@@ -1,5 +1,6 @@
 package bifast.library.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +12,6 @@ import bifast.library.model.InboundMessage;
 public interface InboundMessageRepository extends JpaRepository<InboundMessage, Long> {
 
 	public Optional<InboundMessage> findByBizMsgIdr (String bizmsgid);
+	public List<InboundMessage> findByFrFinId (String frFindId);
 	
 }

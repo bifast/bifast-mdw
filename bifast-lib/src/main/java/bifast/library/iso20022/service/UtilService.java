@@ -30,8 +30,8 @@ public class UtilService {
 
 	public Integer getCounter () {
         Integer intNow = Integer.valueOf(LocalDateTime.now().format(formatter));
-
-		Optional<MessageCounter> optCnt = msgCounterRepo.findById(intNow);
+        
+		Optional<MessageCounter> optCnt = msgCounterRepo.findById(intNow); 
 		if (optCnt.isPresent()) {
 			MessageCounter msgCnt = optCnt.get();
 			msgCnt.setLastNumber(msgCnt.getLastNumber()+1);

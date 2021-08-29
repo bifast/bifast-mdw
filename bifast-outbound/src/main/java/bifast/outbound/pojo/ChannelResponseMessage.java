@@ -9,6 +9,7 @@ import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
 import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
 import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
+import bifast.outbound.proxyregistration.ChannelProxyResolutionReq;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 
 @JsonRootName("OutboundMessage")
@@ -18,6 +19,7 @@ import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 					"paymentStatusRequest", 
 					"reverseCreditTransferRequest",
 					"proxyRegistrationRequest",
+					"proxyResolutionRequest",
 					"response",
 					"rejection"})
 public class ChannelResponseMessage {
@@ -34,6 +36,8 @@ public class ChannelResponseMessage {
 	private ChannelReverseCreditTransferRequest reverseCreditTransferRequest;
 	@JsonProperty("ProxyRegistrationRequest")
 	private ChannelProxyRegistrationReq proxyRegistrationRequest;
+	@JsonProperty("ProxyResolutionRequest")
+	private ChannelProxyResolutionReq proxyResolutionRequest;
 	
 	@JsonProperty("Response")
 	private ChannelResponse response;
@@ -88,6 +92,12 @@ public class ChannelResponseMessage {
 	}
 	public void setProxyRegistrationRequest(ChannelProxyRegistrationReq proxyRegistrationRequest) {
 		this.proxyRegistrationRequest = proxyRegistrationRequest;
+	}
+	public ChannelProxyResolutionReq getProxyResolutionRequest() {
+		return proxyResolutionRequest;
+	}
+	public void setProxyResolutionRequest(ChannelProxyResolutionReq proxyResolutionRequest) {
+		this.proxyResolutionRequest = proxyResolutionRequest;
 	}
 
 }

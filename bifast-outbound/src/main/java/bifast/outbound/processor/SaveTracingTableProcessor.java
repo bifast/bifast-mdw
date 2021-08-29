@@ -10,8 +10,12 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
 import bifast.library.iso20022.pacs009.CreditTransferTransaction44;
+import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
+import bifast.library.iso20022.prxy002.ProxyRegistrationResponse1;
 import bifast.library.model.CreditTransfer;
+import bifast.library.model.ProxyMessage;
 import bifast.library.repository.CreditTransferRepository;
+import bifast.library.repository.ProxyMessageRepository;
 import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
@@ -21,6 +25,8 @@ public class SaveTracingTableProcessor implements Processor {
 
 	@Autowired
 	private CreditTransferRepository creditTrnRepo;
+	@Autowired
+	private ProxyMessageRepository proxyMessageRepo;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -49,6 +55,17 @@ public class SaveTracingTableProcessor implements Processor {
 			saveReversalCreditTransfer(intrnRefId, reqBi, respBi);	
 		}
 		
+		else if (msgType.equals("ProxyRegistration")) {
+			
+			BusinessMessage respBi = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
+			saveProxyMessage("NEWR", reqBi, respBi);
+		}
+
+//		else if (msgType.equals("ProxyResolution")) {
+//			
+//			BusinessMessage respBi = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
+//			saveProxyMessage("NEWR", reqBi, respBi);
+//		}
 
 	}
 
@@ -134,6 +151,33 @@ public class SaveTracingTableProcessor implements Processor {
 		creditTrnRepo.save(revCreditTransfer);
 	}
 
-	
+	public void saveProxyMessage (String oprType, BusinessMessage reqBi, BusinessMessage respBi) {
+		ProxyMessage proxyMsg = new ProxyMessage(); 
+		
+		ProxyRegistrationV01 proxyData = reqBi.getDocument().getPrxyRegn();
+		
+		proxyMsg.setBizMsgId(reqBi.getAppHdr().getBizMsgIdr());
+		proxyMsg.setOperationType(oprType);
+		proxyMsg.setAccountName(proxyData.getRegn().getPrxyRegn().getAcct().getNm());
+		proxyMsg.setAccountNumber(proxyData.getRegn().getPrxyRegn().getAcct().getId().getOthr().getId());
+		proxyMsg.setAccountType(proxyData.getRegn().getPrxyRegn().getAcct().getTp().getPrtry());
+		proxyMsg.setCustomerId(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getId());
+		proxyMsg.setCustomerType(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getTp());
+		
+		proxyMsg.setDisplayName(proxyData.getRegn().getPrxyRegn().getDsplNm());
+		proxyMsg.setProxyType(proxyData.getRegn().getPrxy().getTp());
+		proxyMsg.setProxyValue(proxyData.getRegn().getPrxy().getVal());
+		proxyMsg.setResidentStatus(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts());
+		proxyMsg.setScndIdType(proxyData.getRegn().getPrxyRegn().getScndId().getTp());
+		proxyMsg.setScndValue(proxyData.getRegn().getPrxyRegn().getScndId().getVal());
+		proxyMsg.setTownName(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
+
+		ProxyRegistrationResponse1 resp = respBi.getDocument().getPrxyRegnRspn().getRegnRspn();
+		proxyMsg.setRespBizMsgId(respBi.getAppHdr().getBizMsgIdr());
+		proxyMsg.setRespReason(resp.getStsRsnInf().getPrtry());
+		proxyMsg.setRespStatus(resp.getPrxRspnSts().value());
+
+		proxyMessageRepo.save(proxyMsg);
+	}
 
 }

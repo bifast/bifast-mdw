@@ -9,12 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.pojo.ChannelRequest;
 import bifast.outbound.pojo.ChannelResponseMessage;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultProcessor;
 import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
+import bifast.outbound.proxyregistration.ChannelProxyResolutionReq;
 import bifast.outbound.proxyregistration.ProxyRegistrationRequestProcessor;
 import bifast.outbound.proxyregistration.ProxyRegistrationResponseProcessor;
+import bifast.outbound.proxyregistration.ProxyResolutionRequestProcessor;
+import bifast.outbound.proxyregistration.ProxyResolutionResponseProcessor;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -25,23 +29,28 @@ public class ProxyRoute extends RouteBuilder {
 
 	@Autowired
 	private ProxyRegistrationRequestProcessor proxyRegistrationRequestProcessor;
-	
 	@Autowired
 	private ProxyRegistrationResponseProcessor ProxyRegistrationResponseProcessor;
-	
+	@Autowired
+	private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
+	@Autowired
+	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
 	@Autowired
 	private FaultProcessor faultProcessor;
-
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	
+	JacksonDataFormat ChnlRequestFormat = new JacksonDataFormat(ChannelRequest.class);
 	JacksonDataFormat jsonChnlResponseFormat = new JacksonDataFormat(ChannelResponseMessage.class);
 	JacksonDataFormat jsonChnlProxyRegistrationFormat = new JacksonDataFormat(ChannelProxyRegistrationReq.class);
-	
+	JacksonDataFormat jsonChnlProxyResolutionFormat = new JacksonDataFormat(ChannelProxyResolutionReq.class);
 
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
 
 	private void configureJsonDataFormat() {
+
+		ChnlRequestFormat.setInclude("NON_NULL");
+		ChnlRequestFormat.setInclude("NON_EMPTY");
 
 		jsonChnlResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonChnlResponseFormat.setInclude("NON_NULL");
@@ -54,7 +63,6 @@ public class ProxyRoute extends RouteBuilder {
 		jsonBusinessMessageFormat.setInclude("NON_EMPTY");
 		jsonBusinessMessageFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		jsonBusinessMessageFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-
 	}
 	
 	@Override
@@ -78,19 +86,23 @@ public class ProxyRoute extends RouteBuilder {
 
         ;
 		
-		rest("/channel")
+		rest("/komi")
 			.post("/proxyregistration")
-				.description("Pengiriman instruksi Account Enquiry ke bank lain melalui BI-FAST")
+				.description("Pendaftaran data proxy account ke BI")
 				.consumes("application/json")
 				.to("direct:proxyregistration")
 		
+			.post("/proxyresolution")
+				.description("Periksa / enquiry data proxy account ke BI")
+				.consumes("application/json")
+				.to("direct:proxyresolution")
 		;
 
 		// Untuk Proses Proxy Registration Request
 
-		from("direct:proxyregistration").routeId("direct:proxyregistration")
+		from("direct:proxyregistration").routeId("proxyregistration")
 			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlProxyRegistrationFormat)
+			.unmarshal(ChnlRequestFormat)
 			.setHeader("req_channelReq",simple("${body}"))
 			.setHeader("req_msgType", constant("ProxyRegistration"))
 
@@ -101,7 +113,11 @@ public class ProxyRoute extends RouteBuilder {
 			
 			// kirim ke CI-HUB
 			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:localhost:9006/mock/cihub-proxy-regitrastion?bridgeEndpoint=true&socketTimeout=6000", enrichmentAggregator)
+			.enrich("http:{{bifast.ciconnector-url}}?"
+					+ "socketTimeout={{bifast.timeout}}&" 
+					+ "bridgeEndpoint=true",
+					enrichmentAggregator)
+
 			.convertBodyTo(String.class)
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
@@ -119,6 +135,40 @@ public class ProxyRoute extends RouteBuilder {
 			.removeHeaders("resp_*")
 		;	
 
-		
+		from("direct:proxyresolution").routeId("proxyresolution")
+			.convertBodyTo(String.class)
+			.unmarshal(jsonChnlProxyResolutionFormat)
+			.setHeader("req_channelReq",simple("${body}"))
+			.setHeader("req_msgType", constant("ProxyResolution"))
+
+			// convert channel request jadi prxy.003 message
+			.process(proxyResolutionRequestProcessor)
+			.setHeader("req_objbi", simple("${body}"))
+			.marshal(jsonBusinessMessageFormat)
+
+			// kirim ke CI-HUB
+			.setHeader("HttpMethod", constant("POST"))
+			.enrich("http:{{bifast.ciconnector-url}}?"
+					+ "socketTimeout={{bifast.timeout}}&" 
+					+ "bridgeEndpoint=true",
+					enrichmentAggregator)
+
+			.convertBodyTo(String.class)
+			.unmarshal(jsonBusinessMessageFormat)
+			.setHeader("resp_objbi", simple("${body}"))	
+			
+			// prepare untuk response ke channel
+			.process(proxyResolutionResponseProcessor)
+			.setHeader("resp_channel", simple("${body}"))
+			
+			.setExchangePattern(ExchangePattern.InOnly)
+			.to("seda:endlog")
+			
+			.setBody(simple("${header.resp_channel}"))
+			.marshal(jsonChnlResponseFormat)
+			.removeHeaders("req*")
+			.removeHeaders("resp_*")
+		;
+
 	}
 }

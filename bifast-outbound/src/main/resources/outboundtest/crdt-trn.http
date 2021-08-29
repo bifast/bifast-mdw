@@ -1,5 +1,5 @@
 # Credit Transfer Request from channel untuk personal
-POST http://localhost:9002/services/channel/cstmrcrdtrn HTTP/1.1
+POST http://localhost:9002/services/komi/cstmrcrdtrn HTTP/1.1
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
     "crdtAccountType" : "SVGS",
     "crdtProxyIdType" : "02",
     "crdtProxyIdValue" : "frans.mazhar@gmail.com",
-    "paymentInfo" : "Untuk belikungin sayang"
+    "paymentInfo" : "Untuk pembayaran xxxxx"
 }
 
 ###
@@ -51,20 +51,20 @@ POST http://localhost:9002/services/channel/cstmrcrdtrn HTTP/1.1
 ###
 
 # Credit Transfer Request from channel on generic endpoint
-POST http://localhost:9002/services/channel/outbound HTTP/1.1
+POST http://localhost:9002/services/komi/outbound HTTP/1.1
 Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "intrnRefId" : "KA.4004202-355",
+    "intrnRefId" : "KA.44442-122",
     "channel" : "02",
     "categoryPurpose" : "01",
-    "amount" : 350000300,
+    "amount" : 3530000,
 
     "dbtrIdType" : "02",    
     "dbtrName": "PT Semaraing",
     "dbtrId" : "PTSMG",
-    "dbtrAccountNo" : "9100004374",
+    "dbtrAccountNo" : "910045334",
     "dbtrAccountType" : "CACC",
 
     "recptBank" : "FASTIDJA",

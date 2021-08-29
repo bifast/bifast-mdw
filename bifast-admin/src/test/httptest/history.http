@@ -1,0 +1,16 @@
+POST http://localhost:9008/admin/transmonitoring/filterdata HTTP/1.1
+Content-Type: application/json
+
+{
+    "bicSrc": "FASTIDJA", 
+    "bicDst": "INDOIDJA", 
+    "tranType": "Account Enquiry", 
+    "rspCode": "Sukses", 
+    "startDate": "2021-07-26", 
+    "endDate": "2021-08-28"
+}
+
+###
+
+GET http://localhost:9008/admin/transmonitoring/getTransaction HTTP/1.1
+Content-Type: application/json
