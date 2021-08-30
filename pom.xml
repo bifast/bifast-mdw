@@ -103,9 +103,9 @@
 		<module>bifast-lib</module>
 	    <module>bifast-outbound</module>
 	    <module>bifast-inbound</module>
-	    <module>corebankiface</module>
+<!-- 	    <module>corebankiface</module>
 	    <module>bifast-dashboard</module>
-	    <module>bifast-admin</module>
-	    <module>bifast-mock</module>
+ -->
+ 	    <module>bifast-mock</module>
   </modules>
 </project>

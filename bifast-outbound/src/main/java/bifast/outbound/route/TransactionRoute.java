@@ -131,7 +131,6 @@ public class TransactionRoute extends RouteBuilder {
         	.apiContextPath("/api-doc")
 	            .apiProperty("api.title", "KOMI API Documentation").apiProperty("api.version", "1.0.0")
 	            .apiProperty("cors", "true");
-
         ;
 		
 		rest("/komi")
