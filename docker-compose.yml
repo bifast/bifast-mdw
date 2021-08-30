@@ -59,7 +59,7 @@ services:
         - SPRING.DATASOURCE.USERNAME=postgres 
         - SPRING.DATASOURCE.PASSWORD=postgres 
         - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-        - BIFAST.INBOUND-LOG-FOLDER=/home/logs
+        - BIFAST.OUTBOUND-LOG-FOLDER=/home/logs
         - BIFAST.CICONNECTOR-URL=bifast-mock:9006/mock/cihub
       volumes: 
         - /home/fransdm/workspace/bifast-log/outbound:/home/logs 

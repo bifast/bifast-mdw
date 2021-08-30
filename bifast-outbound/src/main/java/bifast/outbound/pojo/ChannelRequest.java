@@ -7,6 +7,7 @@ import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
 import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
 import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
+import bifast.outbound.proxyregistration.ChannelProxyResolutionReq;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 
 
@@ -31,6 +32,9 @@ public class ChannelRequest {
 	@JsonProperty("ProxyRegistrationRequest")
 	private ChannelProxyRegistrationReq proxyRegistrationReq;
 	
+	@JsonProperty("ProxyResolutionRequest")
+	private ChannelProxyResolutionReq proxyResolutionReq;
+
 	public ChannelAccountEnquiryReq getAccountEnquiryRequest() {
 		return accountEnquiryRequest;
 	}
@@ -77,6 +81,14 @@ public class ChannelRequest {
 
 	public void setProxyRegistrationReq(ChannelProxyRegistrationReq proxyRegistrationReq) {
 		this.proxyRegistrationReq = proxyRegistrationReq;
+	}
+
+	public ChannelProxyResolutionReq getProxyResolutionReq() {
+		return proxyResolutionReq;
+	}
+
+	public void setProxyResolutionReq(ChannelProxyResolutionReq proxyResolutionReq) {
+		this.proxyResolutionReq = proxyResolutionReq;
 	}
 
 

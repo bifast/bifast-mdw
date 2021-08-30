@@ -113,7 +113,7 @@ public class ChannelProxyRegistrationReq {
 	public String getTownName() {
 		return townName;
 	}
-	public void settownName(String townName) {
+	public void setTownName(String townName) {
 		this.townName = townName;
 	}
     

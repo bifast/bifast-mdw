@@ -11,7 +11,6 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		
 		ChannelRequest req = exchange.getIn().getBody(ChannelRequest.class);
 		
 		if (!(null == req.getAccountEnquiryRequest())) {
@@ -37,6 +36,16 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		else if (!(null == req.getReverseCreditTransferRequest())) {
 			exchange.getMessage().setHeader("rcv_msgType", "ReverseCreditTransfer");
 			exchange.getMessage().setHeader("rcv_channel", req.getReverseCreditTransferRequest());
+		}
+
+		else if (!(null == req.getProxyRegistrationReq())) {
+			exchange.getMessage().setHeader("rcv_msgType", "ProxyRegistration");
+			exchange.getMessage().setHeader("rcv_channel", req.getProxyRegistrationReq());
+		}
+
+		else if (!(null == req.getProxyResolutionReq())) {
+			exchange.getMessage().setHeader("rcv_msgType", "ProxyResolution");
+			exchange.getMessage().setHeader("rcv_channel", req.getProxyResolutionReq());
 		}
 
 	}

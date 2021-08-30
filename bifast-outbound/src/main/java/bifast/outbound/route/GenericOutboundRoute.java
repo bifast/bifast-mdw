@@ -13,6 +13,8 @@ import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
 import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
 import bifast.outbound.pojo.ChannelRequest;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
+import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
+import bifast.outbound.proxyregistration.ChannelProxyResolutionReq;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 
 @Component
@@ -27,6 +29,8 @@ public class GenericOutboundRoute extends RouteBuilder {
 	JacksonDataFormat jsonChnlFICreditTransferRequestFormat = new JacksonDataFormat(ChannelFICreditTransferReq.class);
 	JacksonDataFormat jsonChnlPaymentStatusRequestFormat = new JacksonDataFormat(ChannelPaymentStatusRequest.class);
 	JacksonDataFormat jsonChnlReverseCTRequestFormat = new JacksonDataFormat(ChannelReverseCreditTransferRequest.class);
+	JacksonDataFormat jsonChnlProxyRegistrationFormat = new JacksonDataFormat(ChannelProxyRegistrationReq.class);
+	JacksonDataFormat jsonChnlProxyResolutionFormat = new JacksonDataFormat(ChannelProxyResolutionReq.class);
 
 	private void configureJsonDataFormat() {
 		ChnlRequestFormat.setInclude("NON_NULL");
@@ -52,6 +56,14 @@ public class GenericOutboundRoute extends RouteBuilder {
 		jsonChnlReverseCTRequestFormat.setInclude("NON_NULL");
 		jsonChnlReverseCTRequestFormat.setInclude("NON_EMPTY");
 		jsonChnlReverseCTRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		jsonChnlProxyRegistrationFormat.setInclude("NON_NULL");
+		jsonChnlProxyRegistrationFormat.setInclude("NON_EMPTY");
+		jsonChnlProxyRegistrationFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		jsonChnlProxyResolutionFormat.setInclude("NON_NULL");
+		jsonChnlProxyResolutionFormat.setInclude("NON_EMPTY");
+		jsonChnlProxyResolutionFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 	}
 
@@ -104,6 +116,18 @@ public class GenericOutboundRoute extends RouteBuilder {
 					.setBody(simple("${header.rcv_channel}"))
 					.marshal(jsonChnlReverseCTRequestFormat)
 					.to("direct:reversect")
+
+				.when().simple("${header.rcv_msgType} == 'ProxyRegistration'")
+					.log("Proxy Registration")
+					.setBody(simple("${header.rcv_channel}"))
+					.marshal(jsonChnlProxyRegistrationFormat)
+					.to("direct:proxyregistration")
+
+				.when().simple("${header.rcv_msgType} == 'ProxyResolution'")
+					.log("Proxy Resolution")
+					.setBody(simple("${header.rcv_channel}"))
+					.marshal(jsonChnlProxyResolutionFormat)
+					.to("direct:proxyresolution")
 
 			.end()
 			

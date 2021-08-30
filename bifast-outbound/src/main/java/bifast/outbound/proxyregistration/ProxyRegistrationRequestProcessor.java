@@ -29,7 +29,7 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelProxyRegistrationReq chnReq = exchange.getIn().getBody(ChannelRequest.class).getProxyRegistrationReq();
+		ChannelProxyRegistrationReq chnReq = exchange.getIn().getBody(ChannelProxyRegistrationReq.class);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = appHeaderService.initAppHdr(config.getBicode(), "prxy.001.001.01", "710", chnReq.getChannel());

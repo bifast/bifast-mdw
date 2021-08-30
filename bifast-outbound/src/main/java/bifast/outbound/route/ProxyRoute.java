@@ -40,7 +40,7 @@ public class ProxyRoute extends RouteBuilder {
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	
-	JacksonDataFormat ChnlRequestFormat = new JacksonDataFormat(ChannelRequest.class);
+	JacksonDataFormat chnlRequestFormat = new JacksonDataFormat(ChannelRequest.class);
 	JacksonDataFormat jsonChnlResponseFormat = new JacksonDataFormat(ChannelResponseMessage.class);
 	JacksonDataFormat jsonChnlProxyRegistrationFormat = new JacksonDataFormat(ChannelProxyRegistrationReq.class);
 	JacksonDataFormat jsonChnlProxyResolutionFormat = new JacksonDataFormat(ChannelProxyResolutionReq.class);
@@ -49,9 +49,12 @@ public class ProxyRoute extends RouteBuilder {
 
 	private void configureJsonDataFormat() {
 
-		ChnlRequestFormat.setInclude("NON_NULL");
-		ChnlRequestFormat.setInclude("NON_EMPTY");
+		chnlRequestFormat.setInclude("NON_NULL");
+		chnlRequestFormat.setInclude("NON_EMPTY");
 
+		jsonChnlProxyRegistrationFormat.setInclude("NON_NULL");
+		jsonChnlProxyRegistrationFormat.setInclude("NON_EMPTY");
+		
 		jsonChnlResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonChnlResponseFormat.setInclude("NON_NULL");
 		jsonChnlResponseFormat.setInclude("NON_EMPTY");
@@ -86,23 +89,28 @@ public class ProxyRoute extends RouteBuilder {
 
         ;
 		
-		rest("/komi")
-			.post("/proxyregistration")
-				.description("Pendaftaran data proxy account ke BI")
-				.consumes("application/json")
-				.to("direct:proxyregistration")
+//		rest("/komi")
+//			.post("/proxyregistration")
+//				.description("Pendaftaran data proxy account ke BI")
+//				.consumes("application/json")
+//				.to("direct:proxyregistration")
 		
-			.post("/proxyresolution")
-				.description("Periksa / enquiry data proxy account ke BI")
-				.consumes("application/json")
-				.to("direct:proxyresolution")
+//			.post("/proxyresolution")
+//				.description("Periksa / enquiry data proxy account ke BI")
+//				.consumes("application/json")
+//				.to("direct:proxyresolution")
 		;
 
 		// Untuk Proses Proxy Registration Request
 
 		from("direct:proxyregistration").routeId("proxyregistration")
 			.convertBodyTo(String.class)
-			.unmarshal(ChnlRequestFormat)
+
+//			.setExchangePattern(ExchangePattern.InOnly)  // simpan log file dulu
+//			.setHeader("req_loglabel", constant("Channel Message"))
+//			.to("seda:savelogfiles")
+
+			.unmarshal(jsonChnlProxyRegistrationFormat)
 			.setHeader("req_channelReq",simple("${body}"))
 			.setHeader("req_msgType", constant("ProxyRegistration"))
 
@@ -110,6 +118,8 @@ public class ProxyRoute extends RouteBuilder {
 			.process(proxyRegistrationRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
+			
+
 			
 			// kirim ke CI-HUB
 			.setHeader("HttpMethod", constant("POST"))
@@ -128,6 +138,7 @@ public class ProxyRoute extends RouteBuilder {
 			
 			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:endlog")
+//			.to("seda:savelogfiles")
 			
 			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
@@ -169,6 +180,18 @@ public class ProxyRoute extends RouteBuilder {
 			.removeHeaders("req*")
 			.removeHeaders("resp_*")
 		;
+
+//		from("seda:savelogfiles")
+//			.log("Save log files")
+//			.setHeader("tmp_body", simple("${body}"))
+//			.setHeader("req_namafile", simple("${header.req_objbi.appHdr.msgDefIdr}"))
+//			
+//			.setBody(simple("### ${header.req_loglabel} ###\n"))
+//			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.req_namafile}&fileExist=Append")
+//			.setBody(simple("${header.tmp_body}"))
+//			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.req_namafile}&fileExist=Append")
+//			.removeHeader("tmp_body")
+//		;
 
 	}
 }
