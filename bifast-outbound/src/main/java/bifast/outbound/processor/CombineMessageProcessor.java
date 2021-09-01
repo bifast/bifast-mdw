@@ -27,7 +27,7 @@ public class CombineMessageProcessor implements Processor {
 
 		CombinedMessage fullMesg = new CombinedMessage();
 		
-		String msgType = exchange.getMessage().getHeader("req_msgType", String.class);
+		String msgType = exchange.getMessage().getHeader("rcv_msgType", String.class);
 		String fileName = "";
 		
 		if (msgType.equals("AccountEnquiry")) {
@@ -61,7 +61,7 @@ public class CombineMessageProcessor implements Processor {
 			fullMesg.setReverseCreditTransferRequest(revCT);
 		}
 
-		else if (msgType.equals("ProxyRegistration")) {
+		else if (msgType.equals("prxyrgst")) {
 			fileName = "prxy.001.";
 			ChannelProxyRegistrationReq prxReg = exchange.getMessage().getHeader("req_channelReq", ChannelProxyRegistrationReq.class);
 			fullMesg.setProxyRegistrationRequest(prxReg);

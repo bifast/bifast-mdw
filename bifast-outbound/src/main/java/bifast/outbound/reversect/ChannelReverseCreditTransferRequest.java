@@ -11,7 +11,6 @@ public class ChannelReverseCreditTransferRequest {
 	private String orgnlEndToEndId;
 	private BigDecimal amount; 
 	private String recptBank; 
-	private String channel; 
 	
 	private String dbtrId;   // CrdtTrn
 	private String dbtrName;  //optional
@@ -111,12 +110,6 @@ public class ChannelReverseCreditTransferRequest {
 	}
 	public void setRecptBank(String recptBank) {
 		this.recptBank = recptBank;
-	}
-	public String getChannel() {
-		return channel;
-	}
-	public void setChannel(String channel) {
-		this.channel = channel;
 	}
 	public String getPaymentInfo() {
 		return paymentInfo;

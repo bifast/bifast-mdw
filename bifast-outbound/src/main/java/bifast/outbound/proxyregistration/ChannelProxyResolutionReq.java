@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("ProxyResolutionRequest")
 public class ChannelProxyResolutionReq {
 	
+	private String intrnRefId;
 	private String channel;
 	private String lookupType;
 	
@@ -13,6 +14,14 @@ public class ChannelProxyResolutionReq {
 	
 	public ChannelProxyResolutionReq() {}
 	
+	public String getIntrnRefId() {
+		return intrnRefId;
+	}
+
+	public void setIntrnRefId(String intrnRefId) {
+		this.intrnRefId = intrnRefId;
+	}
+
 	public String getChannel() {
 		return channel;
 	}

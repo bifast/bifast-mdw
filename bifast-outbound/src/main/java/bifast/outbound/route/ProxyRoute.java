@@ -2,14 +2,12 @@ package bifast.outbound.route;
 
 import java.net.SocketTimeoutException;
 
-import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.pojo.ChannelRequest;
 import bifast.outbound.pojo.ChannelResponseMessage;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultProcessor;
@@ -30,7 +28,7 @@ public class ProxyRoute extends RouteBuilder {
 	@Autowired
 	private ProxyRegistrationRequestProcessor proxyRegistrationRequestProcessor;
 	@Autowired
-	private ProxyRegistrationResponseProcessor ProxyRegistrationResponseProcessor;
+	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
 	@Autowired
 	private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
 	@Autowired
@@ -39,8 +37,7 @@ public class ProxyRoute extends RouteBuilder {
 	private FaultProcessor faultProcessor;
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
-	
-	JacksonDataFormat chnlRequestFormat = new JacksonDataFormat(ChannelRequest.class);
+
 	JacksonDataFormat jsonChnlResponseFormat = new JacksonDataFormat(ChannelResponseMessage.class);
 	JacksonDataFormat jsonChnlProxyRegistrationFormat = new JacksonDataFormat(ChannelProxyRegistrationReq.class);
 	JacksonDataFormat jsonChnlProxyResolutionFormat = new JacksonDataFormat(ChannelProxyResolutionReq.class);
@@ -49,16 +46,13 @@ public class ProxyRoute extends RouteBuilder {
 
 	private void configureJsonDataFormat() {
 
-		chnlRequestFormat.setInclude("NON_NULL");
-		chnlRequestFormat.setInclude("NON_EMPTY");
-
 		jsonChnlProxyRegistrationFormat.setInclude("NON_NULL");
 		jsonChnlProxyRegistrationFormat.setInclude("NON_EMPTY");
 		
 		jsonChnlResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonChnlResponseFormat.setInclude("NON_NULL");
 		jsonChnlResponseFormat.setInclude("NON_EMPTY");
-		jsonChnlResponseFormat.setPrettyPrint(true);
+//		jsonChnlResponseFormat.setPrettyPrint(true);
 		jsonChnlResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		jsonBusinessMessageFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
@@ -80,6 +74,7 @@ public class ProxyRoute extends RouteBuilder {
 			.marshal(jsonChnlResponseFormat)
 			.removeHeaders("resp_*")
 			.removeHeaders("req_*")
+			.removeHeaders("log_*")
 		;
 		
 		restConfiguration().component("servlet")
@@ -89,70 +84,66 @@ public class ProxyRoute extends RouteBuilder {
 
         ;
 		
-//		rest("/komi")
-//			.post("/proxyregistration")
-//				.description("Pendaftaran data proxy account ke BI")
-//				.consumes("application/json")
-//				.to("direct:proxyregistration")
-		
-//			.post("/proxyresolution")
-//				.description("Periksa / enquiry data proxy account ke BI")
-//				.consumes("application/json")
-//				.to("direct:proxyresolution")
-		;
-
 		// Untuk Proses Proxy Registration Request
 
 		from("direct:proxyregistration").routeId("proxyregistration")
-			.convertBodyTo(String.class)
 
-//			.setExchangePattern(ExchangePattern.InOnly)  // simpan log file dulu
-//			.setHeader("req_loglabel", constant("Channel Message"))
-//			.to("seda:savelogfiles")
-
-			.unmarshal(jsonChnlProxyRegistrationFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("ProxyRegistration"))
+			.setHeader("log_filename", simple("prxyrgst.${header.rcv_channel.intrnRefId}.arch"))
+			 
+			//log channel request message
+			.marshal(jsonChnlProxyRegistrationFormat)
+			.setHeader("log_label", constant("Channel Request Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// convert channel request jadi prxy.001 message
+			.unmarshal(jsonChnlProxyRegistrationFormat)
 			.process(proxyRegistrationRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			
 
-			
+			//log message ke ci-hub
+			.setHeader("log_label", constant("Outbound Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
 			// kirim ke CI-HUB
+			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.setHeader("HttpMethod", constant("POST"))
 			.enrich("http:{{bifast.ciconnector-url}}?"
 					+ "socketTimeout={{bifast.timeout}}&" 
 					+ "bridgeEndpoint=true",
 					enrichmentAggregator)
-
 			.convertBodyTo(String.class)
+			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+
+			// log message dari ci-hub
+			.setHeader("log_label", constant("CI-Hub Response Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
 			
 			// prepare untuk response ke channel
-			.process(ProxyRegistrationResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-			
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-//			.to("seda:savelogfiles")
-			
-			.setBody(simple("${header.resp_channel}"))
+			.process(proxyRegistrationResponseProcessor)
+			.setHeader("resp_channel", simple("${body}"))			
 			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("req*")
-			.removeHeaders("resp_*")
+			
+			// log message reponse ke channel
+			.setHeader("log_label", constant("Channel Response Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
 		;	
 
+		
 		from("direct:proxyresolution").routeId("proxyresolution")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlProxyResolutionFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("ProxyResolution"))
+			.setHeader("log_filename", simple("prxyrslt.${header.rcv_channel.intrnRefId}.arch"))
+			
+			//log channel request message
+			.marshal(jsonChnlProxyResolutionFormat)
+			.setHeader("log_label", constant("Channel Request Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// convert channel request jadi prxy.003 message
+			.unmarshal(jsonChnlProxyResolutionFormat)
 			.process(proxyResolutionRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
@@ -163,35 +154,26 @@ public class ProxyRoute extends RouteBuilder {
 					+ "socketTimeout={{bifast.timeout}}&" 
 					+ "bridgeEndpoint=true",
 					enrichmentAggregator)
-
 			.convertBodyTo(String.class)
+
+			// log message dari ci-hub
+			.setHeader("log_label", constant("CI-Hub Response Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
-			
+					
 			// prepare untuk response ke channel
 			.process(proxyResolutionResponseProcessor)
 			.setHeader("resp_channel", simple("${body}"))
-			
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-			
-			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("req*")
-			.removeHeaders("resp_*")
+
+			// log message reponse ke channel
+			.setHeader("log_label", constant("Channel Response Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+			
 		;
 
-//		from("seda:savelogfiles")
-//			.log("Save log files")
-//			.setHeader("tmp_body", simple("${body}"))
-//			.setHeader("req_namafile", simple("${header.req_objbi.appHdr.msgDefIdr}"))
-//			
-//			.setBody(simple("### ${header.req_loglabel} ###\n"))
-//			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.req_namafile}&fileExist=Append")
-//			.setBody(simple("${header.tmp_body}"))
-//			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.req_namafile}&fileExist=Append")
-//			.removeHeader("tmp_body")
-//		;
 
 	}
 }

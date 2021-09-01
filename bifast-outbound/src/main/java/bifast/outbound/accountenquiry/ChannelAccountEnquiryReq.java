@@ -8,11 +8,13 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 public class ChannelAccountEnquiryReq {
 
 	private String intrnRefId;
-	private String channelType;  //M
+	private String channelName;  //M
 	private String receivingParticipant; //M
 	private BigDecimal amount;  //M
 	private String categoryPurpose;  //M
 	private String creditorAccountNumber; //M
+	
+	public ChannelAccountEnquiryReq() {}
 	
 	public String getIntrnRefId() {
 		return intrnRefId;
@@ -20,11 +22,11 @@ public class ChannelAccountEnquiryReq {
 	public void setIntrnRefId(String intrnRefId) {
 		this.intrnRefId = intrnRefId;
 	}
-	public String getChannelType() {
-		return channelType;
+	public String getChannelName() {
+		return channelName;
 	}
-	public void setChannelType(String channelType) {
-		this.channelType = channelType;
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
 	}
 	public String getReceivingParticipant() {
 		return receivingParticipant;

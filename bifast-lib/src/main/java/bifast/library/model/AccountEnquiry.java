@@ -1,5 +1,6 @@
 package bifast.library.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -15,7 +16,7 @@ public class AccountEnquiry {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	private String direction;
+	private Long logMessageId;
 	
 	private String intrRefId;
 	
@@ -23,10 +24,10 @@ public class AccountEnquiry {
 	private String originatingBank;
 	@Column(name="RECPT_BANK")
 	private String recipientBank;
+
+	private BigDecimal amount;
 	
 	private String accountNo;
-	private String reqBizMsgId;
-	private String respStatus;
 	private LocalDateTime creDt;
 	
 	public AccountEnquiry () {}
@@ -39,12 +40,12 @@ public class AccountEnquiry {
 		this.id = id;
 	}
 
-	public String getDirection() {
-		return direction;
+	public Long getLogMessageId() {
+		return logMessageId;
 	}
 
-	public void setDirection(String direction) {
-		this.direction = direction;
+	public void setLogMessageId(Long logMessageId) {
+		this.logMessageId = logMessageId;
 	}
 
 	public String getIntrRefId() {
@@ -71,28 +72,20 @@ public class AccountEnquiry {
 		this.recipientBank = recipientBank;
 	}
 
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
 	public String getAccountNo() {
 		return accountNo;
 	}
 
 	public void setAccountNo(String accountNo) {
 		this.accountNo = accountNo;
-	}
-
-	public String getReqBizMsgId() {
-		return reqBizMsgId;
-	}
-
-	public void setReqBizMsgId(String reqBizMsgId) {
-		this.reqBizMsgId = reqBizMsgId;
-	}
-
-	public String getRespStatus() {
-		return respStatus;
-	}
-
-	public void setRespStatus(String respStatus) {
-		this.respStatus = respStatus;
 	}
 
 	public LocalDateTime getCreDt() {
@@ -102,6 +95,8 @@ public class AccountEnquiry {
 	public void setCreDt(LocalDateTime creDt) {
 		this.creDt = creDt;
 	}
+
+
 	
 	
 }

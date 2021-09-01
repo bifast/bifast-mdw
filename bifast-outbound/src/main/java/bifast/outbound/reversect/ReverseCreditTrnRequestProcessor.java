@@ -29,14 +29,14 @@ public class ReverseCreditTrnRequestProcessor implements Processor {
 		ChannelReverseCreditTransferRequest chnReq = exchange.getIn().getHeader("req_channelReq",ChannelReverseCreditTransferRequest.class);
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = appHeaderService.initAppHdr(chnReq.getRecptBank(), "pacs.008.001.08", "011", chnReq.getChannel());
+		hdr = appHeaderService.initAppHdr(chnReq.getRecptBank(), "pacs.008.001.08", "011", "99");
 
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
 		seedCreditTrn.setAmount(chnReq.getAmount());
 		seedCreditTrn.setBizMsgId(hdr.getBizMsgIdr());
 		seedCreditTrn.setCategoryPurpose("99");
 		
-		seedCreditTrn.setChannel(chnReq.getChannel());
+		seedCreditTrn.setChannel("99");
 		
 		seedCreditTrn.setCrdtAccountNo(chnReq.getCrdtAccountNo());		
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());

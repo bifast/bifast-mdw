@@ -19,8 +19,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 
 		BusinessMessage busMesg = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
 		
-		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("req_channelReq",ChannelAccountEnquiryReq.class);
-
+		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("rcv_channel",ChannelAccountEnquiryReq.class);
+		
 		ChannelResponseMessage responseMessage = new ChannelResponseMessage();
 		responseMessage.setAccountEnquiryRequest(chnReq);
 

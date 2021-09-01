@@ -12,6 +12,8 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
+import bifast.library.model.DomainCode;
+import bifast.library.repository.DomainCodeRepository;
 import bifast.outbound.config.Config;
 
 @Component
@@ -24,6 +26,8 @@ public class AccountEnquiryProcessor implements Processor {
 	private AppHeaderService appHeaderService;
 	@Autowired
 	private Pacs008MessageService pacs008MessageService;
+	@Autowired
+	private DomainCodeRepository domainCodeRepo;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -31,7 +35,10 @@ public class AccountEnquiryProcessor implements Processor {
 		ChannelAccountEnquiryReq chnReq = exchange.getIn().getBody(ChannelAccountEnquiryReq.class);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = appHeaderService.initAppHdr(chnReq.getReceivingParticipant(), "pacs.008.001.08", "510", chnReq.getChannelType());
+		
+		String channelType = domainCodeRepo.findByGrpAndValue("CHANNEL.TYPE", chnReq.getChannelName()).orElse(new DomainCode()).getKey();
+		
+		hdr = appHeaderService.initAppHdr(chnReq.getReceivingParticipant(), "pacs.008.001.08", "510", channelType);
 		
 		Pacs008Seed seedAcctEnquiry = new Pacs008Seed();
 		

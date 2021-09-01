@@ -2,10 +2,8 @@ package bifast.outbound.route;
 
 import java.net.SocketTimeoutException;
 
-import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
-import org.apache.camel.model.rest.RestParamType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,18 +19,10 @@ import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor;
 import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor;
 import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
 import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor;
-import bifast.outbound.paymentstatus.PaymentStatusRequestProcessor;
-import bifast.outbound.paymentstatus.PaymentStatusResponseProcessor;
 import bifast.outbound.pojo.ChannelResponseMessage;
 import bifast.outbound.processor.CheckSettlementProcessor;
-import bifast.outbound.processor.CombineMessageProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultProcessor;
-import bifast.outbound.processor.SaveOutboundMesgProcessor;
-import bifast.outbound.processor.SaveTracingTableProcessor;
-import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
-import bifast.outbound.reversect.ReverseCreditTrnRequestProcessor;
-import bifast.outbound.reversect.ReverseCreditTrnResponseProcessor;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -48,8 +38,6 @@ public class TransactionRoute extends RouteBuilder {
 	@Autowired
 	private CheckSettlementProcessor checkSettlementProcessor;
 	@Autowired
-	private CombineMessageProcessor combineMessageProcessor;
-	@Autowired
 	private CreditTransferRequestProcessor crdtTransferProcessor;
 	@Autowired
 	private CreditTransferResponseProcessor crdtTransferResponseProcessor;
@@ -59,21 +47,12 @@ public class TransactionRoute extends RouteBuilder {
 	private FICreditTransferRequestProcessor fiCrdtTransferRequestProcessor;
 	@Autowired
 	private FICreditTransferResponseProcessor fiCrdtTransferResponseProcessor;
-	@Autowired
-	private PaymentStatusRequestProcessor paymentStatusRequestProcessor;
-	@Autowired
-	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
+//	@Autowired
+//	private PaymentStatusRequestProcessor paymentStatusRequestProcessor;
+//	@Autowired
+//	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
 	@Autowired
 	private PaymentStatusOnTimeoutProcessor paymentStatusTimeoutProcessor;
-	@Autowired
-	private ReverseCreditTrnRequestProcessor reverseCTRequestProcessor;
-	@Autowired
-	private ReverseCreditTrnResponseProcessor reverseCTResponseProcessor;
-	@Autowired
-	private SaveOutboundMesgProcessor saveOutboundMesg;
-	@Autowired
-	private SaveTracingTableProcessor saveTracingTable;
-
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	
@@ -81,37 +60,25 @@ public class TransactionRoute extends RouteBuilder {
 	JacksonDataFormat jsonChnlCreditTransferRequestFormat = new JacksonDataFormat(ChannelCreditTransferRequest.class);
 	JacksonDataFormat jsonChnlFICreditTransferRequestFormat = new JacksonDataFormat(ChannelFICreditTransferReq.class);
 	JacksonDataFormat jsonChnlPaymentStatusRequestFormat = new JacksonDataFormat(ChannelPaymentStatusRequest.class);
-	JacksonDataFormat jsonChnlReverseCTRequestFormat = new JacksonDataFormat(ChannelReverseCreditTransferRequest.class);
 	JacksonDataFormat jsonChnlResponseFormat = new JacksonDataFormat(ChannelResponseMessage.class);
-	
-
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
 
 	private void configureJsonDataFormat() {
 		jsonChnlAccountEnqrReqFormat.setInclude("NON_NULL");
 		jsonChnlAccountEnqrReqFormat.setInclude("NON_EMPTY");
-//		jsonChnlAccountEnqrReqFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonChnlCreditTransferRequestFormat.setInclude("NON_NULL");
 		jsonChnlCreditTransferRequestFormat.setInclude("NON_EMPTY");
-//		jsonChnlCreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonChnlFICreditTransferRequestFormat.setInclude("NON_NULL");
 		jsonChnlFICreditTransferRequestFormat.setInclude("NON_EMPTY");
-//		jsonChnlFICreditTransferRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonChnlPaymentStatusRequestFormat.setInclude("NON_NULL");
 		jsonChnlPaymentStatusRequestFormat.setInclude("NON_EMPTY");
-//		jsonChnlPaymentStatusRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-
-		jsonChnlReverseCTRequestFormat.setInclude("NON_NULL");
-		jsonChnlReverseCTRequestFormat.setInclude("NON_EMPTY");
-//		jsonChnlReverseCTRequestFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		jsonChnlResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonChnlResponseFormat.setInclude("NON_NULL");
 		jsonChnlResponseFormat.setInclude("NON_EMPTY");
-		jsonChnlResponseFormat.setPrettyPrint(true);
 		jsonChnlResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		jsonBusinessMessageFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
@@ -133,81 +100,31 @@ public class TransactionRoute extends RouteBuilder {
 	            .apiProperty("cors", "true");
         ;
 		
-		rest("/komi")
-			.post("/acctenquiry")
-				.description("Pengiriman instruksi Account Enquiry ke bank lain melalui BI-FAST")
-				.param()
-					.name("IntrnRefId")
-					.description("Kode ID Internal dari channel")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-				.param()
-					.name("ChannelType")
-					.description("Kode channel")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-				.param()
-					.name("ReceivingParticipant")
-					.description("Kode Swift dari bank tujuan")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-				.param()
-					.name("Amount")
-					.description("Nilai yang akan ditransfer")
-					.type(RestParamType.body).dataType("Decimal")
-					.endParam()
-				.param()
-					.name("categoryPurpose")
-					.description("Kode CategoryPurpose sesuai acuan BI")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-				.param()
-					.name("CreditorAccountNumber")
-					.description("Nomor Rekening tujuan")
-					.type(RestParamType.body).dataType("String")
-					.endParam()
-					
-				.consumes("application/json")
-				.to("direct:acctenqr")
-				
-			.post("/cstmrcrdtrn")
-				.description("Pengiriman instruksi Credit Transfer ke bank lain melalui BI-FAST")
-				.consumes("application/json")
-				.to("direct:ctreq")
-
-			.post("/ficrdtrn")
-				.description("Pengiriman instruksi Financial Institution Credit Transfer melalui BI-FAST")
-				.consumes("application/json")
-				.to("direct:fictreq")
-
-			.post("/pymtstatus")
-				.description("Check status instruksi Credit Transfer yang pernah dikirim sebelumnya")
-				.consumes("application/json")
-				.to("direct:pymtstatus")
-
-			.post("/reversect")
-				.description("Pengiriman Instruksi Reverse Credit Transfer")
-				.consumes("application/json")
-				.to("direct:reversect")
-		
-		;
-
 		// Untuk Proses Account Enquiry Request
 
 		from("direct:acctenqr").routeId("direct:acctenqr")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlAccountEnqrReqFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("AccountEnquiry"))
+			.setHeader("log_filename", simple("acctenqr.${header.rcv_channel.intrnRefId}.arch"))
+
+			//log channel request message
+			.marshal(jsonChnlAccountEnqrReqFormat)
+			.setHeader("log_label", constant("Channel Request Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// convert channel request jadi pacs008 message
+			.unmarshal(jsonChnlAccountEnqrReqFormat)
+			
 			.process(accountEnquiryProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
 			
-			// kirim ke CI-HUB
-			.doTry()
+			//log message ke ci-hub
+			.setHeader("log_label", constant("Outbound Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
 
+			// kirim ke CI-HUB
+			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			.doTry()
+				
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich("http:{{bifast.ciconnector-url}}?"
 						+ "socketTimeout={{bifast.timeout}}&" 
@@ -215,9 +132,13 @@ public class TransactionRoute extends RouteBuilder {
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
 
-				.unmarshal(jsonBusinessMessageFormat)
+				// log message dari ci-hub
+				.setHeader("log_label", constant("CI-Hub Response Message"))
+				.to("seda:savelogfiles?exchangePattern=InOnly")
 
-				.setHeader("resp_objbi", simple("${body}"))	
+				.unmarshal(jsonBusinessMessageFormat)
+				.setHeader("resp_objbi", simple("${body}"))
+				
 				// prepare untuk response ke channel
 				.process(accountEnqrResponseProcessor)
 				.setHeader("resp_channel", simple("${body}"))
@@ -228,31 +149,38 @@ public class TransactionRoute extends RouteBuilder {
 				.setHeader("resp_channel", simple("${body}"))
 
 			.end()
+			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
-			
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-			
-			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("req*")
-			.removeHeaders("resp_*")
+			
+			// log message reponse ke channel
+			.setHeader("log_label", constant("Channel Response Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
 		;
 
 		// Untuk Proses Credit Transfer Request
 
 		from("direct:ctreq").routeId("crdt_trnsf")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlCreditTransferRequestFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("CreditTransfer"))
+			.setHeader("log_filename", simple("crdttrns.${header.rcv_channel.intrnRefId}.arch"))
+
+			//log channel request message
+			.marshal(jsonChnlCreditTransferRequestFormat)
+			.setHeader("log_label", constant("Channel Request Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// convert channel request jadi pacs008 message
+			.unmarshal(jsonChnlCreditTransferRequestFormat)
 			.process(crdtTransferProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
 			
+			//log message ke ci-hub
+			.setHeader("log_label", constant("Credit Transfer Request Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
 			// kirim ke CI-HUB
+			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.doTry()
 				.log("Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}")
 				.setHeader("HttpMethod", constant("POST"))
@@ -261,7 +189,10 @@ public class TransactionRoute extends RouteBuilder {
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
-				.log("CT Request")
+				
+				// log message dari ci-hub
+				.setHeader("log_label", constant("Credit Transfer Response Message"))
+				.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
 				.log("Timeout")
@@ -272,151 +203,127 @@ public class TransactionRoute extends RouteBuilder {
 						.log("Payment Status")
 						.process(paymentStatusTimeoutProcessor)
 						.marshal(jsonBusinessMessageFormat)
+
+						// log message dari ci-hub
+						.setHeader("log_label", constant("Payment Status Request Message"))
+						.to("seda:savelogfiles?exchangePattern=InOnly")
+
 						.setHeader("HttpMethod", constant("POST"))
 						.enrich("http:{{bifast.ciconnector-url}}?bridgeEndpoint=true", enrichmentAggregator)
 						.convertBodyTo(String.class)
+
+						// log message dari ci-hub
+						.setHeader("log_label", constant("Payment Status Response Message"))
+						.to("seda:savelogfiles?exchangePattern=InOnly")
+
 					.otherwise()
 						.log("Nemu settlement")
+						// log message dari ci-hub
+						.setHeader("log_label", constant("Payment Status Response Message"))
+						.to("seda:savelogfiles?exchangePattern=InOnly")
+
 				.end()
 			.endDoTry()
 			.end()
+			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			
-			.log("Akan unmarshal")
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
 			
 			// prepare untuk response ke channel
 			.process(crdtTransferResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-					
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-			
-			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
-			.log("akan remove headers")
-			.removeHeaders("resp_*")
-			.removeHeaders("req_*")
 			
+			// log message reponse ke channel
+			.setHeader("log_label", constant("Channel Response Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
 		;
 
 		// Untuk Proses FI Credit Transfer Request
 		
 		from("direct:fictreq").routeId("fictreq")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlFICreditTransferRequestFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("FICreditTransfer"))
+			.setHeader("log_filename", simple("ficrdttrns.${header.rcv_channel.intrnRefId}.arch"))
+			
+			//log channel request message
+			.marshal(jsonChnlFICreditTransferRequestFormat)
+			.setHeader("log_label", constant("Channel Request Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// convert channel request jadi pacs009 message
+			.unmarshal(jsonChnlFICreditTransferRequestFormat)
 			.process(fiCrdtTransferRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
 	
+			//log message ke ci-hub
+			.setHeader("log_label", constant("FI Credit Transfer Request Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
 			// kirim ke CI-HUB
+			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.setHeader("HttpMethod", constant("POST"))
 			.enrich("http:{{bifast.ciconnector-url}}?"
 					+ "bridgeEndpoint=true",
 					enrichmentAggregator)
-
 			.convertBodyTo(String.class)
+			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+
+			// log message dari ci-hub
+			.setHeader("log_label", constant("FI Credit Transfer Response Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
 			.unmarshal(jsonBusinessMessageFormat)
 			.setHeader("resp_objbi", simple("${body}"))	
 
+			// prepare untuk response ke channel
 			.process(fiCrdtTransferResponseProcessor)
 			.setHeader("resp_channel", simple("${body}"))
-
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-	
-			// prepare untuk response ke channel
-			.setBody(simple("${header.resp_channel}"))
 			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("req*")
-			.removeHeaders("resp_*")
+
+			// log message reponse ke channel
+			.setHeader("log_label", constant("Channel Response Message"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
+
 		;
 
 		
 		// Untuk Proses Payment Status Request
 
-		from("direct:pymtstatus")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlPaymentStatusRequestFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("PaymentStatus"))
-
-			// convert channel request jadi pacs028 message
-			.process(paymentStatusRequestProcessor)
-			.setHeader("req_objbi", simple("${body}"))
-			.marshal(jsonBusinessMessageFormat)
-			
-			// kirim ke CI-HUB
-			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:{{bifast.ciconnector-url}}?"
-					+ "socketTimeout={{bifast.timeout}}&" 
-					+ "bridgeEndpoint=true",
-					enrichmentAggregator)
-
-			.convertBodyTo(String.class)
-			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbi", simple("${body}"))	
-			
-			// prepare untuk response ke channel
-			.process(paymentStatusResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-			
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-
-			.setBody(simple("${header.resp_channel}"))
-			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("resp_*")
-			.removeHeaders("req_*")
-		;
-		
-		// Untuk Proses Reverse Credit Transfer
-		from("direct:reversect")
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlReverseCTRequestFormat)
-			.setHeader("req_channelReq",simple("${body}"))
-			.setHeader("req_msgType", constant("ReverseCreditTransfer"))
-			
-			// convert channel request jadi pacs008 message
-			.process(reverseCTRequestProcessor)
-			.setHeader("req_objbi", simple("${body}"))
-			.marshal(jsonBusinessMessageFormat)
-			
-			// kirim ke CI-HUB
-			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:{{bifast.ciconnector-url}}?"
-					+ "socketTimeout={{bifast.timeout}}&" 
-					+ "bridgeEndpoint=true",
-					enrichmentAggregator)
-			.convertBodyTo(String.class)
-			
-			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbi", simple("${body}"))	
-
-			.process(reverseCTResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-			
-			.setBody(simple("${header.resp_channel}"))
-			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("resp_*")
-			.removeHeaders("req_*")
-		;
-
-		from("seda:endlog")
-			.log("Save log and trace")
-			.process(saveOutboundMesg)
-			.process(saveTracingTable)
-			.process(combineMessageProcessor)
-			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.req_fileName}")
-			;
-
-		
+//		from("direct:pymtstatus")
+//			.convertBodyTo(String.class)
+//			.unmarshal(jsonChnlPaymentStatusRequestFormat)
+//			.setHeader("req_channelReq",simple("${body}"))
+//
+//			// convert channel request jadi pacs028 message
+//			.process(paymentStatusRequestProcessor)
+//			.setHeader("req_objbi", simple("${body}"))
+//			.marshal(jsonBusinessMessageFormat)
+//			
+//			// kirim ke CI-HUB
+//			.setHeader("HttpMethod", constant("POST"))
+//			.enrich("http:{{bifast.ciconnector-url}}?"
+//					+ "socketTimeout={{bifast.timeout}}&" 
+//					+ "bridgeEndpoint=true",
+//					enrichmentAggregator)
+//
+//			.convertBodyTo(String.class)
+//			.unmarshal(jsonBusinessMessageFormat)
+//			.setHeader("resp_objbi", simple("${body}"))	
+//			
+//			// prepare untuk response ke channel
+//			.process(paymentStatusResponseProcessor)
+//			.setHeader("resp_channel", simple("${body}"))
+//			
+//			.setExchangePattern(ExchangePattern.InOnly)
+//			.to("seda:endlog")
+//
+//			.setBody(simple("${header.resp_channel}"))
+//			.marshal(jsonChnlResponseFormat)
+//			.removeHeaders("resp_*")
+//			.removeHeaders("req_*")
+//		;
+				
 	}
 }

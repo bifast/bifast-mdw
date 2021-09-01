@@ -17,7 +17,7 @@ public class FICreditTransferResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		ChannelFICreditTransferReq chnRequest = exchange.getMessage().getHeader("req_channelReq", ChannelFICreditTransferReq.class);
+		ChannelFICreditTransferReq chnRequest = exchange.getMessage().getHeader("rcv_channel", ChannelFICreditTransferReq.class);
 		ChannelResponseMessage ctMesg = new ChannelResponseMessage();
 		ctMesg.setfICreditTransferRequest(chnRequest);
 

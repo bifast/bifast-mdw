@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("ProxyRegistrationRequest")
 public class ChannelProxyRegistrationReq {
 	
+	private String intrnRefId;
+
 	private String channel; 
 	
 	private String proxyTp;
@@ -26,7 +28,13 @@ public class ChannelProxyRegistrationReq {
 	private String residentialStatus;
 	private String townName;
 
-    public String getChannel() {
+    public String getIntrnRefId() {
+		return intrnRefId;
+	}
+	public void setIntrnRefId(String intrnRefId) {
+		this.intrnRefId = intrnRefId;
+	}
+	public String getChannel() {
 		return channel;
 	}
 	public void setChannel(String channel) {

@@ -16,7 +16,7 @@ public class CreditTransfer {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-//	private String direction;
+	private Long logMessageId;
 	
 	@Column(name="ORIGN_BANK")
 	private String originatingBank;
@@ -46,6 +46,8 @@ public class CreditTransfer {
 	@Column(name="SETTLCONF_BIZMSGID")
 	private String SettlementBizMsgId;
 	
+	private String reversal;
+	
 	public CreditTransfer() {}
 
 	public Long getId() {
@@ -56,13 +58,13 @@ public class CreditTransfer {
 		this.id = id;
 	}
 
-//	public String getDirection() {
-//		return direction;
-//	}
-//
-//	public void setDirection(String direction) {
-//		this.direction = direction;
-//	}
+	public Long getLogMessageId() {
+		return logMessageId;
+	}
+
+	public void setLogMessageId(Long logMessageId) {
+		this.logMessageId = logMessageId;
+	}
 
 	public String getOriginatingBank() {
 		return originatingBank;
@@ -158,6 +160,14 @@ public class CreditTransfer {
 
 	public void setSettlementBizMsgId(String settlementBizMsgId) {
 		SettlementBizMsgId = settlementBizMsgId;
+	}
+
+	public String getReversal() {
+		return reversal;
+	}
+
+	public void setReversal(String reversal) {
+		this.reversal = reversal;
 	}
 
 	

@@ -64,23 +64,21 @@ public class SaveTracingTableProcessor implements Processor {
 		sttl.setSettlConfBizMsgId(sttlBizMsgId);
 		sttl.setOrignBank(sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
 		sttl.setRecptBank(sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
+		
+//		sttl.setAmount(null);
+//		sttl.setCrdtAccountNo(orglBizMsgId);
+//		sttl.setCrdtAccountType(orglBizMsgId);
+//		sttl.setCrdtId(orglBizMsgId);
+//		sttl.setCrdtIdType(orglBizMsgId);
+//		sttl.setCrdtName(orglBizMsgId);
+//		sttl.setDbtrAccountNo(orglBizMsgId);
+//		sttl.setDbtrAccountType(orglBizMsgId);
+//		sttl.setDbtrId(orglBizMsgId);
+//		sttl.setDbtrIdType(orglBizMsgId);
+//		sttl.setDbtrName(orglBizMsgId);
+
+		
 		sttl.setFullMessage(strMesg);
-		// check apakah harus reversal ?
-//		Optional<CreditTransfer> optCreditTrn = creditTrnRepo.findByCrdtTrnRequestBizMsgIdr(orglBizMsgId);
-//
-//		if (optCreditTrn.isPresent()) {
-//			System.out.print("Present, dan ");
-//			if (optCreditTrn.get().getCrdtTrnResponseStatus().equals("ACTC")) {
-//				sttl.setForReversal("N");
-//			}
-//			else {
-//				sttl.setForReversal("Y");
-//			}
-//		}
-//		
-//		else {
-//			sttl.setForReversal("Y");
-//		}
 		
 		settlementRepo.save(sttl);
 

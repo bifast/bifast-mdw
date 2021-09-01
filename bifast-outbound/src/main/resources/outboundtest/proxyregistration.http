@@ -1,14 +1,15 @@
 # Proxy Register  from channel
-POST http://localhost:9002/services/komi/proxyregistration HTTP/1.1
+POST http://localhost:9002/services/komi/outbound HTTP/1.1
 Content-Type: application/json
 
 {
     "ProxyRegistrationRequest": {
+        "intrnRefId": "B44231",
         "channel" : "01",
         "proxyTp" : "02",
         "proxyVal" : "frans.mazhar@gmail.com",
         "displayName" : "Oom aja",
-        "accNumber" : "1234556",
+        "accNumber" : "14556",
         "accType" : "SVGS",
         "accName" : "Juan Manse",
         "scndIdTp" : "01",

@@ -14,37 +14,37 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		ChannelRequest req = exchange.getIn().getBody(ChannelRequest.class);
 		
 		if (!(null == req.getAccountEnquiryRequest())) {
-			exchange.getMessage().setHeader("rcv_msgType", "AccountEnquiry");
+			exchange.getMessage().setHeader("rcv_msgType", "acctenqr");
 			exchange.getMessage().setHeader("rcv_channel", req.getAccountEnquiryRequest());
 		}
 
 		else if (!(null == req.getCreditTransferRequest())) {
-			exchange.getMessage().setHeader("rcv_msgType", "CreditTransfer");
+			exchange.getMessage().setHeader("rcv_msgType", "crdttrns");
 			exchange.getMessage().setHeader("rcv_channel", req.getCreditTransferRequest());
 		}
 		
 		else if  (!(null == req.getFiCreditTransferRequest())) {
-			exchange.getMessage().setHeader("rcv_msgType", "FICreditTransfer");
+			exchange.getMessage().setHeader("rcv_msgType", "ficrdttrns");
 			exchange.getMessage().setHeader("rcv_channel", req.getFiCreditTransferRequest());
 		}
 		
-		else if (!(null == req.getPaymentStatusRequest())) {
-			exchange.getMessage().setHeader("rcv_msgType", "PaymentStatus");
-			exchange.getMessage().setHeader("rcv_channel", req.getPaymentStatusRequest());
-		}
+//		else if (!(null == req.getPaymentStatusRequest())) {
+//			exchange.getMessage().setHeader("rcv_msgType", "PaymentStatus");
+//			exchange.getMessage().setHeader("rcv_channel", req.getPaymentStatusRequest());
+//		}
 		
-		else if (!(null == req.getReverseCreditTransferRequest())) {
-			exchange.getMessage().setHeader("rcv_msgType", "ReverseCreditTransfer");
-			exchange.getMessage().setHeader("rcv_channel", req.getReverseCreditTransferRequest());
-		}
+//		else if (!(null == req.getReverseCreditTransferRequest())) {
+//			exchange.getMessage().setHeader("rcv_msgType", "ReverseCreditTransfer");
+//			exchange.getMessage().setHeader("rcv_channel", req.getReverseCreditTransferRequest());
+//		}
 
 		else if (!(null == req.getProxyRegistrationReq())) {
-			exchange.getMessage().setHeader("rcv_msgType", "ProxyRegistration");
+			exchange.getMessage().setHeader("rcv_msgType", "prxyrgst");
 			exchange.getMessage().setHeader("rcv_channel", req.getProxyRegistrationReq());
 		}
 
 		else if (!(null == req.getProxyResolutionReq())) {
-			exchange.getMessage().setHeader("rcv_msgType", "ProxyResolution");
+			exchange.getMessage().setHeader("rcv_msgType", "prxyrslt");
 			exchange.getMessage().setHeader("rcv_channel", req.getProxyResolutionReq());
 		}
 

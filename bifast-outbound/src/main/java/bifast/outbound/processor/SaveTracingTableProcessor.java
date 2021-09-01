@@ -32,7 +32,7 @@ public class SaveTracingTableProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		BusinessMessage reqBi = exchange.getMessage().getHeader("req_objbi", BusinessMessage.class);
-		String msgType = exchange.getMessage().getHeader("req_msgType", String.class);
+		String msgType = exchange.getMessage().getHeader("rcv_msgType", String.class);
 		
 		if (msgType.equals("CreditTransfer")) {
 			ChannelCreditTransferRequest chnReq  = exchange.getMessage().getHeader("req_channelReq", ChannelCreditTransferRequest.class);
@@ -55,7 +55,7 @@ public class SaveTracingTableProcessor implements Processor {
 			saveReversalCreditTransfer(intrnRefId, reqBi, respBi);	
 		}
 		
-		else if (msgType.equals("ProxyRegistration")) {
+		else if (msgType.equals("prxyrgst")) {
 			
 			BusinessMessage respBi = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
 			saveProxyMessage("NEWR", reqBi, respBi);
@@ -156,7 +156,7 @@ public class SaveTracingTableProcessor implements Processor {
 		
 		ProxyRegistrationV01 proxyData = reqBi.getDocument().getPrxyRegn();
 		
-		proxyMsg.setBizMsgId(reqBi.getAppHdr().getBizMsgIdr());
+//		proxyMsg.setBizMsgId(reqBi.getAppHdr().getBizMsgIdr());
 		proxyMsg.setOperationType(oprType);
 		proxyMsg.setAccountName(proxyData.getRegn().getPrxyRegn().getAcct().getNm());
 		proxyMsg.setAccountNumber(proxyData.getRegn().getPrxyRegn().getAcct().getId().getOthr().getId());
@@ -172,10 +172,10 @@ public class SaveTracingTableProcessor implements Processor {
 		proxyMsg.setScndValue(proxyData.getRegn().getPrxyRegn().getScndId().getVal());
 		proxyMsg.setTownName(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
 
-		ProxyRegistrationResponse1 resp = respBi.getDocument().getPrxyRegnRspn().getRegnRspn();
-		proxyMsg.setRespBizMsgId(respBi.getAppHdr().getBizMsgIdr());
-		proxyMsg.setRespReason(resp.getStsRsnInf().getPrtry());
-		proxyMsg.setRespStatus(resp.getPrxRspnSts().value());
+//		ProxyRegistrationResponse1 resp = respBi.getDocument().getPrxyRegnRspn().getRegnRspn();
+//		proxyMsg.setRespBizMsgId(respBi.getAppHdr().getBizMsgIdr());
+//		proxyMsg.setRespReason(resp.getStsRsnInf().getPrtry());
+//		proxyMsg.setRespStatus(resp.getPrxRspnSts().value());
 
 		proxyMessageRepo.save(proxyMsg);
 	}

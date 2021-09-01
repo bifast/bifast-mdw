@@ -19,7 +19,7 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		
 		BusinessMessage obj_crdtrnResp = exchange.getIn().getBody(BusinessMessage.class);
 
-		ChannelProxyRegistrationReq chnRequest = exchange.getMessage().getHeader("req_channelReq", ChannelProxyRegistrationReq.class);
+		ChannelProxyRegistrationReq chnRequest = exchange.getMessage().getHeader("rcv_channel", ChannelProxyRegistrationReq.class);
 
 		ChannelResponseMessage ctResponse = new ChannelResponseMessage();
 		ctResponse.setProxyRegistrationRequest(chnRequest);

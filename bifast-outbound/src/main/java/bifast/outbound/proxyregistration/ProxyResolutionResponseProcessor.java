@@ -20,7 +20,7 @@ public class ProxyResolutionResponseProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		
 
-		ChannelProxyResolutionReq chnRequest = exchange.getMessage().getHeader("req_channelReq", ChannelProxyResolutionReq.class);
+		ChannelProxyResolutionReq chnRequest = exchange.getMessage().getHeader("rcv_channel", ChannelProxyResolutionReq.class);
 
 		ChannelResponseMessage ctResponse = new ChannelResponseMessage();
 		ctResponse.setProxyResolutionRequest(chnRequest);

@@ -19,7 +19,7 @@ public class CreditTransferResponseProcessor implements Processor {
 		
 		BusinessMessage obj_crdtrnResp = exchange.getIn().getBody(BusinessMessage.class);
 
-		ChannelCreditTransferRequest chnRequest = exchange.getMessage().getHeader("req_channelReq", ChannelCreditTransferRequest.class);
+		ChannelCreditTransferRequest chnRequest = exchange.getMessage().getHeader("rcv_channel", ChannelCreditTransferRequest.class);
 
 		ChannelResponseMessage ctResponse = new ChannelResponseMessage();
 		ctResponse.setCreditTransferRequest(chnRequest);

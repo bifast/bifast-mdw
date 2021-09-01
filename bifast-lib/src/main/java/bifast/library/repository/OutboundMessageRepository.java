@@ -15,8 +15,8 @@ public interface OutboundMessageRepository extends JpaRepository<OutboundMessage
 	public Optional<OutboundMessage> findByBizMsgIdr (String bizMsgIdr);
 	public List<OutboundMessage> findByToFinId (String toFinId);
 	
-	public List<OutboundMessage> findAllBySendDtBetween (LocalDateTime date1, LocalDateTime date2);
-	public List<OutboundMessage> findAllByTransactionTypeAndSendDtBetween (String trxType, LocalDateTime date1, LocalDateTime date2);
+	public List<OutboundMessage> findAllByChannelRequestDTBetween (LocalDateTime date1, LocalDateTime date2);
+	public List<OutboundMessage> findAllByTransactionTypeAndChannelRequestDTBetween (String trxType, LocalDateTime date1, LocalDateTime date2);
 
 	
 }
