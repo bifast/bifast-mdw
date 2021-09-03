@@ -2,15 +2,21 @@ package bifast.outbound.route;
 
 import java.util.NoSuchElementException;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.outbound.pojo.ChannelRequest;
+import bifast.outbound.pojo.ChannelResponseMessage;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
+import bifast.outbound.processor.FaultProcessor;
 import bifast.outbound.processor.SaveTablesProcessor;
 import bifast.outbound.processor.ValidateInputProcessor;
 
@@ -23,15 +29,22 @@ public class GenericOutboundRoute extends RouteBuilder {
 	private SaveTablesProcessor saveTablesProcessor;
 	@Autowired
 	private ValidateInputProcessor validateInputProcessor;
+	@Autowired
+	private FaultProcessor faultProcessor;
 	
-	JacksonDataFormat ChnlRequestFormat = new JacksonDataFormat(ChannelRequest.class);
+	JacksonDataFormat chnlRequestFormat = new JacksonDataFormat(ChannelRequest.class);
+	JacksonDataFormat jsonChnlResponseFormat = new JacksonDataFormat(ChannelResponseMessage.class);
 
 	@Override
 	public void configure() throws Exception {
 
-		ChnlRequestFormat.setInclude("NON_NULL");
-		ChnlRequestFormat.setInclude("NON_EMPTY");
-		
+		chnlRequestFormat.setInclude("NON_NULL");
+		chnlRequestFormat.setInclude("NON_EMPTY");
+		jsonChnlResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		jsonChnlResponseFormat.setInclude("NON_NULL");
+		jsonChnlResponseFormat.setInclude("NON_EMPTY");
+		jsonChnlResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+
         onException(NoSuchElementException.class).routeId("Error Exception")
         	.log(LoggingLevel.ERROR, "Ada error barusan ")
         	.handled(true)
@@ -52,7 +65,7 @@ public class GenericOutboundRoute extends RouteBuilder {
 
 			.setHeader("req_channelRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			
-			.unmarshal(ChnlRequestFormat)
+			.unmarshal(chnlRequestFormat)
 			.process(checkChannelRequest)		// produce header rcv_msgType, rcv_channel
 			.process(validateInputProcessor)
 			
@@ -118,8 +131,12 @@ public class GenericOutboundRoute extends RouteBuilder {
 			.process(saveTablesProcessor)
 		;
 	
-        from("seda:b").to("seda:c");
-
+		from("seda:error")
+			.log("Ada error dari seda:error")
+			.process(faultProcessor)
+			.marshal(jsonChnlResponseFormat)
+			.log("${body}")
+		;
 	}
 
 }

@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,7 +187,10 @@ public class SaveTablesProcessor implements Processor {
 		
 		accountEnquiry.setAccountNo(accountEnqReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 		accountEnquiry.setAmount(accountEnqReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
-		accountEnquiry.setCreDt(LocalDateTime.now());
+
+		// dari XMLGregorianCalender ubah ke LocalDateTime
+		accountEnquiry.setCreDt(accountEnqReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
+		
 		accountEnquiry.setIntrRefId(auditTab.getInternalReffId());
 		accountEnquiry.setLogMessageId(auditTab.getId());
 		accountEnquiry.setOriginatingBank(orgnlBank);
@@ -217,7 +222,8 @@ public class SaveTablesProcessor implements Processor {
 		else
 			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
 			
-		ct.setCreDt(LocalDateTime.now());
+		// dari XMLGregorianCalender ubah ke LocalDateTime
+		ct.setCreDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
 		
 		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
 		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
@@ -261,7 +267,8 @@ public class SaveTablesProcessor implements Processor {
 		ct.setCrdtTrnRequestBizMsgIdr(auditTab.getBizMsgIdr());
 
 		ct.setAmount(fiCreditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
-		ct.setCreDt(LocalDateTime.now());
+		ct.setCreDt(fiCreditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
+
 		ct.setIntrRefId(auditTab.getInternalReffId());
 		ct.setMsgType("FI Credit Transfer");
 		ct.setOriginatingBank(orgnlBank);
