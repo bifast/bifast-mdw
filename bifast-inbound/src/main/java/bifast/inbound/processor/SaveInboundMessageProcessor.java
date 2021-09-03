@@ -152,6 +152,7 @@ public class SaveInboundMessageProcessor implements Processor {
 		ct.setStatus(logTable.getRespStatus());
 		
 		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
+		ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
 		
 		// jika node splmtryData ada, ambil data custType dari sini; jika tidak maka cek apakah ada di prvtId atau orgId
 		
@@ -175,7 +176,8 @@ public class SaveInboundMessageProcessor implements Processor {
 		ct.setCreDt(LocalDateTime.now());
 		
 		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
-
+		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
+		
 		// tentukan debtorType: Personal atau bukan
 		if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0) {	
 			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr()))

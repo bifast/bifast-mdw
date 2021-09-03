@@ -47,10 +47,6 @@ public class TransactionRoute extends RouteBuilder {
 	private FICreditTransferRequestProcessor fiCrdtTransferRequestProcessor;
 	@Autowired
 	private FICreditTransferResponseProcessor fiCrdtTransferResponseProcessor;
-//	@Autowired
-//	private PaymentStatusRequestProcessor paymentStatusRequestProcessor;
-//	@Autowired
-//	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
 	@Autowired
 	private PaymentStatusOnTimeoutProcessor paymentStatusTimeoutProcessor;
 	@Autowired

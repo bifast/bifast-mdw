@@ -129,6 +129,7 @@ public class InboundRoute extends RouteBuilder {
 			.setBody(simple("${header.resp_jsonbi}"))
 			
 			.removeHeaders("rcv_*")
+			.removeHeader("req_")
 			.removeHeaders("resp_*")
 			.log("output response selesai")
 		;

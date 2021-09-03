@@ -2,6 +2,7 @@ package bifast.outbound.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.camel.Exchange;
@@ -49,8 +50,8 @@ public class SaveTablesProcessor implements Processor {
 
 		
 		BusinessMessage outRequest = exchange.getMessage().getHeader("req_objbi", BusinessMessage.class);
-		
-		String filename = exchange.getIn().getHeader("log_filename", String.class);
+	    Map<String,Object> sqlqry = (Map<String,Object>) exchange.getIn().getHeader("rcv_qryresult");
+
 		String msgType = exchange.getIn().getHeader("rcv_msgType", String.class);
 		Object channelRequest = exchange.getMessage().getHeader("rcv_channel");
 
@@ -59,8 +60,8 @@ public class SaveTablesProcessor implements Processor {
 		outboundMessage.setBizMsgIdr(outRequest.getAppHdr().getBizMsgIdr());
 		outboundMessage.setMsgDefIdr(outRequest.getAppHdr().getMsgDefIdr());
 
-		outboundMessage.setToFinId(outRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-		
+		outboundMessage.setRecipientBank(outRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+
 		String trxType = outRequest.getAppHdr().getBizMsgIdr().substring(16, 19);
 		Optional<DomainCode> trxName = domainCodeRepo.findByGrpAndKey("TRANSACTION.TYPE", trxType);
 		if (trxName.isPresent())
@@ -68,8 +69,6 @@ public class SaveTablesProcessor implements Processor {
 		else 
 			outboundMessage.setTransactionType(trxType);
 			
-		outboundMessage.setLogfileName(filename);
-
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
 
 		String strChnlRequestTime = exchange.getMessage().getHeader("req_channelRequestTime", String.class);
@@ -109,7 +108,10 @@ public class SaveTablesProcessor implements Processor {
 			intrRefId = ((ChannelProxyResolutionReq)channelRequest).getIntrnRefId();
 			channel = ((ChannelProxyResolutionReq)channelRequest).getChannel();
 		}
-		
+		else if (msgType.equals("reversal")) {
+			channel = "Reverse Credit Transfer";
+		}
+
 		if (!(null==intrRefId))
 			outboundMessage.setInternalReffId(intrRefId);
 
@@ -161,6 +163,9 @@ public class SaveTablesProcessor implements Processor {
 		else if (msgType.equals("crdttrns")) {
 			saveCreditTransferMsg(outboundMessage, outRequest);
 		}
+		else if (msgType.equals("reversal")) 
+			saveReversalCreditTransferMsg(outboundMessage, outRequest, (String) sqlqry.get("crdttrn_req_bizmsgid"));
+			
 		else if (msgType.equals("ficrdttrns")) {
 			saveFICreditTransferMsg(outboundMessage, outRequest);
 		}
@@ -184,13 +189,13 @@ public class SaveTablesProcessor implements Processor {
 		accountEnquiry.setIntrRefId(auditTab.getInternalReffId());
 		accountEnquiry.setLogMessageId(auditTab.getId());
 		accountEnquiry.setOriginatingBank(orgnlBank);
-		accountEnquiry.setRecipientBank(auditTab.getToFinId());
+		accountEnquiry.setRecipientBank(auditTab.getRecipientBank());
 		
 		accountEnqrRepo.save(accountEnquiry);
 		
 	} 
 
-	private void saveCreditTransferMsg (OutboundMessage auditTab,
+	private CreditTransfer saveCreditTransferMsg (OutboundMessage auditTab,
 										BusinessMessage outRequest) 
 	{
 		FIToFICustomerCreditTransferV08 creditTransferReq = outRequest.getDocument().getFiToFICstmrCdtTrf();
@@ -203,6 +208,7 @@ public class SaveTablesProcessor implements Processor {
 		ct.setStatus(auditTab.getRespStatus());
 		
 		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
+		ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
 
 		ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
 		
@@ -214,6 +220,7 @@ public class SaveTablesProcessor implements Processor {
 		ct.setCreDt(LocalDateTime.now());
 		
 		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
+		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
 		ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getTp());
 
 		if (ct.getDebtorType().endsWith("01"))
@@ -224,10 +231,23 @@ public class SaveTablesProcessor implements Processor {
 		ct.setIntrRefId(auditTab.getInternalReffId());
 		ct.setMsgType("Credit Transfer");
 		ct.setOriginatingBank(orgnlBank);
-		ct.setRecipientBank(auditTab.getToFinId());
+		ct.setRecipientBank(auditTab.getRecipientBank());
 		ct.setLogMessageId(auditTab.getId());
 		
 		creditTransferRepo.save(ct);
+		
+		return ct;
+	}
+
+	private void saveReversalCreditTransferMsg (OutboundMessage auditTab,
+				BusinessMessage outRequest,
+				String endToEndId) 
+	{
+		CreditTransfer ct = saveCreditTransferMsg(auditTab, outRequest);
+		ct.setMsgType("Reversal CT");
+		ct.setReversal(endToEndId);
+		creditTransferRepo.save(ct);
+
 	}
 
 	private void saveFICreditTransferMsg (OutboundMessage auditTab,
@@ -245,7 +265,7 @@ public class SaveTablesProcessor implements Processor {
 		ct.setIntrRefId(auditTab.getInternalReffId());
 		ct.setMsgType("FI Credit Transfer");
 		ct.setOriginatingBank(orgnlBank);
-		ct.setRecipientBank(auditTab.getToFinId());
+		ct.setRecipientBank(auditTab.getRecipientBank());
 		ct.setLogMessageId(auditTab.getId());
 		
 		creditTransferRepo.save(ct);

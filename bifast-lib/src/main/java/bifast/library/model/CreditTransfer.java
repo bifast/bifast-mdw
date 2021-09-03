@@ -20,6 +20,7 @@ public class CreditTransfer {
 	private String intrRefId;
 
 	private Long logMessageId;
+
 	private String msgType;
 	
 	@Column(name="ORIGN_BANK")
@@ -29,11 +30,16 @@ public class CreditTransfer {
 	
 	@Column(name="DEBTOR_ACCT_NO")
 	private String debtorAccountNumber;
+	@Column(name="DEBTOR_ACCT_TYPE")
+	private String debtorAccountType;
+
 	private String debtorId;
 	private String debtorType;
 	
 	@Column(name="CREDITOR_ACCT_NO")
 	private String creditorAccountNumber;
+	@Column(name="CREDITOR_ACCT_TYPE")
+	private String creditorAccountType;
 	@Column(name="CREDITOR_ID")
 	private String creditorId;
 	private String creditorType;
@@ -109,6 +115,14 @@ public class CreditTransfer {
 		this.debtorAccountNumber = debtorAccountNumber;
 	}
 
+	public String getDebtorAccountType() {
+		return debtorAccountType;
+	}
+
+	public void setDebtorAccountType(String debtorAccountType) {
+		this.debtorAccountType = debtorAccountType;
+	}
+
 	public String getDebtorId() {
 		return debtorId;
 	}
@@ -131,6 +145,14 @@ public class CreditTransfer {
 
 	public void setCreditorAccountNumber(String creditorAccountNumber) {
 		this.creditorAccountNumber = creditorAccountNumber;
+	}
+
+	public String getCreditorAccountType() {
+		return creditorAccountType;
+	}
+
+	public void setCreditorAccountType(String creditorAccountType) {
+		this.creditorAccountType = creditorAccountType;
 	}
 
 	public String getCreditorId() {
@@ -196,6 +218,8 @@ public class CreditTransfer {
 	public void setReversal(String reversal) {
 		this.reversal = reversal;
 	}
+
+
 
 	
 }

@@ -1,839 +1,512 @@
-2021-09-03 08:33:52,347 WARN org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer [main] 
-
-Found multiple occurrences of org.json.JSONObject on the class path:
-
-	jar:file:/home/fransdm/.m2/repository/org/json/json/20171018/json-20171018.jar!/org/json/JSONObject.class
-	jar:file:/home/fransdm/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar!/org/json/JSONObject.class
-
-You may wish to exclude one of them to ensure predictable runtime behavior
-
-2021-09-03 08:33:52,399 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplicationTests using Java 11.0.11 on fransdm-Latitude with PID 73227 (started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
-2021-09-03 08:33:52,411 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
-2021-09-03 08:33:53,310 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2021-09-03 08:33:53,388 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 71 ms. Found 11 JPA repository interfaces.
-2021-09-03 08:33:54,547 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
-2021-09-03 08:33:54,628 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
-2021-09-03 08:33:54,769 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
-2021-09-03 08:33:54,865 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
-2021-09-03 08:33:54,996 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
-2021-09-03 08:33:55,030 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
-2021-09-03 08:33:55,600 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
-2021-09-03 08:33:55,618 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
-2021-09-03 08:33:56,630 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2021-09-03 08:33:58,075 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
-2021-09-03 08:33:58,600 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
-2021-09-03 08:33:59,090 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
-
-Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
-2021-09-03 08:33:59,103 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringContextShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
-2021-09-03 08:33:59,107 INFO com.zaxxer.hikari.HikariDataSource [SpringContextShutdownHook] HikariPool-1 - Shutdown initiated...
-2021-09-03 08:33:59,113 ERROR org.springframework.boot.SpringApplication [main] Application run failed
-org.apache.camel.FailedToCreateRouteException: Failed to create route crdt_trnsf at: >>> DoTry[[Log[Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?socketTimeout={{bifast.timeout}}&bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly], DoCatch[ [class java.net.SocketTimeoutException] -> [Log[Timeout], SetHeader[log_label, constant{TIMEOUT}], To[seda:savelogfiles?exchangePattern=InOnly], process[Processor@0x4d142b53], Choice[[When[simple{${body} == ''} -> [Log[Payment Status], process[Processor@0x1a48a582], Marshal[org.apache.camel.model.DataFormatDefinition@c310aa3], SetHeader[log_label, constant{Payment Status Request}], To[seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly]]]] Otherwise[[Log[Nemu settlement], SetHeader[log_label, constant{Settlement}], To[seda:savelogfiles?exchangePattern=InOnly]]]]]]]] <<< in route: Route(crdt_trnsf)[From[direct:ctreq] -> [SetHeader[log_filen... because of Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:240)
-	at org.apache.camel.reifier.RouteReifier.createRoute(RouteReifier.java:74)
-	at org.apache.camel.impl.DefaultModelReifierFactory.createRoute(DefaultModelReifierFactory.java:49)
-	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:684)
-	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:636)
-	at org.apache.camel.impl.engine.AbstractCamelContext.doInit(AbstractCamelContext.java:2771)
-	at org.apache.camel.support.service.BaseService.init(BaseService.java:83)
-	at org.apache.camel.impl.engine.AbstractCamelContext.init(AbstractCamelContext.java:2490)
-	at org.apache.camel.support.service.BaseService.start(BaseService.java:111)
-	at org.apache.camel.impl.engine.AbstractCamelContext.start(AbstractCamelContext.java:2507)
-	at org.apache.camel.impl.DefaultCamelContext.start(DefaultCamelContext.java:174)
-	at org.apache.camel.spring.SpringCamelContext.start(SpringCamelContext.java:107)
-	at org.apache.camel.spring.SpringCamelContext.onApplicationEvent(SpringCamelContext.java:139)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143)
-	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:421)
-	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:378)
-	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:938)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
-	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:123)
-	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:99)
-	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
-	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:124)
-	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:190)
-	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:132)
-	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:244)
-	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:138)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$6(ClassBasedTestDescriptor.java:350)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:355)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$7(ClassBasedTestDescriptor.java:350)
-	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:195)
-	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:177)
-	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1655)
-	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:484)
-	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)
-	at java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:312)
-	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
-	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
-	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:349)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$4(ClassBasedTestDescriptor.java:270)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:269)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$2(ClassBasedTestDescriptor.java:259)
-	at java.base/java.util.Optional.orElseGet(Optional.java:369)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$3(ClassBasedTestDescriptor.java:258)
-	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:31)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:101)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:100)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:65)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$1(NodeTestTask.java:111)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:111)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:79)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220)
-	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188)
-	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124)
-	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418)
-Caused by: org.apache.camel.ResolveEndpointFailedException: Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:156)
-	at org.apache.camel.impl.engine.AbstractCamelContext.doGetEndpoint(AbstractCamelContext.java:895)
-	at org.apache.camel.impl.engine.AbstractCamelContext.getEndpoint(AbstractCamelContext.java:845)
-	at org.apache.camel.support.CamelContextHelper.resolveEndpoint(CamelContextHelper.java:123)
-	at org.apache.camel.reifier.SendReifier.resolveEndpoint(SendReifier.java:43)
-	at org.apache.camel.reifier.SendReifier.createProcessor(SendReifier.java:36)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
-	at org.apache.camel.reifier.ExpressionReifier.createFilterProcessor(ExpressionReifier.java:38)
-	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:32)
-	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:24)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ChoiceReifier.createProcessor(ChoiceReifier.java:68)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
-	at org.apache.camel.reifier.ProcessorReifier.createChildProcessor(ProcessorReifier.java:566)
-	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:54)
-	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:30)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.TryReifier.createProcessor(TryReifier.java:46)
-	at org.apache.camel.reifier.ProcessorReifier.makeProcessor(ProcessorReifier.java:835)
-	at org.apache.camel.reifier.ProcessorReifier.addRoutes(ProcessorReifier.java:576)
-	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:236)
-	... 93 common frames omitted
-Caused by: java.net.URISyntaxException: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at java.base/java.net.URI$Parser.fail(URI.java:2913)
-	at java.base/java.net.URI$Parser.checkChars(URI.java:3084)
-	at java.base/java.net.URI$Parser.parse(URI.java:3120)
-	at java.base/java.net.URI.<init>(URI.java:600)
-	at org.apache.camel.util.URISupport.doComplexNormalizeUri(URISupport.java:584)
-	at org.apache.camel.util.URISupport.normalizeUri(URISupport.java:575)
-	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:154)
-	... 117 common frames omitted
-2021-09-03 08:33:59,116 INFO com.zaxxer.hikari.HikariDataSource [SpringContextShutdownHook] HikariPool-1 - Shutdown completed.
-2021-09-03 08:46:46,519 WARN org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer [main] 
-
-Found multiple occurrences of org.json.JSONObject on the class path:
-
-	jar:file:/home/fransdm/.m2/repository/org/json/json/20171018/json-20171018.jar!/org/json/JSONObject.class
-	jar:file:/home/fransdm/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar!/org/json/JSONObject.class
-
-You may wish to exclude one of them to ensure predictable runtime behavior
-
-2021-09-03 08:46:46,565 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplicationTests using Java 11.0.11 on fransdm-Latitude with PID 74653 (started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
-2021-09-03 08:46:46,576 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
-2021-09-03 08:46:47,613 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2021-09-03 08:46:47,694 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 75 ms. Found 11 JPA repository interfaces.
-2021-09-03 08:46:48,869 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
-2021-09-03 08:46:48,939 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
-2021-09-03 08:46:49,161 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
-2021-09-03 08:46:49,298 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
-2021-09-03 08:46:49,394 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
-2021-09-03 08:46:49,412 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
-2021-09-03 08:46:50,274 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
-2021-09-03 08:46:50,296 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
-2021-09-03 08:46:51,382 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2021-09-03 08:46:52,810 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
-2021-09-03 08:46:53,193 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
-2021-09-03 08:46:53,661 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
-
-Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
-2021-09-03 08:46:53,691 ERROR org.springframework.boot.SpringApplication [main] Application run failed
-org.apache.camel.FailedToCreateRouteException: Failed to create route crdt_trnsf at: >>> DoTry[[Log[Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?socketTimeout={{bifast.timeout}}&bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly], DoCatch[ [class java.net.SocketTimeoutException] -> [Log[Timeout], SetHeader[log_label, constant{TIMEOUT}], To[seda:savelogfiles?exchangePattern=InOnly], process[Processor@0x4d142b53], Choice[[When[simple{${body} == ''} -> [Log[Payment Status], process[Processor@0x1a48a582], Marshal[org.apache.camel.model.DataFormatDefinition@77a27356], SetHeader[log_label, constant{Payment Status Request}], To[seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly]]]] Otherwise[[Log[Nemu settlement], SetHeader[log_label, constant{Settlement}], To[seda:savelogfiles?exchangePattern=InOnly]]]]]]]] <<< in route: Route(crdt_trnsf)[From[direct:ctreq] -> [SetHeader[log_filen... because of Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:240)
-	at org.apache.camel.reifier.RouteReifier.createRoute(RouteReifier.java:74)
-	at org.apache.camel.impl.DefaultModelReifierFactory.createRoute(DefaultModelReifierFactory.java:49)
-	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:684)
-	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:636)
-	at org.apache.camel.impl.engine.AbstractCamelContext.doInit(AbstractCamelContext.java:2771)
-	at org.apache.camel.support.service.BaseService.init(BaseService.java:83)
-	at org.apache.camel.impl.engine.AbstractCamelContext.init(AbstractCamelContext.java:2490)
-	at org.apache.camel.support.service.BaseService.start(BaseService.java:111)
-	at org.apache.camel.impl.engine.AbstractCamelContext.start(AbstractCamelContext.java:2507)
-	at org.apache.camel.impl.DefaultCamelContext.start(DefaultCamelContext.java:174)
-	at org.apache.camel.spring.SpringCamelContext.start(SpringCamelContext.java:107)
-	at org.apache.camel.spring.SpringCamelContext.onApplicationEvent(SpringCamelContext.java:139)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143)
-	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:421)
-	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:378)
-	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:938)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
-	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:123)
-	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:99)
-	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
-	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:124)
-	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:190)
-	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:132)
-	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:244)
-	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:138)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$6(ClassBasedTestDescriptor.java:350)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:355)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$7(ClassBasedTestDescriptor.java:350)
-	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:195)
-	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:177)
-	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1655)
-	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:484)
-	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)
-	at java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:312)
-	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
-	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
-	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:349)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$4(ClassBasedTestDescriptor.java:270)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:269)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$2(ClassBasedTestDescriptor.java:259)
-	at java.base/java.util.Optional.orElseGet(Optional.java:369)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$3(ClassBasedTestDescriptor.java:258)
-	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:31)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:101)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:100)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:65)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$1(NodeTestTask.java:111)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:111)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:79)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220)
-	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188)
-	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124)
-	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418)
-Caused by: org.apache.camel.ResolveEndpointFailedException: Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:156)
-	at org.apache.camel.impl.engine.AbstractCamelContext.doGetEndpoint(AbstractCamelContext.java:895)
-	at org.apache.camel.impl.engine.AbstractCamelContext.getEndpoint(AbstractCamelContext.java:845)
-	at org.apache.camel.support.CamelContextHelper.resolveEndpoint(CamelContextHelper.java:123)
-	at org.apache.camel.reifier.SendReifier.resolveEndpoint(SendReifier.java:43)
-	at org.apache.camel.reifier.SendReifier.createProcessor(SendReifier.java:36)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
-	at org.apache.camel.reifier.ExpressionReifier.createFilterProcessor(ExpressionReifier.java:38)
-	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:32)
-	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:24)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ChoiceReifier.createProcessor(ChoiceReifier.java:68)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
-	at org.apache.camel.reifier.ProcessorReifier.createChildProcessor(ProcessorReifier.java:566)
-	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:54)
-	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:30)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.TryReifier.createProcessor(TryReifier.java:46)
-	at org.apache.camel.reifier.ProcessorReifier.makeProcessor(ProcessorReifier.java:835)
-	at org.apache.camel.reifier.ProcessorReifier.addRoutes(ProcessorReifier.java:576)
-	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:236)
-	... 93 common frames omitted
-Caused by: java.net.URISyntaxException: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at java.base/java.net.URI$Parser.fail(URI.java:2913)
-	at java.base/java.net.URI$Parser.checkChars(URI.java:3084)
-	at java.base/java.net.URI$Parser.parse(URI.java:3120)
-	at java.base/java.net.URI.<init>(URI.java:600)
-	at org.apache.camel.util.URISupport.doComplexNormalizeUri(URISupport.java:584)
-	at org.apache.camel.util.URISupport.normalizeUri(URISupport.java:575)
-	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:154)
-	... 117 common frames omitted
-2021-09-03 08:46:53,717 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Closing JPA EntityManagerFactory for persistence unit 'default'
-2021-09-03 08:46:53,723 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown initiated...
-2021-09-03 08:46:53,754 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown completed.
-2021-09-03 08:46:53,756 ERROR org.springframework.test.context.TestContextManager [main] Caught exception while allowing TestExecutionListener [org.springframework.test.context.web.ServletTestExecutionListener@5adb0db3] to prepare test instance [bifast.outbound.BifastOutboundApplicationTests@5ed4c87]
-java.lang.IllegalStateException: Failed to load ApplicationContext
-	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:132)
-	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:124)
-	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:190)
-	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:132)
-	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:244)
-	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:138)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$6(ClassBasedTestDescriptor.java:350)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:355)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$7(ClassBasedTestDescriptor.java:350)
-	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:195)
-	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:177)
-	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1655)
-	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:484)
-	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)
-	at java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:312)
-	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
-	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
-	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:349)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$4(ClassBasedTestDescriptor.java:270)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:269)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$2(ClassBasedTestDescriptor.java:259)
-	at java.base/java.util.Optional.orElseGet(Optional.java:369)
-	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$3(ClassBasedTestDescriptor.java:258)
-	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:31)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:101)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:100)
-	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:65)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$1(NodeTestTask.java:111)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:111)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:79)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
-	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
-	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
-	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
-	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
-	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
-	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220)
-	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188)
-	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181)
-	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150)
-	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124)
-	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384)
-	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345)
-	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126)
-	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418)
-Caused by: org.apache.camel.FailedToCreateRouteException: Failed to create route crdt_trnsf at: >>> DoTry[[Log[Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?socketTimeout={{bifast.timeout}}&bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly], DoCatch[ [class java.net.SocketTimeoutException] -> [Log[Timeout], SetHeader[log_label, constant{TIMEOUT}], To[seda:savelogfiles?exchangePattern=InOnly], process[Processor@0x4d142b53], Choice[[When[simple{${body} == ''} -> [Log[Payment Status], process[Processor@0x1a48a582], Marshal[org.apache.camel.model.DataFormatDefinition@77a27356], SetHeader[log_label, constant{Payment Status Request}], To[seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly]]]] Otherwise[[Log[Nemu settlement], SetHeader[log_label, constant{Settlement}], To[seda:savelogfiles?exchangePattern=InOnly]]]]]]]] <<< in route: Route(crdt_trnsf)[From[direct:ctreq] -> [SetHeader[log_filen... because of Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:240)
-	at org.apache.camel.reifier.RouteReifier.createRoute(RouteReifier.java:74)
-	at org.apache.camel.impl.DefaultModelReifierFactory.createRoute(DefaultModelReifierFactory.java:49)
-	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:684)
-	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:636)
-	at org.apache.camel.impl.engine.AbstractCamelContext.doInit(AbstractCamelContext.java:2771)
-	at org.apache.camel.support.service.BaseService.init(BaseService.java:83)
-	at org.apache.camel.impl.engine.AbstractCamelContext.init(AbstractCamelContext.java:2490)
-	at org.apache.camel.support.service.BaseService.start(BaseService.java:111)
-	at org.apache.camel.impl.engine.AbstractCamelContext.start(AbstractCamelContext.java:2507)
-	at org.apache.camel.impl.DefaultCamelContext.start(DefaultCamelContext.java:174)
-	at org.apache.camel.spring.SpringCamelContext.start(SpringCamelContext.java:107)
-	at org.apache.camel.spring.SpringCamelContext.onApplicationEvent(SpringCamelContext.java:139)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143)
-	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:421)
-	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:378)
-	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:938)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
-	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:123)
-	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:99)
-	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
-	... 67 common frames omitted
-Caused by: org.apache.camel.ResolveEndpointFailedException: Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:156)
-	at org.apache.camel.impl.engine.AbstractCamelContext.doGetEndpoint(AbstractCamelContext.java:895)
-	at org.apache.camel.impl.engine.AbstractCamelContext.getEndpoint(AbstractCamelContext.java:845)
-	at org.apache.camel.support.CamelContextHelper.resolveEndpoint(CamelContextHelper.java:123)
-	at org.apache.camel.reifier.SendReifier.resolveEndpoint(SendReifier.java:43)
-	at org.apache.camel.reifier.SendReifier.createProcessor(SendReifier.java:36)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
-	at org.apache.camel.reifier.ExpressionReifier.createFilterProcessor(ExpressionReifier.java:38)
-	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:32)
-	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:24)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ChoiceReifier.createProcessor(ChoiceReifier.java:68)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
-	at org.apache.camel.reifier.ProcessorReifier.createChildProcessor(ProcessorReifier.java:566)
-	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:54)
-	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:30)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.TryReifier.createProcessor(TryReifier.java:46)
-	at org.apache.camel.reifier.ProcessorReifier.makeProcessor(ProcessorReifier.java:835)
-	at org.apache.camel.reifier.ProcessorReifier.addRoutes(ProcessorReifier.java:576)
-	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:236)
-	... 93 common frames omitted
-Caused by: java.net.URISyntaxException: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at java.base/java.net.URI$Parser.fail(URI.java:2913)
-	at java.base/java.net.URI$Parser.checkChars(URI.java:3084)
-	at java.base/java.net.URI$Parser.parse(URI.java:3120)
-	at java.base/java.net.URI.<init>(URI.java:600)
-	at org.apache.camel.util.URISupport.doComplexNormalizeUri(URISupport.java:584)
-	at org.apache.camel.util.URISupport.normalizeUri(URISupport.java:575)
-	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:154)
-	... 117 common frames omitted
-2021-09-03 08:47:35,341 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 74864 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
-2021-09-03 08:47:35,343 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
-2021-09-03 08:47:35,771 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2021-09-03 08:47:35,819 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 43 ms. Found 11 JPA repository interfaces.
-2021-09-03 08:47:36,426 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
-2021-09-03 08:47:36,432 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
-2021-09-03 08:47:36,433 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
-2021-09-03 08:47:36,433 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
-2021-09-03 08:47:36,499 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
-2021-09-03 08:47:36,499 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1108 ms
-2021-09-03 08:47:36,636 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
-2021-09-03 08:47:36,643 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
-2021-09-03 08:47:36,646 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
-2021-09-03 08:47:36,647 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
-2021-09-03 08:47:36,653 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
-2021-09-03 08:47:36,737 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
-2021-09-03 08:47:36,795 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
-2021-09-03 08:47:36,874 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
-2021-09-03 08:47:36,927 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
-2021-09-03 08:47:36,973 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
-2021-09-03 08:47:36,982 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
-2021-09-03 08:47:37,442 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
-2021-09-03 08:47:37,447 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
-2021-09-03 08:47:37,916 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2021-09-03 08:47:38,395 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
-2021-09-03 08:47:38,460 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-9002"]
-2021-09-03 08:47:38,473 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Initialized CamelHttpTransportServlet[name=CamelServlet, contextPath=]
-2021-09-03 08:47:38,474 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 9002 (http) with context path ''
-2021-09-03 08:47:38,609 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
-2021-09-03 08:47:38,774 INFO org.apache.juli.logging.DirectJDKLog [main] Pausing ProtocolHandler ["http-nio-9002"]
-2021-09-03 08:47:38,774 INFO org.apache.juli.logging.DirectJDKLog [main] Stopping service [Tomcat]
-2021-09-03 08:47:38,775 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Destroyed CamelHttpTransportServlet[CamelServlet]
-2021-09-03 08:47:38,775 INFO io.hawt.web.auth.AuthenticationFilter [main] Destroying hawtio authentication filter
-2021-09-03 08:47:38,776 INFO io.hawt.HawtioContextListener [main] Destroying hawtio services
-2021-09-03 08:47:38,778 INFO org.apache.juli.logging.DirectJDKLog [main] Stopping ProtocolHandler ["http-nio-9002"]
-2021-09-03 08:47:38,780 INFO org.apache.juli.logging.DirectJDKLog [main] Destroying ProtocolHandler ["http-nio-9002"]
-2021-09-03 08:47:38,782 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
-
-Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
-2021-09-03 08:47:38,790 ERROR org.springframework.boot.SpringApplication [main] Application run failed
-org.apache.camel.FailedToCreateRouteException: Failed to create route crdt_trnsf at: >>> DoTry[[Log[Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?socketTimeout={{bifast.timeout}}&bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly], DoCatch[ [class java.net.SocketTimeoutException] -> [Log[Timeout], SetHeader[log_label, constant{TIMEOUT}], To[seda:savelogfiles?exchangePattern=InOnly], process[Processor@0x2b6a4da7], Choice[[When[simple{${body} == ''} -> [Log[Payment Status], process[Processor@0xb867869], Marshal[org.apache.camel.model.DataFormatDefinition@3a649f9a], SetHeader[log_label, constant{Payment Status Request}], To[seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly]]]] Otherwise[[Log[Nemu settlement], SetHeader[log_label, constant{Settlement}], To[seda:savelogfiles?exchangePattern=InOnly]]]]]]]] <<< in route: Route(crdt_trnsf)[From[direct:ctreq] -> [SetHeader[log_filen... because of Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:240)
-	at org.apache.camel.reifier.RouteReifier.createRoute(RouteReifier.java:74)
-	at org.apache.camel.impl.DefaultModelReifierFactory.createRoute(DefaultModelReifierFactory.java:49)
-	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:684)
-	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:636)
-	at org.apache.camel.impl.engine.AbstractCamelContext.doInit(AbstractCamelContext.java:2771)
-	at org.apache.camel.support.service.BaseService.init(BaseService.java:83)
-	at org.apache.camel.impl.engine.AbstractCamelContext.init(AbstractCamelContext.java:2490)
-	at org.apache.camel.support.service.BaseService.start(BaseService.java:111)
-	at org.apache.camel.impl.engine.AbstractCamelContext.start(AbstractCamelContext.java:2507)
-	at org.apache.camel.impl.DefaultCamelContext.start(DefaultCamelContext.java:174)
-	at org.apache.camel.spring.SpringCamelContext.start(SpringCamelContext.java:107)
-	at org.apache.camel.spring.SpringCamelContext.onApplicationEvent(SpringCamelContext.java:139)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169)
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143)
-	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:421)
-	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:378)
-	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:938)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586)
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:144)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1329)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1318)
-	at bifast.outbound.BifastOutboundApplication.main(BifastOutboundApplication.java:14)
-Caused by: org.apache.camel.ResolveEndpointFailedException: Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
-elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:156)
-	at org.apache.camel.impl.engine.AbstractCamelContext.doGetEndpoint(AbstractCamelContext.java:895)
-	at org.apache.camel.impl.engine.AbstractCamelContext.getEndpoint(AbstractCamelContext.java:845)
-	at org.apache.camel.support.CamelContextHelper.resolveEndpoint(CamelContextHelper.java:123)
-	at org.apache.camel.reifier.SendReifier.resolveEndpoint(SendReifier.java:43)
-	at org.apache.camel.reifier.SendReifier.createProcessor(SendReifier.java:36)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
-	at org.apache.camel.reifier.ExpressionReifier.createFilterProcessor(ExpressionReifier.java:38)
-	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:32)
-	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:24)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ChoiceReifier.createProcessor(ChoiceReifier.java:68)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
-	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
-	at org.apache.camel.reifier.ProcessorReifier.createChildProcessor(ProcessorReifier.java:566)
-	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:54)
-	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:30)
-	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
-	at org.apache.camel.reifier.TryReifier.createProcessor(TryReifier.java:46)
-	at org.apache.camel.reifier.ProcessorReifier.makeProcessor(ProcessorReifier.java:835)
-	at org.apache.camel.reifier.ProcessorReifier.addRoutes(ProcessorReifier.java:576)
-	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:236)
-	... 27 common frames omitted
-Caused by: java.net.URISyntaxException: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
-elogfiles?exchangePattern=InOnly
-	at java.base/java.net.URI$Parser.fail(URI.java:2966)
-	at java.base/java.net.URI$Parser.checkChars(URI.java:3137)
-	at java.base/java.net.URI$Parser.parse(URI.java:3173)
-	at java.base/java.net.URI.<init>(URI.java:623)
-	at org.apache.camel.util.URISupport.doComplexNormalizeUri(URISupport.java:584)
-	at org.apache.camel.util.URISupport.normalizeUri(URISupport.java:575)
-	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:154)
-	... 51 common frames omitted
-2021-09-03 08:47:38,798 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Closing JPA EntityManagerFactory for persistence unit 'default'
-2021-09-03 08:47:38,799 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown initiated...
-2021-09-03 08:47:38,806 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown completed.
-2021-09-03 08:51:48,713 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 75220 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
-2021-09-03 08:51:48,715 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
-2021-09-03 08:51:49,091 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2021-09-03 08:51:49,133 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 37 ms. Found 11 JPA repository interfaces.
-2021-09-03 08:51:49,672 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
-2021-09-03 08:51:49,679 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
-2021-09-03 08:51:49,679 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
-2021-09-03 08:51:49,679 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
-2021-09-03 08:51:49,752 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
-2021-09-03 08:51:49,752 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1009 ms
-2021-09-03 08:51:49,889 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
-2021-09-03 08:51:49,898 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
-2021-09-03 08:51:49,900 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
-2021-09-03 08:51:49,901 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
-2021-09-03 08:51:49,907 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
-2021-09-03 08:51:49,995 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
-2021-09-03 08:51:50,024 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
-2021-09-03 08:51:50,109 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
-2021-09-03 08:51:50,167 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
-2021-09-03 08:51:50,217 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
-2021-09-03 08:51:50,228 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
-2021-09-03 08:51:50,798 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
-2021-09-03 08:51:50,804 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
-2021-09-03 08:51:51,143 WARN org.springframework.context.support.AbstractApplicationContext [main] Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'transactionRoute' defined in file [/home/fransdm/workspace/bifast/bifast-outbound/target/classes/bifast/outbound/route/TransactionRoute.class]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [bifast.outbound.route.TransactionRoute]: Constructor threw exception; nested exception is java.lang.Error: Unresolved compilation problems: 
-	The import bifast.outbound.accountenquiry.AccountEnquiryProcessor cannot be resolved
-	The import bifast.outbound.accountenquiry.AccountEnquiryResponseProcessor cannot be resolved
-	The import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq cannot be resolved
-	The import bifast.outbound.credittransfer.ChannelCreditTransferRequest cannot be resolved
-	The import bifast.outbound.credittransfer.CreditTransferRequestProcessor cannot be resolved
-	The import bifast.outbound.credittransfer.CreditTransferResponseProcessor cannot be resolved
-	The import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq cannot be resolved
-	The import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor cannot be resolved
-	The import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor cannot be resolved
-	The import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest cannot be resolved
-	The import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor cannot be resolved
-	The import bifast.outbound.pojo.ChannelResponseMessage cannot be resolved
-	The import bifast.outbound.processor.CheckSettlementProcessor cannot be resolved
-	The import bifast.outbound.processor.EnrichmentAggregator cannot be resolved
-	The import bifast.outbound.processor.FaultProcessor cannot be resolved
-	AccountEnquiryProcessor cannot be resolved to a type
-	AccountEnquiryResponseProcessor cannot be resolved to a type
-	CheckSettlementProcessor cannot be resolved to a type
-	CreditTransferRequestProcessor cannot be resolved to a type
-	CreditTransferResponseProcessor cannot be resolved to a type
-	FaultProcessor cannot be resolved to a type
-	FICreditTransferRequestProcessor cannot be resolved to a type
-	FICreditTransferResponseProcessor cannot be resolved to a type
-	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	ChannelAccountEnquiryReq cannot be resolved to a type
-	ChannelCreditTransferRequest cannot be resolved to a type
-	ChannelFICreditTransferReq cannot be resolved to a type
-	ChannelPaymentStatusRequest cannot be resolved to a type
-	ChannelResponseMessage cannot be resolved to a type
-	BusinessMessage cannot be resolved to a type
-	AccountEnquiryProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	AccountEnquiryResponseProcessor cannot be resolved to a type
-	FaultProcessor cannot be resolved to a type
-	CreditTransferRequestProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	CheckSettlementProcessor cannot be resolved to a type
-	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	CreditTransferResponseProcessor cannot be resolved to a type
-	FICreditTransferRequestProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	FICreditTransferResponseProcessor cannot be resolved to a type
-
-2021-09-03 08:51:51,145 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Closing JPA EntityManagerFactory for persistence unit 'default'
-2021-09-03 08:51:51,147 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown initiated...
-2021-09-03 08:51:51,151 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown completed.
-2021-09-03 08:51:51,157 INFO org.apache.juli.logging.DirectJDKLog [main] Stopping service [Tomcat]
-2021-09-03 08:51:51,161 INFO io.hawt.web.auth.AuthenticationFilter [main] Destroying hawtio authentication filter
-2021-09-03 08:51:51,162 INFO io.hawt.HawtioContextListener [main] Destroying hawtio services
-2021-09-03 08:51:51,185 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
-
-Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
-2021-09-03 08:51:51,199 ERROR org.springframework.boot.SpringApplication [main] Application run failed
-org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'transactionRoute' defined in file [/home/fransdm/workspace/bifast/bifast-outbound/target/classes/bifast/outbound/route/TransactionRoute.class]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [bifast.outbound.route.TransactionRoute]: Constructor threw exception; nested exception is java.lang.Error: Unresolved compilation problems: 
-	The import bifast.outbound.accountenquiry.AccountEnquiryProcessor cannot be resolved
-	The import bifast.outbound.accountenquiry.AccountEnquiryResponseProcessor cannot be resolved
-	The import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq cannot be resolved
-	The import bifast.outbound.credittransfer.ChannelCreditTransferRequest cannot be resolved
-	The import bifast.outbound.credittransfer.CreditTransferRequestProcessor cannot be resolved
-	The import bifast.outbound.credittransfer.CreditTransferResponseProcessor cannot be resolved
-	The import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq cannot be resolved
-	The import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor cannot be resolved
-	The import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor cannot be resolved
-	The import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest cannot be resolved
-	The import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor cannot be resolved
-	The import bifast.outbound.pojo.ChannelResponseMessage cannot be resolved
-	The import bifast.outbound.processor.CheckSettlementProcessor cannot be resolved
-	The import bifast.outbound.processor.EnrichmentAggregator cannot be resolved
-	The import bifast.outbound.processor.FaultProcessor cannot be resolved
-	AccountEnquiryProcessor cannot be resolved to a type
-	AccountEnquiryResponseProcessor cannot be resolved to a type
-	CheckSettlementProcessor cannot be resolved to a type
-	CreditTransferRequestProcessor cannot be resolved to a type
-	CreditTransferResponseProcessor cannot be resolved to a type
-	FaultProcessor cannot be resolved to a type
-	FICreditTransferRequestProcessor cannot be resolved to a type
-	FICreditTransferResponseProcessor cannot be resolved to a type
-	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	ChannelAccountEnquiryReq cannot be resolved to a type
-	ChannelCreditTransferRequest cannot be resolved to a type
-	ChannelFICreditTransferReq cannot be resolved to a type
-	ChannelPaymentStatusRequest cannot be resolved to a type
-	ChannelResponseMessage cannot be resolved to a type
-	BusinessMessage cannot be resolved to a type
-	AccountEnquiryProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	AccountEnquiryResponseProcessor cannot be resolved to a type
-	FaultProcessor cannot be resolved to a type
-	CreditTransferRequestProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	CheckSettlementProcessor cannot be resolved to a type
-	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	CreditTransferResponseProcessor cannot be resolved to a type
-	FICreditTransferRequestProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	FICreditTransferResponseProcessor cannot be resolved to a type
-
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1316)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1214)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:564)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:524)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:944)
-	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:918)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583)
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:144)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1329)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1318)
-	at bifast.outbound.BifastOutboundApplication.main(BifastOutboundApplication.java:14)
-Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [bifast.outbound.route.TransactionRoute]: Constructor threw exception; nested exception is java.lang.Error: Unresolved compilation problems: 
-	The import bifast.outbound.accountenquiry.AccountEnquiryProcessor cannot be resolved
-	The import bifast.outbound.accountenquiry.AccountEnquiryResponseProcessor cannot be resolved
-	The import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq cannot be resolved
-	The import bifast.outbound.credittransfer.ChannelCreditTransferRequest cannot be resolved
-	The import bifast.outbound.credittransfer.CreditTransferRequestProcessor cannot be resolved
-	The import bifast.outbound.credittransfer.CreditTransferResponseProcessor cannot be resolved
-	The import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq cannot be resolved
-	The import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor cannot be resolved
-	The import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor cannot be resolved
-	The import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest cannot be resolved
-	The import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor cannot be resolved
-	The import bifast.outbound.pojo.ChannelResponseMessage cannot be resolved
-	The import bifast.outbound.processor.CheckSettlementProcessor cannot be resolved
-	The import bifast.outbound.processor.EnrichmentAggregator cannot be resolved
-	The import bifast.outbound.processor.FaultProcessor cannot be resolved
-	AccountEnquiryProcessor cannot be resolved to a type
-	AccountEnquiryResponseProcessor cannot be resolved to a type
-	CheckSettlementProcessor cannot be resolved to a type
-	CreditTransferRequestProcessor cannot be resolved to a type
-	CreditTransferResponseProcessor cannot be resolved to a type
-	FaultProcessor cannot be resolved to a type
-	FICreditTransferRequestProcessor cannot be resolved to a type
-	FICreditTransferResponseProcessor cannot be resolved to a type
-	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	ChannelAccountEnquiryReq cannot be resolved to a type
-	ChannelCreditTransferRequest cannot be resolved to a type
-	ChannelFICreditTransferReq cannot be resolved to a type
-	ChannelPaymentStatusRequest cannot be resolved to a type
-	ChannelResponseMessage cannot be resolved to a type
-	BusinessMessage cannot be resolved to a type
-	AccountEnquiryProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	AccountEnquiryResponseProcessor cannot be resolved to a type
-	FaultProcessor cannot be resolved to a type
-	CreditTransferRequestProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	CheckSettlementProcessor cannot be resolved to a type
-	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	CreditTransferResponseProcessor cannot be resolved to a type
-	FICreditTransferRequestProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	FICreditTransferResponseProcessor cannot be resolved to a type
-
-	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:225)
-	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:87)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1308)
-	... 18 common frames omitted
-Caused by: java.lang.Error: Unresolved compilation problems: 
-	The import bifast.outbound.accountenquiry.AccountEnquiryProcessor cannot be resolved
-	The import bifast.outbound.accountenquiry.AccountEnquiryResponseProcessor cannot be resolved
-	The import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq cannot be resolved
-	The import bifast.outbound.credittransfer.ChannelCreditTransferRequest cannot be resolved
-	The import bifast.outbound.credittransfer.CreditTransferRequestProcessor cannot be resolved
-	The import bifast.outbound.credittransfer.CreditTransferResponseProcessor cannot be resolved
-	The import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq cannot be resolved
-	The import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor cannot be resolved
-	The import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor cannot be resolved
-	The import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest cannot be resolved
-	The import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor cannot be resolved
-	The import bifast.outbound.pojo.ChannelResponseMessage cannot be resolved
-	The import bifast.outbound.processor.CheckSettlementProcessor cannot be resolved
-	The import bifast.outbound.processor.EnrichmentAggregator cannot be resolved
-	The import bifast.outbound.processor.FaultProcessor cannot be resolved
-	AccountEnquiryProcessor cannot be resolved to a type
-	AccountEnquiryResponseProcessor cannot be resolved to a type
-	CheckSettlementProcessor cannot be resolved to a type
-	CreditTransferRequestProcessor cannot be resolved to a type
-	CreditTransferResponseProcessor cannot be resolved to a type
-	FaultProcessor cannot be resolved to a type
-	FICreditTransferRequestProcessor cannot be resolved to a type
-	FICreditTransferResponseProcessor cannot be resolved to a type
-	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	ChannelAccountEnquiryReq cannot be resolved to a type
-	ChannelCreditTransferRequest cannot be resolved to a type
-	ChannelFICreditTransferReq cannot be resolved to a type
-	ChannelPaymentStatusRequest cannot be resolved to a type
-	ChannelResponseMessage cannot be resolved to a type
-	BusinessMessage cannot be resolved to a type
-	AccountEnquiryProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	AccountEnquiryResponseProcessor cannot be resolved to a type
-	FaultProcessor cannot be resolved to a type
-	CreditTransferRequestProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	CheckSettlementProcessor cannot be resolved to a type
-	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	CreditTransferResponseProcessor cannot be resolved to a type
-	FICreditTransferRequestProcessor cannot be resolved to a type
-	EnrichmentAggregator cannot be resolved to a type
-	FICreditTransferResponseProcessor cannot be resolved to a type
-
-	at bifast.outbound.route.TransactionRoute.<init>(TransactionRoute.java:10)
-	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
-	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:78)
-	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
-	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
-	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
-	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:212)
-	... 20 common frames omitted
+2021-09-03 15:35:55,164 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started fictreq (direct://fictreq)
+2021-09-03 15:35:55,165 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Apache Camel 3.9.0 (camel-1) started in 526ms (build:24ms init:191ms start:311ms)
+2021-09-03 15:35:55,167 INFO org.springframework.boot.StartupInfoLogger [main] Started BifastOutboundApplication in 3.651 seconds (JVM running for 4.08)
+2021-09-03 15:36:09,916 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001889
+2021-09-03 15:36:10,027 INFO org.apache.camel.component.http.HttpComponent [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Created ClientConnectionManager org.apache.http.impl.conn.PoolingHttpClientConnectionManager@78d15afa
+2021-09-03 15:36:11,335 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] {"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"MNDRIDJA"}}}},"BizMsgIdr":"20210903FASTIDJA010O0200001892","MsgDefIdr":"pacs.002.001.10","BizSvc":"CTRESPONSE","CreDt":"2021-09-03T08:36:11"},"Document":{"FitoFIPmtStsRpt":{"GrpHdr":{"MsgId":"20210903FASTIDJA01000001891","CreDtTm":"2021-09-03T08:36:11"},"OrgnlGrpInfAndSts":[{"OrgnlMsgId":"20210903MNDRIDJA01100001890","OrgnlMsgNmId":"pacs.008.001.08"}],"TxInfAndSts":[{"OrgnlEndToEndId":"20210903MNDRIDJA011O9900001889","OrgnlTxId":"20210903FASTIDJA010ORB98314178","TxSts":"ACTC","StsRsnInf":[{"Rsn":{"Prtry":"U000"},"AddtlInf":[null]}],"OrgnlTxRef":{"Cdtr":{}},"SplmtryData":[{"Envlp":{"Cdtr":{"Tp":"01","Id":"KTP-2004384","RsdntSts":"01","TwnNm":"0300"}}}]}]}}}}
+2021-09-03 15:38:31,329 INFO org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar$SpringApplicationAdmin [RMI TCP Connection(8)-127.0.0.1] Application shutdown requested.
+2021-09-03 15:38:31,336 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutting down (timeout:45s)
+2021-09-03 15:38:32,973 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1] Routes shutdown summary (total:12 stopped:12)
+2021-09-03 15:38:32,973 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped fictreq (direct://fictreq)
+2021-09-03 15:38:32,973 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped crdt_trnsf (direct://ctreq)
+2021-09-03 15:38:32,974 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped direct:acctenqr (direct://acctenqr)
+2021-09-03 15:38:32,974 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:38:32,974 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route1 (rest-api:///api-doc)
+2021-09-03 15:38:32,974 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped proxyresolution (direct://proxyresolution)
+2021-09-03 15:38:32,974 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped proxyregistration (direct://proxyregistration)
+2021-09-03 15:38:32,974 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route6 (rest://post:/komi:/outbound)
+2021-09-03 15:38:32,974 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route5 (seda://b)
+2021-09-03 15:38:32,974 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route4 (seda://savetables)
+2021-09-03 15:38:32,975 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route3 (seda://savelogfiles)
+2021-09-03 15:38:32,975 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route2 (direct://outbound)
+2021-09-03 15:38:32,978 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutdown in 1s642ms (uptime:2m38s)
+2021-09-03 15:38:32,988 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [RMI TCP Connection(8)-127.0.0.1] Destroyed CamelHttpTransportServlet[CamelServlet]
+2021-09-03 15:38:32,989 INFO io.hawt.web.auth.AuthenticationFilter [RMI TCP Connection(8)-127.0.0.1] Destroying hawtio authentication filter
+2021-09-03 15:38:32,991 INFO io.hawt.HawtioContextListener [RMI TCP Connection(8)-127.0.0.1] Destroying hawtio services
+2021-09-03 15:38:33,022 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [RMI TCP Connection(8)-127.0.0.1] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:38:33,025 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(8)-127.0.0.1] HikariPool-1 - Shutdown initiated...
+2021-09-03 15:38:33,029 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(8)-127.0.0.1] HikariPool-1 - Shutdown completed.
+2021-09-03 15:38:34,735 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 108178 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 15:38:34,737 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 15:38:35,112 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 15:38:35,158 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 40 ms. Found 11 JPA repository interfaces.
+2021-09-03 15:38:35,693 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
+2021-09-03 15:38:35,699 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:38:35,699 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2021-09-03 15:38:35,699 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
+2021-09-03 15:38:35,769 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2021-09-03 15:38:35,770 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1005 ms
+2021-09-03 15:38:35,874 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
+2021-09-03 15:38:35,882 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
+2021-09-03 15:38:35,884 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
+2021-09-03 15:38:35,885 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
+2021-09-03 15:38:35,890 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
+2021-09-03 15:38:35,975 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 15:38:36,002 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 15:38:36,084 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 15:38:36,142 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 15:38:36,191 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 15:38:36,201 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 15:38:36,654 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 15:38:36,659 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:38:37,073 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-09-03 15:38:37,537 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
+2021-09-03 15:38:37,581 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:38:37,592 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Initialized CamelHttpTransportServlet[name=CamelServlet, contextPath=]
+2021-09-03 15:38:37,592 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 9002 (http) with context path ''
+2021-09-03 15:38:37,680 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
+2021-09-03 15:38:37,875 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:37,926 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:37,928 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:37,929 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:37,954 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:37,985 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:38,003 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:38,004 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:38,005 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:38,023 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:38,054 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Routes startup summary (total:12 started:12)
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route2 (direct://outbound)
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route3 (seda://savelogfiles)
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route4 (seda://savetables)
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route5 (seda://b)
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route6 (rest://post:/komi:/outbound)
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyregistration (direct://proxyregistration)
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyresolution (direct://proxyresolution)
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route1 (rest-api:///api-doc)
+2021-09-03 15:38:38,087 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:38:38,088 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started direct:acctenqr (direct://acctenqr)
+2021-09-03 15:38:38,088 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started crdt_trnsf (direct://ctreq)
+2021-09-03 15:38:38,088 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started fictreq (direct://fictreq)
+2021-09-03 15:38:38,088 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Apache Camel 3.9.0 (camel-1) started in 450ms (build:26ms init:167ms start:257ms)
+2021-09-03 15:38:38,091 INFO org.springframework.boot.StartupInfoLogger [main] Started BifastOutboundApplication in 3.613 seconds (JVM running for 4.046)
+2021-09-03 15:38:38,899 INFO org.apache.juli.logging.DirectJDKLog [RMI TCP Connection(3)-127.0.0.1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-09-03 15:38:38,900 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Initializing Servlet 'dispatcherServlet'
+2021-09-03 15:38:38,901 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Completed initialization in 1 ms
+2021-09-03 15:38:46,799 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001893
+2021-09-03 15:38:46,906 INFO org.apache.camel.component.http.HttpComponent [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Created ClientConnectionManager org.apache.http.impl.conn.PoolingHttpClientConnectionManager@5c8dcfde
+2021-09-03 15:38:48,280 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] {"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"MNDRIDJA"}}}},"BizMsgIdr":"20210903FASTIDJA010O0200001896","MsgDefIdr":"pacs.002.001.10","BizSvc":"CTRESPONSE","CreDt":"2021-09-03T08:38:48"},"Document":{"FitoFIPmtStsRpt":{"GrpHdr":{"MsgId":"20210903FASTIDJA01000001895","CreDtTm":"2021-09-03T08:38:48"},"OrgnlGrpInfAndSts":[{"OrgnlMsgId":"20210903MNDRIDJA01100001894","OrgnlMsgNmId":"pacs.008.001.08"}],"TxInfAndSts":[{"OrgnlEndToEndId":"20210903MNDRIDJA011O9900001893","OrgnlTxId":"20210903FASTIDJA010ORB98314178","TxSts":"ACTC","StsRsnInf":[{"Rsn":{"Prtry":"U000"},"AddtlInf":[null]}],"OrgnlTxRef":{"Cdtr":{}},"SplmtryData":[{"Envlp":{"Cdtr":{"Tp":"01","Id":"KTP-2004384","RsdntSts":"01","TwnNm":"0300"}}}]}]}}}}
+2021-09-03 15:40:27,664 INFO org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar$SpringApplicationAdmin [RMI TCP Connection(7)-127.0.0.1] Application shutdown requested.
+2021-09-03 15:40:27,669 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutting down (timeout:45s)
+2021-09-03 15:40:28,830 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1] Routes shutdown summary (total:12 stopped:12)
+2021-09-03 15:40:28,830 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped fictreq (direct://fictreq)
+2021-09-03 15:40:28,830 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped crdt_trnsf (direct://ctreq)
+2021-09-03 15:40:28,830 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped direct:acctenqr (direct://acctenqr)
+2021-09-03 15:40:28,830 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:40:28,830 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped route1 (rest-api:///api-doc)
+2021-09-03 15:40:28,830 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped proxyresolution (direct://proxyresolution)
+2021-09-03 15:40:28,831 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped proxyregistration (direct://proxyregistration)
+2021-09-03 15:40:28,831 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped route6 (rest://post:/komi:/outbound)
+2021-09-03 15:40:28,831 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped route5 (seda://b)
+2021-09-03 15:40:28,831 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped route4 (seda://savetables)
+2021-09-03 15:40:28,831 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped route3 (seda://savelogfiles)
+2021-09-03 15:40:28,831 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1]     Stopped route2 (direct://outbound)
+2021-09-03 15:40:28,834 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(7)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutdown in 1s165ms (uptime:1m51s)
+2021-09-03 15:40:28,842 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [RMI TCP Connection(7)-127.0.0.1] Destroyed CamelHttpTransportServlet[CamelServlet]
+2021-09-03 15:40:28,842 INFO io.hawt.web.auth.AuthenticationFilter [RMI TCP Connection(7)-127.0.0.1] Destroying hawtio authentication filter
+2021-09-03 15:40:28,843 INFO io.hawt.HawtioContextListener [RMI TCP Connection(7)-127.0.0.1] Destroying hawtio services
+2021-09-03 15:40:28,852 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [RMI TCP Connection(7)-127.0.0.1] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:40:28,853 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(7)-127.0.0.1] HikariPool-1 - Shutdown initiated...
+2021-09-03 15:40:28,855 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(7)-127.0.0.1] HikariPool-1 - Shutdown completed.
+2021-09-03 15:40:30,426 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 108406 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 15:40:30,428 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 15:40:30,809 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 15:40:30,850 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 36 ms. Found 11 JPA repository interfaces.
+2021-09-03 15:40:31,387 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
+2021-09-03 15:40:31,393 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:40:31,394 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2021-09-03 15:40:31,394 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
+2021-09-03 15:40:31,451 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2021-09-03 15:40:31,452 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 993 ms
+2021-09-03 15:40:31,562 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
+2021-09-03 15:40:31,570 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
+2021-09-03 15:40:31,572 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
+2021-09-03 15:40:31,573 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
+2021-09-03 15:40:31,578 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
+2021-09-03 15:40:31,673 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 15:40:31,702 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 15:40:31,782 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 15:40:31,838 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 15:40:31,891 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 15:40:31,901 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 15:40:32,363 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 15:40:32,414 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:40:32,819 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-09-03 15:40:33,279 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
+2021-09-03 15:40:33,320 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:40:33,329 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Initialized CamelHttpTransportServlet[name=CamelServlet, contextPath=]
+2021-09-03 15:40:33,330 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 9002 (http) with context path ''
+2021-09-03 15:40:33,418 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
+2021-09-03 15:40:33,613 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,665 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,667 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,668 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,694 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,719 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,737 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,738 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,739 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,764 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,793 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:40:33,826 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Routes startup summary (total:12 started:12)
+2021-09-03 15:40:33,826 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route2 (direct://outbound)
+2021-09-03 15:40:33,826 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route3 (seda://savelogfiles)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route4 (seda://savetables)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route5 (seda://b)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route6 (rest://post:/komi:/outbound)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyregistration (direct://proxyregistration)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyresolution (direct://proxyresolution)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route1 (rest-api:///api-doc)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started direct:acctenqr (direct://acctenqr)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started crdt_trnsf (direct://ctreq)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started fictreq (direct://fictreq)
+2021-09-03 15:40:33,827 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Apache Camel 3.9.0 (camel-1) started in 449ms (build:25ms init:166ms start:258ms)
+2021-09-03 15:40:33,830 INFO org.springframework.boot.StartupInfoLogger [main] Started BifastOutboundApplication in 3.66 seconds (JVM running for 4.09)
+2021-09-03 15:40:34,698 INFO org.apache.juli.logging.DirectJDKLog [RMI TCP Connection(3)-127.0.0.1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-09-03 15:40:34,698 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Initializing Servlet 'dispatcherServlet'
+2021-09-03 15:40:34,699 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Completed initialization in 1 ms
+2021-09-03 15:41:17,792 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001897
+2021-09-03 15:41:17,892 INFO org.apache.camel.component.http.HttpComponent [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Created ClientConnectionManager org.apache.http.impl.conn.PoolingHttpClientConnectionManager@4c327b3e
+2021-09-03 15:41:18,721 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] {"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"MNDRIDJA"}}}},"BizMsgIdr":"20210903FASTIDJA010O0200001900","MsgDefIdr":"pacs.002.001.10","BizSvc":"CTRESPONSE","CreDt":"2021-09-03T08:41:18"},"Document":{"FitoFIPmtStsRpt":{"GrpHdr":{"MsgId":"20210903FASTIDJA01000001899","CreDtTm":"2021-09-03T08:41:18"},"OrgnlGrpInfAndSts":[{"OrgnlMsgId":"20210903MNDRIDJA01100001898","OrgnlMsgNmId":"pacs.008.001.08"}],"TxInfAndSts":[{"OrgnlEndToEndId":"20210903MNDRIDJA011O9900001897","OrgnlTxId":"20210903FASTIDJA010ORB98314178","TxSts":"ACTC","StsRsnInf":[{"Rsn":{"Prtry":"U000"},"AddtlInf":[null]}],"OrgnlTxRef":{"Cdtr":{}},"SplmtryData":[{"Envlp":{"Cdtr":{"Tp":"01","Id":"KTP-2004384","RsdntSts":"01","TwnNm":"0300"}}}]}]}}}}
+2021-09-03 15:44:50,975 INFO org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar$SpringApplicationAdmin [RMI TCP Connection(10)-127.0.0.1] Application shutdown requested.
+2021-09-03 15:44:50,977 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutting down (timeout:45s)
+2021-09-03 15:44:52,852 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1] Routes shutdown summary (total:12 stopped:12)
+2021-09-03 15:44:52,852 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped fictreq (direct://fictreq)
+2021-09-03 15:44:52,852 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped crdt_trnsf (direct://ctreq)
+2021-09-03 15:44:52,852 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped direct:acctenqr (direct://acctenqr)
+2021-09-03 15:44:52,852 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:44:52,852 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped route1 (rest-api:///api-doc)
+2021-09-03 15:44:52,852 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped proxyresolution (direct://proxyresolution)
+2021-09-03 15:44:52,852 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped proxyregistration (direct://proxyregistration)
+2021-09-03 15:44:52,853 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped route6 (rest://post:/komi:/outbound)
+2021-09-03 15:44:52,853 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped route5 (seda://b)
+2021-09-03 15:44:52,853 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped route4 (seda://savetables)
+2021-09-03 15:44:52,853 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped route3 (seda://savelogfiles)
+2021-09-03 15:44:52,853 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1]     Stopped route2 (direct://outbound)
+2021-09-03 15:44:52,857 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(10)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutdown in 1s880ms (uptime:4m19s)
+2021-09-03 15:44:52,865 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [RMI TCP Connection(10)-127.0.0.1] Destroyed CamelHttpTransportServlet[CamelServlet]
+2021-09-03 15:44:52,865 INFO io.hawt.web.auth.AuthenticationFilter [RMI TCP Connection(10)-127.0.0.1] Destroying hawtio authentication filter
+2021-09-03 15:44:52,866 INFO io.hawt.HawtioContextListener [RMI TCP Connection(10)-127.0.0.1] Destroying hawtio services
+2021-09-03 15:44:52,875 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [RMI TCP Connection(10)-127.0.0.1] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:44:52,876 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(10)-127.0.0.1] HikariPool-1 - Shutdown initiated...
+2021-09-03 15:44:52,880 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(10)-127.0.0.1] HikariPool-1 - Shutdown completed.
+2021-09-03 15:44:54,519 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 108781 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 15:44:54,521 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 15:44:54,917 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 15:44:54,961 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 39 ms. Found 11 JPA repository interfaces.
+2021-09-03 15:44:55,532 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
+2021-09-03 15:44:55,538 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:44:55,539 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2021-09-03 15:44:55,539 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
+2021-09-03 15:44:55,605 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2021-09-03 15:44:55,606 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1057 ms
+2021-09-03 15:44:55,723 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
+2021-09-03 15:44:55,732 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
+2021-09-03 15:44:55,734 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
+2021-09-03 15:44:55,734 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
+2021-09-03 15:44:55,740 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
+2021-09-03 15:44:55,827 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 15:44:55,855 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 15:44:55,935 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 15:44:55,994 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 15:44:56,047 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 15:44:56,057 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 15:44:56,512 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 15:44:56,517 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:44:56,898 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-09-03 15:44:57,366 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
+2021-09-03 15:44:57,408 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:44:57,417 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Initialized CamelHttpTransportServlet[name=CamelServlet, contextPath=]
+2021-09-03 15:44:57,418 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 9002 (http) with context path ''
+2021-09-03 15:44:57,512 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
+2021-09-03 15:44:57,740 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,801 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,804 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,805 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,834 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,916 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,946 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,947 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,948 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,969 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:57,999 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:44:58,037 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Routes startup summary (total:12 started:12)
+2021-09-03 15:44:58,037 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route2 (direct://outbound)
+2021-09-03 15:44:58,037 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route3 (seda://savelogfiles)
+2021-09-03 15:44:58,037 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route4 (seda://savetables)
+2021-09-03 15:44:58,037 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route5 (seda://b)
+2021-09-03 15:44:58,037 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route6 (rest://post:/komi:/outbound)
+2021-09-03 15:44:58,038 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyregistration (direct://proxyregistration)
+2021-09-03 15:44:58,038 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyresolution (direct://proxyresolution)
+2021-09-03 15:44:58,038 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route1 (rest-api:///api-doc)
+2021-09-03 15:44:58,038 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:44:58,038 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started direct:acctenqr (direct://acctenqr)
+2021-09-03 15:44:58,038 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started crdt_trnsf (direct://ctreq)
+2021-09-03 15:44:58,038 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started fictreq (direct://fictreq)
+2021-09-03 15:44:58,038 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Apache Camel 3.9.0 (camel-1) started in 567ms (build:24ms init:188ms start:355ms)
+2021-09-03 15:44:58,041 INFO org.springframework.boot.StartupInfoLogger [main] Started BifastOutboundApplication in 3.776 seconds (JVM running for 4.195)
+2021-09-03 15:44:58,264 INFO org.apache.juli.logging.DirectJDKLog [RMI TCP Connection(3)-127.0.0.1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-09-03 15:44:58,265 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Initializing Servlet 'dispatcherServlet'
+2021-09-03 15:44:58,266 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Completed initialization in 1 ms
+2021-09-03 15:45:26,396 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001901
+2021-09-03 15:45:26,500 INFO org.apache.camel.component.http.HttpComponent [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Created ClientConnectionManager org.apache.http.impl.conn.PoolingHttpClientConnectionManager@eb2783e
+2021-09-03 15:45:28,407 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001905
+2021-09-03 15:45:30,115 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001909
+2021-09-03 15:45:31,421 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001913
+2021-09-03 15:45:33,593 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001917
+2021-09-03 15:45:34,678 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001921
+2021-09-03 15:45:37,004 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001925
+2021-09-03 15:45:39,491 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001929
+2021-09-03 15:45:40,732 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001933
+2021-09-03 15:45:42,191 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001937
+2021-09-03 15:45:44,015 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001941
+2021-09-03 15:45:45,466 INFO org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar$SpringApplicationAdmin [RMI TCP Connection(5)-127.0.0.1] Application shutdown requested.
+2021-09-03 15:45:45,470 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutting down (timeout:45s)
+2021-09-03 15:45:45,474 INFO org.apache.camel.impl.engine.DefaultShutdownStrategy$ShutdownTask [Camel (camel-1) thread #4 - ShutdownTask] Waiting as there are still 2 inflight and pending exchanges to complete, timeout in 45 seconds. Inflights per route: [QueryReversal = 2]
+2021-09-03 15:45:49,057 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1] Routes shutdown summary (total:12 stopped:12)
+2021-09-03 15:45:49,058 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped fictreq (direct://fictreq)
+2021-09-03 15:45:49,111 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped crdt_trnsf (direct://ctreq)
+2021-09-03 15:45:49,112 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped direct:acctenqr (direct://acctenqr)
+2021-09-03 15:45:49,112 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:45:49,112 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped route1 (rest-api:///api-doc)
+2021-09-03 15:45:49,113 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped proxyresolution (direct://proxyresolution)
+2021-09-03 15:45:49,113 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped proxyregistration (direct://proxyregistration)
+2021-09-03 15:45:49,113 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped route6 (rest://post:/komi:/outbound)
+2021-09-03 15:45:49,114 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped route5 (seda://b)
+2021-09-03 15:45:49,114 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped route4 (seda://savetables)
+2021-09-03 15:45:49,114 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped route3 (seda://savelogfiles)
+2021-09-03 15:45:49,115 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1]     Stopped route2 (direct://outbound)
+2021-09-03 15:45:49,126 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(5)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutdown in 3s656ms (uptime:51s443ms)
+2021-09-03 15:45:49,140 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [RMI TCP Connection(5)-127.0.0.1] Destroyed CamelHttpTransportServlet[CamelServlet]
+2021-09-03 15:45:49,141 INFO io.hawt.web.auth.AuthenticationFilter [RMI TCP Connection(5)-127.0.0.1] Destroying hawtio authentication filter
+2021-09-03 15:45:49,143 INFO io.hawt.HawtioContextListener [RMI TCP Connection(5)-127.0.0.1] Destroying hawtio services
+2021-09-03 15:45:49,165 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [RMI TCP Connection(5)-127.0.0.1] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:45:49,168 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(5)-127.0.0.1] HikariPool-1 - Shutdown initiated...
+2021-09-03 15:45:49,172 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(5)-127.0.0.1] HikariPool-1 - Shutdown completed.
+2021-09-03 15:47:36,589 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 109014 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 15:47:36,591 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 15:47:37,014 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 15:47:37,058 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 39 ms. Found 11 JPA repository interfaces.
+2021-09-03 15:47:37,639 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
+2021-09-03 15:47:37,645 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:47:37,646 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2021-09-03 15:47:37,646 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
+2021-09-03 15:47:37,718 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2021-09-03 15:47:37,718 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1095 ms
+2021-09-03 15:47:37,843 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
+2021-09-03 15:47:37,851 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
+2021-09-03 15:47:37,853 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
+2021-09-03 15:47:37,854 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
+2021-09-03 15:47:37,860 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
+2021-09-03 15:47:37,952 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 15:47:37,980 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 15:47:38,059 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 15:47:38,115 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 15:47:38,164 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 15:47:38,174 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 15:47:38,628 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 15:47:38,633 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:47:39,014 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-09-03 15:47:39,483 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
+2021-09-03 15:47:39,528 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:47:39,538 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Initialized CamelHttpTransportServlet[name=CamelServlet, contextPath=]
+2021-09-03 15:47:39,539 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 9002 (http) with context path ''
+2021-09-03 15:47:39,649 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
+2021-09-03 15:47:39,870 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:39,931 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:39,934 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:39,935 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:39,963 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:39,994 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:40,028 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:40,029 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:40,030 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:40,049 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:40,079 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:47:40,120 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Routes startup summary (total:12 started:12)
+2021-09-03 15:47:40,120 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route2 (direct://outbound)
+2021-09-03 15:47:40,120 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route3 (seda://savelogfiles)
+2021-09-03 15:47:40,120 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route4 (seda://savetables)
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route5 (seda://b)
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route6 (rest://post:/komi:/outbound)
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyregistration (direct://proxyregistration)
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyresolution (direct://proxyresolution)
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route1 (rest-api:///api-doc)
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started direct:acctenqr (direct://acctenqr)
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started crdt_trnsf (direct://ctreq)
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started fictreq (direct://fictreq)
+2021-09-03 15:47:40,121 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Apache Camel 3.9.0 (camel-1) started in 523ms (build:27ms init:198ms start:298ms)
+2021-09-03 15:47:40,124 INFO org.springframework.boot.StartupInfoLogger [main] Started BifastOutboundApplication in 3.826 seconds (JVM running for 4.289)
+2021-09-03 15:47:41,272 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001945
+2021-09-03 15:47:41,364 INFO org.apache.camel.component.http.HttpComponent [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Created ClientConnectionManager org.apache.http.impl.conn.PoolingHttpClientConnectionManager@55fec182
+2021-09-03 15:47:42,034 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] {"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"MNDRIDJA"}}}},"BizMsgIdr":"20210903FASTIDJA010O0200001948","MsgDefIdr":"pacs.002.001.10","BizSvc":"CTRESPONSE","CreDt":"2021-09-03T08:47:42"},"Document":{"FitoFIPmtStsRpt":{"GrpHdr":{"MsgId":"20210903FASTIDJA01000001947","CreDtTm":"2021-09-03T08:47:42"},"OrgnlGrpInfAndSts":[{"OrgnlMsgId":"20210903MNDRIDJA01100001946","OrgnlMsgNmId":"pacs.008.001.08"}],"TxInfAndSts":[{"OrgnlEndToEndId":"20210903MNDRIDJA011O9900001945","OrgnlTxId":"20210903FASTIDJA010ORB98314178","TxSts":"ACTC","StsRsnInf":[{"Rsn":{"Prtry":"U000"},"AddtlInf":[null]}],"OrgnlTxRef":{"Cdtr":{}},"SplmtryData":[{"Envlp":{"Cdtr":{"Tp":"01","Id":"KTP-2004384","RsdntSts":"01","TwnNm":"0300"}}}]}]}}}}
+2021-09-03 15:47:42,303 INFO org.apache.juli.logging.DirectJDKLog [RMI TCP Connection(3)-127.0.0.1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-09-03 15:47:42,304 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Initializing Servlet 'dispatcherServlet'
+2021-09-03 15:47:42,305 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Completed initialization in 1 ms
+2021-09-03 15:58:50,391 INFO org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar$SpringApplicationAdmin [RMI TCP Connection(15)-127.0.0.1] Application shutdown requested.
+2021-09-03 15:58:50,397 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutting down (timeout:45s)
+2021-09-03 15:58:52,413 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1] Routes shutdown summary (total:12 stopped:12)
+2021-09-03 15:58:52,414 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped fictreq (direct://fictreq)
+2021-09-03 15:58:52,414 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped crdt_trnsf (direct://ctreq)
+2021-09-03 15:58:52,414 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped direct:acctenqr (direct://acctenqr)
+2021-09-03 15:58:52,414 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:58:52,414 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped route1 (rest-api:///api-doc)
+2021-09-03 15:58:52,415 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped proxyresolution (direct://proxyresolution)
+2021-09-03 15:58:52,415 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped proxyregistration (direct://proxyregistration)
+2021-09-03 15:58:52,415 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped route6 (rest://post:/komi:/outbound)
+2021-09-03 15:58:52,415 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped route5 (seda://b)
+2021-09-03 15:58:52,415 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped route4 (seda://savetables)
+2021-09-03 15:58:52,415 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped route3 (seda://savelogfiles)
+2021-09-03 15:58:52,415 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1]     Stopped route2 (direct://outbound)
+2021-09-03 15:58:52,419 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(15)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutdown in 2s22ms (uptime:11m12s)
+2021-09-03 15:58:52,426 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [RMI TCP Connection(15)-127.0.0.1] Destroyed CamelHttpTransportServlet[CamelServlet]
+2021-09-03 15:58:52,427 INFO io.hawt.web.auth.AuthenticationFilter [RMI TCP Connection(15)-127.0.0.1] Destroying hawtio authentication filter
+2021-09-03 15:58:52,427 INFO io.hawt.HawtioContextListener [RMI TCP Connection(15)-127.0.0.1] Destroying hawtio services
+2021-09-03 15:58:52,437 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [RMI TCP Connection(15)-127.0.0.1] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:58:52,438 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(15)-127.0.0.1] HikariPool-1 - Shutdown initiated...
+2021-09-03 15:58:52,441 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(15)-127.0.0.1] HikariPool-1 - Shutdown completed.
+2021-09-03 15:59:14,108 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 109896 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 15:59:14,110 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 15:59:14,494 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 15:59:14,536 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 37 ms. Found 11 JPA repository interfaces.
+2021-09-03 15:59:15,079 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
+2021-09-03 15:59:15,084 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:59:15,085 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2021-09-03 15:59:15,085 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
+2021-09-03 15:59:15,150 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2021-09-03 15:59:15,151 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1014 ms
+2021-09-03 15:59:15,275 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
+2021-09-03 15:59:15,283 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
+2021-09-03 15:59:15,285 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
+2021-09-03 15:59:15,287 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
+2021-09-03 15:59:15,293 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
+2021-09-03 15:59:15,391 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 15:59:15,421 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 15:59:15,513 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 15:59:15,577 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 15:59:15,633 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 15:59:15,646 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 15:59:16,101 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 15:59:16,106 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 15:59:16,572 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-09-03 15:59:17,046 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
+2021-09-03 15:59:17,090 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-9002"]
+2021-09-03 15:59:17,100 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Initialized CamelHttpTransportServlet[name=CamelServlet, contextPath=]
+2021-09-03 15:59:17,101 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 9002 (http) with context path ''
+2021-09-03 15:59:17,193 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
+2021-09-03 15:59:17,408 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,461 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,463 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,464 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,490 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,516 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,553 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,554 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,555 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,574 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,602 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 15:59:17,636 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Routes startup summary (total:12 started:12)
+2021-09-03 15:59:17,636 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route2 (direct://outbound)
+2021-09-03 15:59:17,636 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route3 (seda://savelogfiles)
+2021-09-03 15:59:17,636 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route4 (seda://savetables)
+2021-09-03 15:59:17,637 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route5 (seda://b)
+2021-09-03 15:59:17,637 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route6 (rest://post:/komi:/outbound)
+2021-09-03 15:59:17,637 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyregistration (direct://proxyregistration)
+2021-09-03 15:59:17,637 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyresolution (direct://proxyresolution)
+2021-09-03 15:59:17,637 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route1 (rest-api:///api-doc)
+2021-09-03 15:59:17,637 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 15:59:17,637 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started direct:acctenqr (direct://acctenqr)
+2021-09-03 15:59:17,638 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started crdt_trnsf (direct://ctreq)
+2021-09-03 15:59:17,638 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started fictreq (direct://fictreq)
+2021-09-03 15:59:17,638 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Apache Camel 3.9.0 (camel-1) started in 486ms (build:26ms init:181ms start:279ms)
+2021-09-03 15:59:17,641 INFO org.springframework.boot.StartupInfoLogger [main] Started BifastOutboundApplication in 3.789 seconds (JVM running for 4.235)
+2021-09-03 15:59:18,351 INFO org.apache.juli.logging.DirectJDKLog [RMI TCP Connection(3)-127.0.0.1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-09-03 15:59:18,351 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Initializing Servlet 'dispatcherServlet'
+2021-09-03 15:59:18,353 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Completed initialization in 2 ms
+2021-09-03 15:59:31,387 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001949
+2021-09-03 15:59:31,493 INFO org.apache.camel.component.http.HttpComponent [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Created ClientConnectionManager org.apache.http.impl.conn.PoolingHttpClientConnectionManager@13a2d0b8
+2021-09-03 16:04:52,330 INFO org.springframework.boot.admin.SpringApplicationAdminMXBeanRegistrar$SpringApplicationAdmin [RMI TCP Connection(8)-127.0.0.1] Application shutdown requested.
+2021-09-03 16:04:52,337 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutting down (timeout:45s)
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1] Routes shutdown summary (total:12 stopped:12)
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped fictreq (direct://fictreq)
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped crdt_trnsf (direct://ctreq)
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped direct:acctenqr (direct://acctenqr)
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route1 (rest-api:///api-doc)
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped proxyresolution (direct://proxyresolution)
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped proxyregistration (direct://proxyregistration)
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route6 (rest://post:/komi:/outbound)
+2021-09-03 16:04:54,477 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route5 (seda://b)
+2021-09-03 16:04:54,478 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route4 (seda://savetables)
+2021-09-03 16:04:54,478 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route3 (seda://savelogfiles)
+2021-09-03 16:04:54,478 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1]     Stopped route2 (direct://outbound)
+2021-09-03 16:04:54,481 INFO org.apache.camel.impl.engine.AbstractCamelContext [RMI TCP Connection(8)-127.0.0.1] Apache Camel 3.9.0 (camel-1) shutdown in 2s144ms (uptime:5m37s)
+2021-09-03 16:04:54,489 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [RMI TCP Connection(8)-127.0.0.1] Destroyed CamelHttpTransportServlet[CamelServlet]
+2021-09-03 16:04:54,489 INFO io.hawt.web.auth.AuthenticationFilter [RMI TCP Connection(8)-127.0.0.1] Destroying hawtio authentication filter
+2021-09-03 16:04:54,489 INFO io.hawt.HawtioContextListener [RMI TCP Connection(8)-127.0.0.1] Destroying hawtio services
+2021-09-03 16:04:54,498 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [RMI TCP Connection(8)-127.0.0.1] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 16:04:54,500 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(8)-127.0.0.1] HikariPool-1 - Shutdown initiated...
+2021-09-03 16:04:54,502 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(8)-127.0.0.1] HikariPool-1 - Shutdown completed.
+2021-09-03 16:04:56,141 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 110338 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 16:04:56,143 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 16:04:56,605 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 16:04:56,648 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 37 ms. Found 11 JPA repository interfaces.
+2021-09-03 16:04:57,196 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
+2021-09-03 16:04:57,202 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
+2021-09-03 16:04:57,202 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2021-09-03 16:04:57,202 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
+2021-09-03 16:04:57,263 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2021-09-03 16:04:57,263 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1092 ms
+2021-09-03 16:04:57,370 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
+2021-09-03 16:04:57,378 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
+2021-09-03 16:04:57,431 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
+2021-09-03 16:04:57,434 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
+2021-09-03 16:04:57,452 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
+2021-09-03 16:04:57,554 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 16:04:57,581 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 16:04:57,662 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 16:04:57,717 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 16:04:57,767 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 16:04:57,777 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 16:04:58,197 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 16:04:58,202 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 16:04:58,576 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-09-03 16:04:59,049 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
+2021-09-03 16:04:59,093 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-9002"]
+2021-09-03 16:04:59,103 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Initialized CamelHttpTransportServlet[name=CamelServlet, contextPath=]
+2021-09-03 16:04:59,104 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 9002 (http) with context path ''
+2021-09-03 16:04:59,197 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
+2021-09-03 16:04:59,405 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,456 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,459 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,459 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,485 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,510 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,540 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,541 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,542 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,560 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,591 INFO org.apache.camel.component.jackson.JacksonDataFormat [main] The option autoDiscoverObjectMapper is set to false, Camel won't search in the registry
+2021-09-03 16:04:59,625 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Routes startup summary (total:12 started:12)
+2021-09-03 16:04:59,625 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route2 (direct://outbound)
+2021-09-03 16:04:59,625 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route3 (seda://savelogfiles)
+2021-09-03 16:04:59,625 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route4 (seda://savetables)
+2021-09-03 16:04:59,625 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route5 (seda://b)
+2021-09-03 16:04:59,625 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route6 (rest://post:/komi:/outbound)
+2021-09-03 16:04:59,626 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyregistration (direct://proxyregistration)
+2021-09-03 16:04:59,626 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started proxyresolution (direct://proxyresolution)
+2021-09-03 16:04:59,626 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started route1 (rest-api:///api-doc)
+2021-09-03 16:04:59,626 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started QueryReversal (sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING')
+2021-09-03 16:04:59,626 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started direct:acctenqr (direct://acctenqr)
+2021-09-03 16:04:59,626 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started crdt_trnsf (direct://ctreq)
+2021-09-03 16:04:59,626 INFO org.apache.camel.impl.engine.AbstractCamelContext [main]     Started fictreq (direct://fictreq)
+2021-09-03 16:04:59,626 INFO org.apache.camel.impl.engine.AbstractCamelContext [main] Apache Camel 3.9.0 (camel-1) started in 472ms (build:26ms init:180ms start:266ms)
+2021-09-03 16:04:59,629 INFO org.springframework.boot.StartupInfoLogger [main] Started BifastOutboundApplication in 3.746 seconds (JVM running for 4.209)
+2021-09-03 16:05:00,235 INFO org.apache.juli.logging.DirectJDKLog [RMI TCP Connection(3)-127.0.0.1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2021-09-03 16:05:00,236 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Initializing Servlet 'dispatcherServlet'
+2021-09-03 16:05:00,238 INFO org.springframework.web.servlet.FrameworkServlet [RMI TCP Connection(3)-127.0.0.1] Completed initialization in 2 ms
+2021-09-03 16:05:08,856 INFO org.apache.camel.spi.CamelLogger [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Submit Reversal CT no: 20210903MNDRIDJA011O9900001953
+2021-09-03 16:05:08,955 INFO org.apache.camel.component.http.HttpComponent [Camel (camel-1) thread #3 - sql://select%20*%20from%20CREDIT_TRANSFER%20ct%20where%20ct.reversal%20=%20'PENDING'] Created ClientConnectionManager org.apache.http.impl.conn.PoolingHttpClientConnectionManager@78a7e186

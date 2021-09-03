@@ -345,7 +345,8 @@ public class Pacs008MessageService {
 			throws DatatypeConfigurationException {
 		
 		FIToFICustomerCreditTransferV08 rctRequest = creditTransferRequest(seed);
-
+		
+		rctRequest.getCdtTrfTxInf().get(0).getPmtId().setTxId(seed.getEndToEndId());
 		return rctRequest;
 		
 	}

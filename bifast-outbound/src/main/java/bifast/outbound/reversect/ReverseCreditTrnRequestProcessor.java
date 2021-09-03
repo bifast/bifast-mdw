@@ -33,10 +33,8 @@ public class ReverseCreditTrnRequestProcessor implements Processor {
 
 	    Map<String,Object> out = (Map<String,Object>) exchange.getIn().getHeader("rcv_qryresult");
 	    
-	    System.out.println("Hasilnya " + out.get("id"));
-		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = appHeaderService.initAppHdr((String)out.get("recpt_bank"), "pacs.008.001.08", "011", "99");
+		hdr = appHeaderService.initAppHdr((String)out.get("orign_bank"), "pacs.008.001.08", "011", "99");
 
 		Pacs008Seed seed = new Pacs008Seed();
 		
@@ -45,21 +43,23 @@ public class ReverseCreditTrnRequestProcessor implements Processor {
 		seed.setCategoryPurpose("99");
 		seed.setChannel("99");
 		
-		seed.setCrdtAccountNo((String) out.get("creditor_acct_no"));		
-//		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
-		seed.setCrdtId((String) out.get("creditor_id"));
-//		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
-//		seedCreditTrn.setCrdtIdType(chnReq.getCrdtIdType());
-//		
-		seed.setDbtrAccountNo((String) out.get("debtor_acct_no"));
-//		seed.setDbtrAccountType(chnReq.getDbtrAccountType());
-//		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
-//		seedCreditTrn.setDbtrId(chnReq.getDbtrId());
-//		seedCreditTrn.setDbtrIdType(chnReq.getDbtrIdType());
+		seed.setDbtrId((String) out.get("creditor_id"));
+		seed.setDbtrIdType((String)out.get("creditor_type"));
+		seed.setDbtrAccountNo((String) out.get("creditor_acct_no"));
+		seed.setDbtrAccountType((String) out.get("creditor_acct_type"));
+
+		seed.setCrdtId((String) out.get("debtor_id"));
+		seed.setCrdtIdType((String)out.get("debtor_type"));
+		seed.setCrdtAccountNo((String) out.get("debtor_acct_no"));
+		seed.setCrdtAccountType((String) out.get("debtor_acct_type"));
+
 		seed.setOrignBank(config.getBankcode());
-//		seedCreditTrn.setPaymentInfo(chnReq.getPaymentInfo());
+		seed.setPaymentInfo("Reversal");
+
 		seed.setRecptBank((String) out.get("orign_bank"));
 		seed.setTrnType("011");
+		
+		seed.setEndToEndId((String) out.get("crdttrn_req_bizmsgid"));
 		
 		Document doc = new Document();
 		doc.setFiToFICstmrCdtTrf(pacs008MessageService.reverseCreditTransferRequest(seed));

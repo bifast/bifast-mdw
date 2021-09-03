@@ -6,6 +6,8 @@ public class Pacs008Seed {
 
 	private String trnType;   // AcctEnq & CrdtTrn
 	private String bizMsgId;  // AcctEnq CrdtTrn
+	private String endToEndId;
+	
 	private BigDecimal amount; // AcctEnq CrdtTrn
 	private String orignBank; //  AcctEnq  CrdtTrn
 	private String recptBank; //  AcctEnq  CrdtTrn
@@ -43,6 +45,14 @@ public class Pacs008Seed {
 	public void setBizMsgId(String bizMsgId) {
 		this.bizMsgId = bizMsgId;
 	}
+	public String getEndToEndId() {
+		return endToEndId;
+	}
+
+	public void setEndToEndId(String endToEndId) {
+		this.endToEndId = endToEndId;
+	}
+
 	public BigDecimal getAmount() {
 		return amount;
 	}

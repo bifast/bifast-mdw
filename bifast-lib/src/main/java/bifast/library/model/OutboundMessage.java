@@ -30,7 +30,7 @@ public class OutboundMessage {
 	private String msgDefIdr;
 	
 	@Column(name="RECPT_BANK")
-	private String toFinId;
+	private String recipientBank;
 	
 	@Column(name="RESP_BIZMSGID")
 	private String respBizMsgId;
@@ -105,12 +105,12 @@ public class OutboundMessage {
 		this.msgDefIdr = msgDefIdr;
 	}
 
-	public String getToFinId() {
-		return toFinId;
+	public String getRecipientBank() {
+		return recipientBank;
 	}
 
-	public void setToFinId(String toFinId) {
-		this.toFinId = toFinId;
+	public void setRecipientBank(String recipientBank) {
+		this.recipientBank = recipientBank;
 	}
 
 	public String getRespBizMsgId() {

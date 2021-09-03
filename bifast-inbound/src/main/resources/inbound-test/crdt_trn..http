@@ -18,20 +18,19 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "INDOIDJA"
+              "Id" : "MNDRIDJA"
             }
           }
         }
       },
-      "BizMsgIdr" : "20210903FASTIDJA010ORB98314268",
+      "BizMsgIdr" : "20210903FASTIDJA010ORB98314178",
       "MsgDefIdr" : "pacs.008.001.08",
-      "CreDt" : "2021-09-03T18:00:00",
-      "CpyDplct": "DUPL"
+      "CreDt" : "2021-09-03T18:00:00"
     },
     "Document" : {
       "FitoFICstmrCdtTrf" : {
         "GrpHdr" : {
-          "MsgId" : "20210301FASTIDJA01012345628",
+          "MsgId" : "20210903FASTIDJAORB98314178",
           "CreDtTm" : "2021-03-01T19:00:00",
           "NbOfTxs" : "1",
           "SttlmInf" : {
@@ -40,8 +39,8 @@ Content-Type: application/json
         },
         "CdtTrfTxInf" : [ {
           "PmtId" : {
-            "EndToEndId" : "20210301FASTIDJA010ORB12114378",
-            "TxId" : "20210301FASTIDJA01012345678"
+            "EndToEndId" : "20210903FASTIDJA010ORB98314178",
+            "TxId" : "20210903FASTIDJAORB98314178"
           },
           "PmtTpInf" : {
             "LclInstrm" : {
@@ -52,17 +51,17 @@ Content-Type: application/json
             }
           },
           "IntrBkSttlmAmt" : {
-            "Value" : "1234.56",
+            "Value" : "50234.26",
             "Ccy" : "IDR"
           },
           "IntrBkSttlmDt" : "2021-03-19T00:00:00",
           "ChrgBr" : "DEBT",
           "Dbtr" : {
-            "Nm" : "JAMES BROWN",
+            "Nm" : "ANDI BROWN",
             "Id" : {
               "PrvtId" : {
                 "Othr" : [ {
-                  "Id" : "0102030405060708"
+                  "Id" : "8881234777"
                 } ]
               }
             }

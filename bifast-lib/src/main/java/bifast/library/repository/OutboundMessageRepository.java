@@ -13,7 +13,7 @@ import bifast.library.model.OutboundMessage;
 public interface OutboundMessageRepository extends JpaRepository<OutboundMessage, Long> {
 
 	public Optional<OutboundMessage> findByBizMsgIdr (String bizMsgIdr);
-	public List<OutboundMessage> findByToFinId (String toFinId);
+	public List<OutboundMessage> findByRecipientBank (String recipientBank);
 	
 	public List<OutboundMessage> findAllByChannelRequestDTBetween (LocalDateTime date1, LocalDateTime date2);
 	public List<OutboundMessage> findAllByTransactionTypeAndChannelRequestDTBetween (String trxType, LocalDateTime date1, LocalDateTime date2);

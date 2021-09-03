@@ -1,6 +1,7 @@
 package bifast.outbound.route;
 
-import org.apache.camel.ExchangePattern;
+import java.net.SocketTimeoutException;
+
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.pojo.ChannelResponseMessage;
+import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor;
+import bifast.outbound.processor.CheckSettlementProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 import bifast.outbound.reversect.ReverseCreditTrnRequestProcessor;
-import bifast.outbound.reversect.ReverseCreditTrnResponseProcessor;
 
 @Component
 public class ReversalRoute extends RouteBuilder {
@@ -23,23 +23,16 @@ public class ReversalRoute extends RouteBuilder {
 	@Autowired
 	private ReverseCreditTrnRequestProcessor reverseCTRequestProcessor;
 	@Autowired
-	private ReverseCreditTrnResponseProcessor reverseCTResponseProcessor;
-	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
+	@Autowired
+	private CheckSettlementProcessor checkSettlementProcessor;
+	@Autowired
+	private PaymentStatusOnTimeoutProcessor paymentStatusTimeoutProcessor;
 
-	JacksonDataFormat jsonChnlReverseCTRequestFormat = new JacksonDataFormat(ChannelReverseCreditTransferRequest.class);
-	JacksonDataFormat jsonChnlResponseFormat = new JacksonDataFormat(ChannelResponseMessage.class);
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
 
 	@Override
 	public void configure() throws Exception {
-
-		jsonChnlReverseCTRequestFormat.setInclude("NON_NULL");
-		jsonChnlReverseCTRequestFormat.setInclude("NON_EMPTY");
-		jsonChnlResponseFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		jsonChnlResponseFormat.setInclude("NON_NULL");
-		jsonChnlResponseFormat.setInclude("NON_EMPTY");
-		jsonChnlResponseFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		jsonBusinessMessageFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonBusinessMessageFormat.setInclude("NON_NULL");
@@ -55,57 +48,79 @@ public class ReversalRoute extends RouteBuilder {
 					+ "maxMessagesPerPoll=3")
 			.routeId("QueryReversal")
 
-			.log("${header.req_qryresult}")
-//			.when().simple("${header.rcv_qryresult[crdtStatus]} == 'ACTC'")
-
 			.setHeader("req_channelRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
 			.process(reverseCTRequestProcessor)
+			.setHeader("req_objbi", simple("${body}"))
+			.marshal(jsonBusinessMessageFormat)
+
+			//log message ke ci-hub
+			.setHeader("log_label", constant("CI-Hub Request"))
+			.to("seda:savelogfiles?exchangePattern=InOnly")
+
+			// kirim ke CI-HUB
+			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			.doTry()
+				.log("Submit Reversal CT no: ${header.req_objbi.appHdr.bizMsgIdr}")
+				.setHeader("HttpMethod", constant("POST"))
+				.enrich("http:{{bifast.ciconnector-url}}?"
+						+ "socketTimeout={{bifast.timeout}}&" 
+						+ "bridgeEndpoint=true",
+						enrichmentAggregator)
+				.convertBodyTo(String.class)
+				
+			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
+				.log("Timeout")
+				.setHeader("log_label", constant("TIMEOUT"))
+				.to("seda:savelogfiles?exchangePattern=InOnly")
+
+				// cek settlement dulu, kalo ga ada baru payment status
+				.process(checkSettlementProcessor)
+				.choice()
+					.when().simple("${body} == ''")
+						.log("Payment Status")
+						.process(paymentStatusTimeoutProcessor)
+						.marshal(jsonBusinessMessageFormat)
+
+						// log message dari ci-hub
+						.setHeader("log_label", constant("Payment Status Request"))
+						.to("seda:savelogfiles?exchangePattern=InOnly")
+
+						.setHeader("HttpMethod", constant("POST"))
+						.enrich("http:{{bifast.ciconnector-url}}?bridgeEndpoint=true", enrichmentAggregator)
+						.convertBodyTo(String.class)
+
+						// log message dari ci-hub
+						.setHeader("log_label", constant("CI-Hub Response"))
+						.to("seda:savelogfiles?exchangePattern=InOnly")
+
+					.otherwise()
+						.log("Nemu settlement")
+						// log message dari ci-hub
+						.setHeader("log_label", constant("Settlement"))
+						.to("seda:savelogfiles?exchangePattern=InOnly")
+
+				.end()
+			.endDoTry()
+			.end()
+			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			
-//			.removeHeaders("req_*")
+			.unmarshal(jsonBusinessMessageFormat)
+			.setHeader("resp_objbi", simple("${body}"))	
+
+			.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+
+			// save audit tables
+			.setHeader("rcv_msgType", constant("reversal"))
+			.to("seda:savetables?exchangePattern=InOnly")
+
+			.to("sql:update CREDIT_TRANSFER set reversal = 'DONE' "
+					+ "where id = :#${header.rcv_qryresult[id]}")
+			
+			.removeHeaders("req_*")
+			.removeHeader("rcv_*")
 		;
 
-
-		// Untuk Proses Reverse Credit Transfer
-//		from("direct:reversect")
-			
-//		setHeader("rcv_msgType", "ReverseCreditTransfer");
-//		setHeader("rcv_channel", req.getReverseCreditTransferRequest());
-
-//			.setHeader("log_filename", simple("prxyrgst.${header.rcv_channel.intrnRefId}.arch"))
-//
-//			.convertBodyTo(String.class)
-//			.unmarshal(jsonChnlReverseCTRequestFormat)
-//			.setHeader("req_channelReq",simple("${body}"))
-//			.setHeader("req_msgType", constant("ReverseCreditTransfer"))
-			
-			// convert channel request jadi pacs008 message
-//			.process(reverseCTRequestProcessor)
-//			.setHeader("req_objbi", simple("${body}"))
-//			.marshal(jsonBusinessMessageFormat)
-			
-			// kirim ke CI-HUB
-//			.setHeader("HttpMethod", constant("POST"))
-//			.enrich("http:{{bifast.ciconnector-url}}?"
-//					+ "socketTimeout={{bifast.timeout}}&" 
-//					+ "bridgeEndpoint=true",
-//					enrichmentAggregator)
-//			.convertBodyTo(String.class)
-//			
-//			.unmarshal(jsonBusinessMessageFormat)
-//			.setHeader("resp_objbi", simple("${body}"))	
-//
-//			.process(reverseCTResponseProcessor)
-//			.setHeader("resp_channel", simple("${body}"))
-//
-//			.setExchangePattern(ExchangePattern.InOnly)
-//			.to("seda:endlog")
-//			
-//			.setBody(simple("${header.resp_channel}"))
-//			.marshal(jsonChnlResponseFormat)
-//			.removeHeaders("resp_*")
-//			.removeHeaders("req_*")
-//		;
 		
 	}
 
