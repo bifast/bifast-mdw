@@ -26,7 +26,6 @@ public class CheckSettlementProcessor implements Processor {
 
 		if (settlementList.size() > 0) {
 			Settlement settlement = settlementList.get(0);
-			settlement.setAck("Y");
 			settlementRepo.save(settlement);
 			
 			exchange.getIn().setBody(settlement.getFullMessage());

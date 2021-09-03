@@ -107,7 +107,7 @@ public class TransactionRoute extends RouteBuilder {
 
 			//log channel request message
 			.marshal(jsonChnlAccountEnqrReqFormat)
-			.setHeader("log_label", constant("Channel Request Message"))
+			.setHeader("log_label", constant("Channel Request"))
 			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// convert channel request jadi pacs008 message
@@ -118,7 +118,7 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonBusinessMessageFormat)
 			
 			//log message ke ci-hub
-			.setHeader("log_label", constant("Outbound Message"))
+			.setHeader("log_label", constant("CI-Hub Request"))
 			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// kirim ke CI-HUB
@@ -133,7 +133,7 @@ public class TransactionRoute extends RouteBuilder {
 				.convertBodyTo(String.class)
 
 				// log message dari ci-hub
-				.setHeader("log_label", constant("CI-Hub Response Message"))
+				.setHeader("log_label", constant("CI-Hub Response"))
 				.to("seda:savelogfiles?exchangePattern=InOnly")
 
 				.unmarshal(jsonBusinessMessageFormat)
@@ -154,7 +154,7 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonChnlResponseFormat)
 			
 			// log message reponse ke channel
-			.setHeader("log_label", constant("Channel Response Message"))
+			.setHeader("log_label", constant("Channel Response"))
 			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 		;
@@ -166,7 +166,7 @@ public class TransactionRoute extends RouteBuilder {
 
 			//log channel request message
 			.marshal(jsonChnlCreditTransferRequestFormat)
-			.setHeader("log_label", constant("Channel Request Message"))
+			.setHeader("log_label", constant("Channel Request"))
 			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// convert channel request jadi pacs008 message
@@ -176,7 +176,7 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonBusinessMessageFormat)
 			
 			//log message ke ci-hub
-			.setHeader("log_label", constant("Credit Transfer Request Message"))
+			.setHeader("log_label", constant("CI-Hub Request"))
 			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// kirim ke CI-HUB
@@ -191,11 +191,14 @@ public class TransactionRoute extends RouteBuilder {
 				.convertBodyTo(String.class)
 				
 				// log message dari ci-hub
-				.setHeader("log_label", constant("Credit Transfer Response Message"))
+				.setHeader("log_label", constant("CI-Hub Response"))
 				.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
 				.log("Timeout")
+				.setHeader("log_label", constant("TIMEOUT"))
+				.to("seda:savelogfiles?exchangePattern=InOnly")
+
 				// cek settlement dulu, kalo ga ada baru payment status
 				.process(checkSettlementProcessor)
 				.choice()
@@ -205,7 +208,7 @@ public class TransactionRoute extends RouteBuilder {
 						.marshal(jsonBusinessMessageFormat)
 
 						// log message dari ci-hub
-						.setHeader("log_label", constant("Payment Status Request Message"))
+						.setHeader("log_label", constant("Payment Status Request"))
 						.to("seda:savelogfiles?exchangePattern=InOnly")
 
 						.setHeader("HttpMethod", constant("POST"))
@@ -213,13 +216,13 @@ public class TransactionRoute extends RouteBuilder {
 						.convertBodyTo(String.class)
 
 						// log message dari ci-hub
-						.setHeader("log_label", constant("Payment Status Response Message"))
+						.setHeader("log_label", constant("CI-Hub Response"))
 						.to("seda:savelogfiles?exchangePattern=InOnly")
 
 					.otherwise()
 						.log("Nemu settlement")
 						// log message dari ci-hub
-						.setHeader("log_label", constant("Payment Status Response Message"))
+						.setHeader("log_label", constant("Settlement"))
 						.to("seda:savelogfiles?exchangePattern=InOnly")
 
 				.end()
@@ -235,7 +238,7 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonChnlResponseFormat)
 			
 			// log message reponse ke channel
-			.setHeader("log_label", constant("Channel Response Message"))
+			.setHeader("log_label", constant("Channel Response"))
 			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 		;
@@ -257,7 +260,7 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonBusinessMessageFormat)
 	
 			//log message ke ci-hub
-			.setHeader("log_label", constant("FI Credit Transfer Request Message"))
+			.setHeader("log_label", constant("CI-Hub Request"))
 			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			// kirim ke CI-HUB
@@ -270,7 +273,7 @@ public class TransactionRoute extends RouteBuilder {
 			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
 			// log message dari ci-hub
-			.setHeader("log_label", constant("FI Credit Transfer Response Message"))
+			.setHeader("log_label", constant("CI-Hub Response"))
 			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 			.unmarshal(jsonBusinessMessageFormat)
@@ -282,7 +285,7 @@ public class TransactionRoute extends RouteBuilder {
 			.marshal(jsonChnlResponseFormat)
 
 			// log message reponse ke channel
-			.setHeader("log_label", constant("Channel Response Message"))
+			.setHeader("log_label", constant("Channel Response"))
 			.to("seda:savelogfiles?exchangePattern=InOnly")
 
 

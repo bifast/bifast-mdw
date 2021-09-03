@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.pacs008.AccountIdentification4Choice;
 import bifast.library.iso20022.pacs008.ActiveCurrencyAndAmount;
+import bifast.library.iso20022.pacs008.BIAddtlCstmrInf;
+import bifast.library.iso20022.pacs008.BISupplementaryData1;
+import bifast.library.iso20022.pacs008.BISupplementaryDataEnvelope1;
 import bifast.library.iso20022.pacs008.BranchAndFinancialInstitutionIdentification6;
 import bifast.library.iso20022.pacs008.CashAccount38;
 import bifast.library.iso20022.pacs008.CashAccountType2Choice;
@@ -313,10 +316,39 @@ public class Pacs008MessageService {
 		
 		// CdtTrfTxInf / SplmtryData
 		// unt credit transfer tidak digunakan
+		BISupplementaryDataEnvelope1 envl = new BISupplementaryDataEnvelope1();
+
+		if (!(null==seed.getCrdtIdType())) {
+			BIAddtlCstmrInf custInfo = new BIAddtlCstmrInf();
+			custInfo.setTp(seed.getCrdtIdType());
+			envl.setCdtr(custInfo);
+		}
+		if (!(null==seed.getDbtrIdType())) {
+			BIAddtlCstmrInf custInfo = new BIAddtlCstmrInf();
+			custInfo.setTp(seed.getDbtrIdType());
+			envl.setDbtr(custInfo);
+		}
+		
+		if ((!(null==envl.getCdtr())) || (!(null==envl.getDbtr())) ) {
+			BISupplementaryData1 suppData = new BISupplementaryData1();
+			suppData.setEnvlp(envl);
+			cdtTrfTxInf.getSplmtryData().add(suppData);
+		}
 		
 		pacs008.getCdtTrfTxInf().add(cdtTrfTxInf);
 		
 		return pacs008;
 
 	}
+
+	public FIToFICustomerCreditTransferV08 reverseCreditTransferRequest (Pacs008Seed seed) 
+			throws DatatypeConfigurationException {
+		
+		FIToFICustomerCreditTransferV08 rctRequest = creditTransferRequest(seed);
+
+		return rctRequest;
+		
+	}
+
+
 }

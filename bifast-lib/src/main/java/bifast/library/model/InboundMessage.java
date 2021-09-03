@@ -8,45 +8,47 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import bifast.library.iso20022.head001.CopyDuplicate1Code;
-
 @Entity(name="INBOUND_MESSAGE")
 public class InboundMessage {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long Id;
+	private Long id;
 
+	
 	@Column(name="BIZMSGID")
 	private String bizMsgIdr;
 	
 	@Column(name="MSG_NAME")
-	private String msgDefIdr;
+	private String messageName;
 	
 	@Column(name="ORGN_BANK")
 	private String frFinId;
 	
 	@Column(name="BIZSVC")
 	private String bizSvc;
-	@Column(name="COPY_MSG")
-	private CopyDuplicate1Code cpyDplct;
-	@Column(name="DUPL")
-	private String pssblDplct;
+	@Column(name="COPYDUPL")
+	private String copyDupl;
+
 	@Column(name="RECEIVE_DT")
 	private LocalDateTime receiveDt;
 	
+	private String respStatus;
+	private String respRejectMsg;
 	@Column (name="RESP_BIZMSGIDR")
 	private String respBizMsgIdr;
-	private String respStatus;
+
+	private LocalDateTime cihubRequestTime;
+	private LocalDateTime cihubResponseTime;
 	
 	public InboundMessage() {}
-	
+
 	public Long getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(Long id) {
-		Id = id;
+		this.id = id;
 	}
 
 	public String getBizMsgIdr() {
@@ -57,12 +59,12 @@ public class InboundMessage {
 		this.bizMsgIdr = bizMsgIdr;
 	}
 
-	public String getMsgDefIdr() {
-		return msgDefIdr;
+	public String getMessageName() {
+		return messageName;
 	}
 
-	public void setMsgDefIdr(String msgDefIdr) {
-		this.msgDefIdr = msgDefIdr;
+	public void setMessageName(String messageName) {
+		this.messageName = messageName;
 	}
 
 	public String getFrFinId() {
@@ -81,20 +83,12 @@ public class InboundMessage {
 		this.bizSvc = bizSvc;
 	}
 
-	public CopyDuplicate1Code getCpyDplct() {
-		return cpyDplct;
+	public String getCopyDupl() {
+		return copyDupl;
 	}
 
-	public void setCpyDplct(CopyDuplicate1Code cpyDplct) {
-		this.cpyDplct = cpyDplct;
-	}
-
-	public String getPssblDplct() {
-		return pssblDplct;
-	}
-
-	public void setPssblDplct(String pssblDplct) {
-		this.pssblDplct = pssblDplct;
+	public void setCopyDupl(String copyDupl) {
+		this.copyDupl = copyDupl;
 	}
 
 	public LocalDateTime getReceiveDt() {
@@ -105,21 +99,21 @@ public class InboundMessage {
 		this.receiveDt = receiveDt;
 	}
 
-//	public String getFullMessage() {
-//		return fullMessage;
-//	}
-//
-//	public void setFullMessage(String fullMessage) {
-//		this.fullMessage = fullMessage;
-//	}
-//
-//	public String getResponseMessage() {
-//		return responseMessage;
-//	}
-//
-//	public void setResponseMessage(String responseMessage) {
-//		this.responseMessage = responseMessage;
-//	}
+	public String getRespStatus() {
+		return respStatus;
+	}
+
+	public void setRespStatus(String respStatus) {
+		this.respStatus = respStatus;
+	}
+
+	public String getRespRejectMsg() {
+		return respRejectMsg;
+	}
+
+	public void setRespRejectMsg(String respRejectMsg) {
+		this.respRejectMsg = respRejectMsg;
+	}
 
 	public String getRespBizMsgIdr() {
 		return respBizMsgIdr;
@@ -129,20 +123,22 @@ public class InboundMessage {
 		this.respBizMsgIdr = respBizMsgIdr;
 	}
 
-	public String getRespStatus() {
-		return respStatus;
+	public LocalDateTime getCihubRequestTime() {
+		return cihubRequestTime;
 	}
 
-	public void setRespStatus(String respStatus) {
-		this.respStatus = respStatus;
+	public void setCihubRequestTime(LocalDateTime cihubRequestTime) {
+		this.cihubRequestTime = cihubRequestTime;
 	}
 
-	@Override
-	public String toString() {
-		return "InboundMessage [bizMsgIdr=" + bizMsgIdr + ", msgDefIdr=" + msgDefIdr + ", frFinId=" + frFinId
-				+ ", bizSvc=" + bizSvc + "]";
+	public LocalDateTime getCihubResponseTime() {
+		return cihubResponseTime;
 	}
-	
+
+	public void setCihubResponseTime(LocalDateTime cihubResponseTime) {
+		this.cihubResponseTime = cihubResponseTime;
+	}
+
 
 	
 }

@@ -1,0 +1,839 @@
+2021-09-03 08:33:52,347 WARN org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer [main] 
+
+Found multiple occurrences of org.json.JSONObject on the class path:
+
+	jar:file:/home/fransdm/.m2/repository/org/json/json/20171018/json-20171018.jar!/org/json/JSONObject.class
+	jar:file:/home/fransdm/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar!/org/json/JSONObject.class
+
+You may wish to exclude one of them to ensure predictable runtime behavior
+
+2021-09-03 08:33:52,399 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplicationTests using Java 11.0.11 on fransdm-Latitude with PID 73227 (started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 08:33:52,411 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 08:33:53,310 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 08:33:53,388 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 71 ms. Found 11 JPA repository interfaces.
+2021-09-03 08:33:54,547 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 08:33:54,628 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 08:33:54,769 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 08:33:54,865 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 08:33:54,996 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 08:33:55,030 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 08:33:55,600 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 08:33:55,618 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 08:33:56,630 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-09-03 08:33:58,075 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
+2021-09-03 08:33:58,600 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
+2021-09-03 08:33:59,090 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2021-09-03 08:33:59,103 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringContextShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 08:33:59,107 INFO com.zaxxer.hikari.HikariDataSource [SpringContextShutdownHook] HikariPool-1 - Shutdown initiated...
+2021-09-03 08:33:59,113 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+org.apache.camel.FailedToCreateRouteException: Failed to create route crdt_trnsf at: >>> DoTry[[Log[Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?socketTimeout={{bifast.timeout}}&bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly], DoCatch[ [class java.net.SocketTimeoutException] -> [Log[Timeout], SetHeader[log_label, constant{TIMEOUT}], To[seda:savelogfiles?exchangePattern=InOnly], process[Processor@0x4d142b53], Choice[[When[simple{${body} == ''} -> [Log[Payment Status], process[Processor@0x1a48a582], Marshal[org.apache.camel.model.DataFormatDefinition@c310aa3], SetHeader[log_label, constant{Payment Status Request}], To[seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly]]]] Otherwise[[Log[Nemu settlement], SetHeader[log_label, constant{Settlement}], To[seda:savelogfiles?exchangePattern=InOnly]]]]]]]] <<< in route: Route(crdt_trnsf)[From[direct:ctreq] -> [SetHeader[log_filen... because of Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:240)
+	at org.apache.camel.reifier.RouteReifier.createRoute(RouteReifier.java:74)
+	at org.apache.camel.impl.DefaultModelReifierFactory.createRoute(DefaultModelReifierFactory.java:49)
+	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:684)
+	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:636)
+	at org.apache.camel.impl.engine.AbstractCamelContext.doInit(AbstractCamelContext.java:2771)
+	at org.apache.camel.support.service.BaseService.init(BaseService.java:83)
+	at org.apache.camel.impl.engine.AbstractCamelContext.init(AbstractCamelContext.java:2490)
+	at org.apache.camel.support.service.BaseService.start(BaseService.java:111)
+	at org.apache.camel.impl.engine.AbstractCamelContext.start(AbstractCamelContext.java:2507)
+	at org.apache.camel.impl.DefaultCamelContext.start(DefaultCamelContext.java:174)
+	at org.apache.camel.spring.SpringCamelContext.start(SpringCamelContext.java:107)
+	at org.apache.camel.spring.SpringCamelContext.onApplicationEvent(SpringCamelContext.java:139)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:421)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:378)
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:938)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:123)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:99)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
+	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:124)
+	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:190)
+	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:132)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:244)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:138)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$6(ClassBasedTestDescriptor.java:350)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:355)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$7(ClassBasedTestDescriptor.java:350)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:195)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:177)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1655)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:484)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)
+	at java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:312)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:349)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$4(ClassBasedTestDescriptor.java:270)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:269)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$2(ClassBasedTestDescriptor.java:259)
+	at java.base/java.util.Optional.orElseGet(Optional.java:369)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$3(ClassBasedTestDescriptor.java:258)
+	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:31)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:101)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:100)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:65)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$1(NodeTestTask.java:111)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:111)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:79)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220)
+	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188)
+	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418)
+Caused by: org.apache.camel.ResolveEndpointFailedException: Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:156)
+	at org.apache.camel.impl.engine.AbstractCamelContext.doGetEndpoint(AbstractCamelContext.java:895)
+	at org.apache.camel.impl.engine.AbstractCamelContext.getEndpoint(AbstractCamelContext.java:845)
+	at org.apache.camel.support.CamelContextHelper.resolveEndpoint(CamelContextHelper.java:123)
+	at org.apache.camel.reifier.SendReifier.resolveEndpoint(SendReifier.java:43)
+	at org.apache.camel.reifier.SendReifier.createProcessor(SendReifier.java:36)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
+	at org.apache.camel.reifier.ExpressionReifier.createFilterProcessor(ExpressionReifier.java:38)
+	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:32)
+	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:24)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ChoiceReifier.createProcessor(ChoiceReifier.java:68)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
+	at org.apache.camel.reifier.ProcessorReifier.createChildProcessor(ProcessorReifier.java:566)
+	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:54)
+	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:30)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.TryReifier.createProcessor(TryReifier.java:46)
+	at org.apache.camel.reifier.ProcessorReifier.makeProcessor(ProcessorReifier.java:835)
+	at org.apache.camel.reifier.ProcessorReifier.addRoutes(ProcessorReifier.java:576)
+	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:236)
+	... 93 common frames omitted
+Caused by: java.net.URISyntaxException: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at java.base/java.net.URI$Parser.fail(URI.java:2913)
+	at java.base/java.net.URI$Parser.checkChars(URI.java:3084)
+	at java.base/java.net.URI$Parser.parse(URI.java:3120)
+	at java.base/java.net.URI.<init>(URI.java:600)
+	at org.apache.camel.util.URISupport.doComplexNormalizeUri(URISupport.java:584)
+	at org.apache.camel.util.URISupport.normalizeUri(URISupport.java:575)
+	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:154)
+	... 117 common frames omitted
+2021-09-03 08:33:59,116 INFO com.zaxxer.hikari.HikariDataSource [SpringContextShutdownHook] HikariPool-1 - Shutdown completed.
+2021-09-03 08:46:46,519 WARN org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer [main] 
+
+Found multiple occurrences of org.json.JSONObject on the class path:
+
+	jar:file:/home/fransdm/.m2/repository/org/json/json/20171018/json-20171018.jar!/org/json/JSONObject.class
+	jar:file:/home/fransdm/.m2/repository/com/vaadin/external/google/android-json/0.0.20131108.vaadin1/android-json-0.0.20131108.vaadin1.jar!/org/json/JSONObject.class
+
+You may wish to exclude one of them to ensure predictable runtime behavior
+
+2021-09-03 08:46:46,565 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplicationTests using Java 11.0.11 on fransdm-Latitude with PID 74653 (started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 08:46:46,576 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 08:46:47,613 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 08:46:47,694 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 75 ms. Found 11 JPA repository interfaces.
+2021-09-03 08:46:48,869 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 08:46:48,939 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 08:46:49,161 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 08:46:49,298 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 08:46:49,394 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 08:46:49,412 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 08:46:50,274 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 08:46:50,296 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 08:46:51,382 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-09-03 08:46:52,810 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
+2021-09-03 08:46:53,193 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
+2021-09-03 08:46:53,661 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2021-09-03 08:46:53,691 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+org.apache.camel.FailedToCreateRouteException: Failed to create route crdt_trnsf at: >>> DoTry[[Log[Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?socketTimeout={{bifast.timeout}}&bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly], DoCatch[ [class java.net.SocketTimeoutException] -> [Log[Timeout], SetHeader[log_label, constant{TIMEOUT}], To[seda:savelogfiles?exchangePattern=InOnly], process[Processor@0x4d142b53], Choice[[When[simple{${body} == ''} -> [Log[Payment Status], process[Processor@0x1a48a582], Marshal[org.apache.camel.model.DataFormatDefinition@77a27356], SetHeader[log_label, constant{Payment Status Request}], To[seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly]]]] Otherwise[[Log[Nemu settlement], SetHeader[log_label, constant{Settlement}], To[seda:savelogfiles?exchangePattern=InOnly]]]]]]]] <<< in route: Route(crdt_trnsf)[From[direct:ctreq] -> [SetHeader[log_filen... because of Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:240)
+	at org.apache.camel.reifier.RouteReifier.createRoute(RouteReifier.java:74)
+	at org.apache.camel.impl.DefaultModelReifierFactory.createRoute(DefaultModelReifierFactory.java:49)
+	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:684)
+	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:636)
+	at org.apache.camel.impl.engine.AbstractCamelContext.doInit(AbstractCamelContext.java:2771)
+	at org.apache.camel.support.service.BaseService.init(BaseService.java:83)
+	at org.apache.camel.impl.engine.AbstractCamelContext.init(AbstractCamelContext.java:2490)
+	at org.apache.camel.support.service.BaseService.start(BaseService.java:111)
+	at org.apache.camel.impl.engine.AbstractCamelContext.start(AbstractCamelContext.java:2507)
+	at org.apache.camel.impl.DefaultCamelContext.start(DefaultCamelContext.java:174)
+	at org.apache.camel.spring.SpringCamelContext.start(SpringCamelContext.java:107)
+	at org.apache.camel.spring.SpringCamelContext.onApplicationEvent(SpringCamelContext.java:139)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:421)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:378)
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:938)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:123)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:99)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
+	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:124)
+	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:190)
+	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:132)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:244)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:138)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$6(ClassBasedTestDescriptor.java:350)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:355)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$7(ClassBasedTestDescriptor.java:350)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:195)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:177)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1655)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:484)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)
+	at java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:312)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:349)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$4(ClassBasedTestDescriptor.java:270)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:269)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$2(ClassBasedTestDescriptor.java:259)
+	at java.base/java.util.Optional.orElseGet(Optional.java:369)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$3(ClassBasedTestDescriptor.java:258)
+	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:31)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:101)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:100)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:65)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$1(NodeTestTask.java:111)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:111)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:79)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220)
+	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188)
+	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418)
+Caused by: org.apache.camel.ResolveEndpointFailedException: Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:156)
+	at org.apache.camel.impl.engine.AbstractCamelContext.doGetEndpoint(AbstractCamelContext.java:895)
+	at org.apache.camel.impl.engine.AbstractCamelContext.getEndpoint(AbstractCamelContext.java:845)
+	at org.apache.camel.support.CamelContextHelper.resolveEndpoint(CamelContextHelper.java:123)
+	at org.apache.camel.reifier.SendReifier.resolveEndpoint(SendReifier.java:43)
+	at org.apache.camel.reifier.SendReifier.createProcessor(SendReifier.java:36)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
+	at org.apache.camel.reifier.ExpressionReifier.createFilterProcessor(ExpressionReifier.java:38)
+	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:32)
+	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:24)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ChoiceReifier.createProcessor(ChoiceReifier.java:68)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
+	at org.apache.camel.reifier.ProcessorReifier.createChildProcessor(ProcessorReifier.java:566)
+	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:54)
+	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:30)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.TryReifier.createProcessor(TryReifier.java:46)
+	at org.apache.camel.reifier.ProcessorReifier.makeProcessor(ProcessorReifier.java:835)
+	at org.apache.camel.reifier.ProcessorReifier.addRoutes(ProcessorReifier.java:576)
+	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:236)
+	... 93 common frames omitted
+Caused by: java.net.URISyntaxException: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at java.base/java.net.URI$Parser.fail(URI.java:2913)
+	at java.base/java.net.URI$Parser.checkChars(URI.java:3084)
+	at java.base/java.net.URI$Parser.parse(URI.java:3120)
+	at java.base/java.net.URI.<init>(URI.java:600)
+	at org.apache.camel.util.URISupport.doComplexNormalizeUri(URISupport.java:584)
+	at org.apache.camel.util.URISupport.normalizeUri(URISupport.java:575)
+	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:154)
+	... 117 common frames omitted
+2021-09-03 08:46:53,717 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 08:46:53,723 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown initiated...
+2021-09-03 08:46:53,754 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown completed.
+2021-09-03 08:46:53,756 ERROR org.springframework.test.context.TestContextManager [main] Caught exception while allowing TestExecutionListener [org.springframework.test.context.web.ServletTestExecutionListener@5adb0db3] to prepare test instance [bifast.outbound.BifastOutboundApplicationTests@5ed4c87]
+java.lang.IllegalStateException: Failed to load ApplicationContext
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:132)
+	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:124)
+	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:190)
+	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:132)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:244)
+	at org.springframework.test.context.junit.jupiter.SpringExtension.postProcessTestInstance(SpringExtension.java:138)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$6(ClassBasedTestDescriptor.java:350)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.executeAndMaskThrowable(ClassBasedTestDescriptor.java:355)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$invokeTestInstancePostProcessors$7(ClassBasedTestDescriptor.java:350)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:195)
+	at java.base/java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:177)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1655)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:484)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:474)
+	at java.base/java.util.stream.StreamSpliterators$WrappingSpliterator.forEachRemaining(StreamSpliterators.java:312)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:735)
+	at java.base/java.util.stream.Streams$ConcatSpliterator.forEachRemaining(Streams.java:734)
+	at java.base/java.util.stream.ReferencePipeline$Head.forEach(ReferencePipeline.java:658)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeTestInstancePostProcessors(ClassBasedTestDescriptor.java:349)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$instantiateAndPostProcessTestInstance$4(ClassBasedTestDescriptor.java:270)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.instantiateAndPostProcessTestInstance(ClassBasedTestDescriptor.java:269)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$2(ClassBasedTestDescriptor.java:259)
+	at java.base/java.util.Optional.orElseGet(Optional.java:369)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$testInstancesProvider$3(ClassBasedTestDescriptor.java:258)
+	at org.junit.jupiter.engine.execution.TestInstancesProvider.getTestInstances(TestInstancesProvider.java:31)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$prepare$0(TestMethodTestDescriptor.java:101)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:100)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.prepare(TestMethodTestDescriptor.java:65)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$prepare$1(NodeTestTask.java:111)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.prepare(NodeTestTask.java:111)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:79)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:129)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:127)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:126)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:84)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:220)
+	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:188)
+	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:202)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:181)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:128)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:384)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:345)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:126)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:418)
+Caused by: org.apache.camel.FailedToCreateRouteException: Failed to create route crdt_trnsf at: >>> DoTry[[Log[Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?socketTimeout={{bifast.timeout}}&bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly], DoCatch[ [class java.net.SocketTimeoutException] -> [Log[Timeout], SetHeader[log_label, constant{TIMEOUT}], To[seda:savelogfiles?exchangePattern=InOnly], process[Processor@0x4d142b53], Choice[[When[simple{${body} == ''} -> [Log[Payment Status], process[Processor@0x1a48a582], Marshal[org.apache.camel.model.DataFormatDefinition@77a27356], SetHeader[log_label, constant{Payment Status Request}], To[seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly]]]] Otherwise[[Log[Nemu settlement], SetHeader[log_label, constant{Settlement}], To[seda:savelogfiles?exchangePattern=InOnly]]]]]]]] <<< in route: Route(crdt_trnsf)[From[direct:ctreq] -> [SetHeader[log_filen... because of Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:240)
+	at org.apache.camel.reifier.RouteReifier.createRoute(RouteReifier.java:74)
+	at org.apache.camel.impl.DefaultModelReifierFactory.createRoute(DefaultModelReifierFactory.java:49)
+	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:684)
+	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:636)
+	at org.apache.camel.impl.engine.AbstractCamelContext.doInit(AbstractCamelContext.java:2771)
+	at org.apache.camel.support.service.BaseService.init(BaseService.java:83)
+	at org.apache.camel.impl.engine.AbstractCamelContext.init(AbstractCamelContext.java:2490)
+	at org.apache.camel.support.service.BaseService.start(BaseService.java:111)
+	at org.apache.camel.impl.engine.AbstractCamelContext.start(AbstractCamelContext.java:2507)
+	at org.apache.camel.impl.DefaultCamelContext.start(DefaultCamelContext.java:174)
+	at org.apache.camel.spring.SpringCamelContext.start(SpringCamelContext.java:107)
+	at org.apache.camel.spring.SpringCamelContext.onApplicationEvent(SpringCamelContext.java:139)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:421)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:378)
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:938)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
+	at org.springframework.boot.test.context.SpringBootContextLoader.loadContext(SpringBootContextLoader.java:123)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:99)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
+	... 67 common frames omitted
+Caused by: org.apache.camel.ResolveEndpointFailedException: Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:156)
+	at org.apache.camel.impl.engine.AbstractCamelContext.doGetEndpoint(AbstractCamelContext.java:895)
+	at org.apache.camel.impl.engine.AbstractCamelContext.getEndpoint(AbstractCamelContext.java:845)
+	at org.apache.camel.support.CamelContextHelper.resolveEndpoint(CamelContextHelper.java:123)
+	at org.apache.camel.reifier.SendReifier.resolveEndpoint(SendReifier.java:43)
+	at org.apache.camel.reifier.SendReifier.createProcessor(SendReifier.java:36)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
+	at org.apache.camel.reifier.ExpressionReifier.createFilterProcessor(ExpressionReifier.java:38)
+	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:32)
+	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:24)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ChoiceReifier.createProcessor(ChoiceReifier.java:68)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
+	at org.apache.camel.reifier.ProcessorReifier.createChildProcessor(ProcessorReifier.java:566)
+	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:54)
+	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:30)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.TryReifier.createProcessor(TryReifier.java:46)
+	at org.apache.camel.reifier.ProcessorReifier.makeProcessor(ProcessorReifier.java:835)
+	at org.apache.camel.reifier.ProcessorReifier.addRoutes(ProcessorReifier.java:576)
+	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:236)
+	... 93 common frames omitted
+Caused by: java.net.URISyntaxException: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at java.base/java.net.URI$Parser.fail(URI.java:2913)
+	at java.base/java.net.URI$Parser.checkChars(URI.java:3084)
+	at java.base/java.net.URI$Parser.parse(URI.java:3120)
+	at java.base/java.net.URI.<init>(URI.java:600)
+	at org.apache.camel.util.URISupport.doComplexNormalizeUri(URISupport.java:584)
+	at org.apache.camel.util.URISupport.normalizeUri(URISupport.java:575)
+	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:154)
+	... 117 common frames omitted
+2021-09-03 08:47:35,341 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 74864 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 08:47:35,343 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 08:47:35,771 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 08:47:35,819 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 43 ms. Found 11 JPA repository interfaces.
+2021-09-03 08:47:36,426 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
+2021-09-03 08:47:36,432 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
+2021-09-03 08:47:36,433 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2021-09-03 08:47:36,433 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
+2021-09-03 08:47:36,499 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2021-09-03 08:47:36,499 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1108 ms
+2021-09-03 08:47:36,636 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
+2021-09-03 08:47:36,643 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
+2021-09-03 08:47:36,646 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
+2021-09-03 08:47:36,647 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
+2021-09-03 08:47:36,653 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
+2021-09-03 08:47:36,737 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 08:47:36,795 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 08:47:36,874 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 08:47:36,927 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 08:47:36,973 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 08:47:36,982 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 08:47:37,442 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 08:47:37,447 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 08:47:37,916 WARN org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration$JpaWebConfiguration [main] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2021-09-03 08:47:38,395 INFO org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver [main] Exposing 2 endpoint(s) beneath base path ''
+2021-09-03 08:47:38,460 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-9002"]
+2021-09-03 08:47:38,473 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Initialized CamelHttpTransportServlet[name=CamelServlet, contextPath=]
+2021-09-03 08:47:38,474 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 9002 (http) with context path ''
+2021-09-03 08:47:38,609 INFO org.apache.camel.management.JmxManagementStrategy [main] JMX is enabled
+2021-09-03 08:47:38,774 INFO org.apache.juli.logging.DirectJDKLog [main] Pausing ProtocolHandler ["http-nio-9002"]
+2021-09-03 08:47:38,774 INFO org.apache.juli.logging.DirectJDKLog [main] Stopping service [Tomcat]
+2021-09-03 08:47:38,775 INFO org.apache.camel.component.servlet.CamelHttpTransportServlet [main] Destroyed CamelHttpTransportServlet[CamelServlet]
+2021-09-03 08:47:38,775 INFO io.hawt.web.auth.AuthenticationFilter [main] Destroying hawtio authentication filter
+2021-09-03 08:47:38,776 INFO io.hawt.HawtioContextListener [main] Destroying hawtio services
+2021-09-03 08:47:38,778 INFO org.apache.juli.logging.DirectJDKLog [main] Stopping ProtocolHandler ["http-nio-9002"]
+2021-09-03 08:47:38,780 INFO org.apache.juli.logging.DirectJDKLog [main] Destroying ProtocolHandler ["http-nio-9002"]
+2021-09-03 08:47:38,782 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2021-09-03 08:47:38,790 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+org.apache.camel.FailedToCreateRouteException: Failed to create route crdt_trnsf at: >>> DoTry[[Log[Submit CT no: ${header.req_objbi.appHdr.bizMsgIdr}], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?socketTimeout={{bifast.timeout}}&bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly], DoCatch[ [class java.net.SocketTimeoutException] -> [Log[Timeout], SetHeader[log_label, constant{TIMEOUT}], To[seda:savelogfiles?exchangePattern=InOnly], process[Processor@0x2b6a4da7], Choice[[When[simple{${body} == ''} -> [Log[Payment Status], process[Processor@0xb867869], Marshal[org.apache.camel.model.DataFormatDefinition@3a649f9a], SetHeader[log_label, constant{Payment Status Request}], To[seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly], SetHeader[HttpMethod, constant{POST}], Enrich[constant{http:{{bifast.ciconnector-url}}?bridgeEndpoint=true}], ConvertBodyTo[java.lang.String], SetHeader[log_label, constant{CI-Hub Response}], To[seda:savelogfiles?exchangePattern=InOnly]]]] Otherwise[[Log[Nemu settlement], SetHeader[log_label, constant{Settlement}], To[seda:savelogfiles?exchangePattern=InOnly]]]]]]]] <<< in route: Route(crdt_trnsf)[From[direct:ctreq] -> [SetHeader[log_filen... because of Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:240)
+	at org.apache.camel.reifier.RouteReifier.createRoute(RouteReifier.java:74)
+	at org.apache.camel.impl.DefaultModelReifierFactory.createRoute(DefaultModelReifierFactory.java:49)
+	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:684)
+	at org.apache.camel.impl.DefaultCamelContext.startRouteDefinitions(DefaultCamelContext.java:636)
+	at org.apache.camel.impl.engine.AbstractCamelContext.doInit(AbstractCamelContext.java:2771)
+	at org.apache.camel.support.service.BaseService.init(BaseService.java:83)
+	at org.apache.camel.impl.engine.AbstractCamelContext.init(AbstractCamelContext.java:2490)
+	at org.apache.camel.support.service.BaseService.start(BaseService.java:111)
+	at org.apache.camel.impl.engine.AbstractCamelContext.start(AbstractCamelContext.java:2507)
+	at org.apache.camel.impl.DefaultCamelContext.start(DefaultCamelContext.java:174)
+	at org.apache.camel.spring.SpringCamelContext.start(SpringCamelContext.java:107)
+	at org.apache.camel.spring.SpringCamelContext.onApplicationEvent(SpringCamelContext.java:139)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:421)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:378)
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:938)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:144)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1329)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1318)
+	at bifast.outbound.BifastOutboundApplication.main(BifastOutboundApplication.java:14)
+Caused by: org.apache.camel.ResolveEndpointFailedException: Failed to resolve endpoint: seda:sav					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+elogfiles?exchangePattern=InOnly due to: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:156)
+	at org.apache.camel.impl.engine.AbstractCamelContext.doGetEndpoint(AbstractCamelContext.java:895)
+	at org.apache.camel.impl.engine.AbstractCamelContext.getEndpoint(AbstractCamelContext.java:845)
+	at org.apache.camel.support.CamelContextHelper.resolveEndpoint(CamelContextHelper.java:123)
+	at org.apache.camel.reifier.SendReifier.resolveEndpoint(SendReifier.java:43)
+	at org.apache.camel.reifier.SendReifier.createProcessor(SendReifier.java:36)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
+	at org.apache.camel.reifier.ExpressionReifier.createFilterProcessor(ExpressionReifier.java:38)
+	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:32)
+	at org.apache.camel.reifier.WhenReifier.createProcessor(WhenReifier.java:24)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ChoiceReifier.createProcessor(ChoiceReifier.java:68)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:767)
+	at org.apache.camel.reifier.ProcessorReifier.createOutputsProcessor(ProcessorReifier.java:545)
+	at org.apache.camel.reifier.ProcessorReifier.createChildProcessor(ProcessorReifier.java:566)
+	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:54)
+	at org.apache.camel.reifier.CatchReifier.createProcessor(CatchReifier.java:30)
+	at org.apache.camel.reifier.ProcessorReifier.createProcessor(ProcessorReifier.java:812)
+	at org.apache.camel.reifier.TryReifier.createProcessor(TryReifier.java:46)
+	at org.apache.camel.reifier.ProcessorReifier.makeProcessor(ProcessorReifier.java:835)
+	at org.apache.camel.reifier.ProcessorReifier.addRoutes(ProcessorReifier.java:576)
+	at org.apache.camel.reifier.RouteReifier.doCreateRoute(RouteReifier.java:236)
+	... 27 common frames omitted
+Caused by: java.net.URISyntaxException: Illegal character in opaque part at index 8: seda:sav					.log(LoggingLevel.INFO,%20%22accountenquiry%22,%20%22%5BRefId:$%7Bheader.req_refId%7D%5D%5B$%7Bheader.log_label%7D%5D%20$%7Bbody%7D%22)
+elogfiles?exchangePattern=InOnly
+	at java.base/java.net.URI$Parser.fail(URI.java:2966)
+	at java.base/java.net.URI$Parser.checkChars(URI.java:3137)
+	at java.base/java.net.URI$Parser.parse(URI.java:3173)
+	at java.base/java.net.URI.<init>(URI.java:623)
+	at org.apache.camel.util.URISupport.doComplexNormalizeUri(URISupport.java:584)
+	at org.apache.camel.util.URISupport.normalizeUri(URISupport.java:575)
+	at org.apache.camel.support.EndpointHelper.normalizeEndpointUri(EndpointHelper.java:154)
+	... 51 common frames omitted
+2021-09-03 08:47:38,798 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 08:47:38,799 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown initiated...
+2021-09-03 08:47:38,806 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown completed.
+2021-09-03 08:51:48,713 INFO org.springframework.boot.StartupInfoLogger [main] Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 75220 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-03 08:51:48,715 INFO org.springframework.boot.SpringApplication [main] No active profile set, falling back to default profiles: default
+2021-09-03 08:51:49,091 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2021-09-03 08:51:49,133 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 37 ms. Found 11 JPA repository interfaces.
+2021-09-03 08:51:49,672 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 9002 (http)
+2021-09-03 08:51:49,679 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-9002"]
+2021-09-03 08:51:49,679 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2021-09-03 08:51:49,679 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/9.0.46]
+2021-09-03 08:51:49,752 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2021-09-03 08:51:49,752 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1009 ms
+2021-09-03 08:51:49,889 INFO org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar [main] Registered '/jolokia' to jolokia-actuator-endpoint
+2021-09-03 08:51:49,898 INFO io.hawt.HawtioContextListener [main] Initialising hawtio services
+2021-09-03 08:51:49,900 INFO io.hawt.system.ConfigManager [main] Configuration will be discovered via system properties
+2021-09-03 08:51:49,901 INFO io.hawt.jmx.JmxTreeWatcher [main] Welcome to Hawtio 2.13.5
+2021-09-03 08:51:49,907 INFO io.hawt.web.auth.AuthenticationConfiguration [main] Starting hawtio authentication filter, JAAS authentication disabled
+2021-09-03 08:51:49,995 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2021-09-03 08:51:50,024 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 5.4.32.Final
+2021-09-03 08:51:50,109 INFO org.hibernate.annotations.common.reflection.java.JavaReflectionManager [main] HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2021-09-03 08:51:50,167 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2021-09-03 08:51:50,217 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2021-09-03 08:51:50,228 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2021-09-03 08:51:50,798 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2021-09-03 08:51:50,804 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 08:51:51,143 WARN org.springframework.context.support.AbstractApplicationContext [main] Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'transactionRoute' defined in file [/home/fransdm/workspace/bifast/bifast-outbound/target/classes/bifast/outbound/route/TransactionRoute.class]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [bifast.outbound.route.TransactionRoute]: Constructor threw exception; nested exception is java.lang.Error: Unresolved compilation problems: 
+	The import bifast.outbound.accountenquiry.AccountEnquiryProcessor cannot be resolved
+	The import bifast.outbound.accountenquiry.AccountEnquiryResponseProcessor cannot be resolved
+	The import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq cannot be resolved
+	The import bifast.outbound.credittransfer.ChannelCreditTransferRequest cannot be resolved
+	The import bifast.outbound.credittransfer.CreditTransferRequestProcessor cannot be resolved
+	The import bifast.outbound.credittransfer.CreditTransferResponseProcessor cannot be resolved
+	The import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq cannot be resolved
+	The import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor cannot be resolved
+	The import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor cannot be resolved
+	The import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest cannot be resolved
+	The import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor cannot be resolved
+	The import bifast.outbound.pojo.ChannelResponseMessage cannot be resolved
+	The import bifast.outbound.processor.CheckSettlementProcessor cannot be resolved
+	The import bifast.outbound.processor.EnrichmentAggregator cannot be resolved
+	The import bifast.outbound.processor.FaultProcessor cannot be resolved
+	AccountEnquiryProcessor cannot be resolved to a type
+	AccountEnquiryResponseProcessor cannot be resolved to a type
+	CheckSettlementProcessor cannot be resolved to a type
+	CreditTransferRequestProcessor cannot be resolved to a type
+	CreditTransferResponseProcessor cannot be resolved to a type
+	FaultProcessor cannot be resolved to a type
+	FICreditTransferRequestProcessor cannot be resolved to a type
+	FICreditTransferResponseProcessor cannot be resolved to a type
+	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	ChannelAccountEnquiryReq cannot be resolved to a type
+	ChannelCreditTransferRequest cannot be resolved to a type
+	ChannelFICreditTransferReq cannot be resolved to a type
+	ChannelPaymentStatusRequest cannot be resolved to a type
+	ChannelResponseMessage cannot be resolved to a type
+	BusinessMessage cannot be resolved to a type
+	AccountEnquiryProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	AccountEnquiryResponseProcessor cannot be resolved to a type
+	FaultProcessor cannot be resolved to a type
+	CreditTransferRequestProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	CheckSettlementProcessor cannot be resolved to a type
+	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	CreditTransferResponseProcessor cannot be resolved to a type
+	FICreditTransferRequestProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	FICreditTransferResponseProcessor cannot be resolved to a type
+
+2021-09-03 08:51:51,145 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Closing JPA EntityManagerFactory for persistence unit 'default'
+2021-09-03 08:51:51,147 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown initiated...
+2021-09-03 08:51:51,151 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown completed.
+2021-09-03 08:51:51,157 INFO org.apache.juli.logging.DirectJDKLog [main] Stopping service [Tomcat]
+2021-09-03 08:51:51,161 INFO io.hawt.web.auth.AuthenticationFilter [main] Destroying hawtio authentication filter
+2021-09-03 08:51:51,162 INFO io.hawt.HawtioContextListener [main] Destroying hawtio services
+2021-09-03 08:51:51,185 INFO org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener [main] 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2021-09-03 08:51:51,199 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'transactionRoute' defined in file [/home/fransdm/workspace/bifast/bifast-outbound/target/classes/bifast/outbound/route/TransactionRoute.class]: Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [bifast.outbound.route.TransactionRoute]: Constructor threw exception; nested exception is java.lang.Error: Unresolved compilation problems: 
+	The import bifast.outbound.accountenquiry.AccountEnquiryProcessor cannot be resolved
+	The import bifast.outbound.accountenquiry.AccountEnquiryResponseProcessor cannot be resolved
+	The import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq cannot be resolved
+	The import bifast.outbound.credittransfer.ChannelCreditTransferRequest cannot be resolved
+	The import bifast.outbound.credittransfer.CreditTransferRequestProcessor cannot be resolved
+	The import bifast.outbound.credittransfer.CreditTransferResponseProcessor cannot be resolved
+	The import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq cannot be resolved
+	The import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor cannot be resolved
+	The import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor cannot be resolved
+	The import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest cannot be resolved
+	The import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor cannot be resolved
+	The import bifast.outbound.pojo.ChannelResponseMessage cannot be resolved
+	The import bifast.outbound.processor.CheckSettlementProcessor cannot be resolved
+	The import bifast.outbound.processor.EnrichmentAggregator cannot be resolved
+	The import bifast.outbound.processor.FaultProcessor cannot be resolved
+	AccountEnquiryProcessor cannot be resolved to a type
+	AccountEnquiryResponseProcessor cannot be resolved to a type
+	CheckSettlementProcessor cannot be resolved to a type
+	CreditTransferRequestProcessor cannot be resolved to a type
+	CreditTransferResponseProcessor cannot be resolved to a type
+	FaultProcessor cannot be resolved to a type
+	FICreditTransferRequestProcessor cannot be resolved to a type
+	FICreditTransferResponseProcessor cannot be resolved to a type
+	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	ChannelAccountEnquiryReq cannot be resolved to a type
+	ChannelCreditTransferRequest cannot be resolved to a type
+	ChannelFICreditTransferReq cannot be resolved to a type
+	ChannelPaymentStatusRequest cannot be resolved to a type
+	ChannelResponseMessage cannot be resolved to a type
+	BusinessMessage cannot be resolved to a type
+	AccountEnquiryProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	AccountEnquiryResponseProcessor cannot be resolved to a type
+	FaultProcessor cannot be resolved to a type
+	CreditTransferRequestProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	CheckSettlementProcessor cannot be resolved to a type
+	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	CreditTransferResponseProcessor cannot be resolved to a type
+	FICreditTransferRequestProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	FICreditTransferResponseProcessor cannot be resolved to a type
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1316)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1214)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:564)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:524)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:944)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:918)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:144)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1329)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1318)
+	at bifast.outbound.BifastOutboundApplication.main(BifastOutboundApplication.java:14)
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [bifast.outbound.route.TransactionRoute]: Constructor threw exception; nested exception is java.lang.Error: Unresolved compilation problems: 
+	The import bifast.outbound.accountenquiry.AccountEnquiryProcessor cannot be resolved
+	The import bifast.outbound.accountenquiry.AccountEnquiryResponseProcessor cannot be resolved
+	The import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq cannot be resolved
+	The import bifast.outbound.credittransfer.ChannelCreditTransferRequest cannot be resolved
+	The import bifast.outbound.credittransfer.CreditTransferRequestProcessor cannot be resolved
+	The import bifast.outbound.credittransfer.CreditTransferResponseProcessor cannot be resolved
+	The import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq cannot be resolved
+	The import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor cannot be resolved
+	The import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor cannot be resolved
+	The import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest cannot be resolved
+	The import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor cannot be resolved
+	The import bifast.outbound.pojo.ChannelResponseMessage cannot be resolved
+	The import bifast.outbound.processor.CheckSettlementProcessor cannot be resolved
+	The import bifast.outbound.processor.EnrichmentAggregator cannot be resolved
+	The import bifast.outbound.processor.FaultProcessor cannot be resolved
+	AccountEnquiryProcessor cannot be resolved to a type
+	AccountEnquiryResponseProcessor cannot be resolved to a type
+	CheckSettlementProcessor cannot be resolved to a type
+	CreditTransferRequestProcessor cannot be resolved to a type
+	CreditTransferResponseProcessor cannot be resolved to a type
+	FaultProcessor cannot be resolved to a type
+	FICreditTransferRequestProcessor cannot be resolved to a type
+	FICreditTransferResponseProcessor cannot be resolved to a type
+	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	ChannelAccountEnquiryReq cannot be resolved to a type
+	ChannelCreditTransferRequest cannot be resolved to a type
+	ChannelFICreditTransferReq cannot be resolved to a type
+	ChannelPaymentStatusRequest cannot be resolved to a type
+	ChannelResponseMessage cannot be resolved to a type
+	BusinessMessage cannot be resolved to a type
+	AccountEnquiryProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	AccountEnquiryResponseProcessor cannot be resolved to a type
+	FaultProcessor cannot be resolved to a type
+	CreditTransferRequestProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	CheckSettlementProcessor cannot be resolved to a type
+	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	CreditTransferResponseProcessor cannot be resolved to a type
+	FICreditTransferRequestProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	FICreditTransferResponseProcessor cannot be resolved to a type
+
+	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:225)
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:87)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1308)
+	... 18 common frames omitted
+Caused by: java.lang.Error: Unresolved compilation problems: 
+	The import bifast.outbound.accountenquiry.AccountEnquiryProcessor cannot be resolved
+	The import bifast.outbound.accountenquiry.AccountEnquiryResponseProcessor cannot be resolved
+	The import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq cannot be resolved
+	The import bifast.outbound.credittransfer.ChannelCreditTransferRequest cannot be resolved
+	The import bifast.outbound.credittransfer.CreditTransferRequestProcessor cannot be resolved
+	The import bifast.outbound.credittransfer.CreditTransferResponseProcessor cannot be resolved
+	The import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq cannot be resolved
+	The import bifast.outbound.ficredittransfer.FICreditTransferRequestProcessor cannot be resolved
+	The import bifast.outbound.ficredittransfer.FICreditTransferResponseProcessor cannot be resolved
+	The import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest cannot be resolved
+	The import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor cannot be resolved
+	The import bifast.outbound.pojo.ChannelResponseMessage cannot be resolved
+	The import bifast.outbound.processor.CheckSettlementProcessor cannot be resolved
+	The import bifast.outbound.processor.EnrichmentAggregator cannot be resolved
+	The import bifast.outbound.processor.FaultProcessor cannot be resolved
+	AccountEnquiryProcessor cannot be resolved to a type
+	AccountEnquiryResponseProcessor cannot be resolved to a type
+	CheckSettlementProcessor cannot be resolved to a type
+	CreditTransferRequestProcessor cannot be resolved to a type
+	CreditTransferResponseProcessor cannot be resolved to a type
+	FaultProcessor cannot be resolved to a type
+	FICreditTransferRequestProcessor cannot be resolved to a type
+	FICreditTransferResponseProcessor cannot be resolved to a type
+	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	ChannelAccountEnquiryReq cannot be resolved to a type
+	ChannelCreditTransferRequest cannot be resolved to a type
+	ChannelFICreditTransferReq cannot be resolved to a type
+	ChannelPaymentStatusRequest cannot be resolved to a type
+	ChannelResponseMessage cannot be resolved to a type
+	BusinessMessage cannot be resolved to a type
+	AccountEnquiryProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	AccountEnquiryResponseProcessor cannot be resolved to a type
+	FaultProcessor cannot be resolved to a type
+	CreditTransferRequestProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	CheckSettlementProcessor cannot be resolved to a type
+	PaymentStatusOnTimeoutProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	CreditTransferResponseProcessor cannot be resolved to a type
+	FICreditTransferRequestProcessor cannot be resolved to a type
+	EnrichmentAggregator cannot be resolved to a type
+	FICreditTransferResponseProcessor cannot be resolved to a type
+
+	at bifast.outbound.route.TransactionRoute.<init>(TransactionRoute.java:10)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:78)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:212)
+	... 20 common frames omitted

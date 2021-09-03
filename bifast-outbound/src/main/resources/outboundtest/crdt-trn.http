@@ -4,15 +4,15 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "intrnRefId" : "8854292",
+    "intrnRefId" : "185121",
     "channel" : "02",
     "categoryPurpose" : "01",
     "amount" : 25587000,
 
-    "dbtrIdType" : "02",    
+    "dbtrIdType" : "01",    
     "dbtrName": "PT Semaraing",
     "dbtrId" : "PTSMG",
-    "dbtrAccountNo" : "910045334",
+    "dbtrAccountNo" : "91055334",
     "dbtrAccountType" : "CACC",
 
     "recptBank" : "MNDRIDJA",

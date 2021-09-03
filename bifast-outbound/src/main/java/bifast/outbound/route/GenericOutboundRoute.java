@@ -2,6 +2,7 @@ package bifast.outbound.route;
 
 import java.util.NoSuchElementException;
 
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ public class GenericOutboundRoute extends RouteBuilder {
 		ChnlRequestFormat.setInclude("NON_NULL");
 		ChnlRequestFormat.setInclude("NON_EMPTY");
 		
-        onException(NoSuchElementException.class)
-        	.log("Ada error barusan ")
+        onException(NoSuchElementException.class).routeId("Error Exception")
+        	.log(LoggingLevel.ERROR, "Ada error barusan ")
         	.handled(true)
         ;
 
@@ -55,6 +56,8 @@ public class GenericOutboundRoute extends RouteBuilder {
 			.process(checkChannelRequest)		// produce header rcv_msgType, rcv_channel
 			.process(validateInputProcessor)
 			
+			.setHeader("req_refId", simple("${header.rcv_channel.intrnRefId}"))
+
 			.setBody(simple("${header.rcv_channel}"))
 
 			.choice()
@@ -93,13 +96,22 @@ public class GenericOutboundRoute extends RouteBuilder {
 		;
 	
 		from("seda:savelogfiles")
-			.setHeader("tmp_body", simple("${body}"))	
-			.setBody(simple("### [${date:now:yyyyMMdd hh:mm:ss}] ${header.log_label} ###\\n"))
-			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.log_filename}&fileExist=Append")
-			.setBody(simple("${header.tmp_body}\\n\\n"))
-			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.log_filename}&fileExist=Append")
-			
-			.removeHeader("tmp_body")
+//			.setHeader("tmp_body", simple("${body}"))	
+//			.setBody(simple("### [${date:now:yyyyMMdd hh:mm:ss}] ${header.log_label} ###\\n"))
+//			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.log_filename}&fileExist=Append")
+//			.setBody(simple("${header.tmp_body}\\n\\n"))
+//			.toD("file:{{bifast.outbound-log-folder}}?fileName=${header.log_filename}&fileExist=Append")
+			.choice()
+				.when().simple("${header.rcv_msgType} == 'acctenqr'")
+					.log(LoggingLevel.INFO, "accountenquiry", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+				.when().simple("${header.rcv_msgType} == 'crdttrns'")
+					.log(LoggingLevel.INFO, "credittransfer", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+				.when().simple("${header.rcv_msgType} == 'ficrdttrns'")
+					.log(LoggingLevel.INFO, "credittransfer", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+				.when().simple("${header.rcv_msgType} == 'prxyrslt'")
+					.log(LoggingLevel.INFO, "proxy", "[RefId:${header.req_refId}][${header.log_label}] ${body}")
+			.end()
+//			.removeHeader("tmp_body")
 		;
 
 		from("seda:savetables")

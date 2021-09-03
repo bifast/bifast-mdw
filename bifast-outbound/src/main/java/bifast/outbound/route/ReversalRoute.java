@@ -47,82 +47,65 @@ public class ReversalRoute extends RouteBuilder {
 		jsonBusinessMessageFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		jsonBusinessMessageFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
-		from("sql:select st.id as settlId, "
-				+ "st.settl_conf_bizmsgid as settBizMsgId, "
-				+ "ct.id as crdtId, "
-				+ "ct.crdttrn_resp_status as crdtStatus "
-				+ "from SETTLEMENT st "
-				+ "join CREDIT_TRANSFER ct on ct.crdttrn_req_bizmsgid  = st.orgnl_crdt_trn_bizmsgid "
-				+ "where st.ack is null?"
+		from("sql:select * "
+				+ "from CREDIT_TRANSFER ct "
+				+ "where ct.reversal = 'PENDING'?"
 					+ "outputType=SelectList&"
 					+ "outputHeader=rcv_qryresult&"
 					+ "maxMessagesPerPoll=3")
-			.routeId("QuerySttlement")
+			.routeId("QueryReversal")
 
-			.log("${header.rcv_qryresult}")
+			.log("${header.req_qryresult}")
+//			.when().simple("${header.rcv_qryresult[crdtStatus]} == 'ACTC'")
+
+			.setHeader("req_channelRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+
+			.process(reverseCTRequestProcessor)
 			
-			.choice()
-				.when().simple("${header.rcv_qryresult[crdtStatus]} == 'ACTC'")
-					.log("${header.rcv_qryresult[settBizMsgId]} Accepted")
-					.to("sql:update CREDIT_TRANSFER set "
-							+ "settlconf_bizmsgid = :#${header.rcv_qryresult[settBizMsgId]} "
-							+ "where id = :#${header.rcv_qryresult[crdtId]}")
-					.to("sql:update SETTLEMENT set ack = 'Y' "
-							+ "where id = :#${header.rcv_qryresult[settlId]}")
-
-				.otherwise()
-					.log("${header.rcv_qryresult[settBizMsgId]} Rejected")
-					.to("direct:reversect")
-
-					.to("sql:update SETTLEMENT set ack = 'Y', for_reversal = 'Y' "
-							+ "where id = :#${header.rcv_qryresult[settlId]}")
-			.end()
-
-			.removeHeaders("rcv_*")
-			.removeHeaders("resp_*")
+//			.removeHeaders("req_*")
 		;
 
 
 		// Untuk Proses Reverse Credit Transfer
-		from("direct:reversect")
+//		from("direct:reversect")
 			
 //		setHeader("rcv_msgType", "ReverseCreditTransfer");
 //		setHeader("rcv_channel", req.getReverseCreditTransferRequest());
 
-			.setHeader("log_filename", simple("prxyrgst.${header.rcv_channel.intrnRefId}.arch"))
-
-			.convertBodyTo(String.class)
-			.unmarshal(jsonChnlReverseCTRequestFormat)
-			.setHeader("req_channelReq",simple("${body}"))
+//			.setHeader("log_filename", simple("prxyrgst.${header.rcv_channel.intrnRefId}.arch"))
+//
+//			.convertBodyTo(String.class)
+//			.unmarshal(jsonChnlReverseCTRequestFormat)
+//			.setHeader("req_channelReq",simple("${body}"))
 //			.setHeader("req_msgType", constant("ReverseCreditTransfer"))
 			
 			// convert channel request jadi pacs008 message
-			.process(reverseCTRequestProcessor)
-			.setHeader("req_objbi", simple("${body}"))
-			.marshal(jsonBusinessMessageFormat)
+//			.process(reverseCTRequestProcessor)
+//			.setHeader("req_objbi", simple("${body}"))
+//			.marshal(jsonBusinessMessageFormat)
 			
 			// kirim ke CI-HUB
-			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:{{bifast.ciconnector-url}}?"
-					+ "socketTimeout={{bifast.timeout}}&" 
-					+ "bridgeEndpoint=true",
-					enrichmentAggregator)
-			.convertBodyTo(String.class)
-			
-			.unmarshal(jsonBusinessMessageFormat)
-			.setHeader("resp_objbi", simple("${body}"))	
-
-			.process(reverseCTResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-
-			.setExchangePattern(ExchangePattern.InOnly)
-			.to("seda:endlog")
-			
-			.setBody(simple("${header.resp_channel}"))
-			.marshal(jsonChnlResponseFormat)
-			.removeHeaders("resp_*")
-			.removeHeaders("req_*")
-		;
+//			.setHeader("HttpMethod", constant("POST"))
+//			.enrich("http:{{bifast.ciconnector-url}}?"
+//					+ "socketTimeout={{bifast.timeout}}&" 
+//					+ "bridgeEndpoint=true",
+//					enrichmentAggregator)
+//			.convertBodyTo(String.class)
+//			
+//			.unmarshal(jsonBusinessMessageFormat)
+//			.setHeader("resp_objbi", simple("${body}"))	
+//
+//			.process(reverseCTResponseProcessor)
+//			.setHeader("resp_channel", simple("${body}"))
+//
+//			.setExchangePattern(ExchangePattern.InOnly)
+//			.to("seda:endlog")
+//			
+//			.setBody(simple("${header.resp_channel}"))
+//			.marshal(jsonChnlResponseFormat)
+//			.removeHeaders("resp_*")
+//			.removeHeaders("req_*")
+//		;
 		
 	}
 

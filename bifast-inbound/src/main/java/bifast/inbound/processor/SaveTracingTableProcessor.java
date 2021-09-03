@@ -89,28 +89,40 @@ public class SaveTracingTableProcessor implements Processor {
 		CreditTransferTransaction39 inbCdtTrn = busMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
 		BusinessApplicationHeaderV01 inbMsgHeader = busMesg.getAppHdr();
 
-		CreditTransfer cdtTrn = new CreditTransfer();
+		CreditTransfer creditTransfer = new CreditTransfer();
 		
-		cdtTrn.setMsgType("CreditTransfer");
+		creditTransfer.setAmount(inbCdtTrn.getIntrBkSttlmAmt().getValue());
 
-		cdtTrn.setAmount(inbCdtTrn.getIntrBkSttlmAmt().getValue());		
+		creditTransfer.setCrdtTrnRequestBizMsgIdr(busMesg.getAppHdr().getBizMsgIdr());
+		creditTransfer.setCreditorAccountNumber(inbCdtTrn.getCdtrAcct().getId().getOthr().getId());
+		creditTransfer.setCreditorId(null);
+		creditTransfer.setCreditorType(null);
+		creditTransfer.setCreDt(LocalDateTime.now());
+
+		creditTransfer.setDebtorAccountNumber(inbCdtTrn.getDbtrAcct().getId().getOthr().getId());
+		creditTransfer.setDebtorId(null);
+		creditTransfer.setDebtorType(null);
+//		creditTransfer.setIntrRefId(null);
+		creditTransfer.setLogMessageId(null);
+		creditTransfer.setMsgType(null);
+		creditTransfer.setOriginatingBank(inbMsgHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
+		creditTransfer.setRecipientBank(inbMsgHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
+		creditTransfer.setReversal(null);
+		creditTransfer.setSettlementBizMsgId(null);
+		creditTransfer.setStatus(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+
 		
-		cdtTrn.setCrdtTrnRequestBizMsgIdr(busMesg.getAppHdr().getBizMsgIdr());
-		cdtTrn.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
-		cdtTrn.setCrdtTrnResponseStatus(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
-		
-		if (!(null == inbCdtTrn.getDbtr().getNm())) 
-			cdtTrn.setCreditorAccount(inbCdtTrn.getDbtr().getNm() );
-		
-		cdtTrn.setCreDt(LocalDateTime.now());
-		
-		cdtTrn.setDebtorAccount(inbCdtTrn.getDbtrAcct().getId().getOthr().getId());	
-		cdtTrn.setCreditorAccount(inbCdtTrn.getCdtrAcct().getId().getOthr().getId());
-				
-		cdtTrn.setOriginatingBank(inbMsgHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
-		cdtTrn.setRecipientBank(inbMsgHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
+//		cdtTrn.setMsgType("CreditTransfer");
+//		cdtTrn.setCreditorType(null);
+//		
+//		
+//		if (!(null==inbCdtTrn.getCdtr().getId().getPrvtId()))
+//			cdtTrn.setCreditorId(inbCdtTrn.getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+//		else if (!(null==inbCdtTrn.getCdtr().getId().getOrgId()))
+//			cdtTrn.setCreditorId(inbCdtTrn.getCdtr().getId().getOrgId().getOthr().get(0).getId());
+//		
 	
-		creditTrnRepo.save(cdtTrn);
+		creditTrnRepo.save(creditTransfer);
 	}
 	
 	public void saveFICreditTransfer (BusinessMessage busMesg, BusinessMessage respBi) {
@@ -123,10 +135,7 @@ public class SaveTracingTableProcessor implements Processor {
 		fiCreditTransfer.setAmount(inbMsgRequest.getIntrBkSttlmAmt().getValue());		
 		fiCreditTransfer.setCrdtTrnRequestBizMsgIdr(inbMsgHeader.getBizMsgIdr());
 
-		fiCreditTransfer.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
-		
-		fiCreditTransfer.setCrdtTrnResponseStatus(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
-		
+		fiCreditTransfer.setStatus(respBi.getAppHdr().getBizMsgIdr());
 		
 		fiCreditTransfer.setCreDt(LocalDateTime.now());
 		
@@ -148,15 +157,12 @@ public class SaveTracingTableProcessor implements Processor {
 		revCreditTransfer.setAmount(inbMsgRequest.getIntrBkSttlmAmt().getValue());		
 		revCreditTransfer.setCrdtTrnRequestBizMsgIdr(inbMsgHeader.getBizMsgIdr());
 
-		revCreditTransfer.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
-		
-		revCreditTransfer.setCrdtTrnResponseStatus(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
-		
+		revCreditTransfer.setStatus(respBi.getAppHdr().getBizMsgIdr());
 		
 		revCreditTransfer.setCreDt(LocalDateTime.now());
 		
-		revCreditTransfer.setDebtorAccount(inbMsgRequest.getDbtrAcct().getId().getOthr().getId());
-		revCreditTransfer.setCreditorAccount(inbMsgRequest.getCdtrAcct().getId().getOthr().getId());
+		revCreditTransfer.setDebtorAccountNumber(inbMsgRequest.getDbtrAcct().getId().getOthr().getId());
+		revCreditTransfer.setCreditorAccountNumber(inbMsgRequest.getCdtrAcct().getId().getOthr().getId());
 
 		revCreditTransfer.setMsgType("ReverseCreditTransfer");
 		

@@ -15,13 +15,42 @@
         </layout>
     </appender>
 
-    <appender name="applicationLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGS}/application.log</file>
+    <appender name="accountenquiry" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/accountenquiry.log</file>
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>${LOGS}/application-%i.log</fileNamePattern>
+            <fileNamePattern>${LOGS}/accountenquiry-%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>10</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>1MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <appender name="credittransfer" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/credittransfer.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${LOGS}/credittransfer-%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>10</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>1MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+     <appender name="proxy" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/proxy.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${LOGS}/proxy-%i.log</fileNamePattern>
             <minIndex>1</minIndex>
             <maxIndex>10</maxIndex>
         </rollingPolicy>
@@ -30,7 +59,7 @@
         </triggeringPolicy>
     </appender>
  
-    <appender name="RollingFile"
+    <appender name="SystemLog"
         class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS}/spring-boot-logger.log</file>
         <encoder
@@ -52,14 +81,20 @@
 
    
     <!-- LOG everything at INFO level -->
-    <root level="info">
-        <appender-ref ref="RollingFile" />
+    <root level="INFO">
+        <appender-ref ref="SystemLog" />
         <appender-ref ref="Console" />
     </root>
  
-    <!-- LOG "bei.soafwd.*" at TRACE level -->
-    <logger name="bei.soafwd" level="INFO">
-        <appender-ref ref="applicationLog" />
+    <!-- LOG "bifast.outbound.*"  -->
+    <logger name="accountenquiry" level="INFO">
+        <appender-ref ref="accountenquiry" />
+    </logger>
+    <logger name="credittransfer" level="INFO">
+        <appender-ref ref="credittransfer" />
+    </logger>
+     <logger name="proxy" level="INFO">
+        <appender-ref ref="proxy" />
     </logger>
  
 </configuration>

@@ -199,17 +199,32 @@ public class SaveTablesProcessor implements Processor {
 		CreditTransfer ct = new CreditTransfer();
 
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
-//		ct.setCrdtTrnRequestBizMsgIdr(null);
-//		ct.setCrdtTrnResponseBizMsgIdr(null);
-//		ct.setCrdtTrnResponseStatus(null);
-		ct.setCreditorAccount(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
+		ct.setCrdtTrnRequestBizMsgIdr(auditTab.getBizMsgIdr());
+		ct.setStatus(auditTab.getRespStatus());
+		
+		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
+
+		ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
+		
+		if (ct.getCreditorType().equals("01"))
+			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+		else
+			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
+			
 		ct.setCreDt(LocalDateTime.now());
-		ct.setDebtorAccount(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
+		
+		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
+		ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getTp());
+
+		if (ct.getDebtorType().endsWith("01"))
+			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
+		else
+			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		
+		
 		ct.setIntrRefId(auditTab.getInternalReffId());
 		ct.setMsgType("Credit Transfer");
 		ct.setOriginatingBank(orgnlBank);
 		ct.setRecipientBank(auditTab.getToFinId());
-//		ct.setSettlementBizMsgId(null);
 		ct.setLogMessageId(auditTab.getId());
 		
 		creditTransferRepo.save(ct);
@@ -222,6 +237,8 @@ public class SaveTablesProcessor implements Processor {
 		String orgnlBank = outRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
 
 		CreditTransfer ct = new CreditTransfer();
+
+		ct.setCrdtTrnRequestBizMsgIdr(auditTab.getBizMsgIdr());
 
 		ct.setAmount(fiCreditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 		ct.setCreDt(LocalDateTime.now());

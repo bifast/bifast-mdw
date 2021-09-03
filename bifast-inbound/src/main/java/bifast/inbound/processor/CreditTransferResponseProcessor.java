@@ -27,7 +27,16 @@ public class CreditTransferResponseProcessor implements Processor {
 		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("rcv_bi", BusinessMessage.class);
 
 		// TODO cek account ke core banking
-
+		// jika harus reject maka cek dulu apakah SAF yg harus reversal
+		
+		if ( (!(null==reqBusMesg.getAppHdr().getCpyDplct())) &&
+			 (reqBusMesg.getAppHdr().getCpyDplct().name().equals("DUPL")) )
+			
+			exchange.getMessage().setHeader("resp_reversal", "PENDING");
+		else 
+			exchange.getMessage().setHeader("resp_reversal", "");
+		
+		
 		Pacs002Seed resp = new Pacs002Seed();
 		
 		resp.setCreditorName("UJANG");

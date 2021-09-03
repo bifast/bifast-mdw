@@ -1,0 +1,83 @@
+2021-09-02 08:47:59 INFO Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 13531 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-02 08:47:59 DEBUG Running with Spring Boot v2.4.7, Spring v5.3.8
+2021-09-02 08:47:59 INFO No active profile set, falling back to default profiles: default
+2021-09-02 08:48:02 DEBUG Adding routeId: route1 as rest-api route
+2021-09-02 08:48:02 INFO Started BifastOutboundApplication in 3.856 seconds (JVM running for 4.302)
+2021-09-02 08:48:13 INFO Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 13652 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-02 08:48:13 DEBUG Running with Spring Boot v2.4.7, Spring v5.3.8
+2021-09-02 08:48:13 INFO No active profile set, falling back to default profiles: default
+2021-09-02 08:48:17 DEBUG Adding routeId: route1 as rest-api route
+2021-09-02 08:48:17 INFO Started BifastOutboundApplication in 4.134 seconds (JVM running for 4.567)
+2021-09-02 08:51:21 INFO Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 14136 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-02 08:51:21 DEBUG Running with Spring Boot v2.4.7, Spring v5.3.8
+2021-09-02 08:51:21 INFO No active profile set, falling back to default profiles: default
+2021-09-02 08:51:24 DEBUG Adding routeId: route1 as rest-api route
+2021-09-02 08:51:25 INFO Started BifastOutboundApplication in 4.035 seconds (JVM running for 4.484)
+2021-09-02 08:53:15 INFO Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 14391 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-02 08:53:15 DEBUG Running with Spring Boot v2.4.7, Spring v5.3.8
+2021-09-02 08:53:15 INFO No active profile set, falling back to default profiles: default
+2021-09-02 08:53:18 DEBUG Adding routeId: route1 as rest-api route
+2021-09-02 08:53:18 INFO Started BifastOutboundApplication in 3.653 seconds (JVM running for 4.14)
+2021-09-02 08:53:33 INFO Ada error barusan 
+2021-09-02 08:57:37 INFO Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 14890 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)2021-09-02 08:57:37 DEBUG Running with Spring Boot v2.4.7, Spring v5.3.82021-09-02 08:57:37 INFO No active profile set, falling back to default profiles: default2021-09-02 08:57:40 DEBUG Adding routeId: route1 as rest-api route2021-09-02 08:57:41 INFO Started BifastOutboundApplication in 3.749 seconds (JVM running for 4.188)2021-09-02 08:59:09 INFO Ada error barusan 2021-09-02 08:59:33 INFO Ada error barusan 2021-09-02 09:00:29 INFO
+2021-09-02 09:00:29 DEBUG
+2021-09-02 09:00:29 INFO
+2021-09-02 09:00:31 DEBUG
+2021-09-02 09:00:32 INFO
+2021-09-02 09:00:47 INFO
+2021-09-02 09:00:54 INFO
+2021-09-02 09:01:12 Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 15385 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-02 09:01:12 Running with Spring Boot v2.4.7, Spring v5.3.8
+2021-09-02 09:01:12 No active profile set, falling back to default profiles: default
+2021-09-02 09:01:15 Adding routeId: route1 as rest-api route
+2021-09-02 09:01:15 Started BifastOutboundApplication in 3.635 seconds (JVM running for 4.145)
+2021-09-02 09:01:31 Ada error barusan 
+2021-09-02 09:01:41 Ada error barusan 
+2021-09-02 09:01:42 Ada error barusan 
+2021-09-02 09:01:43 Ada error barusan 
+2021-09-02 09:02:18 Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 15564 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-02 09:02:18 Running with Spring Boot v2.4.7, Spring v5.3.8
+2021-09-02 09:02:18 No active profile set, falling back to default profiles: default
+2021-09-02 09:02:21 Adding routeId: route1 as rest-api route
+2021-09-02 09:02:22 Started BifastOutboundApplication in 4.199 seconds (JVM running for 4.621)
+2021-09-02 09:03:12 Starting BifastOutboundApplication using Java 16.0.1 on fransdm-Latitude with PID 15687 (/home/fransdm/workspace/bifast/bifast-outbound/target/classes started by fransdm in /home/fransdm/workspace/bifast/bifast-outbound)
+2021-09-02 09:03:12 Running with Spring Boot v2.4.7, Spring v5.3.8
+2021-09-02 09:03:12 No active profile set, falling back to default profiles: default
+2021-09-02 09:03:15 Adding routeId: route1 as rest-api route
+2021-09-02 09:03:15 Started BifastOutboundApplication in 3.61 seconds (JVM running for 4.041)
+2021-09-02 09:03:38 Ada error barusan 
+2021-09-02 09:03:48 Ada error barusan 
+2021-09-02 09:03:49 Ada error barusan 
+2021-09-02 09:03:49 Ada error barusan 
+2021-09-02 09:03:51 Ada error barusan 
+2021-09-02 09:03:52 Ada error barusan 
+2021-09-02 09:03:53 Ada error barusan 
+2021-09-02 09:12:25 Ada error barusan 
+2021-09-02 09:12:31 Ada error barusan 
+2021-09-02 09:13:54 Ada error barusan 
+2021-09-02 09:13:54 Ada error barusan 
+2021-09-02 09:17:37 Ada error barusan 
+2021-09-02 09:17:43 Ada error barusan 
+2021-09-02 09:17:44 Ada error barusan 
+2021-09-02 09:17:45 Ada error barusan 
+2021-09-02 09:17:55 Ada error barusan 
+2021-09-02 09:17:56 Ada error barusan 
+2021-09-02 09:17:57 Ada error barusan 
+2021-09-02 09:19:45 Ada error barusan 
+2021-09-02 09:19:48 Ada error barusan 
+2021-09-02 09:19:49 Ada error barusan 
+2021-09-02 09:19:50 Ada error barusan 
+2021-09-02 09:19:51 Ada error barusan 
+2021-09-02 09:19:56 Ada error barusan 
+2021-09-02 09:26:44 {"intrnRefId":"4754227","channelName":"Internet Banking","receivingParticipant":"AICDIDJA","amount":51080000,"categoryPurpose":"02","creditorAccountNumber":"14555231"}
+
+
+2021-09-02 09:26:44 {"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"AICDIDJA"}}}},"BizMsgIdr":"20210902FASTIDJA510O0100000001","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-09-02T09:26:44"},"Document":{"FitoFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20210902FASTIDJA51000000002","CreDtTm":"2021-09-02T09:26:44","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20210902FASTIDJA510O0100000001","TxId":"20210902FASTIDJA51000000002"},"IntrBkSttlmAmt":{"Value":"51080000.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"AICDIDJA"}}},"Cdtr":{},"CdtrAcct":{"Id":{"Othr":{"Id":"14555231"}}}}]}}}}
+
+
+2021-09-02 09:26:46 {"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}}},"BizMsgIdr":"20210902FASTIDJA510O0200000004","MsgDefIdr":"pacs.002.001.10","CreDt":"2021-09-02T02:26:46"},"Document":{"FitoFIPmtStsRpt":{"GrpHdr":{"MsgId":"20210902FASTIDJA51000000003","CreDtTm":"2021-09-02T02:26:46"},"TxInfAndSts":[{"OrgnlEndToEndId":"20210902FASTIDJA510O0100000001","OrgnlTxId":"20210902FASTIDJA51000000002","TxSts":"RJCT","StsRsnInf":[{"Rsn":{"Prtry":"U001"}}],"OrgnlTxRef":{"Cdtr":{"Pty":{"Nm":"Wawan Setiawan"}},"CdtrAcct":{"Id":{"Othr":{"Id":"977004883004"}},"Tp":{"Prtry":"CACC"}}},"SplmtryData":[{"Envlp":{"Cdtr":{"Tp":"01","Id":"KTP-206521623","RsdntSts":"01","TwnNm":"0300"}}}]}]}}}}
+
+
+2021-09-02 09:26:48 {"OutboundMessage":{"AccountEnquiryRequest":{"intrnRefId":"4754227","channelName":"Internet Banking","receivingParticipant":"AICDIDJA","amount":51080000,"categoryPurpose":"02","creditorAccountNumber":"14555231"},"Response":{"status":"RJCT","reason":"U001","creditorAccountType":"CACC","creditorName":"Wawan Setiawan","creditorId":"KTP-206521623","creditorType":"01","creditorResidentStatus":"01","creditorTownName":"0300"}}}
+
+

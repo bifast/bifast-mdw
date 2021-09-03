@@ -4,10 +4,10 @@ Content-Type: application/json
 
 {
   "AccountEnquiryRequest" : {
-    "intrnRefId" : "47542",
-    "channelName" : "Internet Bankinga",
+    "intrnRefId" : "476-7",
+    "channelName" : "Internet Banking",
     "receivingParticipant" : "AICDIDJA",
-    "amount" : 510333000,
+    "amount" : 11080000,
     "categoryPurpose" : "02",
     "creditorAccountNumber" : "14555231"
   }

@@ -23,9 +23,10 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr" : "20210719FASTIDJA010ORB98317555",
+      "BizMsgIdr" : "20210903FASTIDJA010ORB98314268",
       "MsgDefIdr" : "pacs.008.001.08",
-      "CreDt" : "2021-07-03T20:00:00"
+      "CreDt" : "2021-09-03T18:00:00",
+      "CpyDplct": "DUPL"
     },
     "Document" : {
       "FitoFICstmrCdtTrf" : {

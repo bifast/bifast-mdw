@@ -20,7 +20,7 @@ public class Pacs008Seed {
 	
 	private String crdtId;  // CrdtTrn
 	private String crdtName;
-	private String crdtIdType; // CrdtTrn
+	private String crdtIdType; 
 	private String crdtAccountNo;   // AcctEnq CrdtTrn
 	private String crdtAccountType;  // CrdtTrn
 	

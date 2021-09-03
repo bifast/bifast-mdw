@@ -69,7 +69,10 @@ public class InboundRoute extends RouteBuilder {
 		from("direct:receive").routeId("receive")
 			.convertBodyTo(String.class)
 			.setHeader("rcv_jsonbi", simple("${body}"))
+			
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
+
+			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			
 			.setHeader("rcv_bi", simple("${body}"))   // pojo BusinessMessage simpan ke header
 			.setHeader("rcv_msgname", simple("${body.appHdr.msgDefIdr}"))
@@ -119,9 +122,12 @@ public class InboundRoute extends RouteBuilder {
 					.log("Message tidak dikenal")
 			.end()
 			
+			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+
 			.to("seda:logandsave?exchangePattern=InOnly")
 			
 			.setBody(simple("${header.resp_jsonbi}"))
+			
 			.removeHeaders("rcv_*")
 			.removeHeaders("resp_*")
 			.log("output response selesai")
@@ -129,7 +135,7 @@ public class InboundRoute extends RouteBuilder {
 
 		from("seda:logandsave")
 			.process(saveInboundMessageProcessor)
-			.process(saveTracingTableProcessor)
+//			.process(saveTracingTableProcessor)
 			.process(combineMesgProcessor)
 			.log("akan simpan log ke {{bifast.inbound-log-folder}}")
 			.toD("file:{{bifast.inbound-log-folder}}?fileName=${header.rcv_fileName}")
