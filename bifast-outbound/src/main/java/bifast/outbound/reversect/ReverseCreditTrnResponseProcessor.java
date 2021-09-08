@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
-import bifast.outbound.pojo.ChannelResponse;
-import bifast.outbound.pojo.ChannelResponseMessage;
 
 @Component
 public class ReverseCreditTrnResponseProcessor implements Processor {
@@ -18,10 +16,9 @@ public class ReverseCreditTrnResponseProcessor implements Processor {
 		BusinessMessage obj_crdtrnResp = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
 		PaymentTransaction110 biResp = obj_crdtrnResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 		
-		ChannelReverseCreditTransferRequest chnRequest = exchange.getMessage().getHeader("req_channelReq", ChannelReverseCreditTransferRequest.class);
-
-		ChannelResponse chnResponse = new ChannelResponse();
+		ChnlReverseCreditTransferResponse chnResponse = new ChnlReverseCreditTransferResponse();
 		
+//		chnResponse.setOrignReffId(null);
 		// from CI-HUB response
 		chnResponse.setBizMsgId(obj_crdtrnResp.getAppHdr().getBizMsgIdr());
 		chnResponse.setResponseType(obj_crdtrnResp.getAppHdr().getBizSvc());
@@ -47,12 +44,7 @@ public class ReverseCreditTrnResponseProcessor implements Processor {
 		if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm()))
 			chnResponse.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
 
-//		ChannelReverseCreditTransferMessage ctMesg = new ChannelReverseCreditTransferMessage();
-		ChannelResponseMessage ctMesg = new ChannelResponseMessage();
-		ctMesg.setReverseCreditTransferRequest(chnRequest);
-		ctMesg.setResponse(chnResponse);
-		
-		exchange.getIn().setBody(ctMesg);
+		exchange.getIn().setBody(chnResponse);
 		
 	
 	}

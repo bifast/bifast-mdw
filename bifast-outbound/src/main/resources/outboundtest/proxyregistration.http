@@ -4,14 +4,14 @@ Content-Type: application/json
 
 {
     "ProxyRegistrationRequest": {
-        "intrnRefId": "B44231",
-        "channel" : "01",
+        "orignReffId": "4631",
+        "channel" : "Internet Banking",
         "proxyTp" : "02",
         "proxyVal" : "frans.mazhar@gmail.com",
         "displayName" : "Oom aja",
         "accNumber" : "14556",
         "accType" : "SVGS",
-        "accName" : "Juan Manse",
+        "accName" : "Fras Manse",
         "scndIdTp" : "01",
         "scndIdVal" : "44443333",
         "cstmrTp" : "01",

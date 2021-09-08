@@ -26,7 +26,7 @@ public class CreditTransferRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelCreditTransferRequest chnReq = exchange.getIn().getHeader("rcv_channel",ChannelCreditTransferRequest.class);
+		ChannelCreditTransferRequest chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChannelCreditTransferRequest.class);
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = appHeaderService.initAppHdr(chnReq.getRecptBank(), "pacs.008.001.08", "010", chnReq.getChannel());

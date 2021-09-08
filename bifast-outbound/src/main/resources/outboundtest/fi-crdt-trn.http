@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "FICreditTransferRequest" : {
-    "intrnRefId" : "1176564",
+    "orignReffId" : "1176564",
     "channel" : "01",
     "amount" : 60030700,
     "recptBank" : "FASTIDJA",

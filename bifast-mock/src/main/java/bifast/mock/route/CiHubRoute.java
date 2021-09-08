@@ -17,6 +17,7 @@ import bifast.mock.processor.FICreditTransferResponseProcessor;
 import bifast.mock.processor.OnRequestProcessor;
 import bifast.mock.processor.PaymentStatusResponseProcessor;
 import bifast.mock.processor.ProxyRegistrationResponseProcessor;
+import bifast.mock.processor.ProxyResolutionResponseProcessor;
 import bifast.mock.processor.RejectMessageProcessor;
 
 @Component
@@ -34,11 +35,10 @@ public class CiHubRoute extends RouteBuilder {
 	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
 	@Autowired
 	private RejectMessageProcessor rejectMessageProcessor;
-	
 	@Autowired
 	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
-//	@Autowired
-//	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
+	@Autowired
+	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -103,15 +103,17 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'ProxyRegistrationRequest'")
 					.process(proxyRegistrationResponseProcessor)
 
-//				.when().simple("${header.msgType} == 'ProxyResolutionRequest'")
-//					.process(proxyResolutionResponseProcessor)
+				.when().simple("${header.msgType} == 'ProxyResolutionRequest'")
+					.process(proxyResolutionResponseProcessor)
 
 				.otherwise()	
 					.log("Other message")
 			.end()
 				
 			// .process(rejectMessageProcessor)
+
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
+			// .process(proxyResolutionResponseProcessor)
 
 			.log("Response dari mock")
 			.log("${body}")

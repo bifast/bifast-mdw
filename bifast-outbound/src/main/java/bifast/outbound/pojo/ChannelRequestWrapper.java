@@ -5,14 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
 import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
-import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
+import bifast.outbound.paymentstatus.ChnlPaymentStatusRequest;
 import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
 import bifast.outbound.proxyregistration.ChannelProxyResolutionReq;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 
-
-//@JsonProperty("AccountEnquiryRequest")
-public class ChannelRequest {
+public class ChannelRequestWrapper {
 
 	@JsonProperty("AccountEnquiryRequest")
 	private ChannelAccountEnquiryReq accountEnquiryRequest;
@@ -24,7 +22,7 @@ public class ChannelRequest {
 	private ChannelFICreditTransferReq fiCreditTransferRequest;
 	
 	@JsonProperty("PaymentStatusRequest")
-	private ChannelPaymentStatusRequest paymentStatusRequest;
+	private ChnlPaymentStatusRequest paymentStatusRequest;
 	
 	@JsonProperty("ReverseCreditTransferRequest")
 	private ChannelReverseCreditTransferRequest reverseCreditTransferRequest;
@@ -59,11 +57,11 @@ public class ChannelRequest {
 		this.fiCreditTransferRequest = fiCreditTransferRequest;
 	}
 
-	public ChannelPaymentStatusRequest getPaymentStatusRequest() {
+	public ChnlPaymentStatusRequest getPaymentStatusRequest() {
 		return paymentStatusRequest;
 	}
 
-	public void setPaymentStatusRequest(ChannelPaymentStatusRequest paymentStatusRequest) {
+	public void setPaymentStatusRequest(ChnlPaymentStatusRequest paymentStatusRequest) {
 		this.paymentStatusRequest = paymentStatusRequest;
 	}
 

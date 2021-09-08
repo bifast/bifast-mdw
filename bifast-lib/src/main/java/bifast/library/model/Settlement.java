@@ -31,9 +31,6 @@ public class Settlement {
 	private String dbtrAccountType;
 	private String dbtrId;
 	private String dbtrIdType;
-	
-	@Column(name="FULL_MESG", length=6000)
-	private String fullMessage;
 
 	public Settlement () {}
 	
@@ -148,15 +145,5 @@ public class Settlement {
 	public void setDbtrIdType(String dbtrIdType) {
 		this.dbtrIdType = dbtrIdType;
 	}
-
-	public String getFullMessage() {
-		return fullMessage;
-	}
-
-	public void setFullMessage(String fullMessage) {
-		this.fullMessage = fullMessage;
-	}
-	
-
 
 }

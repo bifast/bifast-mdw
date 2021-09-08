@@ -18,14 +18,14 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "INDOIDJA"
+              "Id" : "MNDRIDJA"
             }
           }
         }
       },
-      "BizMsgIdr" : "20210701FASTIDJA510ORB12300245",
+      "BizMsgIdr" : "20210905FASTIDJA510ORB12300945",
       "MsgDefIdr" : "pacs.008.001.08",
-      "CreDt" : "2021-03-01T20:00:00"
+      "CreDt" : "2021-09-05T20:00:00"
     },
     "Document" : {
       "FitoFICstmrCdtTrf" : {
@@ -51,14 +51,14 @@ Content-Type: application/json
           "DbtrAgt" : {
             "FinInstnId" : {
               "Othr" : {
-                "Id" : "INDOIDJA"
+                "Id" : "FASTIDJA"
               }
             }
           },
           "CdtrAgt" : {
             "FinInstnId" : {
               "Othr" : {
-                "Id" : "CENAIDJA"
+                "Id" : "MNDRIDJA"
               }
             }
           },

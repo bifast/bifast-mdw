@@ -11,4 +11,5 @@ import bifast.library.model.CreditTransfer;
 public interface CreditTransferRepository extends JpaRepository<CreditTransfer, Long> {
 
 	public Optional<CreditTransfer> findByCrdtTrnRequestBizMsgIdr (String msgId);
+
 }

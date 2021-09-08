@@ -2,10 +2,6 @@ package bifast.outbound.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -18,110 +14,49 @@ import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.library.model.AccountEnquiry;
 import bifast.library.model.CreditTransfer;
-import bifast.library.model.DomainCode;
 import bifast.library.model.OutboundMessage;
 import bifast.library.model.ProxyMessage;
 import bifast.library.repository.AccountEnquiryRepository;
 import bifast.library.repository.CreditTransferRepository;
-import bifast.library.repository.DomainCodeRepository;
 import bifast.library.repository.OutboundMessageRepository;
 import bifast.library.repository.ProxyMessageRepository;
-import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
-import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
-import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
-import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
-import bifast.outbound.proxyregistration.ChannelProxyResolutionReq;
 
 @Component
 public class SaveTablesProcessor implements Processor {
 
 	@Autowired
-	private OutboundMessageRepository outboundRepo;
+	private OutboundMessageRepository outboundMsgRepo;
 	@Autowired
 	private AccountEnquiryRepository accountEnqrRepo;
 	@Autowired
 	private CreditTransferRepository creditTransferRepo;
 	@Autowired
 	private ProxyMessageRepository proxyMessageRepo;
-	@Autowired
-	private DomainCodeRepository domainCodeRepo;
-
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
 		
 		BusinessMessage outRequest = exchange.getMessage().getHeader("req_objbi", BusinessMessage.class);
-	    Map<String,Object> sqlqry = (Map<String,Object>) exchange.getIn().getHeader("rcv_qryresult");
+		Long tableId = exchange.getMessage().getHeader("hdr_idtable", Long.class); 
+		
+		OutboundMessage outboundMessage = outboundMsgRepo.findById(tableId).orElse(new OutboundMessage());
 
-		String msgType = exchange.getIn().getHeader("rcv_msgType", String.class);
-		Object channelRequest = exchange.getMessage().getHeader("rcv_channel");
-
-		OutboundMessage outboundMessage = new OutboundMessage();
-
-		outboundMessage.setBizMsgIdr(outRequest.getAppHdr().getBizMsgIdr());
-		outboundMessage.setMsgDefIdr(outRequest.getAppHdr().getMsgDefIdr());
-
-		outboundMessage.setRecipientBank(outRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-
-		String trxType = outRequest.getAppHdr().getBizMsgIdr().substring(16, 19);
-		Optional<DomainCode> trxName = domainCodeRepo.findByGrpAndKey("TRANSACTION.TYPE", trxType);
-		if (trxName.isPresent())
-			outboundMessage.setTransactionType(trxName.get().getValue());
-		else 
-			outboundMessage.setTransactionType(trxType);
-			
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
 
-		String strChnlRequestTime = exchange.getMessage().getHeader("req_channelRequestTime", String.class);
 		String strChnlResponseTime = exchange.getMessage().getHeader("req_channelResponseTime", String.class);
-		LocalDateTime chnlRequestTime = LocalDateTime.parse(strChnlRequestTime, dtf);
 		LocalDateTime ChnlResponseTime = LocalDateTime.parse(strChnlResponseTime, dtf);
-		outboundMessage.setChannelRequestDT(chnlRequestTime);
 		outboundMessage.setChannelResponseDT(ChnlResponseTime);
 
 		String strCiHubRequestTime = exchange.getMessage().getHeader("req_cihubRequestTime", String.class);
-		String strCiHubResponseTime = exchange.getMessage().getHeader("req_cihubResponseTime", String.class);
 		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCiHubRequestTime, dtf);
-		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCiHubResponseTime, dtf);
 		outboundMessage.setCihubRequestDT(cihubRequestTime);
+		String strCiHubResponseTime = exchange.getMessage().getHeader("req_cihubResponseTime", String.class);
+		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCiHubResponseTime, dtf);
 		outboundMessage.setCihubResponseDT(cihubResponseTime);
 		
-		
-		String intrRefId = "";
-		String channel = "";
-		if (msgType.equals("acctenqr")) {
-			intrRefId = ((ChannelAccountEnquiryReq)channelRequest).getIntrnRefId();
-			channel = ((ChannelAccountEnquiryReq)channelRequest).getChannelName();
-		}
-		else if (msgType.equals("crdttrns")) {
-			intrRefId = ((ChannelCreditTransferRequest)channelRequest).getIntrnRefId();
-			channel = ((ChannelCreditTransferRequest)channelRequest).getChannel();
-		}
-		else if (msgType.equals("ficrdttrns")) {
-			intrRefId = ((ChannelFICreditTransferReq)channelRequest).getIntrnRefId();
-			channel = ((ChannelFICreditTransferReq)channelRequest).getChannel();
-		}
-		else if (msgType.equals("prxyrgst")) {
-			intrRefId = ((ChannelProxyRegistrationReq)channelRequest).getIntrnRefId();
-			channel = ((ChannelProxyRegistrationReq)channelRequest).getChannel();
-		}
-		else if (msgType.equals("prxyrslt")) {
-			intrRefId = ((ChannelProxyResolutionReq)channelRequest).getIntrnRefId();
-			channel = ((ChannelProxyResolutionReq)channelRequest).getChannel();
-		}
-		else if (msgType.equals("reversal")) {
-			channel = "Reverse Credit Transfer";
-		}
-
-		if (!(null==intrRefId))
-			outboundMessage.setInternalReffId(intrRefId);
-
-//		Optional<DomainCode> channelName = domainCodeRepo.findByGrpAndKey("CHANNEL.TYPE", channel);
-//		if (channelName.isPresent()) 
-//			outboundMessage.setChannel(channelName.get().getValue());
-//		else
-			outboundMessage.setChannel(channel);
+		String fullResponseMsg = exchange.getMessage().getHeader("hdr_fullresponsemessage", String.class);
+		outboundMessage.setFullResponseMsg(fullResponseMsg);
 
 		BusinessMessage outResponse = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
 
@@ -133,6 +68,7 @@ public class SaveTablesProcessor implements Processor {
 		else if (!(null == outResponse.getDocument().getFiToFIPmtStsRpt())) {  // response ct pacs002
 			outboundMessage.setRespBizMsgId(outResponse.getAppHdr().getBizMsgIdr());
 			outboundMessage.setRespStatus(outResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			
 		}			
 
 		else if (!(null == outResponse.getDocument().getPrxyRegnRspn())) {    // Response dari Proxy Registration
@@ -155,23 +91,25 @@ public class SaveTablesProcessor implements Processor {
 			outboundMessage.setErrorMessage(rjctMesg);
 		}
 		
-		outboundRepo.save(outboundMessage);
-		
+		outboundMsgRepo.save(outboundMessage);
+
 		// save table tracing
+		Object channelRequest = exchange.getMessage().getHeader("hdr_channelRequest");
+		String requestClass = channelRequest.getClass().getName();
 		
-		if (msgType.equals("acctenqr")) {
+		if (requestClass.endsWith("ChannelAccountEnquiryReq")) {
 			saveAccountEnquiryMsg(outboundMessage, outRequest);
 		} 
-		else if (msgType.equals("crdttrns")) {
+		else if (requestClass.endsWith("ChannelCreditTransferRequest")) {
 			saveCreditTransferMsg(outboundMessage, outRequest);
 		}
-		else if (msgType.equals("reversal")) 
-			saveReversalCreditTransferMsg(outboundMessage, outRequest, (String) sqlqry.get("crdttrn_req_bizmsgid"));
+//		else if (msgType.equals("reversal")) 
+//			saveReversalCreditTransferMsg(outboundMessage, outRequest, (String) channelRequest.get("crdttrn_req_bizmsgid"));
 			
-		else if (msgType.equals("ficrdttrns")) {
+		else if (requestClass.endsWith("ChannelFICreditTransferReq")) {
 			saveFICreditTransferMsg(outboundMessage, outRequest);
 		}
-		else if (msgType.equals("prxyrgst")) {
+		else if (requestClass.endsWith("ChannelProxyRegistrationReq")) {
 			saveProxyMessage(outboundMessage, outRequest);
 		}
 
@@ -190,7 +128,6 @@ public class SaveTablesProcessor implements Processor {
 
 		// dari XMLGregorianCalender ubah ke LocalDateTime
 		accountEnquiry.setCreDt(accountEnqReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
-		
 		accountEnquiry.setIntrRefId(auditTab.getInternalReffId());
 		accountEnquiry.setLogMessageId(auditTab.getId());
 		accountEnquiry.setOriginatingBank(orgnlBank);
@@ -253,7 +190,6 @@ public class SaveTablesProcessor implements Processor {
 		ct.setMsgType("Reversal CT");
 		ct.setReversal(endToEndId);
 		creditTransferRepo.save(ct);
-
 	}
 
 	private void saveFICreditTransferMsg (OutboundMessage auditTab,
@@ -268,9 +204,10 @@ public class SaveTablesProcessor implements Processor {
 
 		ct.setAmount(fiCreditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 		ct.setCreDt(fiCreditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
-
+		
+		ct.setStatus(auditTab.getRespStatus());
 		ct.setIntrRefId(auditTab.getInternalReffId());
-		ct.setMsgType("FI Credit Transfer");
+		ct.setMsgType("FI to FI Credit Transfer");
 		ct.setOriginatingBank(orgnlBank);
 		ct.setRecipientBank(auditTab.getRecipientBank());
 		ct.setLogMessageId(auditTab.getId());

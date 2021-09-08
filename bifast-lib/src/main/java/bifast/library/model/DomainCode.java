@@ -16,7 +16,11 @@ public class DomainCode {
 	private String key;
 	private String value;
 	
-	public DomainCode () {}
+	public DomainCode () {
+		this.grp = "";
+		this.key = "";
+		this.value = "";
+	}
 	
 	public Long getId() {
 		return id;

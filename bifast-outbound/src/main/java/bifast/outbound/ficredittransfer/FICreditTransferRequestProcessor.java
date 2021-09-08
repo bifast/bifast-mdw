@@ -11,6 +11,7 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs009MessageService;
 import bifast.library.iso20022.service.Pacs009Seed;
+import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
 import bifast.outbound.config.Config;
 
 @Component
@@ -27,7 +28,7 @@ public class FICreditTransferRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelFICreditTransferReq chnReq = exchange.getIn().getBody(ChannelFICreditTransferReq.class);
+		ChannelFICreditTransferReq chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChannelFICreditTransferReq.class);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = appHeaderService.initAppHdr(chnReq.getRecptBank(), "pacs.009.001.09", "019", chnReq.getChannel());

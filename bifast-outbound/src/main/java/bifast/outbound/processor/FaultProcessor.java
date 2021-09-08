@@ -2,35 +2,56 @@ package bifast.outbound.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
-import bifast.outbound.pojo.ChannelReject;
-import bifast.outbound.pojo.ChannelResponseMessage;
+import bifast.library.model.FaultClass;
+import bifast.library.repository.FaultClassRepository;
+import bifast.outbound.pojo.ChannelFaultResponse;
 
 @Component
 public class FaultProcessor implements Processor {
 
-
+	@Autowired 
+	private FaultClassRepository faultClassRepo;
+	
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
+		System.out.println("start FaultProcessor");
 		Exception e = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
 
-		System.out.println("cause : " + e.getMessage());
+		FaultClass fault = faultClassRepo.findByExceptionClass(e.getClass().getName()).orElse(new FaultClass());
 		
-		ChannelReject reject = new ChannelReject();
-		reject.setLocation("Internal/TransactionRoute");
-		reject.setReason(e.getMessage());
-		reject.setDescription(e.getStackTrace()[0].toString());
+		String reason = "General error";
+		if (!(null==fault.getId()))
+			reason = fault.getReason();
+				
+		ChannelFaultResponse reject = new ChannelFaultResponse();
+		reject.setReason(reason);
+		
+		String hdrLocation = exchange.getMessage().getHeader("hdr_errorlocation", String.class);
+		
+		if (null==hdrLocation)
+			reject.setLocation("komi-outbound");
+		else
+			reject.setLocation(hdrLocation);
+		
+		reject.setDescription(e.getMessage());
 
-		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("req_channelReq",ChannelAccountEnquiryReq.class);
+//		Object chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", Object.class);
+//		String refId;
+//				
+//			Method getOrignReffId = chnRequest.getClass().getMethod("getChannelRefId", null);
+//			if (!(null==getOrignReffId)) {
+//				refId = (String) getOrignReffId.invoke(chnRequest, null);
+//				reject.setChannelRefId(refId);
+//			}
 		
-		ChannelResponseMessage responseMessage = new ChannelResponseMessage();
-		responseMessage.setAccountEnquiryRequest(chnReq);
-		responseMessage.setRejection(reject);
-		
-		exchange.getIn().setBody(responseMessage);
+		System.out.println("Cek 453");
+				
+		exchange.getMessage().setHeader("hdr_fault", reject);
+		exchange.getMessage().setBody(reject, ChannelFaultResponse.class);
 	}
 
 }

@@ -14,7 +14,7 @@ import bifast.library.iso20022.custom.BusinessMessageWrap;
 import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
 import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
-import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
+import bifast.outbound.paymentstatus.ChnlPaymentStatusRequest;
 import bifast.outbound.pojo.CombinedMessage;
 import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
@@ -51,7 +51,7 @@ public class CombineMessageProcessor implements Processor {
 
 		else if (msgType.equals("PaymentStatus")) {
 			fileName = "pacs.028.";
-			ChannelPaymentStatusRequest pymtSts = exchange.getMessage().getHeader("req_channelReq", ChannelPaymentStatusRequest.class);
+			ChnlPaymentStatusRequest pymtSts = exchange.getMessage().getHeader("req_channelReq", ChnlPaymentStatusRequest.class);
 			fullMesg.setPaymentStatusRequest(pymtSts);
 		}
 

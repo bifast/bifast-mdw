@@ -8,8 +8,6 @@ import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.outbound.pojo.ChannelReject;
-import bifast.outbound.pojo.ChannelResponse;
-import bifast.outbound.pojo.ChannelResponseMessage;
 
 @Component
 public class ProxyRegistrationResponseProcessor implements Processor {
@@ -19,19 +17,15 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		
 		BusinessMessage obj_crdtrnResp = exchange.getIn().getBody(BusinessMessage.class);
 
-		ChannelProxyRegistrationReq chnRequest = exchange.getMessage().getHeader("rcv_channel", ChannelProxyRegistrationReq.class);
+		ChannelProxyRegistrationReq chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChannelProxyRegistrationReq.class);
 
-		ChannelResponseMessage ctResponse = new ChannelResponseMessage();
-		ctResponse.setProxyRegistrationRequest(chnRequest);
-
-		ChannelResponse chnResponse = new ChannelResponse();
-
-		
 		if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 
-			
+			ChnlProxyRegistrationResponse chnResponse = new ChnlProxyRegistrationResponse();
 			ProxyRegistrationResponseV01 biResp = obj_crdtrnResp.getDocument().getPrxyRegnRspn();
 
+			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
+			
 			// from CI-HUB response
 			chnResponse.setBizMsgId(obj_crdtrnResp.getAppHdr().getBizMsgIdr());
 			chnResponse.setResponseType(obj_crdtrnResp.getAppHdr().getBizSvc());
@@ -39,7 +33,8 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 			chnResponse.setStatus(biResp.getRegnRspn().getPrxRspnSts().toString());
 			chnResponse.setReason(biResp.getRegnRspn().getStsRsnInf().getPrtry());
 
-			ctResponse.setResponse(chnResponse);
+			exchange.getIn().setBody(chnResponse);
+
 		}
 		
 		else {   // ternyata berupa message reject
@@ -53,13 +48,8 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 			reject.setLocation(rejectResp.getRsn().getErrLctn());
 			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
 	
-			ctResponse.setRejection(reject);
+			exchange.getIn().setBody(reject);
 
 		}
-		
-		exchange.getIn().setBody(ctResponse);
-		
-	
 	}
-
 }

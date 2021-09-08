@@ -72,6 +72,8 @@ public class Proxy003MessageService {
 		ProxyLookUpChoice1 lookup = new ProxyLookUpChoice1();
 		lookup.setPrxyOnly(prxyOnly);
 		
+		proxy003.setLookUp(lookup);
+		
 		return proxy003;
 	}
 

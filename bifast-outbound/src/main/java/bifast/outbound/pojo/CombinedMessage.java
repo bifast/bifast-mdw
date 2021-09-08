@@ -8,7 +8,7 @@ import bifast.library.iso20022.custom.BusinessMessageWrap;
 import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
 import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
 import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
-import bifast.outbound.paymentstatus.ChannelPaymentStatusRequest;
+import bifast.outbound.paymentstatus.ChnlPaymentStatusRequest;
 import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 
@@ -30,7 +30,7 @@ public class CombinedMessage {
 	@JsonProperty("FICreditTransferRequest")
 	private ChannelFICreditTransferReq fiCreditTransferRequest;
 	@JsonProperty("PaymentStatusRequest")
-	private ChannelPaymentStatusRequest paymentStatusRequest;
+	private ChnlPaymentStatusRequest paymentStatusRequest;
 	@JsonProperty("ReverseCreditTransferRequest")
 	private ChannelReverseCreditTransferRequest reverseCreditTransferRequest;
 	
@@ -60,10 +60,10 @@ public class CombinedMessage {
 	public void setFiCreditTransferRequest(ChannelFICreditTransferReq fiCreditTransferRequest) {
 		this.fiCreditTransferRequest = fiCreditTransferRequest;
 	}
-	public ChannelPaymentStatusRequest getPaymentStatusRequest() {
+	public ChnlPaymentStatusRequest getPaymentStatusRequest() {
 		return paymentStatusRequest;
 	}
-	public void setPaymentStatusRequest(ChannelPaymentStatusRequest paymentStatusRequest) {
+	public void setPaymentStatusRequest(ChnlPaymentStatusRequest paymentStatusRequest) {
 		this.paymentStatusRequest = paymentStatusRequest;
 	}
 	public ChannelReverseCreditTransferRequest getReverseCreditTransferRequest() {

@@ -7,32 +7,32 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("AccountEnquiryRequest")
 public class ChannelAccountEnquiryReq {
 
-	private String intrnRefId;
-	private String channelName;  //M
-	private String receivingParticipant; //M
+	private String channelRefId;
+	private String channel;  //M
+	private String recipientBank; //M
 	private BigDecimal amount;  //M
 	private String categoryPurpose;  //M
 	private String creditorAccountNumber; //M
 	
 	public ChannelAccountEnquiryReq() {}
 	
-	public String getIntrnRefId() {
-		return intrnRefId;
+	public String getChannelRefId() {
+		return channelRefId;
 	}
-	public void setIntrnRefId(String intrnRefId) {
-		this.intrnRefId = intrnRefId;
+	public void setChannelRefId(String channelRefId) {
+		this.channelRefId = channelRefId;
 	}
-	public String getChannelName() {
-		return channelName;
+	public String getChannel() {
+		return channel;
 	}
-	public void setChannelName(String channelName) {
-		this.channelName = channelName;
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
-	public String getReceivingParticipant() {
-		return receivingParticipant;
+	public String getRecipientBank() {
+		return recipientBank;
 	}
-	public void setReceivingParticipant(String receivingParticipant) {
-		this.receivingParticipant = receivingParticipant;
+	public void setRecipientBank(String recipientBank) {
+		this.recipientBank = recipientBank;
 	}
 	public BigDecimal getAmount() {
 		return amount;

@@ -44,20 +44,7 @@
             <maxFileSize>1MB</maxFileSize>
         </triggeringPolicy>
     </appender>
-     <appender name="proxy" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOGS}/proxy.log</file>
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>${LOGS}/proxy-%i.log</fileNamePattern>
-            <minIndex>1</minIndex>
-            <maxIndex>10</maxIndex>
-        </rollingPolicy>
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>1MB</maxFileSize>
-        </triggeringPolicy>
-    </appender>
+
  
     <appender name="SystemLog"
         class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -80,12 +67,11 @@
     </appender>
 
    
-    <!-- LOG everything at INFO level -->
     <root level="INFO">
         <appender-ref ref="SystemLog" />
         <appender-ref ref="Console" />
     </root>
- 
+    
     <!-- LOG "bifast.outbound.*"  -->
     <logger name="accountenquiry" level="INFO">
         <appender-ref ref="accountenquiry" />
@@ -93,8 +79,6 @@
     <logger name="credittransfer" level="INFO">
         <appender-ref ref="credittransfer" />
     </logger>
-     <logger name="proxy" level="INFO">
-        <appender-ref ref="proxy" />
-    </logger>
+
  
 </configuration>

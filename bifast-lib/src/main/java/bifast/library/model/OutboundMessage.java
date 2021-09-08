@@ -23,11 +23,8 @@ public class OutboundMessage {
 	@Column(name="BIZMSGID")
 	private String bizMsgIdr;
 	
-	@Column(name="TRX_TYPE")
-	private String transactionType;
-	
 	@Column(name="MESSAGE_NAME")
-	private String msgDefIdr;
+	private String messageName;
 	
 	@Column(name="RECPT_BANK")
 	private String recipientBank;
@@ -40,9 +37,6 @@ public class OutboundMessage {
 	@Column(name="ERROR_MSG", length=500)
 	private String errorMessage;
 	
-	@Column(name="LOGFILE_NAME")
-	private String logfileName;
-
 	@Column(name="CHNL_REQ_TIME")
 	private LocalDateTime channelRequestDT;
 	
@@ -54,6 +48,12 @@ public class OutboundMessage {
 	
 	@Column(name="CIHUB_RESP_TIME")
 	private LocalDateTime cihubResponseDT;	
+	
+	@Column(name="FULL_REQUEST_MSG", length=4000)
+	private String fullRequestMessage;
+
+	@Column(name="FULL_RESPONSE_MSG", length=4000)
+	private String fullResponseMsg;
 
 	public OutboundMessage() {}
 
@@ -89,20 +89,12 @@ public class OutboundMessage {
 		this.bizMsgIdr = bizMsgIdr;
 	}
 
-	public String getTransactionType() {
-		return transactionType;
+	public String getMessageName() {
+		return messageName;
 	}
 
-	public void setTransactionType(String transactionType) {
-		this.transactionType = transactionType;
-	}
-
-	public String getMsgDefIdr() {
-		return msgDefIdr;
-	}
-
-	public void setMsgDefIdr(String msgDefIdr) {
-		this.msgDefIdr = msgDefIdr;
+	public void setMessageName(String messageName) {
+		this.messageName = messageName;
 	}
 
 	public String getRecipientBank() {
@@ -137,14 +129,6 @@ public class OutboundMessage {
 		this.errorMessage = errorMessage;
 	}
 
-	public String getLogfileName() {
-		return logfileName;
-	}
-
-	public void setLogfileName(String logfileName) {
-		this.logfileName = logfileName;
-	}
-
 	public LocalDateTime getChannelRequestDT() {
 		return channelRequestDT;
 	}
@@ -175,6 +159,22 @@ public class OutboundMessage {
 
 	public void setCihubResponseDT(LocalDateTime cihubResponseDT) {
 		this.cihubResponseDT = cihubResponseDT;
+	}
+
+	public String getFullRequestMessage() {
+		return fullRequestMessage;
+	}
+
+	public void setFullRequestMessage(String fullRequestMessage) {
+		this.fullRequestMessage = fullRequestMessage;
+	}
+
+	public String getFullResponseMsg() {
+		return fullResponseMsg;
+	}
+
+	public void setFullResponseMsg(String fullResponseMsg) {
+		this.fullResponseMsg = fullResponseMsg;
 	}
 
 

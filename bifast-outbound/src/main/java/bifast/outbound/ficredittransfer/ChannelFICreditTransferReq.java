@@ -7,17 +7,17 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("FICreditTransferRequest")
 public class ChannelFICreditTransferReq {
 
-	private String intrnRefId;
+	private String orignReffId;
 	private BigDecimal amount; 
 	private String recptBank; 
 	private String channel; 
 	private String paymentInfo;
 	
-	public String getIntrnRefId() {
-		return intrnRefId;
+	public String getOrignReffId() {
+		return orignReffId;
 	}
-	public void setIntrnRefId(String intrnRefId) {
-		this.intrnRefId = intrnRefId;
+	public void setOrignReffId(String orignReffId) {
+		this.orignReffId = orignReffId;
 	}
 	public BigDecimal getAmount() {
 		return amount;

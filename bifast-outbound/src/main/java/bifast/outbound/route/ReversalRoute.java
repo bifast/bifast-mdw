@@ -12,12 +12,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.paymentstatus.PaymentStatusOnTimeoutProcessor;
-import bifast.outbound.processor.CheckSettlementProcessor;
+import bifast.outbound.paymentstatus.CheckHistoryProcessor;
+import bifast.outbound.paymentstatus.PaymentStatusRequestProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.reversect.ReverseCreditTrnRequestProcessor;
 
-@Component
+//@Component
 public class ReversalRoute extends RouteBuilder {
 
 	@Autowired
@@ -25,9 +25,9 @@ public class ReversalRoute extends RouteBuilder {
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
-	private CheckSettlementProcessor checkSettlementProcessor;
+	private CheckHistoryProcessor checkSettlementProcessor;
 	@Autowired
-	private PaymentStatusOnTimeoutProcessor paymentStatusTimeoutProcessor;
+	private PaymentStatusRequestProcessor paymentStatusTimeoutProcessor;
 
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
 

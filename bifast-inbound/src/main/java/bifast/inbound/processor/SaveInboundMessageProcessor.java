@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
+import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.model.CreditTransfer;
 import bifast.library.model.DomainCode;
@@ -35,23 +36,25 @@ public class SaveInboundMessageProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		 
-		BusinessMessage rcvBi = exchange.getMessage().getHeader("rcv_bi",BusinessMessage.class);
+		BusinessMessage rcvBi = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
 		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
 
 		InboundMessage inboundMsg = new InboundMessage();
 		
 		inboundMsg.setBizMsgIdr(hdr.getBizMsgIdr());
-		inboundMsg.setBizSvc(hdr.getBizSvc());
 		inboundMsg.setFrFinId(hdr.getFr().getFIId().getFinInstnId().getOthr().getId());
-		inboundMsg.setReceiveDt(LocalDateTime.now());
+		
+		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
+		String fullRespMsg = exchange.getMessage().getHeader("hdr_toBI_jsonzip",String.class);
+		inboundMsg.setFullRequestMessage(fullReqMsg);
+		inboundMsg.setFullResponseMsg(fullRespMsg);
 		
 		if (!(null==hdr.getCpyDplct()))
 				inboundMsg.setCopyDupl(hdr.getCpyDplct().name());
 		
-		inboundMsg.setReceiveDt(LocalDateTime.now());
 
-		if (!(null == exchange.getMessage().getHeader("resp_bi"))) {
-			BusinessMessage respBi = exchange.getMessage().getHeader("resp_bi",BusinessMessage.class);
+		if (!(null == exchange.getMessage().getHeader("hdr_toBIobj"))) {
+			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj",BusinessMessage.class);
 
 			inboundMsg.setRespStatus(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
 			inboundMsg.setRespBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
@@ -60,10 +63,11 @@ public class SaveInboundMessageProcessor implements Processor {
 		}
 //		inboundMsg.setRespErrorMsg(null);
 		
-		String msgType = exchange.getMessage().getHeader("rcv_msgType", String.class);
+		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 		String msgName = "";
-		if (msgType.equals("Settlement")) 
-			msgName = "Settlement";
+		System.out.println("msgName: " + msgType);
+		if (msgType.equals("SETTLEMENT")) 
+			msgName = "Settlement Confirmation";
 		else {
 			String trxCode = hdr.getBizMsgIdr().substring(16,19);
 			msgName = domainCodeRepo.findByGrpAndKey("TRANSACTION.TYPE", trxCode).orElse(new DomainCode()).getValue();
@@ -88,20 +92,20 @@ public class SaveInboundMessageProcessor implements Processor {
 			saveSettlement(rcvBi, inboundMsg);
 		}
 
-		else if (msgType.equals("CRDTTRN")) {
+		else if (msgType.equals("010")) {  // Credit Transfer
 			String reversal = exchange.getMessage().getHeader("resp_reversal",String.class);
 
-			BusinessMessage respBi = exchange.getMessage().getHeader("resp_bi", BusinessMessage.class);
+			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj", BusinessMessage.class);
 			saveCreditTransfer(inboundMsg, rcvBi, reversal);
 		}
 
-		else if (msgType.equals("FICDTTRN")) {
-			BusinessMessage respBi = exchange.getMessage().getHeader("resp_bi", BusinessMessage.class);
+		else if (msgType.equals("019")) {   // FI Credit Tranfsre
+			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj", BusinessMessage.class);
 //			saveFICreditTransfer(rcvMessage, respBi);	
 		}
 
-		else if (msgType.equals("REVCRDTTRN")) {
-			BusinessMessage respBi = exchange.getMessage().getHeader("resp_bi", BusinessMessage.class);
+		else if (msgType.equals("011")) {  // Reversal Credit Transfer
+			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj", BusinessMessage.class);
 //			saveReversalCreditTransfer(rcvMessage, respBi);	
 		}
 
@@ -110,24 +114,24 @@ public class SaveInboundMessageProcessor implements Processor {
 
 	public void saveSettlement (BusinessMessage settlRequest, InboundMessage inbMsg) {
 		BusinessApplicationHeaderV01 sttlHeader = settlRequest.getAppHdr();
+		FIToFIPaymentStatusReportV10 settlBody = settlRequest.getDocument().getFiToFIPmtStsRpt();
 		
 		String sttlBizMsgId = sttlHeader.getBizMsgIdr();
 		
-		String orglBizMsgId = settlRequest.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlEndToEndId();
 	
 		Settlement sttl = new Settlement();
-		sttl.setOrgnlCrdtTrnReqBizMsgId(orglBizMsgId);
+		sttl.setOrgnlCrdtTrnReqBizMsgId(settlBody.getTxInfAndSts().get(0).getOrgnlEndToEndId());
 		sttl.setSettlConfBizMsgId(sttlBizMsgId);
 		sttl.setOrignBank(sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
 		sttl.setRecptBank(sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
 		
 		sttl.setLogMessageId(inbMsg.getId());
-//		sttl.setCrdtAccountNo(orglBizMsgId);
+		sttl.setCrdtAccountNo(settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtrAcct().getId().getOthr().getId());
 //		sttl.setCrdtAccountType(orglBizMsgId);
 //		sttl.setCrdtId(orglBizMsgId);
 //		sttl.setCrdtIdType(orglBizMsgId);
 //		sttl.setCrdtName(orglBizMsgId);
-//		sttl.setDbtrAccountNo(orglBizMsgId);
+		sttl.setDbtrAccountNo(settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().getOthr().getId());
 //		sttl.setDbtrAccountType(orglBizMsgId);
 //		sttl.setDbtrId(orglBizMsgId);
 //		sttl.setDbtrIdType(orglBizMsgId);

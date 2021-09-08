@@ -78,7 +78,6 @@ public class SaveTracingTableProcessor implements Processor {
 //		sttl.setDbtrName(orglBizMsgId);
 
 		
-		sttl.setFullMessage(strMesg);
 		
 		settlementRepo.save(sttl);
 

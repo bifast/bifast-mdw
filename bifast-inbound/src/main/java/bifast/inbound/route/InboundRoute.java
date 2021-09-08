@@ -68,51 +68,47 @@ public class InboundRoute extends RouteBuilder {
 		
 		from("direct:receive").routeId("receive")
 			.convertBodyTo(String.class)
-			.setHeader("rcv_jsonbi", simple("${body}"))
 			
+			// simpan msg inbound compressed
+			.setHeader("hdr_tmp", simple("${body}"))
+			.marshal().zipDeflater()
+			.marshal().base64()
+			.setHeader("hdr_frBI_jsonzip", simple("${body}"))
+			.setBody(simple("${header.hdr_tmp}"))
+
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
 
 			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
+
+			.setHeader("hdr_msgName", simple("${body.appHdr.msgDefIdr}"))
 			
-			.setHeader("rcv_bi", simple("${body}"))   // pojo BusinessMessage simpan ke header
-			.setHeader("rcv_msgname", simple("${body.appHdr.msgDefIdr}"))
-			
-			.process(checkMsgTypeProcessor)   // set header.rcv_msgType
+			.process(checkMsgTypeProcessor)   // set header.hdr_msgType
 			.choice()
 
-				.when().simple("${header.rcv_msgType} == 'SETTLEMENT'")   // terima settlement
+				.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
 					.log("Simpan ke table settlement")
+					.setBody(constant(null))
 					
-					// TODO response apa harus kirim setelah terima settlement ?
-					.setHeader("resp_jsonbi",constant(""))   
-
-				.when().simple("${header.rcv_msgType} == 'ACCTENQR'")   // terima settlement
+				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
 					.log("akan kirim response account enquiry")
 					.process(acctEnqResponseProcessor)
-					.setHeader("resp_bi", simple("${body}"))
-					.marshal(jsonBusinessMessageDataFormat)
-					.setHeader("resp_jsonbi",simple("${body}"))
+					.setHeader("hdr_toBIobj", simple("${body}"))
 
-				.when().simple("${header.rcv_msgtype} == 'CRDTTRN'")
+				.when().simple("${header.hdr_msgType} == '010'")
 					.log("akan kirim response Credit Transfer Request")
 					.process(crdtTrnResponseProcessor)
-					.setHeader("resp_bi", simple("${body}"))
-					.marshal(jsonBusinessMessageDataFormat)
-					.setHeader("resp_jsonbi",simple("${body}"))
+					.setHeader("hdr_toBIobj", simple("${body}"))
 
-				.when().simple("${header.rcv_msgtype} == 'FICDTTRN'")
+				.when().simple("${header.hdr_msgType} == '019'")
 					.log("akan proses FI to FI Reversal Credit Transfer")
 					.process(fiCrdtTrnResponseProcessor)
-					.setHeader("resp_bi", simple("${body}"))
-					.marshal(jsonBusinessMessageDataFormat)
-					.setHeader("resp_jsonbi",simple("${body}"))
+					.setHeader("hdr_toBIobj", simple("${body}"))
 
-				.when().simple("${header.rcv_msgtype} == 'REVCRDTTRN'")
+				.when().simple("${header.hdr_msgType} == '011'")
 					.log("akan proses Reversal Credit Transfer Request")
 					.process(reverseCTResponseProcessor)
-					.setHeader("resp_bi", simple("${body}"))
-					.marshal(jsonBusinessMessageDataFormat)
-					.setHeader("resp_jsonbi",simple("${body}"))
+					.setHeader("hdr_toBIobj", simple("${body}"))
 
 //				.when().simple("${header.rcv_msgtype} == 'SYSNOTIF'")
 //					.log("akan proses System Notification")
@@ -121,25 +117,34 @@ public class InboundRoute extends RouteBuilder {
 				.otherwise()	
 					.log("Message tidak dikenal")
 			.end()
+
+			.choice()
+				.when().simple("${header.hdr_msgType} != 'SETTLEMENT'")   // terima settlement
+					.marshal(jsonBusinessMessageDataFormat) 
+					// simpan outbound compress
+					.setHeader("hdr_tmp", simple("${body}"))
+					.marshal().zipDeflater()
+					.marshal().base64()
+					.setHeader("hdr_toBI_jsonzip", simple("${body}"))
+					.setBody(simple("${header.hdr_tmp}"))
+			.end()
 			
 			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
 			.to("seda:logandsave?exchangePattern=InOnly")
 			
-			.setBody(simple("${header.resp_jsonbi}"))
-			
-			.removeHeaders("rcv_*")
-			.removeHeader("req_")
-			.removeHeaders("resp_*")
+			.removeHeaders("hdr_*")
+			.removeHeaders("req_*")
 			.log("output response selesai")
 		;
 
 		from("seda:logandsave")
+			.log("Save tables")
 			.process(saveInboundMessageProcessor)
 //			.process(saveTracingTableProcessor)
-			.process(combineMesgProcessor)
-			.log("akan simpan log ke {{bifast.inbound-log-folder}}")
-			.toD("file:{{bifast.inbound-log-folder}}?fileName=${header.rcv_fileName}")
+//			.process(combineMesgProcessor)
+//			.log("akan simpan log ke {{bifast.inbound-log-folder}}")
+//			.toD("file:{{bifast.inbound-log-folder}}?fileName=${header.rcv_fileName}")
 		;
 
 

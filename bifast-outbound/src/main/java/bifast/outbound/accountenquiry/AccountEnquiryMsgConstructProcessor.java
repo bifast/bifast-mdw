@@ -12,13 +12,11 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
-import bifast.library.model.DomainCode;
-import bifast.library.repository.DomainCodeRepository;
 import bifast.outbound.config.Config;
 
 @Component
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
-public class AccountEnquiryProcessor implements Processor {
+public class AccountEnquiryMsgConstructProcessor implements Processor {
 
 	@Autowired
 	private Config config;
@@ -26,19 +24,18 @@ public class AccountEnquiryProcessor implements Processor {
 	private AppHeaderService appHeaderService;
 	@Autowired
 	private Pacs008MessageService pacs008MessageService;
-	@Autowired
-	private DomainCodeRepository domainCodeRepo;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelAccountEnquiryReq chnReq = exchange.getIn().getBody(ChannelAccountEnquiryReq.class);
+//		ChannelAccountEnquiryReq chnReq = exchange.getIn().getBody(ChannelAccountEnquiryReq.class);
+		ChannelAccountEnquiryReq chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChannelAccountEnquiryReq.class);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		
-		String channelType = domainCodeRepo.findByGrpAndValue("CHANNEL.TYPE", chnReq.getChannelName()).orElse(new DomainCode()).getKey();
+//		String channelType = domainCodeRepo.findByGrpAndValue("CHANNEL.TYPE", chnReq.getChannel()).orElse(new DomainCode()).getKey();
 		
-		hdr = appHeaderService.initAppHdr(chnReq.getReceivingParticipant(), "pacs.008.001.08", "510", channelType);
+		hdr = appHeaderService.initAppHdr(chnReq.getRecipientBank(), "pacs.008.001.08", "510", chnReq.getChannel());
 		
 		Pacs008Seed seedAcctEnquiry = new Pacs008Seed();
 		
@@ -47,7 +44,7 @@ public class AccountEnquiryProcessor implements Processor {
 		seedAcctEnquiry.setCategoryPurpose(chnReq.getCategoryPurpose());
 		seedAcctEnquiry.setCrdtAccountNo(chnReq.getCreditorAccountNumber());
 		seedAcctEnquiry.setOrignBank(config.getBankcode());
-		seedAcctEnquiry.setRecptBank(chnReq.getReceivingParticipant());
+		seedAcctEnquiry.setRecptBank(chnReq.getRecipientBank());
 		seedAcctEnquiry.setTrnType("510");
 
 		Document doc = new Document();

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("CreditTransferRequest")
 public class ChannelCreditTransferRequest {
 
-	private String intrnRefId;
+	private String orignReffId;
 	private BigDecimal amount; // AcctEnq CrdtTrn
 	private String recptBank; //  AcctEnq  CrdtTrn
 	private String channel; //    CrdtTrn
@@ -28,17 +28,16 @@ public class ChannelCreditTransferRequest {
 	private String crdtProxyIdType;
 	private String crdtProxyIdValue;
 	
-	
 	private String paymentInfo;  // CrdtTrn
 	
 	public ChannelCreditTransferRequest() {}
 
-	public String getIntrnRefId() {
-		return intrnRefId;
+	public String getOrignReffId() {
+		return orignReffId;
 	}
 
-	public void setIntrnRefId(String intrnRefId) {
-		this.intrnRefId = intrnRefId;
+	public void setOrignReffId(String orignReffId) {
+		this.orignReffId = orignReffId;
 	}
 
 	public BigDecimal getAmount() {
@@ -73,20 +72,20 @@ public class ChannelCreditTransferRequest {
 		this.categoryPurpose = categoryPurpose;
 	}
 
-	public String getDbtrName() {
-		return dbtrName;
-	}
-
-	public void setDbtrName(String dbtrName) {
-		this.dbtrName = dbtrName;
-	}
-
 	public String getDbtrId() {
 		return dbtrId;
 	}
 
 	public void setDbtrId(String dbtrId) {
 		this.dbtrId = dbtrId;
+	}
+
+	public String getDbtrName() {
+		return dbtrName;
+	}
+
+	public void setDbtrName(String dbtrName) {
+		this.dbtrName = dbtrName;
 	}
 
 	public String getDbtrIdType() {
@@ -176,6 +175,6 @@ public class ChannelCreditTransferRequest {
 	public void setPaymentInfo(String paymentInfo) {
 		this.paymentInfo = paymentInfo;
 	}
-	
+
 	
 }

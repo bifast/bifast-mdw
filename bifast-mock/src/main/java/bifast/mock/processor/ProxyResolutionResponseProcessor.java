@@ -28,40 +28,115 @@ public class ProxyResolutionResponseProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		Random rand = new Random();
-		Proxy004Seed seed = new Proxy004Seed();
-		
-        int posbl = rand.nextInt(10);
-//		if (posbl == 0) {
-//			seed.setStatus("RJCT");
-//			seed.setReason("U001");
-//		}
-//		else {
-//			seed.setStatus("ACTC");
-//			seed.setReason("U000");
-//			
-//		}
+		String str = "{\n" 
+		+ "  \"BusMsg\" : {\n"
+		+ "    \"AppHdr\" : {\n"
+		+ "      \"Fr\" : {\n"
+		+ "        \"Fiid\" : {\n"
+		+ "          \"FinInstnId\" : {\n"
+		+ "            \"Othr\" : {\n"
+		+ "              \"Id\" : \"FASTIDJA\"\n"
+		+ "            }\n"
+		+ "          }\n"
+		+ "        }\n"
+		+ "      },\n"
+		+ "      \"To\" : {\n"
+		+ "        \"Fiid\" : {\n"
+		+ "          \"FinInstnId\" : {\n"
+		+ "            \"Othr\" : {\n"
+		+ "              \"Id\" : \"INDOIDJA\"\n"
+		+ "            }\n"
+		+ "          }\n"
+		+ "        }\n"
+		+ "      },\n"
+		+ "      \"BizMsgIdr\" : \"20210301INDOIDJATTTHRB12345678\",\n"
+		+ "      \"MsgDefIdr\" : \"prxy.004.001.01\",\n"
+		+ "      \"CreDt\" : \"2021-03-01T20:00:00\"\n"
+		+ "    },\n"
+		+ "    \"Document\" : {\n"
+		+ "      \"PrxyLookUpRspn\" : {\n"
+		+ "        \"GrpHdr\" : {\n"
+		+ "          \"MsgId\" : \"20210301FASTIDJA710HRB12345679\",\n"
+		+ "          \"CreDtTm\" : \"2021-09-27T21:00:00\",\n"
+		+ "          \"MsgRcpt\" : {\n"
+		+ "            \"Agt\" : {\n"
+		+ "              \"FinInstnId\" : {\n"
+		+ "                \"Nm\" : \"Popular Bank\",\n"
+		+ "                \"Othr\" : {\n"
+		+ "                  \"Id\" : \"BANK001\"\n"
+		+ "                }\n"
+		+ "              }\n"
+		+ "            }\n"
+		+ "          }\n"
+		+ "        },\n"
+		+ "        \"OrgnlGrpInf\" : {\n"
+		+ "          \"OrgnlMsgId\" : \"20210301INDOIDJA610HRB12345678\",\n"
+		+ "          \"OrgnlMsgNmId\" : \"prxy.003.001.01\",\n"
+		+ "          \"OrgnlCreDtTm\" : \"2021-09-27T18:59:58\"\n"
+		+ "        },\n"
+		+ "        \"LkUpRspn\" : {\n"
+		+ "          \"OrgnlId\" : \"20210301INDOIDJA61012345678\",\n"
+		+ "          \"OrgnlPrxyRtrvl\" : {\n"
+		+ "            \"Tp\" : \"MSDISDN\",\n"
+		+ "            \"Val\" : \"09248753982\"\n"
+		+ "          },\n"
+		+ "          \"OrgnlPrxyRqstr\" : {\n"
+		+ "            \"Tp\" : \"02\",\n"
+		+ "            \"Val\" : \"james.brown@example.com\"\n"
+		+ "          },\n"
+		+ "          \"OrgnlDsplNm\" : \"Mr. James Brown\",\n"
+		+ "          \"OrgnlAcctTp\" : {\n"
+		+ "            \"Prtry\" : \"CACC\"\n"
+		+ "          },\n"
+		+ "          \"RegnRspn\" : {\n"
+		+ "            \"PrxRspnSts\" : \"ACTC\",\n"
+		+ "            \"StsRsnInf\" : {\n"
+		+ "              \"Prtry\" : \"U000\"\n"
+		+ "            },\n"
+		+ "            \"Prxy\" : {\n"
+		+ "              \"Tp\" : \"02\",\n"
+		+ "              \"Val\" : \"james.brown@example.com\"\n"
+		+ "            },\n"
+		+ "            \"Regn\" : {\n"
+		+ "              \"RegnId\" : \"6789012345\",\n"
+		+ "              \"DsplNm\" : \"Mr. James Brown\",\n"
+		+ "              \"Agt\" : {\n"
+		+ "                \"FinInstnId\" : {\n"
+		+ "                  \"Othr\" : {\n"
+		+ "                    \"Id\" : \"INDOIDJA\"\n"
+		+ "                  }\n"
+		+ "                }\n"
+		+ "              },\n"
+		+ "              \"Acct\" : {\n"
+		+ "                \"Id\" : {\n"
+		+ "                  \"Othr\" : {\n"
+		+ "                    \"Id\" : \"2040606090112\"\n"
+		+ "                  }\n"
+		+ "                },\n"
+		+ "                \"Tp\" : {\n"
+		+ "                  \"Prtry\" : \"CACC\"\n"
+		+ "                },\n"
+		+ "                \"Nm\" : \"James Brown\"\n"
+		+ "              }\n"
+		+ "            }\n"
+		+ "          }\n"
+		+ "        },\n"
+		+ "        \"SplmtryData\" : [ {\n"
+		+ "          \"Envlp\" : {\n"
+		+ "            \"Cstmr\" : {\n"
+		+ "              \"Tp\" : \"01\",\n"
+		+ "              \"Id\" : \"1020304050607080\",\n"
+		+ "              \"RsdntSts\" : \"01\",\n"
+		+ "              \"TwnNm\" : \"0300\"\n"
+		+ "            }\n"
+		+ "          }\n"
+		+ "        } ]\n"
+		+ "      }\n"
+		+ "    }\n"
+		+ "  }\n"
+		+ "}";
 
-//		seed.setAdditionalInfo("Terimakasih atas perhaitiannya");
-//		seed.setCstmrId("5302022290990001");
-//		seed.setCstmrTp("01");
-//		seed.setCstmrTwnNm("0300");
-//		seed.setCstmrRsdntSts("01");
-//		
-		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
-//
-//		ProxyRegistrationResponseV01 response = proxy002MessageService.proxyRegistrationResponse(seed, msg);
-//
-//		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-//		hdr = hdrService.initAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-//									"pacs.002.001.10", "710", "01");
-		Document doc = new Document();
-//		doc.setPrxyRegnRspn(response);
-		BusinessMessage busMesg = new BusinessMessage();
-//		busMesg.setAppHdr(hdr);
-		busMesg.setDocument(doc);
-
-		exchange.getMessage().setBody(busMesg);
+		exchange.getMessage().setBody(str);
 	}
 
 

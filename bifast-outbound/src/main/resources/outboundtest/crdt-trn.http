@@ -4,15 +4,15 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "intrnRefId" : "255121",
+    "orignReffId" : "44122",
     "channel" : "02",
     "categoryPurpose" : "01",
-    "amount" : 25587000,
+    "amount" : 21222000,
 
     "dbtrIdType" : "01",    
     "dbtrName": "Direkturnya",
     "dbtrId" : "PTSMG",
-    "dbtrAccountNo" : "91055334",
+    "dbtrAccountNo" : "91051334",
     "dbtrAccountType" : "CACC",
 
     "recptBank" : "MNDRIDJA",
@@ -20,7 +20,7 @@ Content-Type: application/json
     "crdtIdType" : "02",   
     "crdtName": "PT Semaraing",
     "crdtId" : "CV-A403",
-    "crdtAccountNo" : "934008199",
+    "crdtAccountNo" : "93278199",
     "crdtAccountType" : "SVGS",
     "paymentInfo" : "Untuk makan sayang"
   }

@@ -2,34 +2,64 @@ package bifast.outbound.paymentstatus;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.pojo.ChannelResponse;
-import bifast.outbound.pojo.ChannelResponseMessage;
-import bifast.outbound.processor.ChannelResponseService;
+import bifast.library.iso20022.pacs002.PaymentTransaction110;
+import bifast.outbound.pojo.ChannelReject;
 
 @Component
 public class PaymentStatusResponseProcessor implements Processor {
 
-	@Autowired
-	private ChannelResponseService responseService;
-	
 	@Override
 	public void process(Exchange exchange) throws Exception {
+		
+		BusinessMessage obj_pymnStatusResp = exchange.getIn().getBody(BusinessMessage.class);
 
-		BusinessMessage busMesg = exchange.getIn().getBody(BusinessMessage.class);
+		PaymentStatusResponse psResponse = new PaymentStatusResponse();
+
 		
-		ChannelResponse resp = responseService.proses(busMesg);
+		if (null == obj_pymnStatusResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
+
+			PaymentTransaction110 biResp = obj_pymnStatusResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
+
+			// from CI-HUB response
+
+			psResponse.setCtBizMsgId(biResp.getOrgnlEndToEndId());
+			
+			psResponse.setStatus(biResp.getTxSts());
+			psResponse.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
+			if (!(null == biResp.getStsRsnInf().get(0).getAddtlInf()))
+				psResponse.setAddtInfo(biResp.getStsRsnInf().get(0).getAddtlInf().get(0));
+	
+			if (!(null == biResp.getOrgnlTxRef().getCdtr().getPty()))
+				if (!(null == biResp.getOrgnlTxRef().getCdtr().getPty().getNm()))
+					psResponse.setCreditorName(biResp.getOrgnlTxRef().getCdtr().getPty().getNm());
+	
+			if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId()))
+				psResponse.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
+	
+			if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp()))
+				psResponse.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
+	
+			exchange.getIn().setBody(psResponse);
+
+		}
 		
-		ChannelPaymentStatusRequest chnReq = exchange.getMessage().getHeader("req_channelReq", ChannelPaymentStatusRequest.class);
-		
-		ChannelResponseMessage respMesg = new ChannelResponseMessage();
-		respMesg.setPaymentStatusRequest(chnReq);
-		respMesg.setResponse(resp);
-		
-		exchange.getIn().setBody(respMesg);
+		else {   // ternyata berupa message reject
+			MessageRejectV01 rejectResp = obj_pymnStatusResp.getDocument().getMessageReject();
+
+			ChannelReject reject = new ChannelReject();
+
+			reject.setReference(rejectResp.getRltdRef().getRef());
+			reject.setReason(rejectResp.getRsn().getRjctgPtyRsn());
+			reject.setDescription(rejectResp.getRsn().getRsnDesc());
+			reject.setLocation(rejectResp.getRsn().getErrLctn());
+			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
+	
+			exchange.getIn().setBody(reject);
+
+		}
 	}
-
 }

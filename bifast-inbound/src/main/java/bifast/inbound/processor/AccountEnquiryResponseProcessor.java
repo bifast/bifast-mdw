@@ -24,7 +24,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("rcv_bi", BusinessMessage.class);
+		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("hdr_frBIobj", BusinessMessage.class);
 
 		// TODO cek account ke core banking
 

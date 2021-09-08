@@ -8,8 +8,6 @@ import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.outbound.pojo.ChannelReject;
-import bifast.outbound.pojo.ChannelResponse;
-import bifast.outbound.pojo.ChannelResponseMessage;
 
 @Component
 public class CreditTransferResponseProcessor implements Processor {
@@ -19,12 +17,9 @@ public class CreditTransferResponseProcessor implements Processor {
 		
 		BusinessMessage obj_crdtrnResp = exchange.getIn().getBody(BusinessMessage.class);
 
-		ChannelCreditTransferRequest chnRequest = exchange.getMessage().getHeader("rcv_channel", ChannelCreditTransferRequest.class);
+		ChannelCreditTransferRequest chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChannelCreditTransferRequest.class);
 
-		ChannelResponseMessage ctResponse = new ChannelResponseMessage();
-		ctResponse.setCreditTransferRequest(chnRequest);
-
-		ChannelResponse chnResponse = new ChannelResponse();
+		ChnlCreditTransferResponse chnResponse = new ChnlCreditTransferResponse();
 
 		
 		if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
@@ -32,8 +27,8 @@ public class CreditTransferResponseProcessor implements Processor {
 			PaymentTransaction110 biResp = obj_crdtrnResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 
 			// from CI-HUB response
+			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
 			chnResponse.setBizMsgId(obj_crdtrnResp.getAppHdr().getBizMsgIdr());
-			chnResponse.setResponseType(obj_crdtrnResp.getAppHdr().getBizSvc());
 			
 			chnResponse.setStatus(biResp.getTxSts());
 			chnResponse.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
@@ -56,7 +51,8 @@ public class CreditTransferResponseProcessor implements Processor {
 			if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm()))
 				chnResponse.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
 
-			ctResponse.setResponse(chnResponse);
+			exchange.getIn().setBody(chnResponse);
+
 		}
 		
 		else {   // ternyata berupa message reject
@@ -70,13 +66,8 @@ public class CreditTransferResponseProcessor implements Processor {
 			reject.setLocation(rejectResp.getRsn().getErrLctn());
 			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
 	
-			ctResponse.setRejection(reject);
+			exchange.getIn().setBody(reject);
 
 		}
-		
-		exchange.getIn().setBody(ctResponse);
-		
-	
 	}
-
 }

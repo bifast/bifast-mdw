@@ -8,8 +8,6 @@ import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.outbound.pojo.ChannelReject;
-import bifast.outbound.pojo.ChannelResponse;
-import bifast.outbound.pojo.ChannelResponseMessage;
 
 @Component
 public class AccountEnquiryResponseProcessor implements Processor {
@@ -19,16 +17,15 @@ public class AccountEnquiryResponseProcessor implements Processor {
 
 		BusinessMessage busMesg = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
 		
-		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("rcv_channel",ChannelAccountEnquiryReq.class);
+		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("hdr_channelRequest",ChannelAccountEnquiryReq.class);
 		
-		ChannelResponseMessage responseMessage = new ChannelResponseMessage();
-		responseMessage.setAccountEnquiryRequest(chnReq);
-
 		if (null == busMesg.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 			
 			PaymentTransaction110 biResp = busMesg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 	
-			ChannelResponse chnResp = new ChannelResponse();
+			ChnlAccountEnquiryResp chnResp = new ChnlAccountEnquiryResp();
+			
+			chnResp.setOrignReffId(chnReq.getChannelRefId());
 			
 			chnResp.setCreditorAccountType(biResp.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
 			chnResp.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
@@ -41,7 +38,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			chnResp.setStatus(biResp.getTxSts());
 			chnResp.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
 						
-			responseMessage.setResponse(chnResp);
+			exchange.getIn().setBody(chnResp); 
 
 		}
 		
@@ -57,10 +54,9 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			reject.setLocation(rejectResp.getRsn().getErrLctn());
 			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
 	
-			responseMessage.setRejection(reject);
+			exchange.getIn().setBody(reject); 
 		}
 		
-		exchange.getIn().setBody(responseMessage); 
 
 	}
 
