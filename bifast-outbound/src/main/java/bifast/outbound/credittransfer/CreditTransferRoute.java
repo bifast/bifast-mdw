@@ -143,15 +143,22 @@ public class CreditTransferRoute extends RouteBuilder {
     			.setBody(simple("${header.ct_objreqbi}"))
     			.process(initSettlementRequest)
     			.marshal(SettlementRequestJDF)
+    			.log("Settlement: ${body}")
+    			
+    			.doTry()
+					.enrich("http://localhost:9001/services/api/enquiry?"
+							+ "bridgeEndpoint=true",
+							enrichmentAggregator)
+					.convertBodyTo(String.class)
+					.unmarshal(SettlementResponseJDF)
+					
+	    			.process(settlementEnquiryResultProcessor)
+	    		.doCatch(Exception.class)
+	    			.log("Settlement error")
+	    			.setBody(constant(null))
+	    		.end()
 
-				.enrich("http://localhost:9001/services/api/enquiry?"
-						+ "bridgeEndpoint=true",
-						enrichmentAggregator)
-				.convertBodyTo(String.class)
-				.unmarshal(SettlementResponseJDF)
-				
-    			.process(settlementEnquiryResultProcessor)
-
+	    		.log("Selesai panggil settlement")
     			.choice()
     				.when().simple("${body} == null")
     					.log("tidak ada settlement, harus PS")
@@ -164,14 +171,14 @@ public class CreditTransferRoute extends RouteBuilder {
     					.marshal(businessMessageJDF)
 				.endChoice()
 				.end()	
-				
+
+					
 				.log("selesai catch")
 			
 			.endDoTry()
 			.end()
 
-//			.log("selesai dotry")
-//			.setHeader("ct_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			.log("selesai dotry")
 
 			.choice()
 				.when().simple("${body} != null")
@@ -180,6 +187,8 @@ public class CreditTransferRoute extends RouteBuilder {
 					.unmarshal(businessMessageJDF)
 					.setHeader("ct_objresponsebi", simple("${body}"))	
 				.otherwise()
+					.log("Body null akhirnya")
+			    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
 					.setHeader("ct_encrMessage", constant(null))	
 	
 			.end()

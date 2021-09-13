@@ -17,7 +17,7 @@ import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 import bifast.outbound.paymentstatus.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.pojo.CombinedMessage;
 import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
-import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
+import bifast.outbound.reversect.ChnlReverseCTRequestPojo;
 
 @Component
 public class CombineMessageProcessor implements Processor {
@@ -57,7 +57,7 @@ public class CombineMessageProcessor implements Processor {
 
 		else if (msgType.equals("ReverseCreditTransfer")) {
 			fileName = "pacs.008.";
-			ChannelReverseCreditTransferRequest revCT = exchange.getMessage().getHeader("req_channelReq", ChannelReverseCreditTransferRequest.class);
+			ChnlReverseCTRequestPojo revCT = exchange.getMessage().getHeader("req_channelReq", ChnlReverseCTRequestPojo.class);
 			fullMesg.setReverseCreditTransferRequest(revCT);
 		}
 

@@ -1,4 +1,4 @@
-package bifast.outbound.route;
+package bifast.outbound.reversect;
 
 import java.net.SocketTimeoutException;
 
@@ -14,7 +14,6 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.paymentstatus.PaymentStatusRequestProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.reversect.ReverseCreditTrnRequestProcessor;
 
 //@Component
 public class ReversalRoute extends RouteBuilder {

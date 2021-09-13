@@ -8,7 +8,7 @@ import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 import bifast.outbound.paymentstatus.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.proxyregistration.ChnlProxyResolutionRequestPojo;
-import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
+import bifast.outbound.reversect.ChnlReverseCTRequestPojo;
 
 public class ChannelRequestWrapper {
 
@@ -25,7 +25,7 @@ public class ChannelRequestWrapper {
 	private ChnlPaymentStatusRequestPojo paymentStatusRequest;
 	
 	@JsonProperty("ReverseCreditTransferRequest")
-	private ChannelReverseCreditTransferRequest reverseCreditTransferRequest;
+	private ChnlReverseCTRequestPojo reverseCreditTransferRequest;
 
 	@JsonProperty("ProxyRegistrationRequest")
 	private ChnlProxyRegistrationRequestPojo proxyRegistrationReq;
@@ -65,11 +65,11 @@ public class ChannelRequestWrapper {
 		this.paymentStatusRequest = paymentStatusRequest;
 	}
 
-	public ChannelReverseCreditTransferRequest getReverseCreditTransferRequest() {
+	public ChnlReverseCTRequestPojo getReverseCreditTransferRequest() {
 		return reverseCreditTransferRequest;
 	}
 
-	public void setReverseCreditTransferRequest(ChannelReverseCreditTransferRequest reverseCreditTransferRequest) {
+	public void setReverseCreditTransferRequest(ChnlReverseCTRequestPojo reverseCreditTransferRequest) {
 		this.reverseCreditTransferRequest = reverseCreditTransferRequest;
 	}
 

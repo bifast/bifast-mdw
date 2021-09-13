@@ -106,6 +106,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					.log("Payment Status Request")
 					.to("direct:paymentstatus")
 
+				.when().simple("${header.hdr_msgType} == 'reversect'")
+					.to("direct:ctreq")
+
 				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
 					.log("Proxy Registration")
 					.to("direct:proxyregistration")

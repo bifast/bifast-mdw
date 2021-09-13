@@ -1,11 +1,11 @@
-package bifast.outbound.credittransfer;
+package bifast.inbound.pojo;
 
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("CreditTransferRequest")
-public class ChnlCreditTransferRequestPojo {
+public class ReverseCTRequestPojo {
 
 	private String orignReffId;
 	private String channel; //    CrdtTrn
@@ -32,7 +32,7 @@ public class ChnlCreditTransferRequestPojo {
 	
 	private String paymentInfo;  // CrdtTrn
 	
-	public ChnlCreditTransferRequestPojo() {}
+	public ReverseCTRequestPojo() {}
 
 	public String getOrignReffId() {
 		return orignReffId;

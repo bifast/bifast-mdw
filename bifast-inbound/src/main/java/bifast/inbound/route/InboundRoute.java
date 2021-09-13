@@ -112,7 +112,7 @@ public class InboundRoute extends RouteBuilder {
 			.end()
 
 			.choice()
-				.when().simple("${header.hdr_msgType} != 'SETTLEMENT'")   // terima settlement
+				.when().simple("${header.hdr_msgType} != 'SETTLEMENT'")   
 					.marshal(jsonBusinessMessageDataFormat) 
 					// simpan outbound compress
 					.setHeader("hdr_tmp", simple("${body}"))
@@ -126,18 +126,26 @@ public class InboundRoute extends RouteBuilder {
 
 			.to("seda:logandsave?exchangePattern=InOnly")
 			
+			.choice()
+				.when().simple("${header.resp_reversal} == 'PENDING'")
+					.to("seda:reversal?exchangePattern=InOnly")
+			.end()
+			
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
+			.removeHeaders("resp_*")
 			.log("output response selesai")
+			
+		;
+
+		from("seda:reversal")
+			.setBody(simple("${header.hdr_frBIobj}"))
+			.to("direct:reversal")
 		;
 
 		from("seda:logandsave")
 			.log("Save tables")
 			.process(saveInboundMessageProcessor)
-//			.process(saveTracingTableProcessor)
-//			.process(combineMesgProcessor)
-//			.log("akan simpan log ke {{bifast.inbound-log-folder}}")
-//			.toD("file:{{bifast.inbound-log-folder}}?fileName=${header.rcv_fileName}")
 		;
 
 

@@ -5,11 +5,12 @@ import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("ReverseCreditTransferRequest")
-public class ChannelReverseCreditTransferRequest {
+public class ChnlReverseCTRequestPojo {
 
 	private String intrnRefId;
 	private String orgnlEndToEndId;
 	private BigDecimal amount; 
+	private String categoryPurpose; 
 	private String recptBank; 
 	
 	private String dbtrId;   // CrdtTrn
@@ -24,7 +25,41 @@ public class ChannelReverseCreditTransferRequest {
 	private String crdtAccountNo;   // AcctEnq CrdtTrn
 	private String crdtAccountType;  // CrdtTrn
 	
+	private String crdtProxyIdType;
+	private String crdtProxyIdValue;
+	
+	private String paymentInfo;  
 
+	public String getIntrnRefId() {
+		return intrnRefId;
+	}
+	public void setIntrnRefId(String intrnRefId) {
+		this.intrnRefId = intrnRefId;
+	}
+	public String getOrgnlEndToEndId() {
+		return orgnlEndToEndId;
+	}
+	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
+		this.orgnlEndToEndId = orgnlEndToEndId;
+	}
+	public BigDecimal getAmount() {
+		return amount;
+	}
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+	public String getCategoryPurpose() {
+		return categoryPurpose;
+	}
+	public void setCategoryPurpose(String categoryPurpose) {
+		this.categoryPurpose = categoryPurpose;
+	}
+	public String getRecptBank() {
+		return recptBank;
+	}
+	public void setRecptBank(String recptBank) {
+		this.recptBank = recptBank;
+	}
 	public String getDbtrId() {
 		return dbtrId;
 	}
@@ -85,31 +120,17 @@ public class ChannelReverseCreditTransferRequest {
 	public void setCrdtAccountType(String crdtAccountType) {
 		this.crdtAccountType = crdtAccountType;
 	}
-	private String paymentInfo;
-	
-	public String getIntrnRefId() {
-		return intrnRefId;
+	public String getCrdtProxyIdType() {
+		return crdtProxyIdType;
 	}
-	public void setIntrnRefId(String intrnRefId) {
-		this.intrnRefId = intrnRefId;
+	public void setCrdtProxyIdType(String crdtProxyIdType) {
+		this.crdtProxyIdType = crdtProxyIdType;
 	}
-	public String getOrgnlEndToEndId() {
-		return orgnlEndToEndId;
+	public String getCrdtProxyIdValue() {
+		return crdtProxyIdValue;
 	}
-	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
-		this.orgnlEndToEndId = orgnlEndToEndId;
-	}
-	public BigDecimal getAmount() {
-		return amount;
-	}
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
-	public String getRecptBank() {
-		return recptBank;
-	}
-	public void setRecptBank(String recptBank) {
-		this.recptBank = recptBank;
+	public void setCrdtProxyIdValue(String crdtProxyIdValue) {
+		this.crdtProxyIdValue = crdtProxyIdValue;
 	}
 	public String getPaymentInfo() {
 		return paymentInfo;
@@ -118,7 +139,6 @@ public class ChannelReverseCreditTransferRequest {
 		this.paymentInfo = paymentInfo;
 	}
 
-	
 
 	
 }

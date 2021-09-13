@@ -2,8 +2,6 @@ package bifast.outbound.paymentstatus;
 
 import java.net.SocketTimeoutException;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +13,14 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.FaultProcessor;
 
 @Component
 public class PaymentStatusRoute extends RouteBuilder {
 
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
-//	@Autowired
-//	private CheckHistoryProcessor checkHistoryProcessor;
+	@Autowired
+	private SavePSTablesProcessor savePSTableProcessor;
 	@Autowired
 	private PaymentStatusRequestProcessor paymentStatusRequestProcessor;
 //	@Autowired
@@ -58,12 +55,17 @@ public class PaymentStatusRoute extends RouteBuilder {
 			.log("di direct:paymentstatus")
 			.setHeader("ps_pymtstsreq", simple("${body}"))
 			.process(paymentStatusRequestProcessor)
-			.marshal(jsonBusinessMessageFormat)
 			
-			.setHeader("ps_fullresponsemessage", simple("${body}"))
-//			.to("seda:savetableawal")
+			.setHeader("ps_objreqbi", simple("${body}"))
 
-//			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			.marshal(jsonBusinessMessageFormat)
+			.log("PS data : ${body}")
+			
+			.setHeader("ps_status", simple("New"))
+			.to("seda:encryptPSbody")
+			.to("seda:savePStables")
+
+			.setHeader("ps_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.doTry()
 //				
 				.setHeader("HttpMethod", constant("POST"))
@@ -73,34 +75,43 @@ public class PaymentStatusRoute extends RouteBuilder {
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
 
+				.log("akan save awal PS")
+				.to("seda:encryptPSbody")
+
 //				.setHeader("hdr_fullresponsemessage", simple("${body}"))
 //
-//				.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//
-//				.unmarshal(jsonBusinessMessageFormat)
-//				.setHeader("resp_objbi", simple("${body}"))
-//				
-//				// prepare untuk response ke channel
-//				.process(paymentStatusResponseProcessor)
-//				.setHeader("resp_channel", simple("${body}"))
-//			
+				.setHeader("ps_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+				.setHeader("ps_status", simple("Received"))
+
+				.unmarshal(jsonBusinessMessageFormat)
+				.setHeader("ps_objresponsebi", simple("${body}"))
+				.marshal(jsonBusinessMessageFormat)
+				
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-		    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
+				.setHeader("ps_status", simple("Timeout"))
 		    	.setBody(constant(null))
-//				.process(faultProcessor)
-//				.setHeader("resintrnRefIdp_channel", simple("${body}"))
-//				
+				
 			.end()
 			
 			.log("selesai dotry PS")
-//			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//
-//			.marshal(PaymentStatusResponseJDF)
+			.setHeader("ps_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+
+			.to("seda:savePStables")
 
 			.removeHeaders("ps_*")
 		;
 			
-		
+		from("seda:encryptPSbody")
+			.setHeader("ps_tmp", simple("${body}"))
+			.marshal().zipDeflater()
+			.marshal().base64()
+			.setHeader("ps_encrMessage", simple("${body}"))
+			.setBody(simple("${header.ps_tmp}"))
+		;
+		from("seda:savePStables")
+			.process(savePSTableProcessor)
+		;
+
 	}
 
 }

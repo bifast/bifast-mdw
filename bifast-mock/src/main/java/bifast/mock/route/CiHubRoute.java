@@ -77,13 +77,18 @@ public class CiHubRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
 			.log("${body}")
-			.setHeader("delay", simple("${random(200,3000)}"))
-			.delay(simple("${header.delay}"))
 			.log("end-delay")
 
 			.unmarshal(jsonBusinessMessageDataFormat)
 			.process(checkMessageTypeProcessor)
 			.log("${header.msgType}")
+
+			.setHeader("delay", simple("${random(1200,2000)}"))
+			.choice()
+				.when(simple("${header.msgType} == 'PaymentStatusRequest'"))
+					.setHeader("delay", constant(500))
+			.end()
+			.delay(simple("${header.delay}"))
 
 			.choice()
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")

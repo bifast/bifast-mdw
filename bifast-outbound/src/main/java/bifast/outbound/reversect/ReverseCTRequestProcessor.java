@@ -1,4 +1,4 @@
-package bifast.outbound.credittransfer;
+package bifast.outbound.reversect;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -15,7 +15,7 @@ import bifast.outbound.config.Config;
 import bifast.outbound.processor.UtilService;
 
 @Component
-public class CreditTransferRequestProcessor implements Processor {
+public class ReverseCTRequestProcessor implements Processor {
 
 	@Autowired
 	private Config config;
@@ -29,32 +29,22 @@ public class CreditTransferRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-
-		ChnlCreditTransferRequestPojo chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChnlCreditTransferRequestPojo.class);
-
-		
-		Pacs008Seed seedCreditTrn = new Pacs008Seed();
-
-		String msgType = null;
-		if (null==chnReq.getOrgnlEndToEndId()) 
-			msgType = "010";
-		else {
-			msgType = "011";
-			seedCreditTrn.setEndToEndId(chnReq.getOrgnlEndToEndId());
-		}
+		ChnlReverseCTRequestPojo chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChnlReverseCTRequestPojo.class);
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
+		String bizMsgId = utilService.genOfiBusMsgId("011", "99");
+		String msgId = utilService.genMessageId("011");
 
-		String bizMsgId = utilService.genOfiBusMsgId(msgType, chnReq.getChannel());
-		String msgId = utilService.genMessageId(msgType);
+		hdr = appHeaderService.getAppHdr(chnReq.getRecptBank(), "pacs.008.001.08", bizMsgId);
 
-
+		Pacs008Seed seedCreditTrn = new Pacs008Seed();
 		seedCreditTrn.setMsgId(msgId);
 		seedCreditTrn.setAmount(chnReq.getAmount());
-		seedCreditTrn.setBizMsgId(bizMsgId);
-		seedCreditTrn.setCategoryPurpose(chnReq.getCategoryPurpose());
+		seedCreditTrn.setBizMsgId(hdr.getBizMsgIdr());
+
+		seedCreditTrn.setCategoryPurpose("99");
 		
-		seedCreditTrn.setChannel(chnReq.getChannel());
+		seedCreditTrn.setChannel("99");
 		
 		seedCreditTrn.setCrdtAccountNo(chnReq.getCrdtAccountNo());		
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
@@ -67,28 +57,25 @@ public class CreditTransferRequestProcessor implements Processor {
 		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
 		seedCreditTrn.setDbtrId(chnReq.getDbtrId());
 		seedCreditTrn.setDbtrIdType(chnReq.getDbtrIdType());
-		seedCreditTrn.setOrignBank(config.getBankcode());
-		seedCreditTrn.setPaymentInfo(chnReq.getPaymentInfo());
-		seedCreditTrn.setRecptBank(chnReq.getRecptBank());
 		
-		seedCreditTrn.setTrnType(msgType);
+		seedCreditTrn.setOrignBank(config.getBankcode());
+		seedCreditTrn.setPaymentInfo("Reversal");
+		seedCreditTrn.setRecptBank(chnReq.getRecptBank());
+		seedCreditTrn.setTrnType("011");
 		
 		if (!(null == chnReq.getCrdtProxyIdType())) {
 			seedCreditTrn.setCrdtProxyIdType(chnReq.getCrdtProxyIdType());
 			seedCreditTrn.setCrdtProxyIdValue(chnReq.getCrdtProxyIdValue());
 		}
 		
-		BusinessMessage busMsg = new BusinessMessage();
+		seedCreditTrn.setEndToEndId(chnReq.getOrgnlEndToEndId());
 
-		hdr = appHeaderService.getAppHdr(chnReq.getRecptBank(), "pacs.008.001.08", bizMsgId);
-		busMsg.setAppHdr(hdr);
-
+			
 		Document doc = new Document();
-		if (msgType.equals("010"))
-			doc.setFiToFICstmrCdtTrf(pacs008MessageService.creditTransferRequest(seedCreditTrn));
-		else
-			doc.setFiToFICstmrCdtTrf(pacs008MessageService.reverseCreditTransferRequest(seedCreditTrn));
-		
+		doc.setFiToFICstmrCdtTrf(pacs008MessageService.creditTransferRequest(seedCreditTrn));
+
+		BusinessMessage busMsg = new BusinessMessage();
+		busMsg.setAppHdr(hdr);
 		busMsg.setDocument(doc);
 
 		exchange.getIn().setBody(busMsg);

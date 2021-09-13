@@ -38,11 +38,6 @@ public class SaveCTTablesProcessor implements Processor {
 		
 		BusinessMessage outRequest = exchange.getMessage().getHeader("ct_objreqbi", BusinessMessage.class);
 		
-//		// JANGAN LANJUT JIKA BELUM LOLOS outRequest Msg
-//		if (null == outRequest) 
-//			return;
-//		/////
-
 		ChnlCreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlCreditTransferRequestPojo.class);				
 		String encriptedMessage = exchange.getMessage().getHeader("ct_encrMessage", String.class);
 		
@@ -56,7 +51,12 @@ public class SaveCTTablesProcessor implements Processor {
 			OutboundMessage outboundMessage = new OutboundMessage();
 
 			outboundMessage.setBizMsgIdr(bizMsgIdr);
-			outboundMessage.setMessageName("Credit Transfer");
+			
+			if (null==chnlRequest.getOrgnlEndToEndId())
+				outboundMessage.setMessageName("Credit Transfer");
+			else
+				outboundMessage.setMessageName("Reverse CT");
+				
 			outboundMessage.setChannelRequestDT(LocalDateTime.now());
 			outboundMessage.setFullRequestMessage(encriptedMessage);
 			outboundMessage.setInternalReffId(chnlRefId);
@@ -189,7 +189,9 @@ public class SaveCTTablesProcessor implements Processor {
 			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		
 		
 		ct.setIntrRefId(auditTab.getInternalReffId());
-		ct.setMsgType("Credit Transfer");
+		
+		ct.setMsgType(auditTab.getMessageName());
+		
 		ct.setOriginatingBank(orgnlBank);
 		ct.setRecipientBank(outRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		ct.setLogMessageId(auditTab.getId());

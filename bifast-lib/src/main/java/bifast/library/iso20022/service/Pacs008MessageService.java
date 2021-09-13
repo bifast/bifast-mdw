@@ -135,7 +135,6 @@ public class Pacs008MessageService {
 			throws DatatypeConfigurationException {
 		
 		FIToFICustomerCreditTransferV08 pacs008 = new FIToFICustomerCreditTransferV08();
-//		String msgId = utilService.genMessageId(seed.getTrnType());
 
 		// GrpHdr
 		GroupHeader93 grpHdr = new GroupHeader93();

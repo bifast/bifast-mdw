@@ -10,7 +10,7 @@ import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
 import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 import bifast.outbound.paymentstatus.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
-import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
+import bifast.outbound.reversect.ChnlReverseCTRequestPojo;
 
 @JsonRootName("CombinedMessages")
 @JsonPropertyOrder({"accountEnquiryRequest", 
@@ -32,7 +32,7 @@ public class CombinedMessage {
 	@JsonProperty("PaymentStatusRequest")
 	private ChnlPaymentStatusRequestPojo paymentStatusRequest;
 	@JsonProperty("ReverseCreditTransferRequest")
-	private ChannelReverseCreditTransferRequest reverseCreditTransferRequest;
+	private ChnlReverseCTRequestPojo reverseCreditTransferRequest;
 	
 	@JsonProperty("ProxyRegistrationRequest")
 	private ChnlProxyRegistrationRequestPojo proxyRegistrationRequest;
@@ -66,10 +66,10 @@ public class CombinedMessage {
 	public void setPaymentStatusRequest(ChnlPaymentStatusRequestPojo paymentStatusRequest) {
 		this.paymentStatusRequest = paymentStatusRequest;
 	}
-	public ChannelReverseCreditTransferRequest getReverseCreditTransferRequest() {
+	public ChnlReverseCTRequestPojo getReverseCreditTransferRequest() {
 		return reverseCreditTransferRequest;
 	}
-	public void setReverseCreditTransferRequest(ChannelReverseCreditTransferRequest reverseCreditTransferRequest) {
+	public void setReverseCreditTransferRequest(ChnlReverseCTRequestPojo reverseCreditTransferRequest) {
 		this.reverseCreditTransferRequest = reverseCreditTransferRequest;
 	}
 	public BusinessMessageWrap getOutboundMessage() {

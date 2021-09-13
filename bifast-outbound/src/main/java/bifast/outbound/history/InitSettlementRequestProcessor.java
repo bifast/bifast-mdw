@@ -5,14 +5,13 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.history.RequestPojo;
 
 @Component
 public class InitSettlementRequestProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-
+		System.out.println("InitSettlementRequestProcessor");
 		BusinessMessage reqData = exchange.getMessage().getBody(BusinessMessage.class);
 		RequestPojo histReq = new RequestPojo();
 		
