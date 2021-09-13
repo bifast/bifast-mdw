@@ -11,8 +11,8 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs009MessageService;
 import bifast.library.iso20022.service.Pacs009Seed;
-import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
 import bifast.outbound.config.Config;
+import bifast.outbound.processor.UtilService;
 
 @Component
 //@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
@@ -24,22 +24,29 @@ public class FICreditTransferRequestProcessor implements Processor {
 	private AppHeaderService appHeaderService;
 	@Autowired
 	private Pacs009MessageService pacs009MessageService;
-	
+	@Autowired
+	private UtilService utilService;
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelFICreditTransferReq chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChannelFICreditTransferReq.class);
+		ChnlFICreditTransferRequestPojo chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChnlFICreditTransferRequestPojo.class);
 
+		String msgType = "019";
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = appHeaderService.initAppHdr(chnReq.getRecptBank(), "pacs.009.001.09", "019", chnReq.getChannel());
+		String bizMsgId = utilService.genOfiBusMsgId(msgType, chnReq.getChannel());
+		String msgId = utilService.genMessageId(msgType);
+
+		hdr = appHeaderService.getAppHdr(chnReq.getRecptBank(), "pacs.009.001.09", bizMsgId);
 		
 		Pacs009Seed seedFICT = new Pacs009Seed();
 		
+		seedFICT.setMsgId(msgId);
 		seedFICT.setBizMsgId(hdr.getBizMsgIdr());
 		seedFICT.setAmount(chnReq.getAmount());
 		seedFICT.setOrignBank(config.getBankcode());
 		seedFICT.setRecptBank(chnReq.getRecptBank());
-		seedFICT.setTrnType("019");
+		seedFICT.setTrnType(msgType);
 
 		Document doc = new Document();
 		doc.setFiCdtTrf(pacs009MessageService.creditTransferRequest(seedFICT));

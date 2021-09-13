@@ -18,20 +18,20 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "FASTIDJA"
+              "Id" : "MNDRIDJA"
             }
           }
         }
       },
-      "BizMsgIdr" : "20210710INDOIDJA010HRB12361264",
+      "BizMsgIdr" : "20210912INDOIDJA010HRB12361264",
       "MsgDefIdr" : "pacs.002.001.10",
       "BizSvc" : "SETTLEMENTCONFIRMATION",
-      "CreDt" : "2021-03-01T20:00:00"
+      "CreDt" : "2021-09-12T15:00:00"
     },
     "Document" : {
       "FitoFIPmtStsRpt" : {
         "GrpHdr" : {
-          "MsgId" : "20210301FASTIDJA01012345610",
+          "MsgId" : "20210912INDOIDJA01012361264",
           "CreDtTm" : "2021-03-01T19:00:00"
         },
         "OrgnlGrpInfAndSts" : [ {
@@ -40,8 +40,8 @@ Content-Type: application/json
           "OrgnlCreDtTm" : "2021-03-01T19:00:00"
         } ],
         "TxInfAndSts" : [ {
-          "OrgnlEndToEndId" : "20210301FASTIDJA010ORB92224455",
-          "OrgnlTxId" : "20210301INDOIDJA01012345678",
+          "OrgnlEndToEndId" : "20210912MNDRIDJA010O0100000003",
+          "OrgnlTxId" : "20210911MNDRIDJA010O0100000077",
           "TxSts" : "ACTC",
           "StsRsnInf" : [ {
             "Rsn" : {
@@ -82,7 +82,7 @@ Content-Type: application/json
             },
             "Cdtr" : {
               "Pty" : {
-                "Nm" : "JOHN SMITH"
+                "Nm" : "PT MII"
               }
             },
             "CdtrAcct" : {

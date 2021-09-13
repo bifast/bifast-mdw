@@ -1,6 +1,5 @@
 package bifast.outbound.accountenquiry;
 
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -12,14 +11,14 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
-import bifast.library.model.AccountEnquiry;
-import bifast.library.model.DomainCode;
-import bifast.library.model.OutboundMessage;
-import bifast.library.repository.AccountEnquiryRepository;
-import bifast.library.repository.BankCodeRepository;
-import bifast.library.repository.DomainCodeRepository;
-import bifast.library.repository.OutboundMessageRepository;
-import bifast.outbound.pojo.ChannelFaultResponse;
+import bifast.outbound.model.AccountEnquiry;
+import bifast.outbound.model.BankCode;
+import bifast.outbound.model.DomainCode;
+import bifast.outbound.model.OutboundMessage;
+import bifast.outbound.repository.AccountEnquiryRepository;
+import bifast.outbound.repository.BankCodeRepository;
+import bifast.outbound.repository.DomainCodeRepository;
+import bifast.outbound.repository.OutboundMessageRepository;
 
 @Component
 public class SaveAETablesProcessor implements Processor {
@@ -43,8 +42,8 @@ public class SaveAETablesProcessor implements Processor {
 		if (null == outRequest) 
 			return;
 
-		ChannelAccountEnquiryReq chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChannelAccountEnquiryReq.class);				
-		String encriptedMessage = exchange.getMessage().getHeader("hdr_encrMessage", String.class);
+		ChnlAccountEnquiryRequestPojo chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlAccountEnquiryRequestPojo.class);				
+		String encriptedMessage = exchange.getMessage().getHeader("ae_encrMessage", String.class);
 		
 		OutboundMessage outboundMessage = new OutboundMessage();
 		
@@ -84,15 +83,15 @@ public class SaveAETablesProcessor implements Processor {
 		
 	}
 
-	private OutboundMessage insertOutboundMessage (ChannelAccountEnquiryReq chnlRequest, 
+	private OutboundMessage insertOutboundMessage (ChnlAccountEnquiryRequestPojo chnlRequest, 
 													BusinessMessage request, 
 													String encriptedMessage) {
 		OutboundMessage outboundMessage = new OutboundMessage();
 		
 		outboundMessage.setBizMsgIdr(request.getAppHdr().getBizMsgIdr());
 		
-		String bic = request.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
-		outboundMessage.setRecipientBank(bankCodeRepo.findByBicCode(bic).get().getBankCode());
+		BankCode rcpBankCode = bankCodeRepo.findByBicCode(chnlRequest.getRecptBank()).orElse(new BankCode());
+		outboundMessage.setRecipientBank(rcpBankCode.getBankCode());
 		
 		outboundMessage.setChannelRequestDT(LocalDateTime.now());
 		outboundMessage.setFullRequestMessage(encriptedMessage);
@@ -113,7 +112,7 @@ public class SaveAETablesProcessor implements Processor {
 	
 	
 	private OutboundMessage updateOutboundMessage (OutboundMessage outboundMessage,
-										ChannelAccountEnquiryReq chnlRequest,
+										ChnlAccountEnquiryRequestPojo chnlRequest,
 										BusinessMessage response, 
 										String encriptedMessage,
 										String strChnlResponseTime,

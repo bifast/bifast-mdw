@@ -23,10 +23,15 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 	private AppHeaderService hdrService;
 	@Autowired
 	private Proxy002MessageService proxy002MessageService;
-	
+	@Autowired
+	private UtilService utilService;
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
+		String bizMsgId = utilService.genRfiBusMsgId("710", "01");
+		String msgId = utilService.genMessageId("710");
+
 		Random rand = new Random();
 		Proxy002Seed seed = new Proxy002Seed();
         int posbl = rand.nextInt(10);
@@ -51,8 +56,8 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		ProxyRegistrationResponseV01 response = proxy002MessageService.proxyRegistrationResponse(seed, msg);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.initAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", "710", "01");
+		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
+									"pacs.002.001.10", bizMsgId);
 		Document doc = new Document();
 		doc.setPrxyRegnRspn(response);
 		BusinessMessage busMesg = new BusinessMessage();

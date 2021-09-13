@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public class Pacs008Seed {
 
+	private String msgId;
 	private String trnType;   // AcctEnq & CrdtTrn
 	private String bizMsgId;  // AcctEnq CrdtTrn
 	private String endToEndId;
@@ -31,6 +32,14 @@ public class Pacs008Seed {
 
 	private String paymentInfo;  // CrdtTrn
 	
+	public String getMsgId() {
+		return msgId;
+	}
+
+	public void setMsgId(String msgId) {
+		this.msgId = msgId;
+	}
+
 	public Pacs008Seed () {}
 	
 	public String getTrnType() {

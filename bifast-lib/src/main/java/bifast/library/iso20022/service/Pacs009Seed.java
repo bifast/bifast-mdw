@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public class Pacs009Seed {
 
+	private String msgId;
 	private String trnType;   
 	private String bizMsgId; 
 	private BigDecimal amount; 
@@ -12,6 +13,12 @@ public class Pacs009Seed {
 	private String channel; 
 	private String paymentInfo;
 	
+	public String getMsgId() {
+		return msgId;
+	}
+	public void setMsgId(String msgId) {
+		this.msgId = msgId;
+	}
 	public String getTrnType() {
 		return trnType;
 	}

@@ -6,14 +6,12 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy002.BIAddtlCstmrInf;
 import bifast.library.iso20022.prxy002.BISupplementaryData1;
 import bifast.library.iso20022.prxy002.BISupplementaryDataEnvelope1;
-import bifast.library.iso20022.prxy002.ProxyDefinition1;
 import bifast.library.iso20022.prxy002.ProxyRegistrationAccount1;
 import bifast.library.iso20022.prxy002.BranchAndFinancialInstitutionIdentification5;
 import bifast.library.iso20022.prxy002.FinancialInstitutionIdentification8;
@@ -31,20 +29,17 @@ import bifast.library.iso20022.prxy002.ProxyStatusChoice;
 @Service
 public class Proxy002MessageService {
 
-	@Autowired
-	private UtilService utilService;
-
 	public ProxyRegistrationResponseV01 proxyRegistrationResponse (Proxy002Seed seed, 
 			BusinessMessage orgnlMessage) 
 			throws DatatypeConfigurationException {
 		
 		
 		ProxyRegistrationResponseV01 proxy002 = new ProxyRegistrationResponseV01();
-		String msgId = utilService.genMessageId("710");
+//		String msgId = utilService.genMessageId("710");
 		
 		// GrpHdr
 		GroupHeader60 grpHdr = new GroupHeader60();
-		grpHdr.setMsgId(msgId);
+		grpHdr.setMsgId(seed.getMsgId());
 		
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);

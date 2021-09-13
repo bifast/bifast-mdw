@@ -17,7 +17,7 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		
 		BusinessMessage obj_crdtrnResp = exchange.getIn().getBody(BusinessMessage.class);
 
-		ChannelProxyRegistrationReq chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChannelProxyRegistrationReq.class);
+		ChnlProxyRegistrationRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlProxyRegistrationRequestPojo.class);
 
 		if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 

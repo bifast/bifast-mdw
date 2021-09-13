@@ -6,7 +6,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -33,8 +33,8 @@ import bifast.library.iso20022.pacs002.BISupplementaryDataEnvelope1;
 @Service
 public class Pacs002MessageService {
 
-	@Autowired
-	private UtilService utilService;
+//	@Autowired
+//	private UtilService utilService;
 
 	public FIToFIPaymentStatusReportV10 accountEnquiryResponse (Pacs002Seed seed, 
 				BusinessMessage orgnlMessage) throws DatatypeConfigurationException {
@@ -43,7 +43,7 @@ public class Pacs002MessageService {
 
 		// GrpHdr
 		GroupHeader91 grpHdr = new GroupHeader91();
-		grpHdr.setMsgId(utilService.genMessageId("510"));  // 510 transaction_type untuk Account ENquiry
+		grpHdr.setMsgId(seed.getMsgId());  // 510 transaction_type untuk Account ENquiry
 		
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
@@ -127,7 +127,7 @@ public class Pacs002MessageService {
 
 		// GrpHdr
 		GroupHeader91 grpHdr = new GroupHeader91();
-		grpHdr.setMsgId(utilService.genMessageId("010"));  // 010 Transaction-Type untuk CSTMRCRDTTRN
+		grpHdr.setMsgId(seed.getMsgId());  // 010 Transaction-Type untuk CSTMRCRDTTRN
 		
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
@@ -203,7 +203,7 @@ public class Pacs002MessageService {
 
 		// GrpHdr
 		GroupHeader91 grpHdr = new GroupHeader91();
-		grpHdr.setMsgId(utilService.genMessageId("019"));  // 019 transaction_type untuk FIFICRDTTRN
+		grpHdr.setMsgId(seed.getMsgId());  // 019 transaction_type untuk FIFICRDTTRN
 		
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);

@@ -1,8 +1,5 @@
 package bifast.outbound.paymentstatus;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +11,8 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs028MessageService;
 import bifast.library.iso20022.service.Pacs028Seed;
-import bifast.library.model.CreditTransfer;
-import bifast.library.model.Settlement;
-import bifast.library.repository.CreditTransferRepository;
-import bifast.library.repository.SettlementRepository;
 import bifast.outbound.config.Config;
+import bifast.outbound.processor.UtilService;
 
 @Component
 public class PaymentStatusRequestProcessor implements Processor {
@@ -29,16 +23,22 @@ public class PaymentStatusRequestProcessor implements Processor {
 	private Pacs028MessageService pacs028MessageService;
 	@Autowired
 	private Config config;
-	
+	@Autowired
+	private UtilService utilService;
+
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		PaymentStatusRequest psReq = exchange.getMessage().getBody(PaymentStatusRequest.class);
+		ChnlPaymentStatusRequestPojo psReq = exchange.getMessage().getBody(ChnlPaymentStatusRequestPojo.class);
 			
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = appHeaderService.initAppHdr(config.getBicode(), "pacs.028.001.04", "000", "99");
+		String bizMsgId = utilService.genOfiBusMsgId("000", "99");
+		String msgId = utilService.genMessageId("000");
+
+		hdr = appHeaderService.getAppHdr(config.getBicode(), "pacs.028.001.04", bizMsgId);
 
 		Pacs028Seed seed = new Pacs028Seed();	
+		seed.setMsgId(msgId);
 		seed.setOrgnlEndToEnd(psReq.getEndToEndId());
 
 		Document doc = new Document();

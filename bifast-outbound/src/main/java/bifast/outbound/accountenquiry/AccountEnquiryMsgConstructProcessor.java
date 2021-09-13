@@ -13,6 +13,7 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.outbound.config.Config;
+import bifast.outbound.processor.UtilService;
 
 @Component
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
@@ -24,28 +25,32 @@ public class AccountEnquiryMsgConstructProcessor implements Processor {
 	private AppHeaderService appHeaderService;
 	@Autowired
 	private Pacs008MessageService pacs008MessageService;
+	@Autowired
+	private UtilService utilService;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-//		ChannelAccountEnquiryReq chnReq = exchange.getIn().getBody(ChannelAccountEnquiryReq.class);
-		ChannelAccountEnquiryReq chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChannelAccountEnquiryReq.class);
+		ChnlAccountEnquiryRequestPojo chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChnlAccountEnquiryRequestPojo.class);
 
+		String msgType = "510";
+		String bizMsgId = utilService.genOfiBusMsgId(msgType, chnReq.getChannel());
+		String msgId = utilService.genMessageId(msgType);
+		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		
-//		String channelType = domainCodeRepo.findByGrpAndValue("CHANNEL.TYPE", chnReq.getChannel()).orElse(new DomainCode()).getKey();
-		
-		hdr = appHeaderService.initAppHdr(chnReq.getRecipientBank(), "pacs.008.001.08", "510", chnReq.getChannel());
+
+		hdr = appHeaderService.getAppHdr(chnReq.getRecptBank(), "pacs.008.001.08", bizMsgId);
 		
 		Pacs008Seed seedAcctEnquiry = new Pacs008Seed();
 		
+		seedAcctEnquiry.setMsgId(msgId);
 		seedAcctEnquiry.setBizMsgId(hdr.getBizMsgIdr());
 		seedAcctEnquiry.setAmount(chnReq.getAmount());
 		seedAcctEnquiry.setCategoryPurpose(chnReq.getCategoryPurpose());
 		seedAcctEnquiry.setCrdtAccountNo(chnReq.getCreditorAccountNumber());
 		seedAcctEnquiry.setOrignBank(config.getBankcode());
-		seedAcctEnquiry.setRecptBank(chnReq.getRecipientBank());
-		seedAcctEnquiry.setTrnType("510");
+		seedAcctEnquiry.setRecptBank(chnReq.getRecptBank());
+		seedAcctEnquiry.setTrnType(msgType);
 
 		Document doc = new Document();
 		doc.setFiToFICstmrCdtTrf(pacs008MessageService.accountEnquiryRequest(seedAcctEnquiry));

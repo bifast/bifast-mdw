@@ -8,18 +8,18 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.model.CreditTransfer;
+import bifast.inbound.model.DomainCode;
+import bifast.inbound.model.InboundMessage;
+import bifast.inbound.model.Settlement;
+import bifast.inbound.repository.CreditTransferRepository;
+import bifast.inbound.repository.DomainCodeRepository;
+import bifast.inbound.repository.InboundMessageRepository;
+import bifast.inbound.repository.SettlementRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
-import bifast.library.model.CreditTransfer;
-import bifast.library.model.DomainCode;
-import bifast.library.model.InboundMessage;
-import bifast.library.model.Settlement;
-import bifast.library.repository.CreditTransferRepository;
-import bifast.library.repository.DomainCodeRepository;
-import bifast.library.repository.InboundMessageRepository;
-import bifast.library.repository.SettlementRepository;
 
 @Component
 public class SaveInboundMessageProcessor implements Processor {

@@ -5,9 +5,9 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.model.FaultClass;
-import bifast.library.repository.FaultClassRepository;
+import bifast.outbound.model.FaultClass;
 import bifast.outbound.pojo.ChannelFaultResponse;
+import bifast.outbound.repository.FaultClassRepository;
 
 @Component
 public class FaultProcessor implements Processor {
@@ -47,8 +47,6 @@ public class FaultProcessor implements Processor {
 //				refId = (String) getOrignReffId.invoke(chnRequest, null);
 //				reject.setChannelRefId(refId);
 //			}
-		
-		System.out.println("Cek 453");
 				
 		exchange.getMessage().setHeader("hdr_fault", reject);
 		exchange.getMessage().setBody(reject, ChannelFaultResponse.class);

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.paymentstatus.CheckHistoryProcessor;
 import bifast.outbound.paymentstatus.PaymentStatusRequestProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.reversect.ReverseCreditTrnRequestProcessor;
@@ -24,8 +23,8 @@ public class ReversalRoute extends RouteBuilder {
 	private ReverseCreditTrnRequestProcessor reverseCTRequestProcessor;
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
-	@Autowired
-	private CheckHistoryProcessor checkSettlementProcessor;
+//	@Autowired
+//	private CheckHistoryProcessor checkSettlementProcessor;
 	@Autowired
 	private PaymentStatusRequestProcessor paymentStatusTimeoutProcessor;
 
@@ -75,7 +74,7 @@ public class ReversalRoute extends RouteBuilder {
 				.to("seda:savelogfiles?exchangePattern=InOnly")
 
 				// cek settlement dulu, kalo ga ada baru payment status
-				.process(checkSettlementProcessor)
+//				.process(checkSettlementProcessor)
 				.choice()
 					.when().simple("${body} == ''")
 						.log("Payment Status")

@@ -4,8 +4,53 @@ Content-Type: application/json
 
 {
     "PaymentStatusRequest" : {
-        "orgnReffId" : "441",
-        "requestReffId" : "441126",
+      "endToEndId" : "20210912FASTIDJA010R0200000938",
+      "msgType" : "Credit Transfer",
 	    "recptBank" : "FASTIDJA"
     }
+}
+
+###
+POST http://localhost:9006/mock/cihub HTTP/1.1
+Content-Type: application/json
+
+{
+  "BusMsg": {
+    "AppHdr": {
+      "Fr": {
+        "Fiid": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "MNDRIDJA"
+            }
+          }
+        }
+      },
+      "To": {
+        "Fiid": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "INDOIDJA"
+            }
+          }
+        }
+      },
+      "BizMsgIdr": "20210912MNDRIDJA000O9900000101",
+      "MsgDefIdr": "pacs.028.001.04",
+      "CreDt": "2021-09-12T21:17:27"
+    },
+    "Document": {
+      "FitoFIPmtStsReq": {
+        "GrpHdr": {
+          "MsgId": "20210912MNDRIDJA00000000102",
+          "CreDtTm": 1631456247604
+        },
+        "TxInf": [
+          {
+            "OrgnlEndToEndId": "20210912MNDRIDJA010O0100000099"
+          }
+        ]
+      }
+    }
+  }
 }

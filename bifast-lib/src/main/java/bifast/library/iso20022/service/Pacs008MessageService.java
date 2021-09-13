@@ -6,7 +6,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.pacs008.AccountIdentification4Choice;
@@ -43,18 +42,14 @@ import bifast.library.iso20022.pacs008.SettlementMethod1Code;
 @Service
 public class Pacs008MessageService {
 
-	@Autowired
-	private UtilService utilService;
-
 	public FIToFICustomerCreditTransferV08 accountEnquiryRequest (Pacs008Seed seed) 
 			throws DatatypeConfigurationException {
 		
 		FIToFICustomerCreditTransferV08 pacs008 = new FIToFICustomerCreditTransferV08();
-		String msgId = utilService.genMessageId(seed.getTrnType());
-		
+
 		// GrpHdr
 		GroupHeader93 grpHdr = new GroupHeader93();
-		grpHdr.setMsgId(msgId);
+		grpHdr.setMsgId(seed.getMsgId());
 		
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
@@ -140,11 +135,11 @@ public class Pacs008MessageService {
 			throws DatatypeConfigurationException {
 		
 		FIToFICustomerCreditTransferV08 pacs008 = new FIToFICustomerCreditTransferV08();
-		String msgId = utilService.genMessageId(seed.getTrnType());
+//		String msgId = utilService.genMessageId(seed.getTrnType());
 
 		// GrpHdr
 		GroupHeader93 grpHdr = new GroupHeader93();
-		grpHdr.setMsgId(msgId);
+		grpHdr.setMsgId(seed.getMsgId());
 
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
@@ -165,7 +160,7 @@ public class Pacs008MessageService {
 		
 		PaymentIdentification7 PmtId = new PaymentIdentification7();
 		PmtId.setEndToEndId(seed.getBizMsgId());
-		PmtId.setTxId(msgId);
+		PmtId.setTxId(seed.getMsgId());
 		
 		cdtTrfTxInf.setPmtId(PmtId);
 		

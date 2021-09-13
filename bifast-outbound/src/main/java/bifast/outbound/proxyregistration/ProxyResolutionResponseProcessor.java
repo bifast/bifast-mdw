@@ -15,7 +15,7 @@ public class ProxyResolutionResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		ChannelProxyResolutionReq chnRequest = exchange.getMessage().getHeader("rcv_channel", ChannelProxyResolutionReq.class);
+		ChnlProxyResolutionRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlProxyResolutionRequestPojo.class);
 
 		BusinessMessage obj_pxryLookup = exchange.getIn().getBody(BusinessMessage.class);
 		

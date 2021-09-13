@@ -16,7 +16,6 @@ import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
 
 @Component
-//@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
 public class CreditTransferResponseProcessor implements Processor{
 
 	@Autowired
@@ -25,12 +24,19 @@ public class CreditTransferResponseProcessor implements Processor{
 	private Pacs002MessageService pacs002Service;
 	@Autowired
 	private MessageHistory messageHistory;
-	
+	@Autowired
+	private UtilService utilService;
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
 		Random rand = new Random();
+		String bizMsgId = utilService.genRfiBusMsgId("010", "02");
+		String msgId = utilService.genMessageId("010");
+
 		Pacs002Seed seed = new Pacs002Seed();
+		
+		seed.setMsgId(msgId);
 		
         int posbl4 = rand.nextInt(4);
 		if (posbl4 == 0) {
@@ -54,8 +60,8 @@ public class CreditTransferResponseProcessor implements Processor{
 		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, msg);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.initAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", "010", "02");
+		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
+									"pacs.002.001.10", bizMsgId);
 		hdr.setBizSvc("CTRESPONSE");
 		
 		Document doc = new Document();

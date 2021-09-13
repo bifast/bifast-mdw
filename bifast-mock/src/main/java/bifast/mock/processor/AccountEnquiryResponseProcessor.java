@@ -24,6 +24,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	private AppHeaderService hdrService;
 	@Autowired
 	private Pacs002MessageService pacs002Service;
+	@Autowired
+	private UtilService utilService;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -32,7 +34,9 @@ public class AccountEnquiryResponseProcessor implements Processor {
         int posbl4 = rand.nextInt(4);
 
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
-		
+		String bizMsgId = utilService.genRfiBusMsgId("510", "02");
+		String msgId = utilService.genMessageId("510");
+
 		Pacs002Seed seed = new Pacs002Seed();
 
 		if (posbl4 == 0) {
@@ -44,6 +48,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			seed.setReason("U000");
 			
 		}
+		
+		seed.setMsgId(msgId);
 		seed.setCreditorName("Wawan Setiawan");
 		seed.setCreditorAccountNo("977004883004");
 		seed.setCreditorAccountIdType("CACC");
@@ -55,8 +61,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		FIToFIPaymentStatusReportV10 response = pacs002Service.accountEnquiryResponse(seed, msg);
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.initAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", "510", "02");
+		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
+									"pacs.002.001.10", bizMsgId);
 		
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);

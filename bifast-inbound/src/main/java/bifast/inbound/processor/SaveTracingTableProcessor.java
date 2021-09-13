@@ -7,14 +7,14 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.model.CreditTransfer;
+import bifast.inbound.model.Settlement;
+import bifast.inbound.repository.CreditTransferRepository;
+import bifast.inbound.repository.SettlementRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
 import bifast.library.iso20022.pacs009.CreditTransferTransaction44;
-import bifast.library.model.CreditTransfer;
-import bifast.library.model.Settlement;
-import bifast.library.repository.CreditTransferRepository;
-import bifast.library.repository.SettlementRepository;
 
 @Component
 public class SaveTracingTableProcessor implements Processor {

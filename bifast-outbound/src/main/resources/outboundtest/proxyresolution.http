@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "ProxyResolutionRequest": {
-        "orignReffId": "B44231",
+        "orignReffId": "1B41",
         "channel" : "01",
         "lookupType": "PXRS",
         "proxyType" : "02",

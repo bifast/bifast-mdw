@@ -4,6 +4,8 @@ import bifast.library.iso20022.prxy003.ProxyLookUpType1Code;
 
 public class Proxy003Seed {
 	
+	private String msgId;
+	
 	private String trnType;
 	
 	private ProxyLookUpType1Code lookupType;
@@ -11,6 +13,12 @@ public class Proxy003Seed {
 	private String proxyType;
 	private String proxyValue;
 	
+	public String getMsgId() {
+		return msgId;
+	}
+	public void setMsgId(String msgId) {
+		this.msgId = msgId;
+	}
 	public String getTrnType() {
 		return trnType;
 	}

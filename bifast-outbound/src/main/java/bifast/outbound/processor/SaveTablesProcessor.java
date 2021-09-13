@@ -12,14 +12,14 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
-import bifast.library.model.AccountEnquiry;
-import bifast.library.model.CreditTransfer;
-import bifast.library.model.OutboundMessage;
-import bifast.library.model.ProxyMessage;
-import bifast.library.repository.AccountEnquiryRepository;
-import bifast.library.repository.CreditTransferRepository;
-import bifast.library.repository.OutboundMessageRepository;
-import bifast.library.repository.ProxyMessageRepository;
+import bifast.outbound.model.AccountEnquiry;
+import bifast.outbound.model.CreditTransfer;
+import bifast.outbound.model.OutboundMessage;
+import bifast.outbound.model.ProxyMessage;
+import bifast.outbound.repository.AccountEnquiryRepository;
+import bifast.outbound.repository.CreditTransferRepository;
+import bifast.outbound.repository.OutboundMessageRepository;
+import bifast.outbound.repository.ProxyMessageRepository;
 
 @Component
 public class SaveTablesProcessor implements Processor {

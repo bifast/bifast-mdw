@@ -5,6 +5,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
@@ -20,11 +21,15 @@ public class CreditTransferResponseProcessor implements Processor {
 	private AppHeaderService appHdrService;
 	@Autowired
 	private Pacs002MessageService pacs002Service;
+	@Autowired
+	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
 		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("hdr_frBIobj", BusinessMessage.class);
+		String bizMsgId = utilService.genRfiBusMsgId("010", "99");
+		String msgId = utilService.genMessageId("010");
 
 		// TODO cek account ke core banking
 		// jika harus reject maka cek dulu apakah SAF yg harus reversal
@@ -39,6 +44,7 @@ public class CreditTransferResponseProcessor implements Processor {
 		
 		Pacs002Seed resp = new Pacs002Seed();
 		
+		resp.setMsgId(msgId);
 		resp.setCreditorName("UJANG");
 		resp.setCreditorResidentialStatus("01");  // 01 RESIDENT
 		resp.setCreditorTown("0300");  
@@ -53,7 +59,7 @@ public class CreditTransferResponseProcessor implements Processor {
 		doc.setFiToFIPmtStsRpt(respMsg);
 		
 		String orignBank = reqBusMesg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
-		BusinessApplicationHeaderV01 appHdr = appHdrService.initAppHdr(orignBank, "pacs002.001.10", "010", "99");
+		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr(orignBank, "pacs002.001.10", bizMsgId);
 
 		BusinessMessage respBusMesg = new BusinessMessage();
 		respBusMesg.setAppHdr(appHdr);

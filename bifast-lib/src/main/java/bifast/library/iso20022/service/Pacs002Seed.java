@@ -2,6 +2,7 @@ package bifast.library.iso20022.service;
 
 public class Pacs002Seed {
 
+	private String msgId;
 	private String creditorName;   // CST:resp   ACCENQ:resp
 	private String creditorType;   // CST:resp
 	private String creditorId;     // CST:resp
@@ -14,6 +15,12 @@ public class Pacs002Seed {
 	private String additionalInfo;  //    CST:resp   
 	
 	
+	public String getMsgId() {
+		return msgId;
+	}
+	public void setMsgId(String msgId) {
+		this.msgId = msgId;
+	}
 	public String getCreditorName() {
 		return creditorName;
 	}

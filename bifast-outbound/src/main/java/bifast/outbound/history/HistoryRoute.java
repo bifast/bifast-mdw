@@ -14,7 +14,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 @Component
 public class HistoryRoute extends RouteBuilder {
 	
-	JacksonDataFormat BusinessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
+//	JacksonDataFormat BusinessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
 
 	@Autowired
 	private HistoryRetrievalProcessor historyRetrievalProcessor;
@@ -22,10 +22,10 @@ public class HistoryRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 
-		BusinessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		BusinessMessageJDF.setInclude("NON_NULL");
-		BusinessMessageJDF.setInclude("NON_EMPTY");
-		BusinessMessageJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+//		BusinessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+//		BusinessMessageJDF.setInclude("NON_NULL");
+//		BusinessMessageJDF.setInclude("NON_EMPTY");
+//		BusinessMessageJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		from("direct:history")
 			.log("sedang di direct:history")

@@ -1,29 +1,14 @@
 package bifast.mock.processor;
 
-import java.util.Random;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.custom.Document;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Proxy002MessageService;
-import bifast.library.iso20022.service.Proxy002Seed;
-import bifast.mock.prxy004.Proxy004Seed;
 
 @Component
 //@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
 public class ProxyResolutionResponseProcessor implements Processor{
 
-	@Autowired
-	private AppHeaderService hdrService;
-	@Autowired
-	private Proxy002MessageService proxy002MessageService;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {

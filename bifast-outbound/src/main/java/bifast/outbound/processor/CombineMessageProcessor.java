@@ -11,12 +11,12 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.BusinessMessageWrap;
-import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
-import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
-import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
-import bifast.outbound.paymentstatus.ChnlPaymentStatusRequest;
+import bifast.outbound.accountenquiry.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
+import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
+import bifast.outbound.paymentstatus.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.pojo.CombinedMessage;
-import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
+import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 
 @Component
@@ -31,7 +31,7 @@ public class CombineMessageProcessor implements Processor {
 		String fileName = "";
 		
 		if (msgType.equals("AccountEnquiry")) {
-			ChannelAccountEnquiryReq accEn = exchange.getMessage().getHeader("req_channelReq", ChannelAccountEnquiryReq.class);
+			ChnlAccountEnquiryRequestPojo accEn = exchange.getMessage().getHeader("req_channelReq", ChnlAccountEnquiryRequestPojo.class);
 			fullMesg.setAccountEnquiryRequest(accEn);
 
 			fileName = "pacs.008.";
@@ -39,19 +39,19 @@ public class CombineMessageProcessor implements Processor {
 		
 		else if (msgType.equals("CreditTransfer")) {
 			fileName = "pacs.008.";
-			ChannelCreditTransferRequest crdtTrnReq = exchange.getMessage().getHeader("req_channelReq", ChannelCreditTransferRequest.class);
+			ChnlCreditTransferRequestPojo crdtTrnReq = exchange.getMessage().getHeader("req_channelReq", ChnlCreditTransferRequestPojo.class);
 			fullMesg.setCreditTransferRequest(crdtTrnReq);			
 		}
 
 		else if (msgType.equals("FICreditTransfer")) {
 			fileName = "pacs.009.";
-			ChannelFICreditTransferReq fiCrdtTrnReq = exchange.getMessage().getHeader("req_channelReq", ChannelFICreditTransferReq.class);
+			ChnlFICreditTransferRequestPojo fiCrdtTrnReq = exchange.getMessage().getHeader("req_channelReq", ChnlFICreditTransferRequestPojo.class);
 			fullMesg.setFiCreditTransferRequest(fiCrdtTrnReq);			
 		}
 
 		else if (msgType.equals("PaymentStatus")) {
 			fileName = "pacs.028.";
-			ChnlPaymentStatusRequest pymtSts = exchange.getMessage().getHeader("req_channelReq", ChnlPaymentStatusRequest.class);
+			ChnlPaymentStatusRequestPojo pymtSts = exchange.getMessage().getHeader("req_channelReq", ChnlPaymentStatusRequestPojo.class);
 			fullMesg.setPaymentStatusRequest(pymtSts);
 		}
 
@@ -63,7 +63,7 @@ public class CombineMessageProcessor implements Processor {
 
 		else if (msgType.equals("prxyrgst")) {
 			fileName = "prxy.001.";
-			ChannelProxyRegistrationReq prxReg = exchange.getMessage().getHeader("req_channelReq", ChannelProxyRegistrationReq.class);
+			ChnlProxyRegistrationRequestPojo prxReg = exchange.getMessage().getHeader("req_channelReq", ChnlProxyRegistrationRequestPojo.class);
 			fullMesg.setProxyRegistrationRequest(prxReg);
 		}
 

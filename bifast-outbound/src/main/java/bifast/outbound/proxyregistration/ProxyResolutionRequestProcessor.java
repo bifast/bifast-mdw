@@ -14,6 +14,7 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Proxy003MessageService;
 import bifast.library.iso20022.service.Proxy003Seed;
 import bifast.outbound.config.Config;
+import bifast.outbound.processor.UtilService;
 
 @Component
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
@@ -25,18 +26,26 @@ public class ProxyResolutionRequestProcessor implements Processor {
 	private AppHeaderService appHeaderService;
 	@Autowired
 	private Proxy003MessageService proxy003MessageService;
-	
+	@Autowired
+	private UtilService utilService;
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelProxyResolutionReq chnReq = exchange.getIn().getBody(ChannelProxyResolutionReq.class);
+		ChnlProxyResolutionRequestPojo chnReq = exchange.getIn().getBody(ChnlProxyResolutionRequestPojo.class);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = appHeaderService.initAppHdr(config.getBicode(), "prxy.003.001.01", "610", chnReq.getChannel());
+
+		String trxType = "610";
+		String bizMsgId = utilService.genOfiBusMsgId(trxType, chnReq.getChannel());
+		String msgId = utilService.genMessageId(trxType);
+		
+		hdr = appHeaderService.getAppHdr(config.getBicode(), "prxy.003.001.01", bizMsgId);
 		
 		Proxy003Seed seedProxyResolution = new Proxy003Seed();
 		
-		seedProxyResolution.setTrnType("610");
+		seedProxyResolution.setMsgId(msgId);
+		seedProxyResolution.setTrnType(trxType);
 		
 		if (chnReq.getLookupType().equals("PXRS")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
 		else if (chnReq.getLookupType().equals("CHCK")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.CHCK);

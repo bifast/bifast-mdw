@@ -1,36 +1,37 @@
 package bifast.mock.processor;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.mock.persist.OutboundMessage;
+import bifast.mock.persist.OutboundMessageRepository;
 
 @Component
 public class PaymentStatusResponseProcessor implements Processor{
 
 	@Autowired
 	private MessageHistory messageHistory;
+	@Autowired
+	private OutboundMessageRepository outboundMessageRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
-		String reqMsgId = msg.getDocument().getFIToFIPmtStsReq().getTxInf().get(0).getOrgnlEndToEndId();
+		List<OutboundMessage> optOutboundMessage = outboundMessageRepo.findAllByBizMsgIdr("20210912MNDRIDJA010O0100000085");
+		String fullMsg = null;
+		if (optOutboundMessage.size()>0)
+			fullMsg = optOutboundMessage.get(0).getFullResponseMsg();
 
-		BusinessMessage resp = messageHistory.get(reqMsgId);	
-		if (null == resp.getAppHdr())  {
-			resp = messageHistory.getAny();
-			System.out.println("any: " + resp.getAppHdr().getBizMsgIdr());
-			resp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).setOrgnlEndToEndId(reqMsgId);
-			resp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).setTxSts("RJTC");
-			resp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().setPrtry("U161");
-			resp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getAddtlInf().remove(0);
-			resp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getAddtlInf().add("Tidak ditemukan");
-		}
-
-		exchange.getIn().setBody(resp);
+		else 
+			System.out.println("Kok ga ada ya ");
+		
+		exchange.getIn().setBody(fullMsg);
 		
 	}
 

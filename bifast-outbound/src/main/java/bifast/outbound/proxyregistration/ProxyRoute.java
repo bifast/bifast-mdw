@@ -33,15 +33,15 @@ public class ProxyRoute extends RouteBuilder {
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
-	private ValidatePrxyInputProcessor validatePrxyRegsProcessor;
+	private ValidatePrxyRegistrationProcessor validatePrxyRegsProcessor;
 	@Autowired
 	private FaultProcessor faultProcessor;
 
 
-	JacksonDataFormat chnlProxyRegistrationJDF = new JacksonDataFormat(ChannelProxyRegistrationReq.class);
+	JacksonDataFormat chnlProxyRegistrationJDF = new JacksonDataFormat(ChnlProxyRegistrationRequestPojo.class);
 	JacksonDataFormat jsonChnlProxyRegistrationResponseFormat = new JacksonDataFormat(ChnlProxyRegistrationResponse.class);
 	JacksonDataFormat jsonChnlProxyResolutionResponseFormat = new JacksonDataFormat(ChnlProxyResolutionResponse.class);
-	JacksonDataFormat jsonChnlProxyResolutionFormat = new JacksonDataFormat(ChannelProxyResolutionReq.class);
+	JacksonDataFormat jsonChnlProxyResolutionFormat = new JacksonDataFormat(ChnlProxyResolutionRequestPojo.class);
 	JacksonDataFormat faultJDF = new JacksonDataFormat(ChannelFaultResponse.class);
 
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
@@ -94,20 +94,13 @@ public class ProxyRoute extends RouteBuilder {
 
 		from("direct:proxyregistration").routeId("proxyregistration")
 
-//			.marshal(chnlProxyRegistrationJDF)
-//			.log("${body}")
-//			.unmarshal(chnlProxyRegistrationJDF)
-//			.log("${body.orignReffId}")
-			
 			.setHeader("hdr_errorlocation", constant("PrxyRoute/InputValidation"))
-			.log("Channelnya ${body.channel}")
 			.process(validatePrxyRegsProcessor)
 
 			.setHeader("hdr_errorlocation", constant("PrxyRoute/BuildRegistratinMsg"))
 			.process(proxyRegistrationRequestProcessor)
 			.setHeader("req_objbi", simple("${body}"))
 			.marshal(jsonBusinessMessageFormat)
-			.log("${body}")
 
 			.setHeader("hdr_errorlocation", constant("PrxyRoute/saveTabelInit"))
 			.to("seda:savePrxytables")
@@ -146,34 +139,45 @@ public class ProxyRoute extends RouteBuilder {
 		;	
 
 		
-//		from("direct:proxyresolution").routeId("proxyresolution")
-//			
-//			.process(proxyResolutionRequestProcessor)
-//			.setHeader("req_objbi", simple("${body}"))
-//			.marshal(jsonBusinessMessageFormat)
-//
-//			.setHeader("hdr_fullrequestmessage", simple("${body}"))
-//			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//
+		from("direct:proxyresolution").routeId("proxyresolution")
+		
+//			.setHeader("hdr_errorlocation", constant("proxyresolution/InputValidation"))
+//			.process(validatePrxyRegsProcessor)
+
+			.setHeader("hdr_errorlocation", constant("PrxyRoute/BuildRegistratinMsg"))
+			.process(proxyResolutionRequestProcessor)
+			.setHeader("req_objbi", simple("${body}"))
+			.marshal(jsonBusinessMessageFormat)
+	
+			.setHeader("hdr_errorlocation", constant("PrxyRoute/saveTabelInit"))
+			.to("seda:savePrxytables")
+	
+			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+
 //			// kirim ke CI-HUB
-//			.setHeader("HttpMethod", constant("POST"))
-//			.enrich("http:{{bifast.ciconnector-url}}?"
-//					+ "socketTimeout={{bifast.timeout}}&" 
-//					+ "bridgeEndpoint=true",
-//					enrichmentAggregator)
-//			.convertBodyTo(String.class)
-//			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//			.setHeader("hdr_fullresponsemessage", simple("${body}"))
-//
-//			.unmarshal(jsonBusinessMessageFormat)
-//			.setHeader("resp_objbi", simple("${body}"))	
-//					
-//			// prepare untuk response ke channel
-//			.process(proxyResolutionResponseProcessor)
-//			.setHeader("resp_channel", simple("${body}"))
-//			.marshal(jsonChnlProxyResolutionResponseFormat)
-//
-//		;
+			.setHeader("HttpMethod", constant("POST"))
+			.enrich("http:{{bifast.ciconnector-url}}?"
+					+ "socketTimeout={{bifast.timeout}}&" 
+					+ "bridgeEndpoint=true",
+					enrichmentAggregator)
+			.convertBodyTo(String.class)
+			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			.setHeader("hdr_fullresponsemessage", simple("${body}"))
+
+			.unmarshal(jsonBusinessMessageFormat)
+			.setHeader("resp_objbi", simple("${body}"))	
+					
+			// prepare untuk response ke channel
+			.process(proxyResolutionResponseProcessor)
+			.setHeader("resp_channel", simple("${body}"))
+			.marshal(jsonChnlProxyResolutionResponseFormat)
+			.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+
+			// save audit tables
+			.setHeader("hdr_errorlocation", constant("PrxyRoute/updateTable"))
+			.to("seda:savePrxytables?exchangePattern=InOnly")
+
+		;
 
 
 		from("seda:savePrxytables")

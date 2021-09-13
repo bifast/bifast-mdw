@@ -1,8 +1,6 @@
 package bifast.outbound.reversect;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.camel.Exchange;
@@ -17,6 +15,7 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.outbound.config.Config;
+import bifast.outbound.processor.UtilService;
 
 @Component
 public class ReverseCreditTrnRequestProcessor implements Processor {
@@ -27,6 +26,8 @@ public class ReverseCreditTrnRequestProcessor implements Processor {
 	private AppHeaderService appHeaderService;
 	@Autowired
 	private Pacs008MessageService pacs008MessageService;
+	@Autowired
+	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -34,10 +35,14 @@ public class ReverseCreditTrnRequestProcessor implements Processor {
 	    Map<String,Object> out = (Map<String,Object>) exchange.getIn().getHeader("rcv_qryresult");
 	    
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = appHeaderService.initAppHdr((String)out.get("orign_bank"), "pacs.008.001.08", "011", "99");
+		String bizMsgId = utilService.genOfiBusMsgId("011", "99");
+		String msgId = utilService.genMessageId("011");
+		
+		hdr = appHeaderService.getAppHdr((String)out.get("orign_bank"), "pacs.008.001.08", bizMsgId);
 
 		Pacs008Seed seed = new Pacs008Seed();
 		
+		seed.setMsgId(msgId);
 		seed.setAmount((BigDecimal) out.get("amount"));
 		seed.setBizMsgId(hdr.getBizMsgIdr());
 		seed.setCategoryPurpose("99");

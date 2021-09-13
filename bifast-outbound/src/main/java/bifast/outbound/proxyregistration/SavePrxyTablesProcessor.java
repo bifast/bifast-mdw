@@ -12,13 +12,12 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
-import bifast.library.model.DomainCode;
-import bifast.library.model.OutboundMessage;
-import bifast.library.model.ProxyMessage;
-import bifast.library.repository.BankCodeRepository;
-import bifast.library.repository.DomainCodeRepository;
-import bifast.library.repository.OutboundMessageRepository;
-import bifast.library.repository.ProxyMessageRepository;
+import bifast.outbound.model.DomainCode;
+import bifast.outbound.model.OutboundMessage;
+import bifast.outbound.model.ProxyMessage;
+import bifast.outbound.repository.DomainCodeRepository;
+import bifast.outbound.repository.OutboundMessageRepository;
+import bifast.outbound.repository.ProxyMessageRepository;
 
 @Component
 public class SavePrxyTablesProcessor implements Processor {
@@ -28,22 +27,29 @@ public class SavePrxyTablesProcessor implements Processor {
 	@Autowired
 	private ProxyMessageRepository proxyMessageRepo;
 	@Autowired
-	private BankCodeRepository bankCodeRepo;
-	@Autowired
 	private DomainCodeRepository domainCodeRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-
-		System.out.println("di SavePrxyTablesProcessor");
-		
+	
 		BusinessMessage outRequest = exchange.getMessage().getHeader("req_objbi", BusinessMessage.class);
 
 		// JANGAN LANJUT JIKA BELUM LOLOS outRequest Msg
 		if (null == outRequest) 
 			return;
 
-		ChannelProxyRegistrationReq chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChannelProxyRegistrationReq.class);				
+//		ChannelProxyRegistrationReq chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChannelProxyRegistrationReq.class);				
+
+		Object objChannelRequest = exchange.getMessage().getHeader("hdr_channelRequest", Object.class);
+		String msgName = domainCodeRepo.findByGrpAndKey("REQUEST.CLASS", objChannelRequest.getClass().getName()).orElse(new DomainCode()).getValue();
+
+		Method getOrignReffId = objChannelRequest.getClass().getMethod("getOrignReffId", null);
+		String chnlRefId = (String) getOrignReffId.invoke(objChannelRequest, null);
+		Method getChannel =  objChannelRequest.getClass().getMethod("getChannel", null);
+		String channel = (String) getChannel.invoke(objChannelRequest, null);
+		
+		System.out.println(msgName);
+		
 		String encriptedMessage = exchange.getMessage().getHeader("hdr_encrMessage", String.class);
 		
 		OutboundMessage outboundMessage = new OutboundMessage();
@@ -54,7 +60,15 @@ public class SavePrxyTablesProcessor implements Processor {
 		
 		if (listOutboundMsg.size() == 0 ) {
 			System.out.println("Insert table");
-			outboundMessage = insertOutboundMessage(chnlRequest, outRequest, encriptedMessage);
+			
+			outboundMessage.setBizMsgIdr(bizMsgIdr);
+			outboundMessage.setChannelRequestDT(LocalDateTime.now());
+			outboundMessage.setFullRequestMessage(encriptedMessage);
+			outboundMessage.setInternalReffId(chnlRefId);
+			outboundMessage.setChannel(domainCodeRepo.findByGrpAndKey("CHANNEL.TYPE", channel).get().getValue());
+			outboundMessage.setMessageName(msgName);
+
+			outboundMessage = outboundMsgRepo.save(outboundMessage);
 			exchange.getMessage().setHeader("hdr_idtable", outboundMessage.getId());
 
 		}
@@ -71,55 +85,21 @@ public class SavePrxyTablesProcessor implements Processor {
 			String strCiHubResponseTime = exchange.getMessage().getHeader("req_cihubResponseTime", String.class);
 
 			outboundMessage = updateOutboundMessage(listOutboundMsg.get(0), 
-//									chnlRequest, 
-									outResponse,
-									encriptedMessage,
-									strChnlResponseTime,
-									strCiHubRequestTime,
-									strCiHubResponseTime) ;
+													outResponse,
+													encriptedMessage,
+													strChnlResponseTime,
+													strCiHubRequestTime,
+													strCiHubResponseTime) ;
 			
-			saveProxyMessage (outboundMessage,outRequest);
+			if (msgName.equals("Proxy Registration"))
+				saveProxyRegistration (outboundMessage.getId(), outRequest);
+			// TODO save Proxy Resolution
+//			else 
+//				saveProxyResolution(outboundMessage.getId(), outRequest);
 
 		}
 		
 	}
-
-	private OutboundMessage insertOutboundMessage (ChannelProxyRegistrationReq chnlRequest, 
-													BusinessMessage request, 
-													String encriptedMessage) {
-		
-		System.out.println("insert outboundMessage");
-		OutboundMessage outboundMessage = new OutboundMessage();
-		
-		outboundMessage.setBizMsgIdr(request.getAppHdr().getBizMsgIdr());
-		
-		String bic = request.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
-//		outboundMessage.setRecipientBank(bankCodeRepo.findByBicCode(bic).get().getBankCode());
-
-		outboundMessage.setChannelRequestDT(LocalDateTime.now());
-		outboundMessage.setFullRequestMessage(encriptedMessage);
-		outboundMessage.setInternalReffId(chnlRequest.getOrignReffId());
-
-		System.out.println("Xy" + chnlRequest.getChannel());
-		
-		//channel kembalikan keposisi descriptive
-		String chnCode = chnlRequest.getChannel();
-		outboundMessage.setChannel(domainCodeRepo.findByGrpAndKey("CHANNEL.TYPE", chnCode).get().getValue());
-		
-
-		String requestClass = chnlRequest.getClass().getName();
-
-		System.out.println("Class " + requestClass);
-		String msgName = domainCodeRepo.findByGrpAndKey("REQUEST.CLASS", requestClass).orElse(new DomainCode()).getValue();
-		outboundMessage.setMessageName(msgName);
-
-		System.out.println("Xy");
-
-		outboundMessage = outboundMsgRepo.save(outboundMessage);
-
-		return outboundMessage;
-	}
-	 
 	
 	private OutboundMessage updateOutboundMessage (
 										OutboundMessage outboundMessage,
@@ -147,14 +127,7 @@ public class SavePrxyTablesProcessor implements Processor {
 			outboundMessage.setErrorMessage("Timeout terima message dari CI-HUB");
 		}
 		
-		else if (!(null == response.getDocument().getPrxyRegnRspn())) {  
-			outboundMessage.setRespBizMsgId(response.getAppHdr().getBizMsgIdr());
-			outboundMessage.setRespStatus(response.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().value());
-			
-		}			
-	
-		else {  // msg Reject
-					
+		else if (!(null == response.getDocument().getMessageReject())) {
 			String rjctMesg = response.getDocument().getMessageReject().getRsn().getRsnDesc();
 			if (rjctMesg.length() > 400)
 				rjctMesg = rjctMesg.substring(0, 400);
@@ -163,18 +136,26 @@ public class SavePrxyTablesProcessor implements Processor {
 			outboundMessage.setErrorMessage(rjctMesg);
 		}
 		
-		outboundMsgRepo.save(outboundMessage);
-		return outboundMessage;
+		else {  
+			outboundMessage.setRespBizMsgId(response.getAppHdr().getBizMsgIdr());
+			if (!(null == response.getDocument().getPrxyRegnRspn())) 
+				outboundMessage.setRespStatus(response.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().value());
+			else 
+				outboundMessage.setRespStatus(response.getDocument().getPrxyLookUpRspn().getLkUpRspn().getRegnRspn().getPrxRspnSts().value());
+		}			
 		
+		outboundMsgRepo.save(outboundMessage);
+		return outboundMessage;		
 	}
 
 	
-	public void saveProxyMessage (OutboundMessage auditTab, BusinessMessage reqBi) {
+	public void saveProxyResolution (Long outboundMessageId, BusinessMessage reqBi) {
 		ProxyMessage proxyMsg = new ProxyMessage(); 
 		
 		ProxyRegistrationV01 proxyData = reqBi.getDocument().getPrxyRegn();
 		
-		proxyMsg.setLogMessageId(auditTab.getId());
+		proxyMsg.setLogMessageId(outboundMessageId);
+		
 		proxyMsg.setOperationType(proxyData.getRegn().getRegnTp().value());
 		proxyMsg.setAccountName(proxyData.getRegn().getPrxyRegn().getAcct().getNm());
 		proxyMsg.setAccountNumber(proxyData.getRegn().getPrxyRegn().getAcct().getId().getOthr().getId());
@@ -189,9 +170,33 @@ public class SavePrxyTablesProcessor implements Processor {
 		proxyMsg.setScndIdType(proxyData.getRegn().getPrxyRegn().getScndId().getTp());
 		proxyMsg.setScndValue(proxyData.getRegn().getPrxyRegn().getScndId().getVal());
 		proxyMsg.setTownName(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
-
+		
 		proxyMessageRepo.save(proxyMsg);
 	}
 
-	
+	public void saveProxyRegistration (Long outboundMessageId, BusinessMessage reqBi) {
+		ProxyMessage proxyMsg = new ProxyMessage(); 
+		
+		ProxyRegistrationV01 proxyData = reqBi.getDocument().getPrxyRegn();
+		
+		proxyMsg.setLogMessageId(outboundMessageId);
+		
+		proxyMsg.setOperationType(proxyData.getRegn().getRegnTp().value());
+		proxyMsg.setAccountName(proxyData.getRegn().getPrxyRegn().getAcct().getNm());
+		proxyMsg.setAccountNumber(proxyData.getRegn().getPrxyRegn().getAcct().getId().getOthr().getId());
+		proxyMsg.setAccountType(proxyData.getRegn().getPrxyRegn().getAcct().getTp().getPrtry());
+		proxyMsg.setCustomerId(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getId());
+		proxyMsg.setCustomerType(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getTp());
+		
+		proxyMsg.setDisplayName(proxyData.getRegn().getPrxyRegn().getDsplNm());
+		proxyMsg.setProxyType(proxyData.getRegn().getPrxy().getTp());
+		proxyMsg.setProxyValue(proxyData.getRegn().getPrxy().getVal());
+		proxyMsg.setResidentStatus(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts());
+		proxyMsg.setScndIdType(proxyData.getRegn().getPrxyRegn().getScndId().getTp());
+		proxyMsg.setScndValue(proxyData.getRegn().getPrxyRegn().getScndId().getVal());
+		proxyMsg.setTownName(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
+		
+		proxyMessageRepo.save(proxyMsg);
+	}
+
 }

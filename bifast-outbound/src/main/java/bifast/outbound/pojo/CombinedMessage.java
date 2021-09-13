@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 import bifast.library.iso20022.custom.BusinessMessageWrap;
-import bifast.outbound.accountenquiry.ChannelAccountEnquiryReq;
-import bifast.outbound.credittransfer.ChannelCreditTransferRequest;
-import bifast.outbound.ficredittransfer.ChannelFICreditTransferReq;
-import bifast.outbound.paymentstatus.ChnlPaymentStatusRequest;
-import bifast.outbound.proxyregistration.ChannelProxyRegistrationReq;
+import bifast.outbound.accountenquiry.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
+import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
+import bifast.outbound.paymentstatus.ChnlPaymentStatusRequestPojo;
+import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 
 @JsonRootName("CombinedMessages")
@@ -24,46 +24,46 @@ import bifast.outbound.reversect.ChannelReverseCreditTransferRequest;
 public class CombinedMessage {
 
 	@JsonProperty("AccountEnquiryRequest")
-	private ChannelAccountEnquiryReq accountEnquiryRequest;
+	private ChnlAccountEnquiryRequestPojo accountEnquiryRequest;
 	@JsonProperty("CreditTransferRequest")
-	private ChannelCreditTransferRequest creditTransferRequest;
+	private ChnlCreditTransferRequestPojo creditTransferRequest;
 	@JsonProperty("FICreditTransferRequest")
-	private ChannelFICreditTransferReq fiCreditTransferRequest;
+	private ChnlFICreditTransferRequestPojo fiCreditTransferRequest;
 	@JsonProperty("PaymentStatusRequest")
-	private ChnlPaymentStatusRequest paymentStatusRequest;
+	private ChnlPaymentStatusRequestPojo paymentStatusRequest;
 	@JsonProperty("ReverseCreditTransferRequest")
 	private ChannelReverseCreditTransferRequest reverseCreditTransferRequest;
 	
 	@JsonProperty("ProxyRegistrationRequest")
-	private ChannelProxyRegistrationReq proxyRegistrationRequest;
+	private ChnlProxyRegistrationRequestPojo proxyRegistrationRequest;
 	
 	@JsonProperty("OutboundMessage")
 	private BusinessMessageWrap outboundMessage;
 	@JsonProperty("ResponseMessage")
 	private BusinessMessageWrap responseMessage;
 
-	public ChannelAccountEnquiryReq getAccountEnquiryRequest() {
+	public ChnlAccountEnquiryRequestPojo getAccountEnquiryRequest() {
 		return accountEnquiryRequest;
 	}
-	public void setAccountEnquiryRequest(ChannelAccountEnquiryReq accountEnquiryRequest) {
+	public void setAccountEnquiryRequest(ChnlAccountEnquiryRequestPojo accountEnquiryRequest) {
 		this.accountEnquiryRequest = accountEnquiryRequest;
 	}
-	public ChannelCreditTransferRequest getCreditTransferRequest() {
+	public ChnlCreditTransferRequestPojo getCreditTransferRequest() {
 		return creditTransferRequest;
 	}
-	public void setCreditTransferRequest(ChannelCreditTransferRequest creditTransferRequest) {
+	public void setCreditTransferRequest(ChnlCreditTransferRequestPojo creditTransferRequest) {
 		this.creditTransferRequest = creditTransferRequest;
 	}
-	public ChannelFICreditTransferReq getFiCreditTransferRequest() {
+	public ChnlFICreditTransferRequestPojo getFiCreditTransferRequest() {
 		return fiCreditTransferRequest;
 	}
-	public void setFiCreditTransferRequest(ChannelFICreditTransferReq fiCreditTransferRequest) {
+	public void setFiCreditTransferRequest(ChnlFICreditTransferRequestPojo fiCreditTransferRequest) {
 		this.fiCreditTransferRequest = fiCreditTransferRequest;
 	}
-	public ChnlPaymentStatusRequest getPaymentStatusRequest() {
+	public ChnlPaymentStatusRequestPojo getPaymentStatusRequest() {
 		return paymentStatusRequest;
 	}
-	public void setPaymentStatusRequest(ChnlPaymentStatusRequest paymentStatusRequest) {
+	public void setPaymentStatusRequest(ChnlPaymentStatusRequestPojo paymentStatusRequest) {
 		this.paymentStatusRequest = paymentStatusRequest;
 	}
 	public ChannelReverseCreditTransferRequest getReverseCreditTransferRequest() {
@@ -84,10 +84,10 @@ public class CombinedMessage {
 	public void setResponseMessage(BusinessMessageWrap responseMessage) {
 		this.responseMessage = responseMessage;
 	}
-	public ChannelProxyRegistrationReq getProxyRegistrationRequest() {
+	public ChnlProxyRegistrationRequestPojo getProxyRegistrationRequest() {
 		return proxyRegistrationRequest;
 	}
-	public void setProxyRegistrationRequest(ChannelProxyRegistrationReq proxyRegistrationRequest) {
+	public void setProxyRegistrationRequest(ChnlProxyRegistrationRequestPojo proxyRegistrationRequest) {
 		this.proxyRegistrationRequest = proxyRegistrationRequest;
 	}
 

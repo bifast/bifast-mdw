@@ -2,6 +2,7 @@ package bifast.library.iso20022.service;
 
 public class Proxy001Seed {
 	
+	private String msgId;
 	private String trnType; 
 	private String bizMsgId;
 	
@@ -24,6 +25,12 @@ public class Proxy001Seed {
     protected String cstmrRsdntSts;
     protected String cstmrTwnNm;
     
+	public String getMsgId() {
+		return msgId;
+	}
+	public void setMsgId(String msgId) {
+		this.msgId = msgId;
+	}
 	public String getTrnType() {
 		return trnType;
 	}

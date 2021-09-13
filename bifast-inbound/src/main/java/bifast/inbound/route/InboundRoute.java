@@ -11,11 +11,9 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.inbound.processor.AccountEnquiryResponseProcessor;
 import bifast.inbound.processor.CheckMessageTypeProcessor;
-import bifast.inbound.processor.CombineLogMessageProcessor;
 import bifast.inbound.processor.CreditTransferResponseProcessor;
 import bifast.inbound.processor.FICrdtTrnResponseProcessor;
 import bifast.inbound.processor.ReverseCTResponseProcessor;
-import bifast.inbound.processor.SaveTracingTableProcessor;
 import bifast.inbound.processor.SaveInboundMessageProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
@@ -25,10 +23,6 @@ public class InboundRoute extends RouteBuilder {
 
 	@Autowired
 	private SaveInboundMessageProcessor saveInboundMessageProcessor;
-	@Autowired
-	private CombineLogMessageProcessor combineMesgProcessor;
-	@Autowired
-	private SaveTracingTableProcessor saveTracingTableProcessor;
 	@Autowired
 	private CheckMessageTypeProcessor checkMsgTypeProcessor;
 	@Autowired
@@ -63,8 +57,7 @@ public class InboundRoute extends RouteBuilder {
 				.description("REST listener untuk terima message")
 				.consumes("application/json")
 				.to("direct:receive")
-			;
-		
+		;	
 		
 		from("direct:receive").routeId("receive")
 			.convertBodyTo(String.class)

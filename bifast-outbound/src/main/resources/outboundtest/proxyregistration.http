@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "ProxyRegistrationRequest": {
-        "orignReffId": "4631",
+        "orignReffId": "24563",
         "channel" : "Internet Banking",
         "proxyTp" : "02",
         "proxyVal" : "frans.mazhar@gmail.com",

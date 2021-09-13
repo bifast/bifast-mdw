@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.model.DomainCode;
-import bifast.library.model.OutboundMessage;
-import bifast.library.repository.BankCodeRepository;
-import bifast.library.repository.DomainCodeRepository;
-import bifast.library.repository.OutboundMessageRepository;
+import bifast.outbound.model.DomainCode;
+import bifast.outbound.model.OutboundMessage;
+import bifast.outbound.repository.BankCodeRepository;
+import bifast.outbound.repository.DomainCodeRepository;
+import bifast.outbound.repository.OutboundMessageRepository;
 
 @Component
 public class SaveTableAwalProcessor implements Processor {

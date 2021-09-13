@@ -23,12 +23,20 @@ public class FICreditTransferResponseProcessor implements Processor{
 	private AppHeaderService hdrService;
 	@Autowired
 	private Pacs002MessageService pacs002Service;
-	
+	@Autowired
+	private UtilService utilService;
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
+		String bizMsgId = utilService.genRfiBusMsgId("019", "99");
+		String msgId = utilService.genMessageId("019");
+
 		Random rand = new Random();
 		Pacs002Seed seed = new Pacs002Seed();
+		
+		seed.setMsgId(msgId);
+		
         int posbl = rand.nextInt(10);
 		if (posbl == 0) {
 			seed.setStatus("RJCT");
@@ -47,8 +55,8 @@ public class FICreditTransferResponseProcessor implements Processor{
 		FIToFIPaymentStatusReportV10 response = pacs002Service.fIFICreditTransferRequestResponse(seed, msg);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.initAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", "019", "99");
+		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
+									"pacs.002.001.10", bizMsgId);
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);
 		BusinessMessage busMesg = new BusinessMessage();

@@ -32,9 +32,7 @@ import bifast.library.iso20022.prxy001.ScndIdDefinition1;
 @Service
 public class Proxy001MessageService {
 
-	@Autowired
-	private UtilService utilService;
-	
+
 	@Autowired
 	private LibConfig config;
 
@@ -42,11 +40,11 @@ public class Proxy001MessageService {
 			throws DatatypeConfigurationException {
 		
 		ProxyRegistrationV01 proxy001 = new ProxyRegistrationV01();
-		String msgId = utilService.genMessageId(seed.getTrnType());
+//		String msgId = utilService.genMessageId(seed.getTrnType());
 		
 		// GrpHdr
 		GroupHeader59 grpHdr = new GroupHeader59();
-		grpHdr.setMsgId(msgId);
+		grpHdr.setMsgId(seed.getMsgId());
 		
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);

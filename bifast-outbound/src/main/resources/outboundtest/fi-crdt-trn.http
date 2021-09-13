@@ -4,10 +4,10 @@ Content-Type: application/json
 
 {
   "FICreditTransferRequest" : {
-    "orignReffId" : "1176564",
-    "channel" : "01",
-    "amount" : 60030700,
-    "recptBank" : "FASTIDJA",
+    "orignReffId" : "1190",
+    "channel" : "Over the Counter",
+    "amount" : 850000,
+    "recptBank" : "014",
     "paymentInfo" : "Untuk jalan jalan"
   }
 }

@@ -21,20 +21,23 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 
 		else if (!(null == req.getCreditTransferRequest())) {
 			exchange.getMessage().setHeader("hdr_msgType", "crdttrns");
-			exchange.getMessage().setHeader("hdr_channelRequest", req.getCreditTransferRequest());
-			exchange.getMessage().setHeader("rcv_intrnRefId", req.getCreditTransferRequest().getOrignReffId());
+//			exchange.getMessage().setHeader("hdr_channelRequest", req.getCreditTransferRequest());
+//			exchange.getMessage().setHeader("rcv_intrnRefId", req.getCreditTransferRequest().getOrignReffId());
+			exchange.getMessage().setBody(req.getCreditTransferRequest());
 		}
 		
 		else if  (!(null == req.getFiCreditTransferRequest())) {
 			exchange.getMessage().setHeader("hdr_msgType", "ficrdttrns");
-			exchange.getMessage().setHeader("hdr_channelRequest", req.getFiCreditTransferRequest());
-			exchange.getMessage().setHeader("rcv_intrnRefId", req.getFiCreditTransferRequest().getOrignReffId());
+//			exchange.getMessage().setHeader("hdr_channelRequest", req.getFiCreditTransferRequest());
+//			exchange.getMessage().setHeader("rcv_intrnRefId", req.getFiCreditTransferRequest().getOrignReffId());
+			exchange.getMessage().setBody(req.getFiCreditTransferRequest());
 		}
 		
 		else if (!(null == req.getPaymentStatusRequest())) {
 			exchange.getMessage().setHeader("hdr_msgType", "pymtsts");
-			exchange.getMessage().setHeader("hdr_channelRequest", req.getPaymentStatusRequest());
-			exchange.getMessage().setHeader("rcv_intrnRefId", req.getPaymentStatusRequest().getOrignReffId());
+//			exchange.getMessage().setHeader("hdr_channelRequest", req.getPaymentStatusRequest());
+//			exchange.getMessage().setHeader("rcv_intrnRefId", req.getPaymentStatusRequest().getOrignReffId());
+			exchange.getMessage().setBody(req.getPaymentStatusRequest());
 		}
 		
 //		else if (!(null == req.getReverseCreditTransferRequest())) {
@@ -47,13 +50,13 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 //			exchange.getMessage().setHeader("hdr_channelRequest", req.getProxyRegistrationReq());
 			exchange.getMessage().setBody(req.getProxyRegistrationReq());
 
-			exchange.getMessage().setHeader("rcv_intrnRefId", req.getProxyRegistrationReq().getOrignReffId());
+//			exchange.getMessage().setHeader("rcv_intrnRefId", req.getProxyRegistrationReq().getOrignReffId());
 		}
 
 		else if (!(null == req.getProxyResolutionReq())) {
 			exchange.getMessage().setHeader("hdr_msgType", "prxyrslt");
-			exchange.getMessage().setHeader("hdr_channelRequest", req.getProxyResolutionReq());
-			exchange.getMessage().setHeader("rcv_intrnRefId", req.getProxyResolutionReq().getOrignReffId());
+//			exchange.getMessage().setHeader("hdr_channelRequest", req.getProxyResolutionReq());
+			exchange.getMessage().setBody(req.getProxyResolutionReq());
 		}
 
 	}

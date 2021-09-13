@@ -13,6 +13,7 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Proxy001MessageService;
 import bifast.library.iso20022.service.Proxy001Seed;
 import bifast.outbound.config.Config;
+import bifast.outbound.processor.UtilService;
 
 @Component
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
@@ -24,21 +25,27 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 	private AppHeaderService appHeaderService;
 	@Autowired
 	private Proxy001MessageService proxy001MessageService;
-	
+	@Autowired
+	private UtilService utilService;
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelProxyRegistrationReq chnReq = exchange.getIn().getBody(ChannelProxyRegistrationReq.class);
-
-		System.out.println("ProxyRegistrationRequestProcessor");
+		ChnlProxyRegistrationRequestPojo chnReq = exchange.getIn().getBody(ChnlProxyRegistrationRequestPojo.class);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = appHeaderService.initAppHdr(config.getBicode(), "prxy.001.001.01", "710", chnReq.getChannel());
+		
+		String trxType = "710";
+		String bizMsgId = utilService.genOfiBusMsgId(trxType, chnReq.getChannel());
+		String msgId = utilService.genMessageId(trxType);
+		
+		hdr = appHeaderService.getAppHdr(config.getBicode(), "prxy.001.001.01", bizMsgId);
 		
 		Proxy001Seed seedProxyRegis = new Proxy001Seed();
 		
+		seedProxyRegis.setMsgId(msgId);
 		seedProxyRegis.setBizMsgId(hdr.getBizMsgIdr());
-		seedProxyRegis.setTrnType("710");
+		seedProxyRegis.setTrnType(trxType);
 		seedProxyRegis.setProxyTp(chnReq.getProxyTp());
 		seedProxyRegis.setProxyVal(chnReq.getProxyVal());
 		seedProxyRegis.setDsplNm(chnReq.getDisplayName());
@@ -61,8 +68,6 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 	
 		exchange.getIn().setBody(busMsg);
 		
-		System.out.println("ProxyRegistrationRequestProcessor out");
-
 	}
 
 }

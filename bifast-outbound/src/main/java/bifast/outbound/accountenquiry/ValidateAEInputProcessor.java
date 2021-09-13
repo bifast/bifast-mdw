@@ -5,10 +5,11 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.model.BankCode;
-import bifast.library.model.DomainCode;
-import bifast.library.repository.BankCodeRepository;
-import bifast.library.repository.DomainCodeRepository;
+import bifast.outbound.model.BankCode;
+import bifast.outbound.model.DomainCode;
+import bifast.outbound.repository.BankCodeRepository;
+import bifast.outbound.repository.DomainCodeRepository;
+
 
 @Component
 public class ValidateAEInputProcessor implements Processor  {
@@ -21,7 +22,7 @@ public class ValidateAEInputProcessor implements Processor  {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelAccountEnquiryReq acctEnqReq = exchange.getIn().getBody(ChannelAccountEnquiryReq.class);
+		ChnlAccountEnquiryRequestPojo acctEnqReq = exchange.getIn().getBody(ChnlAccountEnquiryRequestPojo.class);
 		System.out.println(acctEnqReq.getChannel());
 		// periksa channel
 		exchange.getMessage().setHeader("hdr_errorlocation", "AccountEnquiryRequest/channel");
@@ -35,8 +36,8 @@ public class ValidateAEInputProcessor implements Processor  {
 			
 		//periksa kode bank
 		exchange.getMessage().setHeader("hdr_errorlocation", "AccountEnquiryRequest/recipientBank");
-		BankCode bankCode = bankCodeRepo.findById(acctEnqReq.getRecipientBank()).orElseThrow();
-		acctEnqReq.setRecipientBank(bankCode.getBicCode());
+		BankCode bankCode = bankCodeRepo.findById(acctEnqReq.getRecptBank()).orElseThrow();
+		acctEnqReq.setRecptBank(bankCode.getBicCode());
 	}
 
 }

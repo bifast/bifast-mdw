@@ -12,6 +12,7 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.outbound.config.Config;
+import bifast.outbound.processor.UtilService;
 
 @Component
 public class CreditTransferRequestProcessor implements Processor {
@@ -22,16 +23,22 @@ public class CreditTransferRequestProcessor implements Processor {
 	private AppHeaderService appHeaderService;
 	@Autowired
 	private Pacs008MessageService pacs008MessageService;
+	@Autowired
+	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChannelCreditTransferRequest chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChannelCreditTransferRequest.class);
+		ChnlCreditTransferRequestPojo chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChnlCreditTransferRequestPojo.class);
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = appHeaderService.initAppHdr(chnReq.getRecptBank(), "pacs.008.001.08", "010", chnReq.getChannel());
+		String bizMsgId = utilService.genOfiBusMsgId("010", chnReq.getChannel());
+		String msgId = utilService.genMessageId("010");
+
+		hdr = appHeaderService.getAppHdr(chnReq.getRecptBank(), "pacs.008.001.08", bizMsgId);
 
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
+		seedCreditTrn.setMsgId(msgId);
 		seedCreditTrn.setAmount(chnReq.getAmount());
 		seedCreditTrn.setBizMsgId(hdr.getBizMsgIdr());
 		seedCreditTrn.setCategoryPurpose(chnReq.getCategoryPurpose());

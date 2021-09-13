@@ -24,20 +24,17 @@ import bifast.library.iso20022.prxy003.ProxyLookUpV01;
 public class Proxy003MessageService {
 
 	@Autowired
-	private UtilService utilService;
-	
-	@Autowired
 	private LibConfig config;
 
 	public ProxyLookUpV01 proxyResolutionRequest (Proxy003Seed seed) 
 			throws DatatypeConfigurationException {
 			
 		ProxyLookUpV01 proxy003 = new ProxyLookUpV01();
-		String msgId = utilService.genMessageId(seed.getTrnType());
+//		String msgId = utilService.genMessageId(seed.getTrnType());
 		
 		// GrpHdr
 		GroupHeader69 grpHdr = new GroupHeader69();
-		grpHdr.setMsgId(msgId);
+		grpHdr.setMsgId(seed.getMsgId());
 		
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
@@ -60,7 +57,7 @@ public class Proxy003MessageService {
 
 		ProxyLookUp11 prxyOnly = new ProxyLookUp11();
 		prxyOnly.setLkUpTp(seed.getLookupType());
-		prxyOnly.setId(msgId);
+		prxyOnly.setId(seed.getMsgId());
 		
 		ProxyDefinition1 prxyRtrvl = new ProxyDefinition1();
 		prxyRtrvl.setTp(seed.getProxyType());

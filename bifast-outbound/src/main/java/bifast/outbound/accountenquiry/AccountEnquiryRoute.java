@@ -1,5 +1,7 @@
 package bifast.outbound.accountenquiry;
 
+import java.net.SocketTimeoutException;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
@@ -28,15 +30,16 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 
-	JacksonDataFormat jsonChnlAccountEnqrRespFormat = new JacksonDataFormat(ChnlAccountEnquiryResp.class);
-	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
-	JacksonDataFormat faultJDF = new JacksonDataFormat(ChannelFaultResponse.class);
-
 	@Autowired
 	private SaveAETablesProcessor saveAETableProcessor;
 	@Autowired
 	private ValidateAEInputProcessor validateInputProcessor;
-	
+
+	JacksonDataFormat jsonChnlAccountEnqrRespFormat = new JacksonDataFormat(ChnlAccountEnquiryResponsePojo.class);
+	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
+	JacksonDataFormat faultJDF = new JacksonDataFormat(ChannelFaultResponse.class);
+
+
 	private void configureJsonDataFormat() {
 
 		jsonChnlAccountEnqrRespFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
@@ -74,79 +77,88 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.marshal(faultJDF)
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
+			.removeHeaders("ae_*")
 	    	.handled(true)
       	;
 
 		from("direct:acctenqr").routeId("direct:acctenqr")
 			
 			.log("direct:acctenqr")
-			.log("${body}")
 			.setHeader("hdr_errorlocation", constant("AERoute/Cekpoint 1"))
 			.process(validateInputProcessor)
 			
 			.setHeader("hdr_errorlocation", constant("AERoute/AEMsgConstructProcessor"))
 			.process(AEMsgConstructProcessor)
 			.setHeader("req_objbi", simple("${body}"))
+			
 			.marshal(businessMessageJDF)
-
 			.setHeader("hdr_errorlocation", constant("AERoute/saveTabelInit"))
+
+			.to("seda:encryptAEbody")
 			.to("seda:saveAEtables")
 			
 			
 			// kirim ke CI-HUB
 			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//			.doTry()
-				
-			.setHeader("hdr_errorlocation", constant("AERoute/sendCIHub"))
-
-			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:{{bifast.ciconnector-url}}?"
-					+ "socketTimeout={{bifast.timeout}}&" 
-					+ "bridgeEndpoint=true",
-					enrichmentAggregator)
-			.convertBodyTo(String.class)
-			.setHeader("hdr_fullresponsemessage", simple("${body}"))
-
-			.setHeader("hdr_errorlocation", constant("AERoute/Cekpoint 12"))
-
-			.unmarshal(businessMessageJDF)
-			.setHeader("resp_objbi", simple("${body}"))
-			
-			// prepare untuk response ke channel
-			.setHeader("hdr_errorlocation", constant("AERoute/ProcessResponse"))
-			.process(accountEnqrResponseProcessor)
-			.setHeader("resp_channel", simple("${body}"))
-			
-//			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-//	    		.log(LoggingLevel.ERROR, "Timeout process Account Enquiry ref:${header.rcv_channel.orignReffId}")
-//		    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
-//				.process(faultProcessor)
-//				.setHeader("resintrnRefIdp_channel", simple("${body}"))
-//	
-//			.end()
-			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			.doTry()
+				.setHeader("hdr_errorlocation", constant("AERoute/sendCIHub"))
 	
-			.marshal(jsonChnlAccountEnqrRespFormat)
-			.setHeader("hdr_errorlocation", constant("AERoute/Cekpoint 20"))
-			
-			.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+				.setHeader("HttpMethod", constant("POST"))
+				.enrich("http:{{bifast.ciconnector-url}}?"
+						+ "socketTimeout={{bifast.timeout}}&" 
+						+ "bridgeEndpoint=true",
+						enrichmentAggregator)
+				.convertBodyTo(String.class)
+				.to("seda:encryptAEbody")
+	
+				.setHeader("hdr_fullresponsemessage", simple("${body}"))
+	
+				.setHeader("hdr_errorlocation", constant("AERoute/processResponse"))
+	
+				.unmarshal(businessMessageJDF)
+				.setHeader("resp_objbi", simple("${body}"))
+				
+				// prepare untuk response ke channel
+				.process(accountEnqrResponseProcessor)
+				
+				.setHeader("resp_channel", simple("${body}"))
+				.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+				
+				.marshal(jsonChnlAccountEnqrRespFormat)
+				.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
-			// save audit tables
-			.setHeader("hdr_errorlocation", constant("AERoute/updateTable"))
-			.to("seda:saveAEtables?exchangePattern=InOnly")
+				// save audit tables
+				.setHeader("hdr_errorlocation", constant("AERoute/updateTable"))
+				.to("seda:saveAEtables?exchangePattern=InOnly")
+
+			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
+	    		.log(LoggingLevel.ERROR, "Timeout process Account Enquiry ref:${header.hdr_channelRequest.channelRefId}")
+		    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
+				.to("sql:update outbound_message set resp_status = 'ERROR', "
+						+ " error_msg= 'Timeout' "
+						+ "where id= :#${header.hdr_idtable}  ")
+
+				.process(faultProcessor)
+				.marshal(faultJDF)
+			.endDoTry().end()
+				
+			.removeHeaders("ae_*")
 
 		;
 
-		from("seda:saveAEtables")
-			.setHeader("hdr_tmp", simple("${body}"))
+		from("seda:encryptAEbody")
+			.setHeader("ae_tmp", simple("${body}"))
 			.marshal().zipDeflater()
 			.marshal().base64()
-			.setHeader("hdr_encrMessage", simple("${body}"))
+			.setHeader("ae_encrMessage", simple("${body}"))
+			.setBody(simple("${header.ae_tmp}"))
+			.removeHeader("ae_tmp")
+		;
+		from("seda:saveAEtables")
 			.process(saveAETableProcessor)
-			.setBody(simple("${header.hdr_tmp}"))
-			.removeHeader("hdr_tmp")
-			;
+		;
 
+		
 	}
 
 }

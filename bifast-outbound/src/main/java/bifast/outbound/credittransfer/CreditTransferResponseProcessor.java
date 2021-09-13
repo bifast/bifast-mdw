@@ -15,16 +15,24 @@ public class CreditTransferResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		BusinessMessage obj_crdtrnResp = exchange.getIn().getBody(BusinessMessage.class);
+		BusinessMessage obj_crdtrnResp = exchange.getMessage().getHeader("ct_objresponsebi", BusinessMessage.class);
 
-		ChannelCreditTransferRequest chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChannelCreditTransferRequest.class);
+		ChnlCreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlCreditTransferRequestPojo.class);
 
-		ChnlCreditTransferResponse chnResponse = new ChnlCreditTransferResponse();
+		Integer lastHttpResponse = (Integer) exchange.getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE);
+		if ((!(null==lastHttpResponse)) && (lastHttpResponse == 504)) {
+			ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
+			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
+			chnResponse.setReason("Tidak terima response dari CI-Connector");
+			chnResponse.setStatus("Timeout");
+			exchange.getIn().setBody(chnResponse);
 
-		
-		if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
+		}
+
+		else if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 
 			PaymentTransaction110 biResp = obj_crdtrnResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
+			ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
 
 			// from CI-HUB response
 			chnResponse.setOrignReffId(chnRequest.getOrignReffId());

@@ -77,12 +77,13 @@ public class CiHubRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
 			.log("${body}")
-			.setHeader("delay", simple("${random(500,2000)}"))
+			.setHeader("delay", simple("${random(200,3000)}"))
 			.delay(simple("${header.delay}"))
 			.log("end-delay")
 
 			.unmarshal(jsonBusinessMessageDataFormat)
 			.process(checkMessageTypeProcessor)
+			.log("${header.msgType}")
 
 			.choice()
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")
@@ -95,7 +96,11 @@ public class CiHubRoute extends RouteBuilder {
 					.process(fICreditTransferResponseProcessor)
 
 				.when().simple("${header.msgType} == 'PaymentStatusRequest'")
+					.log("Akan proses Payment Status")
 					.process(paymentStatusResponseProcessor)
+					.unmarshal().base64()
+					.unmarshal().zipDeflater()
+					.unmarshal(jsonBusinessMessageDataFormat)
 
 				.when().simple("${header.msgType} == 'ReverseCreditTransferRequest'")
 					.process(creditTransferResponseProcessor)
@@ -104,8 +109,9 @@ public class CiHubRoute extends RouteBuilder {
 					.process(proxyRegistrationResponseProcessor)
 
 				.when().simple("${header.msgType} == 'ProxyResolutionRequest'")
+					.log("ProxyResolutionRequest")
 					.process(proxyResolutionResponseProcessor)
-
+					.unmarshal(jsonBusinessMessageDataFormat)
 				.otherwise()	
 					.log("Other message")
 			.end()
@@ -136,6 +142,7 @@ public class CiHubRoute extends RouteBuilder {
 		.log("Response dari mock")
 		.log("${body}")
 		.removeHeader("msgType")
+		
 	;
 
 

@@ -17,13 +17,13 @@ public class AccountEnquiryResponseProcessor implements Processor {
 
 		BusinessMessage busMesg = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
 		
-		ChannelAccountEnquiryReq chnReq = exchange.getMessage().getHeader("hdr_channelRequest",ChannelAccountEnquiryReq.class);
+		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("hdr_channelRequest",ChnlAccountEnquiryRequestPojo.class);
 		
 		if (null == busMesg.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 			
 			PaymentTransaction110 biResp = busMesg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 	
-			ChnlAccountEnquiryResp chnResp = new ChnlAccountEnquiryResp();
+			ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
 			
 			chnResp.setOrignReffId(chnReq.getChannelRefId());
 			

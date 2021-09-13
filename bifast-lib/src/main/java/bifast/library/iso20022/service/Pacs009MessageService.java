@@ -6,7 +6,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.pacs009.ActiveCurrencyAndAmount;
@@ -26,18 +25,14 @@ import bifast.library.iso20022.pacs009.SettlementMethod1Code;
 @Service
 public class Pacs009MessageService {
 	
-	@Autowired
-	private UtilService utilService;
-
 	public FinancialInstitutionCreditTransferV09 creditTransferRequest (Pacs009Seed seed) 
 			throws DatatypeConfigurationException {
 		
 		FinancialInstitutionCreditTransferV09 pacs009 = new FinancialInstitutionCreditTransferV09();
-		String msgId = utilService.genMessageId(seed.getTrnType());
 
 		// GrpHdr
 		GroupHeader93 grpHdr = new GroupHeader93();
-		grpHdr.setMsgId(msgId);
+		grpHdr.setMsgId(seed.getMsgId());
 
 		GregorianCalendar gcal = new GregorianCalendar();
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
@@ -55,7 +50,7 @@ public class Pacs009MessageService {
 		// CdtTrfTxInf / PmtId
 		PaymentIdentification13 pmtId = new PaymentIdentification13();
 		pmtId.setEndToEndId(seed.getBizMsgId());
-		pmtId.setTxId(msgId);
+		pmtId.setTxId(seed.getMsgId());
 
 		CreditTransferTransaction44 cdtTrfTx = new CreditTransferTransaction44();
 		cdtTrfTx.setPmtId(pmtId);

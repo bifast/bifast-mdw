@@ -15,18 +15,30 @@ public class FICreditTransferResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		ChannelFICreditTransferReq chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChannelFICreditTransferReq.class);
-
-		BusinessMessage obj_crdtrnResp = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
+		System.out.println("FICreditTransferResponseProcessor");
 		
-		if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
-			PaymentTransaction110 biResp = obj_crdtrnResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
+		ChnlFICreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlFICreditTransferRequestPojo.class);
 
-			ChnlFiCreditTransferResponse chnResponse = new ChnlFiCreditTransferResponse();
+		BusinessMessage obj_ficrdtrnResp = exchange.getMessage().getHeader("fict_objresponsebi", BusinessMessage.class);
+		
+		Integer lastHttpResponse = (Integer) exchange.getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE);
+		if ((!(null==lastHttpResponse)) && (lastHttpResponse == 504)) {
+			ChnlFICreditTransferResponsePojo chnResponse = new ChnlFICreditTransferResponsePojo();
+			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
+			chnResponse.setReason("Tidak terima response dari CI-Connector");
+			chnResponse.setStatus("Timeout");
+			exchange.getIn().setBody(chnResponse);
+
+		}
+		
+		else if (null == obj_ficrdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
+			PaymentTransaction110 biResp = obj_ficrdtrnResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
+
+			ChnlFICreditTransferResponsePojo chnResponse = new ChnlFICreditTransferResponsePojo();
 			
 			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
 			// from CI-HUB response
-			chnResponse.setBizMsgId(obj_crdtrnResp.getAppHdr().getBizMsgIdr());
+			chnResponse.setBizMsgId(obj_ficrdtrnResp.getAppHdr().getBizMsgIdr());
 			chnResponse.setStatus(biResp.getTxSts());
 			chnResponse.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
 			
@@ -34,7 +46,7 @@ public class FICreditTransferResponseProcessor implements Processor {
 
 		}
 		else {   // ternyata berupa message reject
-			MessageRejectV01 rejectResp = obj_crdtrnResp.getDocument().getMessageReject();
+			MessageRejectV01 rejectResp = obj_ficrdtrnResp.getDocument().getMessageReject();
 
 			ChannelReject reject = new ChannelReject();
 			
