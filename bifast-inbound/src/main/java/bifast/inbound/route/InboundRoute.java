@@ -9,11 +9,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import bifast.inbound.processor.AccountEnquiryResponseProcessor;
+import bifast.inbound.processor.AccountEnquiryProcessor;
 import bifast.inbound.processor.CheckMessageTypeProcessor;
-import bifast.inbound.processor.CreditTransferResponseProcessor;
-import bifast.inbound.processor.FICrdtTrnResponseProcessor;
-import bifast.inbound.processor.ReverseCTResponseProcessor;
+import bifast.inbound.processor.CreditTransferProcessor;
+import bifast.inbound.processor.FICreditTransferProcessor;
 import bifast.inbound.processor.SaveInboundMessageProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
@@ -26,13 +25,11 @@ public class InboundRoute extends RouteBuilder {
 	@Autowired
 	private CheckMessageTypeProcessor checkMsgTypeProcessor;
 	@Autowired
-	private FICrdtTrnResponseProcessor fiCrdtTrnResponseProcessor;
+	private FICreditTransferProcessor fICreditTransferProcessor;
 	@Autowired
-	private AccountEnquiryResponseProcessor acctEnqResponseProcessor;
+	private AccountEnquiryProcessor accountEnquiryProcessor;
 	@Autowired
-	private CreditTransferResponseProcessor crdtTrnResponseProcessor;
-	@Autowired
-	private ReverseCTResponseProcessor reverseCTResponseProcessor;
+	private CreditTransferProcessor creditTransferProcessor;
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -85,23 +82,24 @@ public class InboundRoute extends RouteBuilder {
 					
 				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
 					.log("akan kirim response account enquiry")
-					.process(acctEnqResponseProcessor)
+					.process(accountEnquiryProcessor)
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
-				.when().simple("${header.hdr_msgType} == '010'")
-					.log("akan kirim response Credit Transfer Request")
-					.process(crdtTrnResponseProcessor)
+				.when().simple("${header.hdr_msgType} == '010'")    // terima credit transfer
+					.log("akan proses Credit Transfer Request")
+					.process(creditTransferProcessor)
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
-				.when().simple("${header.hdr_msgType} == '019'")
-					.log("akan proses FI to FI Reversal Credit Transfer")
-					.process(fiCrdtTrnResponseProcessor)
-					.setHeader("hdr_toBIobj", simple("${body}"))
-
-				.when().simple("${header.hdr_msgType} == '011'")
+				.when().simple("${header.hdr_msgType} == '011'")     // reverse CT
 					.log("akan proses Reversal Credit Transfer Request")
-					.process(reverseCTResponseProcessor)
+					.process(creditTransferProcessor)
 					.setHeader("hdr_toBIobj", simple("${body}"))
+
+				.when().simple("${header.hdr_msgType} == '019'")     // FI CT
+					.log("akan proses FI to FI Reversal Credit Transfer")
+					.process(fICreditTransferProcessor)
+					.setHeader("hdr_toBIobj", simple("${body}"))
+
 
 //				.when().simple("${header.rcv_msgtype} == 'SYSNOTIF'")
 //					.log("akan proses System Notification")

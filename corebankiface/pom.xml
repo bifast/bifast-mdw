@@ -5,12 +5,12 @@
 	
 	<parent>
 		<groupId>fransmz</groupId>
-		<artifactId>bifast-parent</artifactId>
+		<artifactId>bifast-corebank</artifactId>
 		<version>0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> 
+		<relativePath/> 
 	</parent>
 	
-	<groupId>fransmz</groupId>
+	<groupId>komi</groupId>
 	<artifactId>corebankiface</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<name>corebankiface</name>

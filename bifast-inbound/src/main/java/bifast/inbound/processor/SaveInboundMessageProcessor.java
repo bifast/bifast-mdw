@@ -8,10 +8,12 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.model.AccountEnquiry;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.model.DomainCode;
 import bifast.inbound.model.InboundMessage;
 import bifast.inbound.model.Settlement;
+import bifast.inbound.repository.AccountEnquiryRepository;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.repository.DomainCodeRepository;
 import bifast.inbound.repository.InboundMessageRepository;
@@ -19,7 +21,9 @@ import bifast.inbound.repository.SettlementRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
+import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
+import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 
 @Component
 public class SaveInboundMessageProcessor implements Processor {
@@ -30,6 +34,8 @@ public class SaveInboundMessageProcessor implements Processor {
 	private DomainCodeRepository domainCodeRepo;
 	@Autowired
 	private SettlementRepository settlementRepo;
+	@Autowired
+	private AccountEnquiryRepository accountEnquiryRepo;
 	@Autowired
 	private CreditTransferRepository creditTrnRepo;
 
@@ -87,27 +93,22 @@ public class SaveInboundMessageProcessor implements Processor {
 
 		inboundMessageRepo.save(inboundMsg);
 		
-		
-		if (msgType.equals("SETTLEMENT")) {
+		String reversal = exchange.getMessage().getHeader("resp_reversal",String.class);
+
+		if (msgType.equals("SETTLEMENT")) 
 			saveSettlement(rcvBi, inboundMsg);
-		}
 
-		else if (msgType.equals("010")) {  // Credit Transfer
-			String reversal = exchange.getMessage().getHeader("resp_reversal",String.class);
+		else if (msgType.equals("510"))   // Credit Transfer
+			saveAccountEnquiry(inboundMsg, rcvBi);
 
-			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj", BusinessMessage.class);
-			saveCreditTransfer(inboundMsg, rcvBi, reversal);
-		}
+		else if (msgType.equals("010"))   // Credit Transfer
+			saveCreditTransfer(msgType, inboundMsg, rcvBi, reversal);
 
-		else if (msgType.equals("019")) {   // FI Credit Tranfsre
-			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj", BusinessMessage.class);
-//			saveFICreditTransfer(rcvMessage, respBi);	
-		}
+		else if (msgType.equals("019"))    // FI Credit Tranfsre
+			saveFICreditTransfer(inboundMsg, rcvBi);	
 
-		else if (msgType.equals("011")) {  // Reversal Credit Transfer
-			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj", BusinessMessage.class);
-//			saveReversalCreditTransfer(rcvMessage, respBi);	
-		}
+		else if (msgType.equals("011"))  // Reversal Credit Transfer
+			saveCreditTransfer(msgType, inboundMsg, rcvBi, reversal);
 
 
 	}
@@ -143,10 +144,9 @@ public class SaveInboundMessageProcessor implements Processor {
 
 	}
 
-	private void saveCreditTransfer (InboundMessage logTable, BusinessMessage inboundMsg, String reversal) 
+	private void saveCreditTransfer (String msgType, InboundMessage logTable, BusinessMessage inboundMsg, String reversal) 
 	{
 		FIToFICustomerCreditTransferV08 creditTransferReq = inboundMsg.getDocument().getFiToFICstmrCdtTrf();
-		String orgnlBank = inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
 		
 		CreditTransfer ct = new CreditTransfer();
 		
@@ -198,8 +198,14 @@ public class SaveInboundMessageProcessor implements Processor {
 			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());
 		
 //		ct.setIntrRefId(auditTab.getInternalReffId());
-		ct.setMsgType("Credit Transfer");
-		ct.setOriginatingBank(orgnlBank);
+		
+		if (msgType.equals("010"))
+			ct.setMsgType("Credit Transfer");
+		else
+			ct.setMsgType("Reverse CT");
+			
+		
+		ct.setOriginatingBank(inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 		ct.setRecipientBank(inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		
 		ct.setLogMessageId(logTable.getId());
@@ -209,4 +215,59 @@ public class SaveInboundMessageProcessor implements Processor {
 		creditTrnRepo.save(ct);
 	}
 	
+	private void saveFICreditTransfer (InboundMessage logTable, BusinessMessage inboundMsg) {
+		
+		FinancialInstitutionCreditTransferV09 creditTransferReq = inboundMsg.getDocument().getFiCdtTrf();
+		String orgnlBank = inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
+		
+		CreditTransfer ct = new CreditTransfer();
+		
+		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
+		ct.setCrdtTrnRequestBizMsgIdr(inboundMsg.getAppHdr().getBizMsgIdr());
+		
+		ct.setStatus(logTable.getRespStatus());
+		
+		ct.setCreDt(LocalDateTime.now());
+		
+		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
+		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
+		
+		ct.setMsgType("FI Credit Transfer");
+		ct.setOriginatingBank(orgnlBank);
+		ct.setRecipientBank(inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		
+		ct.setLogMessageId(logTable.getId());
+		
+		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
+		ct.setCrdtTrnRequestBizMsgIdr(inboundMsg.getAppHdr().getBizMsgIdr());
+		
+		ct.setStatus(logTable.getRespStatus());
+		ct.setCreDt(LocalDateTime.now());
+		
+		ct.setOriginatingBank(inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+		ct.setRecipientBank(inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		
+		ct.setLogMessageId(logTable.getId());
+		
+		
+		creditTrnRepo.save(ct);
+	}
+
+	private void saveAccountEnquiry (InboundMessage logTable, BusinessMessage inboundMsg) 
+	{
+		CreditTransferTransaction39  aeReq = inboundMsg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
+		
+		AccountEnquiry ae = new AccountEnquiry();
+		
+		ae.setAccountNo(aeReq.getCdtrAcct().getId().getOthr().getId());
+		ae.setAmount(aeReq.getIntrBkSttlmAmt().getValue());
+		ae.setCreDt(LocalDateTime.now());
+		ae.setLogMessageId(logTable.getId());
+		ae.setOriginatingBank(inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+		ae.setRecipientBank(inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		
+		
+		accountEnquiryRepo.save(ae);
+	}
+
 }
