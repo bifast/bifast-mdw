@@ -4,7 +4,7 @@ public class CreditTransferResponsePojo {
 
 	private String transactionId;
 
-	private String status;
+	private String status;    // ACCEPT - REJECT
 	private String reason;
 
 	private String addtInfo;
