@@ -10,16 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
-import bifast.outbound.ficredittransfer.ChnlFICreditTransferResponsePojo;
-import bifast.outbound.history.InitSettlementRequestProcessor;
-import bifast.outbound.history.RequestPojo;
-import bifast.outbound.history.ResponsePojo;
-import bifast.outbound.history.SettlementEnquiryResultProcessor;
-import bifast.outbound.pojo.ChannelFaultResponse;
+import bifast.outbound.corebank.CBDebitInstructionRequestPojo;
+import bifast.outbound.corebank.CBDebitInstructionResponsePojo;
+import bifast.outbound.corebank.CBTransactionFailureProcessor;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultProcessor;
 import bifast.outbound.processor.ValidateInputProcessor;
+import bifast.outbound.report.InitSettlementRequestProcessor;
+import bifast.outbound.report.RequestPojo;
+import bifast.outbound.report.ResponsePojo;
+import bifast.outbound.report.SettlementEnquiryResultProcessor;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -28,6 +29,8 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 @Component
 public class CreditTransferRoute extends RouteBuilder {
 
+	@Autowired
+	private CTCorebankRequestProcessor ctCorebankRequestProcessor;
 	@Autowired
 	private CreditTransferRequestProcessor crdtTransferProcessor;
 	@Autowired
@@ -46,23 +49,18 @@ public class CreditTransferRoute extends RouteBuilder {
 	private SaveCTTablesProcessor saveCTTableProcessor;
 	@Autowired
 	private SettlementEnquiryResultProcessor settlementEnquiryResultProcessor;
+	@Autowired
+	private CBTransactionFailureProcessor corebankTransactionFailureProcessor;
 
-	JacksonDataFormat jsonChnlCreditTransferRequestFormat = new JacksonDataFormat(ChnlCreditTransferRequestPojo.class);
-	JacksonDataFormat jsonChnlCreditTransferResponseFormat = new JacksonDataFormat(ChnlCreditTransferResponsePojo.class);
-	JacksonDataFormat jsonChnlFICreditTransferRequestFormat = new JacksonDataFormat(ChnlFICreditTransferRequestPojo.class);
-	JacksonDataFormat jsonChnlFICreditTransferResponseFormat = new JacksonDataFormat(ChnlFICreditTransferResponsePojo.class);
+	JacksonDataFormat cbDebitInstructionRequestJDF = new JacksonDataFormat(CBDebitInstructionRequestPojo.class);
+	JacksonDataFormat cbDebitInstructionResponseJDF = new JacksonDataFormat(CBDebitInstructionResponsePojo.class);
+	
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
-	JacksonDataFormat faultJDF = new JacksonDataFormat(ChannelFaultResponse.class);
-	JacksonDataFormat SettlementRequestJDF = new JacksonDataFormat(RequestPojo.class);
-	JacksonDataFormat SettlementResponseJDF = new JacksonDataFormat(ResponsePojo.class);
+	JacksonDataFormat settlementRequestJDF = new JacksonDataFormat(RequestPojo.class);
+	JacksonDataFormat settlementResponseJDF = new JacksonDataFormat(ResponsePojo.class);
+	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 	private void configureJsonDataFormat() {
-
-		jsonChnlCreditTransferRequestFormat.setInclude("NON_NULL");
-		jsonChnlCreditTransferRequestFormat.setInclude("NON_EMPTY");
-
-		jsonChnlCreditTransferResponseFormat.setInclude("NON_NULL");
-		jsonChnlCreditTransferResponseFormat.setInclude("NON_EMPTY");
 
 		businessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		businessMessageJDF.setInclude("NON_NULL");
@@ -70,20 +68,26 @@ public class CreditTransferRoute extends RouteBuilder {
 		businessMessageJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		businessMessageJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
-		faultJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		faultJDF.setInclude("NON_NULL");
-		faultJDF.setInclude("NON_EMPTY");
-		faultJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+		settlementRequestJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		settlementRequestJDF.setInclude("NON_NULL");
+		settlementRequestJDF.setInclude("NON_EMPTY");
+		settlementRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+
+		settlementResponseJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		settlementResponseJDF.setInclude("NON_NULL");
+		settlementResponseJDF.setInclude("NON_EMPTY");
+		settlementResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+
+		cbDebitInstructionRequestJDF.setInclude("NON_NULL");
+		cbDebitInstructionRequestJDF.setInclude("NON_EMPTY");
+		cbDebitInstructionRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		
-		SettlementRequestJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		SettlementRequestJDF.setInclude("NON_NULL");
-		SettlementRequestJDF.setInclude("NON_EMPTY");
-		SettlementRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		
-		SettlementResponseJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		SettlementResponseJDF.setInclude("NON_NULL");
-		SettlementResponseJDF.setInclude("NON_EMPTY");
-		SettlementResponseJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+		cbDebitInstructionResponseJDF.setInclude("NON_NULL");
+		cbDebitInstructionResponseJDF.setInclude("NON_EMPTY");
+		cbDebitInstructionResponseJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		chnlResponseJDF.setInclude("NON_NULL");
+		chnlResponseJDF.setInclude("NON_EMPTY");
 
 	}
 	
@@ -92,38 +96,79 @@ public class CreditTransferRoute extends RouteBuilder {
 
 		configureJsonDataFormat();
 
+
         onException(Exception.class).routeId("CT Exception Handler")
 	    	.log("Fault di CT Excp, ${header.hdr_errorlocation}")
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
-			.to("sql:update outbound_message set resp_status = 'ERROR', "
-					+ " error_msg= :#${body.reason} "
+			.to("sql:update outbound_message set resp_status = 'ERROR-KM', "
+					+ " error_msg= :#${body.faultResponse.reason} "
 					+ "where id= :#${header.hdr_idtable}  ")
-			.marshal(faultJDF)
-			.removeHeaders("ct_*")
+			.marshal(chnlResponseJDF)
+			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
+			.removeHeaders("ct_*")
+			.removeHeaders("ps_*")
+			.removeHeader("HttpMethod")
 	    	.handled(true)
 	  	;
 
-		// Untuk Proses Credit Transfer Request
 
 		from("direct:ctreq").routeId("crdt_trnsf")
 
 			.log("Credit Transfer")
 			.process(validateRequest)
-
+			
 			.process(crdtTransferProcessor)
+
 			.setHeader("ct_objreqbi", simple("${body}"))
 			.marshal(businessMessageJDF)
 
 			.to("seda:encryptCTbody")
 			.to("seda:saveCTtables")
 
+			// invoke corebanking
+			.process(ctCorebankRequestProcessor)
+			.marshal(cbDebitInstructionRequestJDF)
+			.log("cbRequest: ${body}")
+			
+			.setHeader("hdr_errorlocation", constant("corebank service call"))		
+			.to("direct:callcb")
+			.log("dari CB: ${body}")
+			.unmarshal(cbDebitInstructionResponseJDF)
+			
+			.choice()
+				.when().simple("${body.status} == 'SUCCESS'")
+					.log("akan seda lolos corebank")
+					.to("seda:ct_lolos_corebank")
+				.when().simple("${body.status} == 'FAILED'")
+					.to("seda:ct_tidaklolos_corebank")
+			.end()
+
+			.removeHeaders("ct_*")
+		;
+
+		from("seda:ct_tidaklolos_corebank")
+			.log("Corebanking failure")
+			.process(corebankTransactionFailureProcessor)
+			.to("sql:update outbound_message set resp_status = 'RJCT-CB' "
+					+ "where id= :#${header.hdr_idtable}  ")
+			.marshal(chnlResponseJDF)
+		;
+		
+		from("seda:ct_lolos_corebank")
+			.log("sudah di seda lolos corebank")
+			.setBody(simple("${header.ct_objreqbi}"))
+			.marshal(businessMessageJDF)
+			.log("${body}")
+			
 			// kirim ke CI-HUB
 			.setHeader("ct_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.doTry()
 				.log("Submit CT no: ${header.ct_objreqbi.appHdr.bizMsgIdr}")
+				.setHeader("hdr_errorlocation", constant("CTRoute/pre-call-cihub"))		
+
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich("http:{{bifast.ciconnector-url}}?"
 						+ "socketTimeout={{bifast.timeout}}&" 
@@ -131,7 +176,7 @@ public class CreditTransferRoute extends RouteBuilder {
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
 				
-//				.log("Selesai submit CT")
+				.log("Selesai submit CT")
 				
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
     			.log(LoggingLevel.ERROR, "Timeout process Credit Transfer ")
@@ -141,17 +186,22 @@ public class CreditTransferRoute extends RouteBuilder {
 
     			// check settlement
     			.setBody(simple("${header.ct_objreqbi}"))
+				.setHeader("hdr_errorlocation", constant("CTRoute/pre-inq-settlement"))		
+
     			.process(initSettlementRequest)
-    			.marshal(SettlementRequestJDF)
+    			.marshal(settlementRequestJDF)
     			.log("Settlement: ${body}")
     			
     			.doTry()
+	    			.setHeader("hdr_errorlocation", constant("CTRoute/SettlementCall"))
+					.setHeader("HttpMethod", constant("POST"))
 					.enrich("http://localhost:9001/services/api/enquiry?"
 							+ "bridgeEndpoint=true",
 							enrichmentAggregator)
 					.convertBodyTo(String.class)
-					.unmarshal(SettlementResponseJDF)
+					.unmarshal(settlementResponseJDF)
 					
+	    			.setHeader("hdr_errorlocation", constant("CTRoute/SettlementReady"))
 	    			.process(settlementEnquiryResultProcessor)
 	    		.doCatch(Exception.class)
 	    			.log("Settlement error")
@@ -159,9 +209,11 @@ public class CreditTransferRoute extends RouteBuilder {
 	    		.end()
 
 	    		.log("Selesai panggil settlement")
-    			.choice()
+	    		
+	    		.choice()
     				.when().simple("${body} == null")
     					.log("tidak ada settlement, harus PS")
+    		    		.setHeader("hdr_errorlocation", constant("CTRoute/PaymentStatus"))
     	    			.setBody(simple("${header.ct_objreqbi}"))
     	    			.process(initPaymentStatusRequestProcessor)
     	    			.to("direct:paymentstatus")
@@ -172,20 +224,18 @@ public class CreditTransferRoute extends RouteBuilder {
 				.endChoice()
 				.end()	
 
-					
-				.log("selesai catch")
-			
 			.endDoTry()
 			.end()
 
 			.log("selesai dotry")
-
+			.log("${body}")
 			.choice()
 				.when().simple("${body} != null")
 					.setHeader("ct_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 					.to("seda:encryptCTbody")
 					.unmarshal(businessMessageJDF)
 					.setHeader("ct_objresponsebi", simple("${body}"))	
+					.marshal(businessMessageJDF)
 				.otherwise()
 					.log("Body null akhirnya")
 			    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
@@ -193,13 +243,14 @@ public class CreditTransferRoute extends RouteBuilder {
 	
 			.end()
 			
+			.log("${body}")
 			// prepare untuk response ke channel
+    		.setHeader("hdr_errorlocation", constant("CTRoute/ResponseProcessor"))
 			.process(crdtTransferResponseProcessor)
-			.marshal(jsonChnlCreditTransferResponseFormat)
+			.marshal(chnlResponseJDF)
 
 			.setHeader("ct_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.to("seda:saveCTtables?exchangePattern=InOnly")
-			.removeHeaders("ct_*")
 		;
 
 

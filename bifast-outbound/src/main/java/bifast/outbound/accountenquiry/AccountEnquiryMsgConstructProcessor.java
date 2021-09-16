@@ -12,6 +12,7 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.config.Config;
 import bifast.outbound.processor.UtilService;
 

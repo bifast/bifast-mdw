@@ -22,16 +22,9 @@ public class ReversalRoute extends RouteBuilder {
 	@Autowired
 	private ReversalRequestProcessor reversalRequestProcessor;
 	
-//	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 	JacksonDataFormat reversalRequestJDF = new JacksonDataFormat(ReverseCTRequestPojo.class);
 
 	private void configureJson() {
-//		jsonBusinessMessageDataFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-//		jsonBusinessMessageDataFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-//		jsonBusinessMessageDataFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-//		jsonBusinessMessageDataFormat.setInclude("NON_NULL");
-//		jsonBusinessMessageDataFormat.setInclude("NON_EMPTY");
-		
 		reversalRequestJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		reversalRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		reversalRequestJDF.setInclude("NON_NULL");

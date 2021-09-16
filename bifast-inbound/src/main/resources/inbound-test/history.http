@@ -4,6 +4,6 @@ Content-Type: application/json
 {
     "MessageRequest": {
         "msgType": "Settlement",
-        "endToEndId": "20210912MNDRIDJA010O0100000003"
+        "endToEndId": "20210914MNDRIDJA019O0300000018"
     }
 }

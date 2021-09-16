@@ -25,6 +25,7 @@ import bifast.library.iso20022.pacs002.PartyIdentification135;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.pacs002.StatusReason6Choice;
 import bifast.library.iso20022.pacs002.StatusReasonInformation12;
+import bifast.library.iso20022.pacs009.CreditTransferTransaction44;
 import bifast.library.iso20022.pacs002.AccountIdentification4Choice;
 import bifast.library.iso20022.pacs002.BIAddtlCstmrInf;
 import bifast.library.iso20022.pacs002.BISupplementaryData1;
@@ -75,12 +76,14 @@ public class Pacs002MessageService {
 	
 		// TxInfAndSts / OrgnlTxRef / Cdtr
 		
-		PartyIdentification135 ptyName = new PartyIdentification135();
-		ptyName.setNm(seed.getCreditorName());
-		Party40Choice cdtr = new Party40Choice();
-		cdtr.setPty(ptyName);  
-		orgnlTxRef.setCdtr(cdtr);
-
+		if (!(null == seed.getCreditorName())) {
+			PartyIdentification135 ptyName = new PartyIdentification135();
+			ptyName.setNm(seed.getCreditorName());
+			Party40Choice cdtr = new Party40Choice();
+			cdtr.setPty(ptyName);  
+			orgnlTxRef.setCdtr(cdtr);
+		}
+		
 		// TxInfAndSts / OrgnlTxRef / CdtrAcct
 
 		GenericAccountIdentification1 acctNo = new GenericAccountIdentification1();
@@ -105,14 +108,19 @@ public class Pacs002MessageService {
 		supCdtr.setId(seed.getCreditorId());
 		supCdtr.setRsdntSts(seed.getCreditorResidentialStatus());
 		supCdtr.setTwnNm(seed.getCreditorTown());
-
 		BISupplementaryDataEnvelope1 supplEnv = new BISupplementaryDataEnvelope1();
 		supplEnv.setCdtr(supCdtr);
-		BISupplementaryData1 splmtryData = new BISupplementaryData1();
-		splmtryData.setEnvlp(supplEnv);
 
-		txInfAndSts.getSplmtryData().add(splmtryData);
-
+		if ((!(null==seed.getCreditorType())) ||
+			(!(null==seed.getCreditorId())) ||
+			(!(null==seed.getCreditorResidentialStatus())) ||
+			(!(null==seed.getCreditorTown())) ) {
+			
+			BISupplementaryData1 splmtryData = new BISupplementaryData1();
+			splmtryData.setEnvlp(supplEnv);
+	
+			txInfAndSts.getSplmtryData().add(splmtryData);
+		}
 		
 		pacs002.getTxInfAndSts().add(txInfAndSts);
 		
@@ -157,7 +165,9 @@ public class Pacs002MessageService {
 		StatusReasonInformation12 stsRsnInf = new StatusReasonInformation12();
 		stsRsnInf.setRsn(rsn);
 		
-		stsRsnInf.getAddtlInf().add(seed.getAdditionalInfo());
+		if (!(null == seed.getAdditionalInfo())) {
+			stsRsnInf.getAddtlInf().add(seed.getAdditionalInfo()); 
+		}
 		txInfAndSts.getStsRsnInf().add(stsRsnInf);
 		
 		// TxInfAndSts / OrgnlTxRef
@@ -167,29 +177,35 @@ public class Pacs002MessageService {
 
 		// TxInfAndSts / OrgnlTxRef / Cdtr
 		Party40Choice cdtr = new Party40Choice();
-		if (!(null == orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm())) {
+		if (!(null == seed.getCreditorName())) {
 			PartyIdentification135 pty = new PartyIdentification135();
-			pty.setNm(orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
+			pty.setNm(seed.getCreditorName());
 			cdtr.setPty(pty);
 		}
 		orgnlTxRef.setCdtr(cdtr);
 		txInfAndSts.setOrgnlTxRef(orgnlTxRef);
 		
 		// TxInfAndSts / SplmtryData
+
+		if ((!(null==seed.getCreditorType())) ||
+				(!(null==seed.getCreditorId())) ||
+				(!(null==seed.getCreditorResidentialStatus())) ||
+				(!(null==seed.getCreditorTown())) ) {
+				
+			BIAddtlCstmrInf supCdtr = new BIAddtlCstmrInf();
+			supCdtr.setTp(seed.getCreditorType());
+			supCdtr.setId(seed.getCreditorId());
+			supCdtr.setRsdntSts(seed.getCreditorResidentialStatus());
+			supCdtr.setTwnNm(seed.getCreditorTown());
+
+			BISupplementaryDataEnvelope1 supplEnv = new BISupplementaryDataEnvelope1();
+			supplEnv.setCdtr(supCdtr);
+			BISupplementaryData1 splmtryData = new BISupplementaryData1();
+			splmtryData.setEnvlp(supplEnv);
+
+			txInfAndSts.getSplmtryData().add(splmtryData);
+		}
 		
-		BIAddtlCstmrInf supCdtr = new BIAddtlCstmrInf();
-		supCdtr.setTp(seed.getCreditorType());
-		supCdtr.setId(seed.getCreditorId());
-		supCdtr.setRsdntSts(seed.getCreditorResidentialStatus());
-		supCdtr.setTwnNm(seed.getCreditorTown());
-
-		BISupplementaryDataEnvelope1 supplEnv = new BISupplementaryDataEnvelope1();
-		supplEnv.setCdtr(supCdtr);
-		BISupplementaryData1 splmtryData = new BISupplementaryData1();
-		splmtryData.setEnvlp(supplEnv);
-
-		txInfAndSts.getSplmtryData().add(splmtryData);
-	
 		pacs002.getTxInfAndSts().add(txInfAndSts);
 		
 		return pacs002;
@@ -200,6 +216,8 @@ public class Pacs002MessageService {
 			BusinessMessage orgnlMessage) throws DatatypeConfigurationException {
 		
 		FIToFIPaymentStatusReportV10 pacs002 = new FIToFIPaymentStatusReportV10();
+		
+		CreditTransferTransaction44 requestMsg = orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0);
 
 		// GrpHdr
 		GroupHeader91 grpHdr = new GroupHeader91();
@@ -223,8 +241,8 @@ public class Pacs002MessageService {
 		
 		PaymentTransaction110 txInfAndSts = new PaymentTransaction110();
 		
-		txInfAndSts.setOrgnlEndToEndId( orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getEndToEndId() );
-		txInfAndSts.setOrgnlTxId(orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getTxId() );
+		txInfAndSts.setOrgnlEndToEndId( requestMsg.getPmtId().getEndToEndId() );
+		txInfAndSts.setOrgnlTxId(requestMsg.getPmtId().getTxId() );
 		txInfAndSts.setTxSts(seed.getStatus());
 		
 		// TxInfAndSts / StsRsnInf
@@ -239,11 +257,15 @@ public class Pacs002MessageService {
 		// TxInfAndSts / OrgnlTxRef
 		OriginalTransactionReference28 orgnlTxRef = new OriginalTransactionReference28();
 		
-		orgnlTxRef.setIntrBkSttlmDt(orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmDt() );
+		orgnlTxRef.setIntrBkSttlmDt(requestMsg.getIntrBkSttlmDt() );
 
 		// TxInfAndSts / OrgnlTxRef / Dbtr
+		String debtorBic = requestMsg.getDbtr().getFinInstnId().getOthr().getId();
+		String creditorBic = requestMsg.getCdtr().getFinInstnId().getOthr().getId();
+		
 		GenericFinancialIdentification1 dbtrOthr = new GenericFinancialIdentification1();
-		dbtrOthr.setId( orgnlMessage.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId() );
+		dbtrOthr.setId( debtorBic );
+		
 		FinancialInstitutionIdentification18 dbtrFinInstnId = new FinancialInstitutionIdentification18();
 		dbtrFinInstnId.setOthr(dbtrOthr);
 		BranchAndFinancialInstitutionIdentification6 dbtrAgt = new BranchAndFinancialInstitutionIdentification6();
@@ -255,7 +277,7 @@ public class Pacs002MessageService {
 		
 		// TxInfAndSts / OrgnlTxRef / Cdtr
 		GenericFinancialIdentification1 cdtrOthr = new GenericFinancialIdentification1();
-		cdtrOthr.setId( orgnlMessage.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId() );
+		cdtrOthr.setId( creditorBic );
 		FinancialInstitutionIdentification18 cdtrFinInstnId = new FinancialInstitutionIdentification18();
 		cdtrFinInstnId.setOthr(cdtrOthr);
 		BranchAndFinancialInstitutionIdentification6 cdtrAgt = new BranchAndFinancialInstitutionIdentification6();

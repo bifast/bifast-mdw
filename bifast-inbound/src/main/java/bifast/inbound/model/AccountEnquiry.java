@@ -18,6 +18,7 @@ public class AccountEnquiry {
 	
 	private Long logMessageId;
 	
+	@Column(length=20)
 	private String intrRefId;
 	
 	@Column(name="ORIGN_BANK")

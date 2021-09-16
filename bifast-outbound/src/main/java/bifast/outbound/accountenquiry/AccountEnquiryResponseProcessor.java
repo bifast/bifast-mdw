@@ -7,7 +7,10 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
-import bifast.outbound.pojo.ChannelReject;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
+import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.ChnlFailureResponsePojo;
 
 @Component
 public class AccountEnquiryResponseProcessor implements Processor {
@@ -18,6 +21,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		BusinessMessage busMesg = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
 		
 		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("hdr_channelRequest",ChnlAccountEnquiryRequestPojo.class);
+		
+		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
 		
 		if (null == busMesg.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 			
@@ -37,8 +42,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			
 			chnResp.setStatus(biResp.getTxSts());
 			chnResp.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
-						
-			exchange.getIn().setBody(chnResp); 
+					
+			channelResponseWr.setAccountEnquiryResponse(chnResp);
 
 		}
 		
@@ -46,18 +51,19 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			
 			MessageRejectV01 rejectResp = busMesg.getDocument().getMessageReject();
 
-			ChannelReject reject = new ChannelReject();
-
-			reject.setReference(rejectResp.getRltdRef().getRef());
+			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
+		
+			reject.setReferenceId(chnReq.getChannelRefId());
+			reject.setTransactionType ("AccountEnquiry");
 			reject.setReason(rejectResp.getRsn().getRjctgPtyRsn());
 			reject.setDescription(rejectResp.getRsn().getRsnDesc());
-			reject.setLocation(rejectResp.getRsn().getErrLctn());
+			reject.setLocation("[CI-HUB] " + rejectResp.getRsn().getErrLctn());
 			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
-	
-			exchange.getIn().setBody(reject); 
+
+			channelResponseWr.setFaultResponse(reject);
 		}
 		
-
+		exchange.getMessage().setBody(channelResponseWr);
 	}
 
 }

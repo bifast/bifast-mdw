@@ -2,13 +2,12 @@ package bifast.outbound.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import bifast.outbound.accountenquiry.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
 import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 import bifast.outbound.paymentstatus.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.proxyregistration.ChnlProxyResolutionRequestPojo;
-import bifast.outbound.reversect.ChnlReverseCTRequestPojo;
 
 public class ChannelRequestWrapper {
 
@@ -24,9 +23,6 @@ public class ChannelRequestWrapper {
 	@JsonProperty("PaymentStatusRequest")
 	private ChnlPaymentStatusRequestPojo paymentStatusRequest;
 	
-	@JsonProperty("ReverseCreditTransferRequest")
-	private ChnlReverseCTRequestPojo reverseCreditTransferRequest;
-
 	@JsonProperty("ProxyRegistrationRequest")
 	private ChnlProxyRegistrationRequestPojo proxyRegistrationReq;
 	
@@ -63,14 +59,6 @@ public class ChannelRequestWrapper {
 
 	public void setPaymentStatusRequest(ChnlPaymentStatusRequestPojo paymentStatusRequest) {
 		this.paymentStatusRequest = paymentStatusRequest;
-	}
-
-	public ChnlReverseCTRequestPojo getReverseCreditTransferRequest() {
-		return reverseCreditTransferRequest;
-	}
-
-	public void setReverseCreditTransferRequest(ChnlReverseCTRequestPojo reverseCreditTransferRequest) {
-		this.reverseCreditTransferRequest = reverseCreditTransferRequest;
 	}
 
 	public ChnlProxyRegistrationRequestPojo getProxyRegistrationReq() {

@@ -23,7 +23,7 @@ public class PaymentStatusResponseProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		List<OutboundMessage> optOutboundMessage = outboundMessageRepo.findAllByBizMsgIdr("20210913MNDRIDJA010O0100000183");
+		List<OutboundMessage> optOutboundMessage = outboundMessageRepo.findAllByBizMsgIdr("20210914MNDRIDJA019O0300000018");
 		String fullMsg = null;
 		if (optOutboundMessage.size()>0)
 			fullMsg = optOutboundMessage.get(0).getFullResponseMsg();

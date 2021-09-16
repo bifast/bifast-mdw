@@ -5,6 +5,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.model.BankCode;
 import bifast.outbound.model.DomainCode;
 import bifast.outbound.repository.BankCodeRepository;

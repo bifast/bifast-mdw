@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.model.AccountEnquiry;
 import bifast.outbound.model.BankCode;
 import bifast.outbound.model.DomainCode;
@@ -140,7 +141,8 @@ public class SaveAETablesProcessor implements Processor {
 		
 		else if (!(null == response.getDocument().getFiToFIPmtStsRpt())) {  // response ct pacs002
 			outboundMessage.setRespBizMsgId(response.getAppHdr().getBizMsgIdr());
-			outboundMessage.setRespStatus(response.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+//			outboundMessage.setRespStatus(response.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			outboundMessage.setRespStatus("SUCCESS");
 			
 		}			
 	
@@ -165,6 +167,7 @@ public class SaveAETablesProcessor implements Processor {
 	{
 		FIToFICustomerCreditTransferV08 accountEnqReq = outRequest.getDocument().getFiToFICstmrCdtTrf();
 		String orgnlBank = outRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
+		String recptBank = outRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
 		AccountEnquiry accountEnquiry = new AccountEnquiry();
 		
 		accountEnquiry.setAccountNo(accountEnqReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
@@ -172,10 +175,11 @@ public class SaveAETablesProcessor implements Processor {
 
 		// dari XMLGregorianCalender ubah ke LocalDateTime
 		accountEnquiry.setCreDt(accountEnqReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
+		
 		accountEnquiry.setIntrRefId(auditTab.getInternalReffId());
 		accountEnquiry.setLogMessageId(auditTab.getId());
 		accountEnquiry.setOriginatingBank(orgnlBank);
-		accountEnquiry.setRecipientBank(auditTab.getRecipientBank());
+		accountEnquiry.setRecipientBank(recptBank);
 		
 		accountEnqrRepo.save(accountEnquiry);
 		

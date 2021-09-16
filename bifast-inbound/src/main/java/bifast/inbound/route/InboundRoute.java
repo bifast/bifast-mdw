@@ -9,10 +9,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import bifast.inbound.processor.AccountEnquiryProcessor;
+import bifast.inbound.credittransfer.CreditTransferProcessor;
+import bifast.inbound.ficredittransfer.FICreditTransferProcessor;
 import bifast.inbound.processor.CheckMessageTypeProcessor;
-import bifast.inbound.processor.CreditTransferProcessor;
-import bifast.inbound.processor.FICreditTransferProcessor;
 import bifast.inbound.processor.SaveInboundMessageProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
@@ -26,8 +25,6 @@ public class InboundRoute extends RouteBuilder {
 	private CheckMessageTypeProcessor checkMsgTypeProcessor;
 	@Autowired
 	private FICreditTransferProcessor fICreditTransferProcessor;
-	@Autowired
-	private AccountEnquiryProcessor accountEnquiryProcessor;
 	@Autowired
 	private CreditTransferProcessor creditTransferProcessor;
 	
@@ -82,12 +79,18 @@ public class InboundRoute extends RouteBuilder {
 					
 				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
 					.log("akan kirim response account enquiry")
-					.process(accountEnquiryProcessor)
+					.marshal(jsonBusinessMessageDataFormat)
+//					.process(accountEnquiryProcessor)
+					.to("direct:accountenq")
+					.unmarshal(jsonBusinessMessageDataFormat)
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '010'")    // terima credit transfer
 					.log("akan proses Credit Transfer Request")
-					.process(creditTransferProcessor)
+					.marshal(jsonBusinessMessageDataFormat)
+//					.process(creditTransferProcessor)
+					.to("direct:crdttransfer")
+					.unmarshal(jsonBusinessMessageDataFormat)
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '011'")     // reverse CT
@@ -124,6 +127,7 @@ public class InboundRoute extends RouteBuilder {
 
 			.to("seda:logandsave?exchangePattern=InOnly")
 			
+			// jika CT yang mesti reversal
 			.choice()
 				.when().simple("${header.resp_reversal} == 'PENDING'")
 					.to("seda:reversal?exchangePattern=InOnly")
@@ -132,6 +136,7 @@ public class InboundRoute extends RouteBuilder {
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
 			.removeHeaders("resp_*")
+			.removeHeader("HttpMethod")
 			.log("output response selesai")
 			
 		;

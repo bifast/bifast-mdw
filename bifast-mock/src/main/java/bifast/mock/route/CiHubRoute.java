@@ -19,6 +19,7 @@ import bifast.mock.processor.PaymentStatusResponseProcessor;
 import bifast.mock.processor.ProxyRegistrationResponseProcessor;
 import bifast.mock.processor.ProxyResolutionResponseProcessor;
 import bifast.mock.processor.RejectMessageProcessor;
+import bifast.mock.processor.SettlementProcessor;
 
 @Component
 public class CiHubRoute extends RouteBuilder {
@@ -39,6 +40,8 @@ public class CiHubRoute extends RouteBuilder {
 	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
 	@Autowired
 	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
+	@Autowired
+	private SettlementProcessor settlementProcessor;
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -80,10 +83,12 @@ public class CiHubRoute extends RouteBuilder {
 			.log("end-delay")
 
 			.unmarshal(jsonBusinessMessageDataFormat)
+			.setHeader("objRequest", simple("${body}"))
+			
 			.process(checkMessageTypeProcessor)
 			.log("${header.msgType}")
 
-			.setHeader("delay", simple("${random(1200,2000)}"))
+			.setHeader("delay", simple("${random(100,1000)}"))
 			.choice()
 				.when(simple("${header.msgType} == 'PaymentStatusRequest'"))
 					.setHeader("delay", constant(500))
@@ -96,9 +101,13 @@ public class CiHubRoute extends RouteBuilder {
 					
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
 					.process(creditTransferResponseProcessor)
+					// .log("akan seda settlement")
+					.setExchangePattern(ExchangePattern.InOnly)
+					.to("seda:settlement")
 
 				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
 					.process(fICreditTransferResponseProcessor)
+					.to("seda:settlement&exchangePattern=InOnly")
 
 				.when().simple("${header.msgType} == 'PaymentStatusRequest'")
 					.log("Akan proses Payment Status")
@@ -122,8 +131,8 @@ public class CiHubRoute extends RouteBuilder {
 			.end()
 				
 			// .process(rejectMessageProcessor)
-
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
+
 			// .process(proxyResolutionResponseProcessor)
 
 			.log("Response dari mock")
@@ -131,26 +140,44 @@ public class CiHubRoute extends RouteBuilder {
 			.log("delay selama ${header.delay}s")
 			.removeHeader("msgType")
 			.removeHeader("delay")
+			.removeHeader("objRequest")
 		;
 		
 		from("direct:proxyRegistration").routeId("proxyRegistration")
 
-		.setExchangePattern(ExchangePattern.InOut)
-		.convertBodyTo(String.class)
-		.log("Terima di mock")
-		.log("${body}")
-		.delay(1000)
-		.log("end-delay")
-		.unmarshal(jsonBusinessMessageDataFormat)
-		.process(proxyRegistrationResponseProcessor)
-		.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
-		.log("Response dari mock")
-		.log("${body}")
-		.removeHeader("msgType")
+			.setExchangePattern(ExchangePattern.InOut)
+			.convertBodyTo(String.class)
+			.log("Terima di mock")
+			.log("${body}")
+			.delay(1000)
+			.log("end-delay")
+			.unmarshal(jsonBusinessMessageDataFormat)
+			.process(proxyRegistrationResponseProcessor)
+			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
+			.log("Response dari mock")
+			.log("${body}")
+			.removeHeader("msgType")
+			
+		;
+
+
+		from("seda:settlement")
+			.log("Proses Settlement")
+			.delay(500)
+			.process(settlementProcessor)
+			.marshal(jsonBusinessMessageDataFormat)
+			.log("${body}")
+			.to("rest:post:inbound?host=localhost:9001/services/api&"
+					+ "bridgeEndpoint=true")
+
+//			.setHeader("HttpMethod", constant("POST"))
+//			.enrich("http:localhost:9001/services/api/inbound"
+//					+ "bridgeEndpoint=true",
+//					enrichmentAggregator)
+//			.convertBodyTo(String.class)
+
+		;
 		
-	;
-
-
 	}
 
 }

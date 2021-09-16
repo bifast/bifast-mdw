@@ -23,10 +23,6 @@ public class PaymentStatusRoute extends RouteBuilder {
 	private SavePSTablesProcessor savePSTableProcessor;
 	@Autowired
 	private PaymentStatusRequestProcessor paymentStatusRequestProcessor;
-//	@Autowired
-//	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
-//	@Autowired
-//	private FaultProcessor faultProcessor;
 
 	JacksonDataFormat PaymentStatusRequestJDF = new JacksonDataFormat(ChnlPaymentStatusRequestPojo.class);
 	JacksonDataFormat PaymentStatusResponseJDF = new JacksonDataFormat(ChnlPaymentStatusResponsePojo.class);
@@ -65,9 +61,11 @@ public class PaymentStatusRoute extends RouteBuilder {
 			.to("seda:encryptPSbody")
 			.to("seda:savePStables")
 
+			.log("PS: selesai save awal")
 			.setHeader("ps_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.doTry()
 //				
+				.setHeader("hdr_errorlocation", constant("PS/call-CIHUB"))
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich("http:{{bifast.ciconnector-url}}?"
 						+ "socketTimeout={{bifast.timeout}}&" 
@@ -75,11 +73,9 @@ public class PaymentStatusRoute extends RouteBuilder {
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
 
-				.log("akan save awal PS")
+				.log("PS response: ${body}")
 				.to("seda:encryptPSbody")
 
-//				.setHeader("hdr_fullresponsemessage", simple("${body}"))
-//
 				.setHeader("ps_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 				.setHeader("ps_status", simple("Received"))
 

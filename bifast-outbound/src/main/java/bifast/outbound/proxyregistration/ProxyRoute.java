@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.accountenquiry.ValidateAEInputProcessor;
-import bifast.outbound.pojo.ChannelFaultResponse;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultProcessor;
 
@@ -38,25 +37,11 @@ public class ProxyRoute extends RouteBuilder {
 	private FaultProcessor faultProcessor;
 
 
-	JacksonDataFormat chnlProxyRegistrationJDF = new JacksonDataFormat(ChnlProxyRegistrationRequestPojo.class);
-	JacksonDataFormat jsonChnlProxyRegistrationResponseFormat = new JacksonDataFormat(ChnlProxyRegistrationResponse.class);
-	JacksonDataFormat jsonChnlProxyResolutionResponseFormat = new JacksonDataFormat(ChnlProxyResolutionResponse.class);
-	JacksonDataFormat jsonChnlProxyResolutionFormat = new JacksonDataFormat(ChnlProxyResolutionRequestPojo.class);
-	JacksonDataFormat faultJDF = new JacksonDataFormat(ChannelFaultResponse.class);
+	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 	JacksonDataFormat jsonBusinessMessageFormat = new JacksonDataFormat(BusinessMessage.class);
 
 	private void configureJsonDataFormat() {
-
-		chnlProxyRegistrationJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		chnlProxyRegistrationJDF.setInclude("NON_NULL");
-		chnlProxyRegistrationJDF.setInclude("NON_EMPTY");
-		chnlProxyRegistrationJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-
-		jsonChnlProxyRegistrationResponseFormat.setInclude("NON_NULL");
-		jsonChnlProxyRegistrationResponseFormat.setInclude("NON_EMPTY");
-		jsonChnlProxyResolutionResponseFormat.setInclude("NON_NULL");
-		jsonChnlProxyResolutionResponseFormat.setInclude("NON_EMPTY");
 
 		jsonBusinessMessageFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonBusinessMessageFormat.setInclude("NON_NULL");
@@ -64,10 +49,8 @@ public class ProxyRoute extends RouteBuilder {
 		jsonBusinessMessageFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		jsonBusinessMessageFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
-		faultJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		faultJDF.setInclude("NON_NULL");
-		faultJDF.setInclude("NON_EMPTY");
-		faultJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+		chnlResponseJDF.setInclude("NON_NULL");
+		chnlResponseJDF.setInclude("NON_EMPTY");
 
 	}
 	
@@ -82,11 +65,12 @@ public class ProxyRoute extends RouteBuilder {
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
 			.to("sql:update outbound_message set resp_status = 'ERROR', "
-					+ " error_msg= :#${body.reason} "
+					+ " error_msg= :#${body.faultResponse.reason} "
 					+ "where id= :#${header.hdr_idtable}  ")
-			.marshal(faultJDF)
+			.marshal(chnlResponseJDF)
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
+			.removeHeader("HttpMethod")
 	    	.handled(true)
     	;
 
@@ -129,7 +113,7 @@ public class ProxyRoute extends RouteBuilder {
 			.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
 			.setHeader("resp_channel", simple("${body}"))			
-			.marshal(jsonChnlProxyRegistrationResponseFormat)
+			.marshal(chnlResponseJDF)
 			
 			// save audit tables
 			.setHeader("hdr_errorlocation", constant("PrxyRoute/updateTable"))
@@ -170,15 +154,13 @@ public class ProxyRoute extends RouteBuilder {
 			// prepare untuk response ke channel
 			.process(proxyResolutionResponseProcessor)
 			.setHeader("resp_channel", simple("${body}"))
-			.marshal(jsonChnlProxyResolutionResponseFormat)
+			.marshal(chnlResponseJDF)
 			.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
 			// save audit tables
 			.setHeader("hdr_errorlocation", constant("PrxyRoute/updateTable"))
 			.to("seda:savePrxytables?exchangePattern=InOnly")
-
 		;
-
 
 		from("seda:savePrxytables")
 			.setHeader("hdr_tmp", simple("${body}"))

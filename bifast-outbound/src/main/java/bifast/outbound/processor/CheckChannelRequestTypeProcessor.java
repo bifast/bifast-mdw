@@ -33,10 +33,10 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 			exchange.getMessage().setBody(req.getPaymentStatusRequest());
 		}
 		
-		else if (!(null == req.getReverseCreditTransferRequest())) {
-			exchange.getMessage().setHeader("hdr_msgType", "reversect");
-			exchange.getMessage().setBody(req.getReverseCreditTransferRequest());
-		}
+//		else if (!(null == req.getReverseCreditTransferRequest())) {
+//			exchange.getMessage().setHeader("hdr_msgType", "reversect");
+//			exchange.getMessage().setBody(req.getReverseCreditTransferRequest());
+//		}
 
 		else if (!(null == req.getProxyRegistrationReq())) {
 			exchange.getMessage().setHeader("hdr_msgType", "prxyrgst");

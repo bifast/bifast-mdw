@@ -94,7 +94,7 @@ public class SaveCTTablesProcessor implements Processor {
 									strCiHubRequestTime,
 									strCiHubResponseTime) ;
 			
-			saveCreditTransferMsg (outboundMessage,outRequest);
+			saveCreditTransferMsg (outboundMessage,outRequest, outResponse);
 
 		}
 		
@@ -134,8 +134,8 @@ public class SaveCTTablesProcessor implements Processor {
 		
 		else if (!(null == response.getDocument().getFiToFIPmtStsRpt())) {  // response ct pacs002
 			outboundMessage.setRespBizMsgId(response.getAppHdr().getBizMsgIdr());
-			outboundMessage.setRespStatus(response.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
-			
+//			outboundMessage.setRespStatus(response.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			outboundMessage.setRespStatus ("SUCCESS");
 		}			
 	
 		else {  // msg Reject
@@ -144,7 +144,7 @@ public class SaveCTTablesProcessor implements Processor {
 			if (rjctMesg.length() > 400)
 				rjctMesg = rjctMesg.substring(0, 400);
 			
-			outboundMessage.setRespStatus("FAILURE");
+			outboundMessage.setRespStatus("RJCT-BI");
 			outboundMessage.setErrorMessage(rjctMesg);
 		}
 		
@@ -155,7 +155,8 @@ public class SaveCTTablesProcessor implements Processor {
 
 	
 	private CreditTransfer saveCreditTransferMsg (OutboundMessage auditTab,
-												  BusinessMessage outRequest) {
+												  BusinessMessage outRequest,
+												  BusinessMessage outResponse) {
 		
 		FIToFICustomerCreditTransferV08 creditTransferReq = outRequest.getDocument().getFiToFICstmrCdtTrf();
 		String orgnlBank = outRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
@@ -164,7 +165,10 @@ public class SaveCTTablesProcessor implements Processor {
 		
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 		ct.setCrdtTrnRequestBizMsgIdr(auditTab.getBizMsgIdr());
-		ct.setStatus(auditTab.getRespStatus());
+		
+		ct.setStatus(
+				outResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts() );
+		
 		
 		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 		ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());

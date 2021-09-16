@@ -92,7 +92,7 @@ public class SavePrxyTablesProcessor implements Processor {
 													strCiHubResponseTime) ;
 			
 			if (msgName.equals("Proxy Registration"))
-				saveProxyRegistration (outboundMessage.getId(), outRequest);
+				saveProxyRegistration (outboundMessage.getId(), outRequest, outResponse);
 			// TODO save Proxy Resolution
 //			else 
 //				saveProxyResolution(outboundMessage.getId(), outRequest);
@@ -132,16 +132,17 @@ public class SavePrxyTablesProcessor implements Processor {
 			if (rjctMesg.length() > 400)
 				rjctMesg = rjctMesg.substring(0, 400);
 			
-			outboundMessage.setRespStatus("FAILURE");
+			outboundMessage.setRespStatus("ERROR-BI");
 			outboundMessage.setErrorMessage(rjctMesg);
 		}
 		
 		else {  
 			outboundMessage.setRespBizMsgId(response.getAppHdr().getBizMsgIdr());
-			if (!(null == response.getDocument().getPrxyRegnRspn())) 
-				outboundMessage.setRespStatus(response.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().value());
-			else 
-				outboundMessage.setRespStatus(response.getDocument().getPrxyLookUpRspn().getLkUpRspn().getRegnRspn().getPrxRspnSts().value());
+			outboundMessage.setRespStatus("SUCCESS");
+//			if (!(null == response.getDocument().getPrxyRegnRspn())) 
+//				outboundMessage.setRespStatus(response.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().value());
+//			else 
+//				outboundMessage.setRespStatus(response.getDocument().getPrxyLookUpRspn().getLkUpRspn().getRegnRspn().getPrxRspnSts().value());
 		}			
 		
 		outboundMsgRepo.save(outboundMessage);
@@ -149,7 +150,7 @@ public class SavePrxyTablesProcessor implements Processor {
 	}
 
 	
-	public void saveProxyResolution (Long outboundMessageId, BusinessMessage reqBi) {
+	public void saveProxyResolution (Long outboundMessageId, BusinessMessage reqBi, BusinessMessage respBi) {
 		ProxyMessage proxyMsg = new ProxyMessage(); 
 		
 		ProxyRegistrationV01 proxyData = reqBi.getDocument().getPrxyRegn();
@@ -171,10 +172,12 @@ public class SavePrxyTablesProcessor implements Processor {
 		proxyMsg.setScndValue(proxyData.getRegn().getPrxyRegn().getScndId().getVal());
 		proxyMsg.setTownName(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
 		
+		proxyMsg.setRespStatus(respBi.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().value());
+
 		proxyMessageRepo.save(proxyMsg);
 	}
 
-	public void saveProxyRegistration (Long outboundMessageId, BusinessMessage reqBi) {
+	public void saveProxyRegistration (Long outboundMessageId, BusinessMessage reqBi, BusinessMessage respBi) {
 		ProxyMessage proxyMsg = new ProxyMessage(); 
 		
 		ProxyRegistrationV01 proxyData = reqBi.getDocument().getPrxyRegn();
@@ -195,6 +198,8 @@ public class SavePrxyTablesProcessor implements Processor {
 		proxyMsg.setScndIdType(proxyData.getRegn().getPrxyRegn().getScndId().getTp());
 		proxyMsg.setScndValue(proxyData.getRegn().getPrxyRegn().getScndId().getVal());
 		proxyMsg.setTownName(proxyData.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
+		
+		proxyMsg.setRespStatus(respBi.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().value());
 		
 		proxyMessageRepo.save(proxyMsg);
 	}

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.model.BankCode;
 import bifast.outbound.model.OutboundMessage;
 import bifast.outbound.model.PaymentStatus;
@@ -41,7 +40,6 @@ public class SavePSTablesProcessor implements Processor {
 		String psStatus = exchange.getMessage().getHeader("ps_status", String.class);
 		String bizMsgIdr = outRequest.getAppHdr().getBizMsgIdr();
 		
-		System.out.println(psStatus);
 		if (psStatus.equals("New")) {
 			System.out.println("Insert table PS");
 			OutboundMessage outboundMessage = new OutboundMessage();
@@ -52,6 +50,7 @@ public class SavePSTablesProcessor implements Processor {
 			outboundMessage.setChannelRequestDT(LocalDateTime.now());
 			outboundMessage.setFullRequestMessage(encriptedMessage);
 			
+			outboundMessage.setInternalReffId(chnlRequest.getEndToEndId());
 			outboundMessage.setChannel("Other");
 			
 			BankCode bankCode = bankCodeRepo.findByBicCode(chnlRequest.getRecptBank()).orElse(new BankCode());
@@ -75,7 +74,7 @@ public class SavePSTablesProcessor implements Processor {
 			String strChnlResponseTime = exchange.getMessage().getHeader("ps_channelResponseTime", String.class);
 			String strCiHubRequestTime = exchange.getMessage().getHeader("ps_cihubRequestTime", String.class);
 			String strCiHubResponseTime = exchange.getMessage().getHeader("ps_cihubResponseTime", String.class);
-
+			
 			outboundMessage = updateOutboundMessage(outboundMessage,
 									chnlRequest, 
 									outResponse,
@@ -104,7 +103,7 @@ public class SavePSTablesProcessor implements Processor {
 
 		LocalDateTime ChnlResponseTime = LocalDateTime.parse(strChnlResponseTime, dtf);
 		outboundMessage.setChannelResponseDT(ChnlResponseTime);
-
+			
 		if (!(null==strCiHubRequestTime)) {
 			LocalDateTime cihubRequestTime = LocalDateTime.parse(strCiHubRequestTime, dtf);
 			outboundMessage.setCihubRequestDT(cihubRequestTime);

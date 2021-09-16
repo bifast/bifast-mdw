@@ -23,15 +23,14 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr" : "20210903FASTIDJA010ORB9131436",
+      "BizMsgIdr" : "20210915FASTIDJA010ORB9131436",
       "MsgDefIdr" : "pacs.008.001.08",
-      "CreDt" : "2021-13-03T18:00:00",
-      "CpyDplct" : "DUPL"
+      "CreDt" : "2021-13-03T18:00:00"
     },
     "Document" : {
       "FitoFICstmrCdtTrf" : {
         "GrpHdr" : {
-          "MsgId" : "20210903FASTIDJAORB98314136",
+          "MsgId" : "20210915FASTIDJAORB98314136",
           "CreDtTm" : "2021-03-01T19:00:00",
           "NbOfTxs" : "1",
           "SttlmInf" : {
@@ -40,8 +39,8 @@ Content-Type: application/json
         },
         "CdtTrfTxInf" : [ {
           "PmtId" : {
-            "EndToEndId" : "20210903FASTIDJA010ORB9131436",
-            "TxId" : "20210903FASTIDJAORB98314136"
+            "EndToEndId" : "20210915FASTIDJA010ORB9131436",
+            "TxId" : "20210915FASTIDJAORB98314136"
           },
           "PmtTpInf" : {
             "LclInstrm" : {

@@ -9,13 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.model.AccountEnquiry;
+import bifast.inbound.model.BankCode;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.model.DomainCode;
 import bifast.inbound.model.InboundMessage;
 import bifast.inbound.model.Settlement;
 import bifast.inbound.repository.AccountEnquiryRepository;
+import bifast.inbound.repository.BankCodeRepository;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.repository.DomainCodeRepository;
+import bifast.inbound.repository.FICreditTransferRepository;
 import bifast.inbound.repository.InboundMessageRepository;
 import bifast.inbound.repository.SettlementRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -24,6 +27,7 @@ import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
+import bifast.inbound.model.FICreditTransfer;
 
 @Component
 public class SaveInboundMessageProcessor implements Processor {
@@ -38,6 +42,10 @@ public class SaveInboundMessageProcessor implements Processor {
 	private AccountEnquiryRepository accountEnquiryRepo;
 	@Autowired
 	private CreditTransferRepository creditTrnRepo;
+	@Autowired
+	private FICreditTransferRepository fiCreditTrnRepo;
+	@Autowired
+	private BankCodeRepository bankCodeRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -48,7 +56,10 @@ public class SaveInboundMessageProcessor implements Processor {
 		InboundMessage inboundMsg = new InboundMessage();
 		
 		inboundMsg.setBizMsgIdr(hdr.getBizMsgIdr());
-		inboundMsg.setFrFinId(hdr.getFr().getFIId().getFinInstnId().getOthr().getId());
+		
+		String orgnBank = hdr.getFr().getFIId().getFinInstnId().getOthr().getId();
+		BankCode orgnBankCode = bankCodeRepo.findByBicCode(orgnBank).orElse(new BankCode());
+		inboundMsg.setFrFinId(orgnBankCode.getBankCode());
 		
 		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
 		String fullRespMsg = exchange.getMessage().getHeader("hdr_toBI_jsonzip",String.class);
@@ -57,7 +68,6 @@ public class SaveInboundMessageProcessor implements Processor {
 		
 		if (!(null==hdr.getCpyDplct()))
 				inboundMsg.setCopyDupl(hdr.getCpyDplct().name());
-		
 
 		if (!(null == exchange.getMessage().getHeader("hdr_toBIobj"))) {
 			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj",BusinessMessage.class);
@@ -123,6 +133,15 @@ public class SaveInboundMessageProcessor implements Processor {
 		Settlement sttl = new Settlement();
 		sttl.setOrgnlCrdtTrnReqBizMsgId(settlBody.getTxInfAndSts().get(0).getOrgnlEndToEndId());
 		sttl.setSettlConfBizMsgId(sttlBizMsgId);
+		
+		String orgnBank = sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId();
+		String recptBank = sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId();
+		BankCode orgnBankCode = bankCodeRepo.findByBicCode(orgnBank).orElse(new BankCode());
+		BankCode recptBankCode = bankCodeRepo.findByBicCode(recptBank).orElse(new BankCode());
+
+		sttl.setOrignBank(orgnBankCode.getBankCode());
+		sttl.setRecptBank(recptBankCode.getBankCode());
+
 		sttl.setOrignBank(sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
 		sttl.setRecptBank(sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
 		
@@ -204,9 +223,13 @@ public class SaveInboundMessageProcessor implements Processor {
 		else
 			ct.setMsgType("Reverse CT");
 			
-		
-		ct.setOriginatingBank(inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
-		ct.setRecipientBank(inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		String orgnBank = inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
+		String recptBank = inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+		BankCode orgnBankCode = bankCodeRepo.findByBicCode(orgnBank).orElse(new BankCode());
+		BankCode recptBankCode = bankCodeRepo.findByBicCode(recptBank).orElse(new BankCode());
+
+		ct.setOriginatingBank(orgnBankCode.getBankCode());
+		ct.setRecipientBank(recptBankCode.getBankCode());
 		
 		ct.setLogMessageId(logTable.getId());
 		
@@ -218,39 +241,30 @@ public class SaveInboundMessageProcessor implements Processor {
 	private void saveFICreditTransfer (InboundMessage logTable, BusinessMessage inboundMsg) {
 		
 		FinancialInstitutionCreditTransferV09 creditTransferReq = inboundMsg.getDocument().getFiCdtTrf();
+		FICreditTransfer ct = new FICreditTransfer();
+		
+		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
+
+		ct.setRequestBizMsgIdr(logTable.getBizMsgIdr());
+		ct.setStatus(logTable.getRespStatus());
+		
+		
+		// dari XMLGregorianCalender ubah ke LocalDateTime
+		ct.setCreDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
+		
+//		ct.setIntrRefId(logTable.getInternalReffId());
+		ct.setLogMessageId(logTable.getId());
+
 		String orgnlBank = inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
+		String debtorBic = creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getFinInstnId().getOthr().getId();
+		String creditorBic = creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getFinInstnId().getOthr().getId();
 		
-		CreditTransfer ct = new CreditTransfer();
-		
-		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
-		ct.setCrdtTrnRequestBizMsgIdr(inboundMsg.getAppHdr().getBizMsgIdr());
-		
-		ct.setStatus(logTable.getRespStatus());
-		
-		ct.setCreDt(LocalDateTime.now());
-		
-		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
-		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
-		
-		ct.setMsgType("FI Credit Transfer");
 		ct.setOriginatingBank(orgnlBank);
-		ct.setRecipientBank(inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		ct.setDebtorBic(debtorBic);
+		ct.setCreditBic(creditorBic);
 		
-		ct.setLogMessageId(logTable.getId());
+		fiCreditTrnRepo.save(ct);
 		
-		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
-		ct.setCrdtTrnRequestBizMsgIdr(inboundMsg.getAppHdr().getBizMsgIdr());
-		
-		ct.setStatus(logTable.getRespStatus());
-		ct.setCreDt(LocalDateTime.now());
-		
-		ct.setOriginatingBank(inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
-		ct.setRecipientBank(inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-		
-		ct.setLogMessageId(logTable.getId());
-		
-		
-		creditTrnRepo.save(ct);
 	}
 
 	private void saveAccountEnquiry (InboundMessage logTable, BusinessMessage inboundMsg) 
@@ -263,8 +277,13 @@ public class SaveInboundMessageProcessor implements Processor {
 		ae.setAmount(aeReq.getIntrBkSttlmAmt().getValue());
 		ae.setCreDt(LocalDateTime.now());
 		ae.setLogMessageId(logTable.getId());
-		ae.setOriginatingBank(inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
-		ae.setRecipientBank(inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		
+		String orgnBank = inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
+		String recptBank = inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+		BankCode orgnBankCode = bankCodeRepo.findByBicCode(orgnBank).orElse(new BankCode());
+		BankCode recptBankCode = bankCodeRepo.findByBicCode(recptBank).orElse(new BankCode());
+		ae.setOriginatingBank(orgnBankCode.getBankCode());
+		ae.setRecipientBank(recptBankCode.getBankCode());
 		
 		
 		accountEnquiryRepo.save(ae);

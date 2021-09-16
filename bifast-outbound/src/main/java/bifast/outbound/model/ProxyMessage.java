@@ -1,5 +1,6 @@
 package bifast.outbound.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,9 +17,12 @@ public class ProxyMessage {
 	private String operationType;
 	private String proxyType;
 	private String proxyValue;
+	@Column(length=100)
 	private String displayName;
 	private String accountNumber;
 	private String accountType;
+	
+	@Column(length=100)
 	private String accountName;
 	private String scndIdType;
 	private String scndValue;
@@ -26,6 +30,9 @@ public class ProxyMessage {
 	private String customerId;
 	private String residentStatus;
 	private String townName;
+	
+	@Column(length=20)
+	private String respStatus;
 	
 	public ProxyMessage() {}
 
@@ -147,6 +154,14 @@ public class ProxyMessage {
 
 	public void setTownName(String townName) {
 		this.townName = townName;
+	}
+
+	public String getRespStatus() {
+		return respStatus;
+	}
+
+	public void setRespStatus(String respStatus) {
+		this.respStatus = respStatus;
 	}
 
 	

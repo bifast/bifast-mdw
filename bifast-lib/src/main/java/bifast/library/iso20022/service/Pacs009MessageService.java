@@ -69,7 +69,7 @@ public class Pacs009MessageService {
 		
 		cdtTrfTx.setIntrBkSttlmAmt(currencyAmount);
 
-		// CdtTrfTxInf / DbtrAgt
+		// CdtTrfTxInf / Dbtr     (bukan DbtrAgt)
 		GenericFinancialIdentification1 orign = new GenericFinancialIdentification1();
 		orign.setId(seed.getOrignBank());
 		FinancialInstitutionIdentification18 othr = new FinancialInstitutionIdentification18();

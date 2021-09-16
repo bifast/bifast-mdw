@@ -14,9 +14,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
 import bifast.outbound.pojo.ChannelFaultResponse;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultProcessor;
+import bifast.outbound.processor.TimoutFaultProcessor;
 
 @Component
 public class AccountEnquiryRoute extends RouteBuilder{
@@ -28,6 +31,8 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	@Autowired
 	private FaultProcessor faultProcessor;
 	@Autowired
+	private TimoutFaultProcessor timeoutFaultProcessor;
+	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 
 	@Autowired
@@ -38,6 +43,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	JacksonDataFormat jsonChnlAccountEnqrRespFormat = new JacksonDataFormat(ChnlAccountEnquiryResponsePojo.class);
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
 	JacksonDataFormat faultJDF = new JacksonDataFormat(ChannelFaultResponse.class);
+	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 
 	private void configureJsonDataFormat() {
@@ -58,6 +64,11 @@ public class AccountEnquiryRoute extends RouteBuilder{
 		faultJDF.setInclude("NON_EMPTY");
 		faultJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
+//		chnlResponseJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		chnlResponseJDF.setInclude("NON_NULL");
+		chnlResponseJDF.setInclude("NON_EMPTY");
+//		chnlResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+
 	}
 	
 	
@@ -71,13 +82,14 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
-			.to("sql:update outbound_message set resp_status = 'ERROR', "
-					+ " error_msg= :#${body.reason} "
+			.to("sql:update outbound_message set resp_status = 'ERROR-KM', "
+					+ " error_msg= :#${body.faultResponse.reason} "
 					+ "where id= :#${header.hdr_idtable}  ")
-			.marshal(faultJDF)
+			.marshal(chnlResponseJDF)
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
 			.removeHeaders("ae_*")
+			.removeHeader("HttpMethod")
 	    	.handled(true)
       	;
 
@@ -102,6 +114,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.doTry()
 				.setHeader("hdr_errorlocation", constant("AERoute/sendCIHub"))
+				.log("akan call cihub")
 	
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich("http:{{bifast.ciconnector-url}}?"
@@ -110,8 +123,9 @@ public class AccountEnquiryRoute extends RouteBuilder{
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
 				.to("seda:encryptAEbody")
-	
+				.log("selesai call cihub")
 				.setHeader("hdr_fullresponsemessage", simple("${body}"))
+				.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 	
 				.setHeader("hdr_errorlocation", constant("AERoute/processResponse"))
 	
@@ -119,12 +133,11 @@ public class AccountEnquiryRoute extends RouteBuilder{
 				.setHeader("resp_objbi", simple("${body}"))
 				
 				// prepare untuk response ke channel
+				.setHeader("hdr_errorlocation", constant("AERoute/ResponseProcessor"))
 				.process(accountEnqrResponseProcessor)
-				
-				.setHeader("resp_channel", simple("${body}"))
-				.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-				
-				.marshal(jsonChnlAccountEnqrRespFormat)
+				.marshal(chnlResponseJDF)
+//				.setHeader("resp_channel", simple("${body}"))
+
 				.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
 				// save audit tables
@@ -134,12 +147,12 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
 	    		.log(LoggingLevel.ERROR, "Timeout process Account Enquiry ref:${header.hdr_channelRequest.channelRefId}")
 		    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
-				.to("sql:update outbound_message set resp_status = 'ERROR', "
+				.to("sql:update outbound_message set resp_status = 'TIMEOUT', "
 						+ " error_msg= 'Timeout' "
 						+ "where id= :#${header.hdr_idtable}  ")
 
-				.process(faultProcessor)
-				.marshal(faultJDF)
+				.process(timeoutFaultProcessor)
+				.marshal(chnlResponseJDF)
 			.endDoTry().end()
 				
 			.removeHeaders("ae_*")

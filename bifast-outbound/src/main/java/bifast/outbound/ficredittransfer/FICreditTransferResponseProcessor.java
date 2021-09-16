@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
-import bifast.outbound.pojo.ChannelReject;
+import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.ChnlFailureResponsePojo;
 
 @Component
 public class FICreditTransferResponseProcessor implements Processor {
@@ -24,11 +25,15 @@ public class FICreditTransferResponseProcessor implements Processor {
 		Integer lastHttpResponse = (Integer) exchange.getMessage().getHeader(Exchange.HTTP_RESPONSE_CODE);
 		if ((!(null==lastHttpResponse)) && (lastHttpResponse == 504)) {
 			ChnlFICreditTransferResponsePojo chnResponse = new ChnlFICreditTransferResponsePojo();
+			
 			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
 			chnResponse.setReason("Tidak terima response dari CI-Connector");
 			chnResponse.setStatus("Timeout");
-			exchange.getIn().setBody(chnResponse);
-
+			
+			ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
+			channelResponseWr.setFiCreditTransferResponse(chnResponse); 
+			exchange.getIn().setBody(channelResponseWr);
+			
 		}
 		
 		else if (null == obj_ficrdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
@@ -42,27 +47,30 @@ public class FICreditTransferResponseProcessor implements Processor {
 			chnResponse.setStatus(biResp.getTxSts());
 			chnResponse.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
 			
-			exchange.getIn().setBody(chnResponse);
+			ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
+			channelResponseWr.setFiCreditTransferResponse(chnResponse); 
+			exchange.getIn().setBody(channelResponseWr);
 
 		}
 		else {   // ternyata berupa message reject
 			MessageRejectV01 rejectResp = obj_ficrdtrnResp.getDocument().getMessageReject();
 
-			ChannelReject reject = new ChannelReject();
+			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
 			
-			reject.setReference(rejectResp.getRltdRef().getRef());
+			reject.setReferenceId(rejectResp.getRltdRef().getRef());
 			reject.setReason(rejectResp.getRsn().getRjctgPtyRsn());
 			reject.setDescription(rejectResp.getRsn().getRsnDesc());
 			reject.setLocation(rejectResp.getRsn().getErrLctn());
 			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
 			
-//			ctMesg.setRejection(reject);
-			exchange.getIn().setBody(reject);
+			ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
+			channelResponseWr.setFaultResponse(reject);
+
+			exchange.getIn().setBody(channelResponseWr);
+
 
 		}
 
-//		exchange.getIn().setBody(ctMesg);
-		
 	
 	}
 

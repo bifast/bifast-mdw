@@ -2,8 +2,8 @@
 version: '3.7'
 services:
     komidb:
-      image: postgres:12.7
       container_name: komidb
+      image: postgres:12.7
       restart: always
       environment:
         - POSTGRES_USER=postgres
@@ -44,6 +44,7 @@ services:
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs 
       networks: 
         - docnet
+# Add VOLUMEs to allow backup of config, logs and databases
 
     outbound:
       build: bifast-outbound

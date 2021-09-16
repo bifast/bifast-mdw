@@ -45,6 +45,8 @@ public class CreditTransfer {
 	private String creditorType;
 	
 	private BigDecimal amount;	
+	
+	@Column(length=20)
 	private String status;
 
 	private LocalDateTime creDt;

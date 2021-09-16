@@ -9,7 +9,7 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "FASTIDJA"
+              "Id" : "CENAIDJA"
             }
           }
         }
@@ -48,14 +48,14 @@ Content-Type: application/json
             }
           },
           "IntrBkSttlmAmt" : {
-            "Value" : "123456.78",
+            "Value" : "124456.78",
             "Ccy" : "IDR"
           },
           "IntrBkSttlmDt" : "2021-03-01T00:00:00",
           "Dbtr" : {
             "FinInstnId" : {
               "Othr" : {
-                "Id" : "INDOIDJA"
+                "Id" : "BSMDIDJA"
               }
             }
           },

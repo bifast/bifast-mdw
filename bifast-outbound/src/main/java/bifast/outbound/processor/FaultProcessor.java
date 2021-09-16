@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.FaultClass;
-import bifast.outbound.pojo.ChannelFaultResponse;
+import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.repository.FaultClassRepository;
 
 @Component
@@ -19,37 +20,37 @@ public class FaultProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		
 		System.out.println("start FaultProcessor");
-		Exception e = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
 
-		FaultClass fault = faultClassRepo.findByExceptionClass(e.getClass().getName()).orElse(new FaultClass());
-		
-		String reason = "General error";
-		if (!(null==fault.getId()))
-			reason = fault.getReason();
-				
-		ChannelFaultResponse reject = new ChannelFaultResponse();
-		reject.setReason(reason);
-		
+		ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
+
 		String hdrLocation = exchange.getMessage().getHeader("hdr_errorlocation", String.class);
-		
 		if (null==hdrLocation)
 			reject.setLocation("komi-outbound");
 		else
 			reject.setLocation(hdrLocation);
-		
-		reject.setDescription(e.getMessage());
 
-//		Object chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", Object.class);
-//		String refId;
-//				
-//			Method getOrignReffId = chnRequest.getClass().getMethod("getChannelRefId", null);
-//			if (!(null==getOrignReffId)) {
-//				refId = (String) getOrignReffId.invoke(chnRequest, null);
-//				reject.setChannelRefId(refId);
-//			}
-				
-		exchange.getMessage().setHeader("hdr_fault", reject);
-		exchange.getMessage().setBody(reject, ChannelFaultResponse.class);
+		Exception e = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
+		if (null == e) {
+			reject.setReason("General error");
+			reject.setDescription("Check ke error log");			
+		}
+		
+		else {
+
+			FaultClass fault = faultClassRepo.findByExceptionClass(e.getClass().getName()).orElse(new FaultClass());
+
+			if (null==fault.getId())
+				reject.setReason(e.getClass().getName());
+			else
+				reject.setReason(fault.getReason());
+					
+			reject.setDescription(e.getMessage());
+		}
+			
+		ChannelResponseWrapper channelResponse = new ChannelResponseWrapper();
+		channelResponse.setFaultResponse(reject);
+
+		exchange.getMessage().setBody(channelResponse, ChannelResponseWrapper.class);
 	}
 
 }

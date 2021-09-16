@@ -7,62 +7,45 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
-import bifast.outbound.history.RequestPojo;
-import bifast.outbound.pojo.ChannelFaultResponse;
 import bifast.outbound.pojo.ChannelRequestWrapper;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.FaultProcessor;
-import bifast.outbound.processor.SaveTableAwalProcessor;
-import bifast.outbound.processor.SaveTablesProcessor;
-import bifast.outbound.processor.ValidateInputProcessor;
 
 @Component
 public class ServiceEndpointRoute extends RouteBuilder {
 
 	@Autowired
 	private CheckChannelRequestTypeProcessor checkChannelRequest;
-//	@Autowired
-//	private SaveTablesProcessor saveTablesProcessor;
-//	@Autowired
-//	private SaveTableAwalProcessor saveTableAwalProcessor;
 	@Autowired
 	private FaultProcessor faultProcessor;
 	
-	JacksonDataFormat chnlRequestFormat = new JacksonDataFormat(ChannelRequestWrapper.class);
-	JacksonDataFormat chnlFaultFormat = new JacksonDataFormat(ChannelFaultResponse.class);
-	JacksonDataFormat historyRequestJDF = new JacksonDataFormat(RequestPojo.class);
+	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(ChannelRequestWrapper.class);
+	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 	@Override
-	public void configure() throws Exception //	@Autowired
-//	private SaveTablesProcessor saveTablesProcessor;
-//	@Autowired
-//	private SaveTableAwalProcessor saveTableAwalProcessor;
-{
+	public void configure() throws Exception {
 
-		chnlRequestFormat.setInclude("NON_NULL");
-		chnlRequestFormat.setInclude("NON_EMPTY");
-		chnlFaultFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		chnlFaultFormat.setInclude("NON_NULL");
-		chnlFaultFormat.setInclude("NON_EMPTY");
-		chnlFaultFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-//		historyRequestJDF.setInclude("NON_NULL");
-//		historyRequestJDF.setInclude("NON_EMPTY");
+		chnlRequestJDF.setInclude("NON_NULL");
+		chnlRequestJDF.setInclude("NON_EMPTY");
+		chnlResponseJDF.setInclude("NON_NULL");
+		chnlResponseJDF.setInclude("NON_EMPTY");
 
         onException(Exception.class).routeId("Generic Exception Handler")
         	.log("Fault di EndpointRoute, ${header.hdr_errorlocation}")
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
-			.to("sql:update outbound_message set resp_status = 'ERROR', "
-					+ " error_msg= :#${body.reason} "
+			.to("sql:update outbound_message set resp_status = 'ERROR-KM', "
+					+ " error_msg= :#${body.faultResponse.reason} "
 					+ "where id= :#${header.hdr_idtable}  ")
-			.marshal(chnlFaultFormat)
+			.marshal(chnlResponseJDF)
 			.removeHeaders("req_*")
 			.removeHeaders("hdr_*")
 			.removeHeaders("fict_*")
+			.removeHeaders("ps_*")
+			.removeHeaders("ae_*")
+			.removeHeader("HttpMethod")
 	    	.handled(true)
     	;
 
@@ -85,7 +68,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.setHeader("hdr_errorlocation", constant("EndpointRoute"))
 					
 			.setHeader("req_channelRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-			.unmarshal(chnlRequestFormat)
+			.unmarshal(chnlRequestJDF)
 
 			.setHeader("hdr_errorlocation", constant("EndpointRoute/checkChannelRequest"))
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
@@ -100,7 +83,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					.to("direct:ctreq")
 
 				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
-					.to("direct:fictreq")
+					.to("direct:fictreq2")
 
 				.when().simple("${header.hdr_msgType} == 'pymtsts'")
 					.log("Payment Status Request")
@@ -119,9 +102,11 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.end()
 			
+			.log("Selesai proses ${header.hdr_msgType}")
 			.removeHeaders("req*")
 			.removeHeaders("resp_*")
 			.removeHeaders("hdr_*")
+			.removeHeader("HttpMethod")
 
 		;
 	

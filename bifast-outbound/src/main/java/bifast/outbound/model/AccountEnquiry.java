@@ -18,17 +18,23 @@ public class AccountEnquiry {
 	
 	private Long logMessageId;
 	
+	@Column(length=20)
 	private String intrRefId;
 	
-	@Column(name="ORIGN_BANK")
+	@Column(name="ORIGN_BANK", length=20)
 	private String originatingBank;
-	@Column(name="RECPT_BANK")
+	@Column(name="RECPT_BANK", length=20)
 	private String recipientBank;
 
 	private BigDecimal amount;
 	
+	@Column(length=50)
 	private String accountNo;
 	private LocalDateTime creDt;
+
+	@Column(length=20)
+	private String status;
+
 	
 	public AccountEnquiry () {}
 

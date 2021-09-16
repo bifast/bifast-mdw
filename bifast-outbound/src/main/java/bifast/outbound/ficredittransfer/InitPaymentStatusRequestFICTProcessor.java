@@ -17,6 +17,7 @@ public class InitPaymentStatusRequestFICTProcessor implements Processor {
 		ChnlPaymentStatusRequestPojo request = new ChnlPaymentStatusRequestPojo();
 		
 		request.setEndToEndId(reqData.getAppHdr().getBizMsgIdr());
+		request.setRecptBank(reqData.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		exchange.getIn().setBody(request);
 	}
 

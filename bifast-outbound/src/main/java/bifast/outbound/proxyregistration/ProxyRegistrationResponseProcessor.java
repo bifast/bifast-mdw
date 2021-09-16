@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
-import bifast.outbound.pojo.ChannelReject;
+import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.ChnlFailureResponsePojo;
 
 @Component
 public class ProxyRegistrationResponseProcessor implements Processor {
@@ -18,6 +19,8 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		BusinessMessage obj_crdtrnResp = exchange.getIn().getBody(BusinessMessage.class);
 
 		ChnlProxyRegistrationRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlProxyRegistrationRequestPojo.class);
+
+		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
 
 		if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 
@@ -33,22 +36,24 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 			chnResponse.setStatus(biResp.getRegnRspn().getPrxRspnSts().toString());
 			chnResponse.setReason(biResp.getRegnRspn().getStsRsnInf().getPrtry());
 
-			exchange.getIn().setBody(chnResponse);
+			channelResponseWr.setProxyRegistrationResponse(chnResponse);
+			exchange.getIn().setBody(channelResponseWr);
 
 		}
 		
 		else {   // ternyata berupa message reject
 			MessageRejectV01 rejectResp = obj_crdtrnResp.getDocument().getMessageReject();
 
-			ChannelReject reject = new ChannelReject();
+			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
 
-			reject.setReference(rejectResp.getRltdRef().getRef());
+			reject.setReferenceId(rejectResp.getRltdRef().getRef());
 			reject.setReason(rejectResp.getRsn().getRjctgPtyRsn());
 			reject.setDescription(rejectResp.getRsn().getRsnDesc());
 			reject.setLocation(rejectResp.getRsn().getErrLctn());
 			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
 	
-			exchange.getIn().setBody(reject);
+			channelResponseWr.setFaultResponse(reject);
+			exchange.getIn().setBody(channelResponseWr);
 
 		}
 	}

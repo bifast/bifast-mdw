@@ -14,26 +14,23 @@ public class Settlement {
 	private Long id;
 	
 	private Long logMessageId;
-	
+	@Column(length=20)
 	private String orignBank;
+	@Column(length=20)
 	private String recptBank;
 	
-	@Column(name="SETTL_CONF_BIZMSGID")
+	@Column(name="SETTL_CONF_BIZMSGID", length=50)
 	private String settlConfBizMsgId;
-	@Column(name="ORGNL_CRDT_TRN_BIZMSGID")
+	@Column(name="ORGNL_CRDT_TRN_BIZMSGID", length=50)
 	private String orgnlCrdtTrnReqBizMsgId;
 
+	@Column(length=100)
 	private String crdtAccountNo;
-	private String crdtAccountType;
-	private String crdtId;
-	private String crdtIdType;
+	@Column(length=100)
 	private String dbtrAccountNo;
-	private String dbtrAccountType;
-	private String dbtrId;
-	private String dbtrIdType;
 
 	public Settlement () {}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -90,30 +87,6 @@ public class Settlement {
 		this.crdtAccountNo = crdtAccountNo;
 	}
 
-	public String getCrdtAccountType() {
-		return crdtAccountType;
-	}
-
-	public void setCrdtAccountType(String crdtAccountType) {
-		this.crdtAccountType = crdtAccountType;
-	}
-
-	public String getCrdtId() {
-		return crdtId;
-	}
-
-	public void setCrdtId(String crdtId) {
-		this.crdtId = crdtId;
-	}
-
-	public String getCrdtIdType() {
-		return crdtIdType;
-	}
-
-	public void setCrdtIdType(String crdtIdType) {
-		this.crdtIdType = crdtIdType;
-	}
-
 	public String getDbtrAccountNo() {
 		return dbtrAccountNo;
 	}
@@ -122,28 +95,5 @@ public class Settlement {
 		this.dbtrAccountNo = dbtrAccountNo;
 	}
 
-	public String getDbtrAccountType() {
-		return dbtrAccountType;
-	}
-
-	public void setDbtrAccountType(String dbtrAccountType) {
-		this.dbtrAccountType = dbtrAccountType;
-	}
-
-	public String getDbtrId() {
-		return dbtrId;
-	}
-
-	public void setDbtrId(String dbtrId) {
-		this.dbtrId = dbtrId;
-	}
-
-	public String getDbtrIdType() {
-		return dbtrIdType;
-	}
-
-	public void setDbtrIdType(String dbtrIdType) {
-		this.dbtrIdType = dbtrIdType;
-	}
-
+	
 }

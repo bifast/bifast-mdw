@@ -12,7 +12,6 @@ import bifast.inbound.repository.BankCodeRepository;
 import bifast.inbound.repository.DomainCodeRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
-import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 
 @Component
 public class ReversalRequestProcessor implements Processor {

@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 import bifast.outbound.model.BankCode;
-import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.model.DomainCode;
+import bifast.outbound.model.FICreditTransfer;
 import bifast.outbound.model.OutboundMessage;
 import bifast.outbound.repository.BankCodeRepository;
-import bifast.outbound.repository.CreditTransferRepository;
 import bifast.outbound.repository.DomainCodeRepository;
+import bifast.outbound.repository.FICreditTransferRepository;
 import bifast.outbound.repository.OutboundMessageRepository;
 
 @Component
@@ -26,7 +26,7 @@ public class SaveFICTTablesProcessor implements Processor {
 	@Autowired
 	private OutboundMessageRepository outboundMsgRepo;
 	@Autowired
-	private CreditTransferRepository creditTransferRepo;
+	private FICreditTransferRepository fiCreditTransferRepo;
 	@Autowired
 	private DomainCodeRepository domainCodeRepo;
 	@Autowired
@@ -89,7 +89,7 @@ public class SaveFICTTablesProcessor implements Processor {
 									strCiHubRequestTime,
 									strCiHubResponseTime) ;
 			
-			saveFICreditTransferMsg (outboundMessage,outRequest);
+			saveFICreditTransferMsg (outboundMessage,outRequest, outResponse);
 
 		}
 		
@@ -129,7 +129,8 @@ public class SaveFICTTablesProcessor implements Processor {
 		
 		else if (!(null == response.getDocument().getFiToFIPmtStsRpt())) {  // response ct pacs002
 			outboundMessage.setRespBizMsgId(response.getAppHdr().getBizMsgIdr());
-			outboundMessage.setRespStatus(response.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+//			outboundMessage.setRespStatus(response.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			outboundMessage.setRespStatus("SUCCESS");
 			
 		}			
 	
@@ -139,7 +140,7 @@ public class SaveFICTTablesProcessor implements Processor {
 			if (rjctMesg.length() > 400)
 				rjctMesg = rjctMesg.substring(0, 400);
 			
-			outboundMessage.setRespStatus("FAILURE");
+			outboundMessage.setRespStatus("ERROR-BI");
 			outboundMessage.setErrorMessage(rjctMesg);
 		}
 		
@@ -149,31 +150,62 @@ public class SaveFICTTablesProcessor implements Processor {
 	}
 
 	
-	private CreditTransfer saveFICreditTransferMsg (OutboundMessage auditTab,
-												  BusinessMessage outRequest) {
-		
+//	private CreditTransfer saveFICreditTransferMsg (OutboundMessage auditTab,
+//												  BusinessMessage outRequest) {
+//		
+//		FinancialInstitutionCreditTransferV09 creditTransferReq = outRequest.getDocument().getFiCdtTrf();
+//		String orgnlBank = outRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
+//		
+//		CreditTransfer ct = new CreditTransfer();
+//		
+//		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
+//		ct.setCrdtTrnRequestBizMsgIdr(auditTab.getBizMsgIdr());
+//		ct.setStatus(auditTab.getRespStatus());
+//		
+//		
+//		// dari XMLGregorianCalender ubah ke LocalDateTime
+//		ct.setCreDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
+//				
+//		ct.setIntrRefId(auditTab.getInternalReffId());
+//		ct.setMsgType("FI Credit Transfer");
+//		ct.setOriginatingBank(orgnlBank);
+//		ct.setRecipientBank(outRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+//		ct.setLogMessageId(auditTab.getId());
+//		
+//		creditTransferRepo.save(ct);
+//		
+//		return ct;
+//		}
+
+	private FICreditTransfer saveFICreditTransferMsg (OutboundMessage auditTab,
+													  BusinessMessage outRequest,
+													  BusinessMessage outResponse) {
+
 		FinancialInstitutionCreditTransferV09 creditTransferReq = outRequest.getDocument().getFiCdtTrf();
-		String orgnlBank = outRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
-		
-		CreditTransfer ct = new CreditTransfer();
+		FICreditTransfer ct = new FICreditTransfer();
 		
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
-		ct.setCrdtTrnRequestBizMsgIdr(auditTab.getBizMsgIdr());
-		ct.setStatus(auditTab.getRespStatus());
+		ct.setRequestBizMsgIdr(auditTab.getBizMsgIdr());
 		
-		
+		ct.setStatus(outResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+				
 		// dari XMLGregorianCalender ubah ke LocalDateTime
 		ct.setCreDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
-				
-		ct.setIntrRefId(auditTab.getInternalReffId());
-		ct.setMsgType("FI Credit Transfer");
-		ct.setOriginatingBank(orgnlBank);
-		ct.setRecipientBank(outRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-		ct.setLogMessageId(auditTab.getId());
 		
-		creditTransferRepo.save(ct);
+		ct.setIntrRefId(auditTab.getInternalReffId());
+		ct.setLogMessageId(auditTab.getId());
+
+		String orgnlBank = outRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
+		String debtorBic = creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getFinInstnId().getOthr().getId();
+		String creditorBic = creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getFinInstnId().getOthr().getId();
+		
+		ct.setOriginatingBank(orgnlBank);
+		ct.setDebtorBic(debtorBic);
+		ct.setCreditBic(creditorBic);
+		
+		fiCreditTransferRepo.save(ct);
 		
 		return ct;
-		}
+	}
 
 }
