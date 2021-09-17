@@ -3,6 +3,7 @@ package bifast.mock.processor;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 
 
@@ -10,12 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.library.config.LibConfig;
+import bifast.mock.persist.MockNames;
+import bifast.mock.persist.MockNamesRepository;
 
 @Service
 public class UtilService {
 
 	@Autowired
 	private LibConfig config;
+	@Autowired
+	private MockNamesRepository mockNamesRepo;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
@@ -67,4 +72,19 @@ public class UtilService {
 		return newDt + config.getBankcode() + trxType + "R99" + newId;
 	}
 	
+	public String getFullName () {
+
+		List<MockNames> names = mockNamesRepo.findAll();
+		System.out.println(names.size());
+        Random rand = new Random();
+        int posbl1 = rand.nextInt(names.size());
+        int posbl2 = rand.nextInt(names.size());
+        if (posbl1 == posbl2)
+        	posbl2 = rand.nextInt(names.size());
+
+        String name = names.get(posbl1).getName() + " " + names.get(posbl2).getName();
+        return name;
+		
+	}
+
 }

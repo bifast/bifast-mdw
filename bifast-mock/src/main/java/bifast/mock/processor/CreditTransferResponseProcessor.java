@@ -14,6 +14,8 @@ import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
+import bifast.mock.persist.MockPacs002;
+import bifast.mock.persist.MockPacs002Repository;
 
 @Component
 public class CreditTransferResponseProcessor implements Processor{
@@ -48,13 +50,18 @@ public class CreditTransferResponseProcessor implements Processor{
 			seed.setStatus("ACTC");
 			seed.setReason("U000");
 
-			seed.setCreditorName("Wawan Setiawan");
+			seed.setCreditorName(utilService.getFullName());
 			seed.setCreditorType("01");
 			seed.setCreditorId("KTP-2004384");
 			seed.setCreditorResidentialStatus("01");
 			seed.setCreditorTown("0300");
 		}
 
+		if (seed.getStatus().equals("ACTC"))	
+			exchange.getMessage().setHeader("hdr_ctRespondStatus", "ACTC");
+		else
+			exchange.getMessage().setHeader("hdr_ctRespondStatus", "RJCT");
+			
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
 
 		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, msg);
@@ -70,8 +77,10 @@ public class CreditTransferResponseProcessor implements Processor{
 		busMesg.setAppHdr(hdr);
 		busMesg.setDocument(doc);
 
-		messageHistory.save(msg.getAppHdr().getBizMsgIdr(), busMesg);
-		messageHistory.listKey();
+
+
+		// messageHistory.save(msg.getAppHdr().getBizMsgIdr(), busMesg);
+		// messageHistory.listKey();
 
 		exchange.getMessage().setBody(busMesg);
 

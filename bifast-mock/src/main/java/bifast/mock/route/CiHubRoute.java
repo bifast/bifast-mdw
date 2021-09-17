@@ -12,6 +12,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.mock.processor.AccountEnquiryResponseProcessor;
+import bifast.mock.processor.CreditResponseStoreProcessor;
 import bifast.mock.processor.CreditTransferResponseProcessor;
 import bifast.mock.processor.FICreditTransferResponseProcessor;
 import bifast.mock.processor.OnRequestProcessor;
@@ -42,6 +43,9 @@ public class CiHubRoute extends RouteBuilder {
 	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
 	@Autowired
 	private SettlementProcessor settlementProcessor;
+	@Autowired
+	private CreditResponseStoreProcessor creditResponseStoreProcessor;
+
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -101,22 +105,40 @@ public class CiHubRoute extends RouteBuilder {
 					
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
 					.process(creditTransferResponseProcessor)
-					// .log("akan seda settlement")
+					.setHeader("hdr_ctResponseObj",simple("${body}"))
+					.marshal(jsonBusinessMessageDataFormat)
+					.process(creditResponseStoreProcessor)
+
+					.setBody(simple("${header.hdr_ctResponseObj}"))
+
 					.setExchangePattern(ExchangePattern.InOnly)
 					.to("seda:settlement")
 
 				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
 					.process(fICreditTransferResponseProcessor)
-					.to("seda:settlement&exchangePattern=InOnly")
+					.setHeader("hdr_pacs002", simple("${body}"))
+					.marshal().zipDeflater().marshal().base64()
+					.process(creditResponseStoreProcessor)
+					.setBody(simple("${hdr_pacs002}"))
+
+					.setExchangePattern(ExchangePattern.InOnly)
+					.to("seda:settlement")
 
 				.when().simple("${header.msgType} == 'PaymentStatusRequest'")
-					.log("Akan proses Payment Status")
+					.log("Akan proses paymentStatusResponseProcessor")
 					.process(paymentStatusResponseProcessor)
-					.unmarshal().base64()
-					.unmarshal().zipDeflater()
-					.unmarshal(jsonBusinessMessageDataFormat)
+					.choice()
+						.when().simple("${body} != null")
+							.log("nemu payment status")
+							.unmarshal().base64()
+							.unmarshal().zipDeflater()
+							.unmarshal(jsonBusinessMessageDataFormat)
+						.otherwise()
+							.log("Nggak nemu untuk response payment status")
+					.endChoice()
 
 				.when().simple("${header.msgType} == 'ReverseCreditTransferRequest'")
+					.log("akan proses creditTransferResponseProcessor")
 					.process(creditTransferResponseProcessor)
 
 				.when().simple("${header.msgType} == 'ProxyRegistrationRequest'")
@@ -141,6 +163,7 @@ public class CiHubRoute extends RouteBuilder {
 			.removeHeader("msgType")
 			.removeHeader("delay")
 			.removeHeader("objRequest")
+			.removeHeaders("hdr_*")
 		;
 		
 		from("direct:proxyRegistration").routeId("proxyRegistration")
@@ -156,6 +179,7 @@ public class CiHubRoute extends RouteBuilder {
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
 			.log("Response dari mock")
 			.log("${body}")
+
 			.removeHeader("msgType")
 			
 		;
@@ -163,19 +187,18 @@ public class CiHubRoute extends RouteBuilder {
 
 		from("seda:settlement")
 			.log("Proses Settlement")
-			.delay(500)
-			.process(settlementProcessor)
-			.marshal(jsonBusinessMessageDataFormat)
-			.log("${body}")
-			.to("rest:post:inbound?host=localhost:9001/services/api&"
-					+ "bridgeEndpoint=true")
-
-//			.setHeader("HttpMethod", constant("POST"))
-//			.enrich("http:localhost:9001/services/api/inbound"
-//					+ "bridgeEndpoint=true",
-//					enrichmentAggregator)
-//			.convertBodyTo(String.class)
-
+			
+			.choice()
+				.when().simple("${header.hdr_ctRespondStatus} == 'ACTC'")
+					.delay(500)
+					.process(settlementProcessor)
+					.marshal(jsonBusinessMessageDataFormat)
+					.log("${body}")
+					.to("rest:post:inbound?host=localhost:9001/services/api&"
+							+ "bridgeEndpoint=true")
+			.end()
+			
+			.removeHeaders("hdr_*")
 		;
 		
 	}

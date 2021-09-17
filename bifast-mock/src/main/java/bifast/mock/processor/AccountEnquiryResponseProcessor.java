@@ -1,5 +1,6 @@
 package bifast.mock.processor;
 
+import java.util.List;
 import java.util.Random;
 
 import org.apache.camel.Exchange;
@@ -15,6 +16,8 @@ import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
+import bifast.mock.persist.MockNames;
+import bifast.mock.persist.MockNamesRepository;
 
 @Component
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
@@ -50,7 +53,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		}
 		
 		seed.setMsgId(msgId);
-		seed.setCreditorName("Wawan Setiawan");
+		seed.setCreditorName(utilService.getFullName());
 		seed.setCreditorAccountNo("977004883004");
 		seed.setCreditorAccountIdType("CACC");
 		seed.setCreditorType("01");

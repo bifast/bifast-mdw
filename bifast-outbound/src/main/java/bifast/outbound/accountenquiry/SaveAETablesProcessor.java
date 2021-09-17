@@ -78,7 +78,7 @@ public class SaveAETablesProcessor implements Processor {
 									strCiHubRequestTime,
 									strCiHubResponseTime) ;
 			
-			saveAccountEnquiryMsg (outboundMessage,outRequest);
+			saveAccountEnquiryMsg (outboundMessage,outRequest, outResponse);
 
 		}
 		
@@ -163,7 +163,8 @@ public class SaveAETablesProcessor implements Processor {
 
 	
 	private void saveAccountEnquiryMsg (OutboundMessage auditTab,
-										BusinessMessage outRequest) 
+										BusinessMessage outRequest,
+										BusinessMessage outResponse) 
 	{
 		FIToFICustomerCreditTransferV08 accountEnqReq = outRequest.getDocument().getFiToFICstmrCdtTrf();
 		String orgnlBank = outRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
@@ -180,6 +181,8 @@ public class SaveAETablesProcessor implements Processor {
 		accountEnquiry.setLogMessageId(auditTab.getId());
 		accountEnquiry.setOriginatingBank(orgnlBank);
 		accountEnquiry.setRecipientBank(recptBank);
+		
+		accountEnquiry.setStatus(outResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
 		
 		accountEnqrRepo.save(accountEnquiry);
 		
