@@ -5,17 +5,18 @@
 	
 	<parent>
 		<groupId>fransmz</groupId>
-		<artifactId>bifast-corebank</artifactId>
+		<artifactId>bifast-parent</artifactId>
 		<version>0.1-SNAPSHOT</version>
-		<relativePath/> 
+		<relativePath>../pom.xml</relativePath> 
 	</parent>
 	
-	<groupId>komi</groupId>
+	<groupId>fransmz</groupId>
 	<artifactId>corebankiface</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<name>corebankiface</name>
 	<description>BI FAST Corebank Interface</description>
-
+	<packaging>jar</packaging>
+	
 	<properties>
 		<java.version>11</java.version>
 	</properties>

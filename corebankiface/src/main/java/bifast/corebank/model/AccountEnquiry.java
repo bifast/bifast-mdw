@@ -1,5 +1,6 @@
 package bifast.corebank.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -28,6 +29,8 @@ public class AccountEnquiry {
 	private String reqBizMsgId;
 	private String respStatus;
 	private LocalDateTime creDt;
+	
+	private BigDecimal amount;
 	
 	public AccountEnquiry () {}
 
@@ -101,6 +104,14 @@ public class AccountEnquiry {
 
 	public void setCreDt(LocalDateTime creDt) {
 		this.creDt = creDt;
+	}
+
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
 	}
 	
 	
