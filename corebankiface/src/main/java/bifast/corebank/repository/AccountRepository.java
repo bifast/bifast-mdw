@@ -6,7 +6,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import bifast.corebank.model.Account;
-import bifast.corebank.model.AccountEnquiry;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,6 +15,11 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
 	@Query("SELECT account FROM Account account WHERE account.accountNo = :accountNumber ")
     Account getAccountByAccountNumber(@Param("accountNumber") String accountNumber);
+	
+    @Query("SELECT account FROM Account account WHERE account.intrRefId =:transactionId and account.accountNo = :accountNumber and account.amount = :amount")
+    Account getAccountInquiry(@Param("transactionId") String transactionId,
+    						  @Param("accountNumber") String accountNumber,
+    						  @Param("amount") BigDecimal amount);
 
 
 }

@@ -18,6 +18,12 @@ public class AccountService {
     @Autowired
     private AccountRepository accountEnquiryRepository;
 
+    
+    public Account getAccountInquiry(String transactionId,String accountNumber,BigDecimal amount) {
+
+        return accountEnquiryRepository.getAccountInquiry(transactionId,accountNumber,amount);
+    }
+    
     public Account getAccountByAccountNumber(String accountNumber) {
 
         return accountEnquiryRepository.getAccountByAccountNumber(accountNumber);

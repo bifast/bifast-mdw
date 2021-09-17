@@ -11,12 +11,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import bifast.corebank.exception.DataNotFoundException;
 import bifast.corebank.model.Account;
-import bifast.corebank.model.AccountEnquiry;
+
 import bifast.corebank.pojo.AccountEnquiryRequestPojo;
 import bifast.corebank.pojo.AccountEnquiryRequest;
 import bifast.corebank.pojo.AccountEnquiryResponsePojo;
 import bifast.corebank.pojo.AccountEnquiryResponse;
-import bifast.corebank.service.AccountEnquiryService;
 import bifast.corebank.service.AccountService;
 
 import java.util.ArrayList;
@@ -36,33 +35,25 @@ import java.util.List;
 public class AccountEnquiryController {
 
     static final Logger log= LoggerFactory.getLogger(AccountEnquiryController.class);
-
-    @Autowired
-    AccountEnquiryService accountEnquiryService;
     
     @Autowired
     AccountService accountService;
     
     @GetMapping("/accountenquiry")
     public AccountEnquiryResponsePojo getListByNoSo(@RequestBody AccountEnquiryRequestPojo accountEnquiryRequestPojo){
-
-        AccountEnquiry accountEnquiry =  new AccountEnquiry();
-        accountEnquiry = accountEnquiryService.getAccountInquiry(
+        
+        Account account =  accountService.getAccountInquiry(
         		accountEnquiryRequestPojo.getAccountEnquiryRequest().getTransactionId(),
         		accountEnquiryRequestPojo.getAccountEnquiryRequest().getAccountNumber(),
         		accountEnquiryRequestPojo.getAccountEnquiryRequest().getAmount());
         
-        
         AccountEnquiryResponsePojo  accountEnquiryResponsePojo = new AccountEnquiryResponsePojo();     
         AccountEnquiryResponse  accountEnquiryResponse = new AccountEnquiryResponse();     
-        if (accountEnquiry == null) {
+        if (account == null) {
         	throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found");
         }else {
         	
-            
-            accountEnquiryResponse.setTransactionId(accountEnquiry.getIntrRefId());
-            
-            Account account =  accountService.getAccountByAccountNumber(accountEnquiryRequestPojo.getAccountEnquiryRequest().getAccountNumber());
+            accountEnquiryResponse.setTransactionId(account.getIntrRefId());
             
             accountEnquiryResponse.setTransactionId(accountEnquiryRequestPojo.getAccountEnquiryRequest().getTransactionId());
             accountEnquiryResponse.setCreditorStatus(account.getCreditorStatus());

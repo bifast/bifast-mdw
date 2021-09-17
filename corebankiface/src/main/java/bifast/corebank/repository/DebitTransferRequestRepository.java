@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import bifast.corebank.model.AccountEnquiry;
 import bifast.corebank.model.CreditTransferRequest;
 import bifast.corebank.model.DebitTransferRequest;
 

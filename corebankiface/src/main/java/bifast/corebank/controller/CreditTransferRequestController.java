@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import bifast.corebank.exception.DataNotFoundException;
 import bifast.corebank.model.Account;
-import bifast.corebank.model.AccountEnquiry;
+
 import bifast.corebank.model.CreditTransferRequest;
 import bifast.corebank.pojo.AccountEnquiryRequestPojo;
 import bifast.corebank.pojo.AccountEnquiryRequest;
@@ -20,7 +20,7 @@ import bifast.corebank.pojo.CreditInstructionRequestPojo;
 import bifast.corebank.pojo.CreditInstructionResponse;
 import bifast.corebank.pojo.CreditInstructionResponsePojo;
 import bifast.corebank.pojo.AccountEnquiryResponse;
-import bifast.corebank.service.AccountEnquiryService;
+
 import bifast.corebank.service.AccountService;
 import bifast.corebank.service.CreditTransferRequestService;
 
