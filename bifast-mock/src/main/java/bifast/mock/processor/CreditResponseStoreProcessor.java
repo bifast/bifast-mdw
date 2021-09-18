@@ -18,27 +18,26 @@ public class CreditResponseStoreProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
 
+        BusinessMessage objRequest = exchange.getMessage().getHeader("objRequest", BusinessMessage.class);		
         BusinessMessage responseMsg = exchange.getMessage().getHeader("hdr_ctResponseObj", BusinessMessage.class);
-        // String fullMsg = exchange.getMessage().getBody(String.class);
+        String fullMsg = exchange.getMessage().getBody(String.class);
 
         String sts = exchange.getMessage().getHeader("hdr_ctRespondStatus", String.class);
-        
-        if (sts.equals("RJCT")) {
+        System.out.println("Status: " + sts);
         		// simpan sbg history
 			MockPacs002 pacs002 = new MockPacs002();
 			pacs002.setBizMsgIdr(responseMsg.getAppHdr().getBizMsgIdr());
 	
-			// pacs002.setFullMessage(encryptedMsg);
+			pacs002.setFullMessage(fullMsg);
 			
 	        pacs002.setOrgnlEndToEndId(responseMsg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlEndToEndId());
 			
 	        pacs002.setOrgnlMsgId(responseMsg.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).getOrgnlMsgId());
 			
-	        pacs002.setOrgnlMsgName(responseMsg.getAppHdr().getMsgDefIdr());
+	        pacs002.setOrgnlMsgName(objRequest.getAppHdr().getMsgDefIdr());
             pacs002.setTrxType("CreditConfirmation");
 	
 	        mockPacs002Repo.save(pacs002);
-        }
         
     }
     

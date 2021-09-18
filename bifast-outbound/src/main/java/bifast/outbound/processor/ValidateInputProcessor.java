@@ -31,28 +31,35 @@ public class ValidateInputProcessor implements Processor  {
 		Boolean validateChannel = false;
 		Boolean validateBank = false;
 		Boolean validatePurpose = false;
+
+		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 		
-		if (className.equals("bifast.outbound.accountenquiry.ChnlAccountEnquiryRequestPojo")) {
+		Method setChannelCode ;
+		
+		if (msgType.equals("acctenqr")) {
 			validateChannel = true;
 			validateBank = true;
 			validatePurpose = true;
 		}
-		else if (className.equals("bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo")) {
+		
+		else if (msgType.equals("crdttrns")) {
 			validateChannel = true;
 			validateBank = true;
 			validatePurpose = true;
 		}
-		else if (className.equals("bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo")) {
+		else if (msgType.equals("ficrdttrns")) {
 			validateChannel = true;
 			validateBank = true;
 		}
 		
 		if (validateChannel) {
 			Method getChannel = objRequest.getClass().getMethod("getChannel");
-			Method setChannelCode = objRequest.getClass().getMethod("setChannel", String.class);
 			String channel = (String) getChannel.invoke(objRequest);
 			DomainCode channelDC = domainCodeRepo.findByGrpAndValue("CHANNEL.TYPE", channel).orElseThrow();
-			setChannelCode.invoke(objRequest, channelDC.getKey());
+
+			Method setChannel = objRequest.getClass().getMethod("setChannel", String.class);
+			System.out.println("akan change channel");
+			setChannel.invoke(objRequest, channelDC.getKey());
 		}
 		
 		if (validateBank) {

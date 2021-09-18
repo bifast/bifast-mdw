@@ -11,6 +11,8 @@ import bifast.outbound.pojo.ChannelRequestWrapper;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.FaultProcessor;
+import bifast.outbound.processor.SaveTableChannelProcessor;
+import bifast.outbound.processor.ValidateInputProcessor;
 
 @Component
 public class ServiceEndpointRoute extends RouteBuilder {
@@ -19,7 +21,12 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	private CheckChannelRequestTypeProcessor checkChannelRequest;
 	@Autowired
 	private FaultProcessor faultProcessor;
+	@Autowired
+	private ValidateInputProcessor validateInputProcessor;
+	@Autowired
+	private SaveTableChannelProcessor saveChannelRequestProcessor;
 	
+
 	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(ChannelRequestWrapper.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
@@ -62,7 +69,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				.to("direct:aa")
 		;
 
-		from("direct:outbound")
+		from("direct:outbound").routeId("OutboundRoute")
 			.convertBodyTo(String.class)
 
 			.setHeader("hdr_errorlocation", constant("EndpointRoute"))
@@ -70,9 +77,14 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.setHeader("req_channelRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.unmarshal(chnlRequestJDF)
 
+
 			.setHeader("hdr_errorlocation", constant("EndpointRoute/checkChannelRequest"))
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
 			.setHeader("hdr_channelRequest", simple("${body}"))
+			
+			.process(validateInputProcessor)
+			
+			.process(saveChannelRequestProcessor)
 
 			.choice()
 				.when().simple("${header.hdr_msgType} == 'acctenqr'")
@@ -83,7 +95,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					.to("direct:ctreq")
 
 				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
-					.to("direct:fictreq2")
+					.to("direct:fictreq")
 
 				.when().simple("${header.hdr_msgType} == 'pymtsts'")
 					.log("Payment Status Request")
@@ -101,8 +113,10 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					.to("direct:proxyresolution")
 
 			.end()
-			
-			.log("Selesai proses ${header.hdr_msgType}")
+
+			.marshal(chnlResponseJDF)
+
+			.log("Proses ${header.hdr_msgType} selesai")
 			.removeHeaders("req*")
 			.removeHeaders("resp_*")
 			.removeHeaders("hdr_*")

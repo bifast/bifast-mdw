@@ -50,6 +50,11 @@ public class FICreditTransferResponseProcessor implements Processor{
 
 		seed.setAdditionalInfo("Terimakasih atas perhaitiannya");
 
+		if (seed.getStatus().equals("ACTC"))	
+			exchange.getMessage().setHeader("hdr_ctRespondStatus", "ACTC");
+		else
+			exchange.getMessage().setHeader("hdr_ctRespondStatus", "RJCT");
+
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
 
 		FIToFIPaymentStatusReportV10 response = pacs002Service.fIFICreditTransferRequestResponse(seed, msg);
@@ -57,6 +62,8 @@ public class FICreditTransferResponseProcessor implements Processor{
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"pacs.002.001.10", bizMsgId);
+		hdr.setBizSvc("CTRESPONSE");
+		
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);
 		BusinessMessage busMesg = new BusinessMessage();

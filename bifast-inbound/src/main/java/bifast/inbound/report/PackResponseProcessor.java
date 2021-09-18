@@ -11,7 +11,7 @@ public class PackResponseProcessor implements Processor{
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		// TODO Auto-generated method stub
+
 		BusinessMessage result = exchange.getMessage().getBody(BusinessMessage.class);
 		
 

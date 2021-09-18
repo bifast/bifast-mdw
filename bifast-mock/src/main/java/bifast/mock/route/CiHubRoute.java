@@ -3,8 +3,11 @@ package bifast.mock.route;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -19,7 +22,6 @@ import bifast.mock.processor.OnRequestProcessor;
 import bifast.mock.processor.PaymentStatusResponseProcessor;
 import bifast.mock.processor.ProxyRegistrationResponseProcessor;
 import bifast.mock.processor.ProxyResolutionResponseProcessor;
-import bifast.mock.processor.RejectMessageProcessor;
 import bifast.mock.processor.SettlementProcessor;
 
 @Component
@@ -35,8 +37,6 @@ public class CiHubRoute extends RouteBuilder {
 	private FICreditTransferResponseProcessor fICreditTransferResponseProcessor;
 	@Autowired
 	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
-	@Autowired
-	private RejectMessageProcessor rejectMessageProcessor;
 	@Autowired
 	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
 	@Autowired
@@ -57,11 +57,16 @@ public class CiHubRoute extends RouteBuilder {
 		jsonBusinessMessageDataFormat.setInclude("NON_EMPTY");
 	}
 
-
+	
 	@Override
 	public void configure() throws Exception {
 
 		configureJson();
+		
+		onException(IOException.class)
+			.log("Client close connection")
+			.handled(true)
+		;
 		
 		restConfiguration()
 			.component("servlet")
@@ -78,13 +83,12 @@ public class CiHubRoute extends RouteBuilder {
 		;
 	
 
-		from("direct:receive").routeId("receive")
+		from("direct:receive").routeId("MsgReceive")
 
 			.setExchangePattern(ExchangePattern.InOut)
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
 			.log("${body}")
-			.log("end-delay")
 
 			.unmarshal(jsonBusinessMessageDataFormat)
 			.setHeader("objRequest", simple("${body}"))
@@ -92,12 +96,11 @@ public class CiHubRoute extends RouteBuilder {
 			.process(checkMessageTypeProcessor)
 			.log("${header.msgType}")
 
-			.setHeader("delay", simple("${random(100,1000)}"))
+			.setHeader("delay", simple("${random(400,3000)}"))
 			.choice()
 				.when(simple("${header.msgType} == 'PaymentStatusRequest'"))
 					.setHeader("delay", constant(500))
 			.end()
-			.delay(simple("${header.delay}"))
 
 			.choice()
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")
@@ -108,7 +111,7 @@ public class CiHubRoute extends RouteBuilder {
 					.setHeader("hdr_ctResponseObj",simple("${body}"))
 					.marshal(jsonBusinessMessageDataFormat)
 					.process(creditResponseStoreProcessor)
-
+					.log("selesi save mock-response")
 					.setBody(simple("${header.hdr_ctResponseObj}"))
 
 					.setExchangePattern(ExchangePattern.InOnly)
@@ -116,10 +119,13 @@ public class CiHubRoute extends RouteBuilder {
 
 				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
 					.process(fICreditTransferResponseProcessor)
-					.setHeader("hdr_pacs002", simple("${body}"))
-					.marshal().zipDeflater().marshal().base64()
+					.setHeader("hdr_ctResponseObj",simple("${body}"))
+					.marshal(jsonBusinessMessageDataFormat)
+					.log("Akan fICreditTransferResponseProcessor: ${body}")
 					.process(creditResponseStoreProcessor)
-					.setBody(simple("${hdr_pacs002}"))
+					.log("After creditResponseStoreProcessor: ${body}")
+					
+					.setBody(simple("${header.hdr_ctResponseObj}"))
 
 					.setExchangePattern(ExchangePattern.InOnly)
 					.to("seda:settlement")
@@ -130,8 +136,8 @@ public class CiHubRoute extends RouteBuilder {
 					.choice()
 						.when().simple("${body} != null")
 							.log("nemu payment status")
-							.unmarshal().base64()
-							.unmarshal().zipDeflater()
+							// .unmarshal().base64()
+							// .unmarshal().zipDeflater()
 							.unmarshal(jsonBusinessMessageDataFormat)
 						.otherwise()
 							.log("Nggak nemu untuk response payment status")
@@ -152,6 +158,8 @@ public class CiHubRoute extends RouteBuilder {
 					.log("Other message")
 			.end()
 				
+			.delay(simple("${header.delay}"))
+
 			// .process(rejectMessageProcessor)
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
 
@@ -159,7 +167,7 @@ public class CiHubRoute extends RouteBuilder {
 
 			.log("Response dari mock")
 			.log("${body}")
-			.log("delay selama ${header.delay}s")
+			// .log("delay selama ${header.delay}s")
 			.removeHeader("msgType")
 			.removeHeader("delay")
 			.removeHeader("objRequest")
@@ -172,7 +180,7 @@ public class CiHubRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
 			.log("${body}")
-			.delay(1000)
+			.delay(3500)
 			.log("end-delay")
 			.unmarshal(jsonBusinessMessageDataFormat)
 			.process(proxyRegistrationResponseProcessor)
@@ -185,16 +193,18 @@ public class CiHubRoute extends RouteBuilder {
 		;
 
 
-		from("seda:settlement")
-			.log("Proses Settlement")
-			
+		from("seda:settlement").routeId("Settlement")
+			.log("Proses Settlement (delayed)")
+			.log("response status: ${header.hdr_ctRespondStatus}")
 			.choice()
 				.when().simple("${header.hdr_ctRespondStatus} == 'ACTC'")
-					.delay(500)
+					.log("Akan proses settlement")
+					.marshal(jsonBusinessMessageDataFormat)
 					.process(settlementProcessor)
 					.marshal(jsonBusinessMessageDataFormat)
-					.log("${body}")
-					.to("rest:post:inbound?host=localhost:9001/services/api&"
+					.delay(1000)
+					.log("After settlementProcessor: ${body}")
+					.to("rest:post:inbound?host={{komi.inbound-url}}&"
 							+ "bridgeEndpoint=true")
 			.end()
 			

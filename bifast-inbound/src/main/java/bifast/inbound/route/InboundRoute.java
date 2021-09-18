@@ -53,7 +53,7 @@ public class InboundRoute extends RouteBuilder {
 				.to("direct:receive")
 		;	
 		
-		from("direct:receive").routeId("receive")
+		from("direct:receive").routeId("Inbound")
 			.convertBodyTo(String.class)
 			
 			// simpan msg inbound compressed
@@ -71,14 +71,15 @@ public class InboundRoute extends RouteBuilder {
 			.setHeader("hdr_msgName", simple("${body.appHdr.msgDefIdr}"))
 			
 			.process(checkMsgTypeProcessor)   // set header.hdr_msgType
+			
+			.log("[Inbound] [${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] received.")
+
 			.choice()
 
 				.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
-					.log("Simpan ke table settlement")
 					.setBody(constant(null))
 					
 				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
-					.log("akan kirim response account enquiry")
 					.marshal(jsonBusinessMessageDataFormat)
 //					.process(accountEnquiryProcessor)
 					.to("direct:accountenq")
@@ -86,7 +87,6 @@ public class InboundRoute extends RouteBuilder {
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '010'")    // terima credit transfer
-					.log("akan proses Credit Transfer Request")
 					.marshal(jsonBusinessMessageDataFormat)
 //					.process(creditTransferProcessor)
 					.to("direct:crdttransfer")
@@ -94,24 +94,19 @@ public class InboundRoute extends RouteBuilder {
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '011'")     // reverse CT
-					.log("akan proses Reversal Credit Transfer Request")
 					.process(creditTransferProcessor)
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '019'")     // FI CT
-					.log("akan proses FI to FI Reversal Credit Transfer")
 					.process(fICreditTransferProcessor)
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 
-//				.when().simple("${header.rcv_msgtype} == 'SYSNOTIF'")
-//					.log("akan proses System Notification")
-//					.to("direct:sysnotif")
-
 				.otherwise()	
-					.log("Message tidak dikenal")
+					.log("[Inbound] Message ${header.hdr_msgType} tidak dikenal")
 			.end()
 
+			// selain SETTLEMENT di zip dulu untuk save table
 			.choice()
 				.when().simple("${header.hdr_msgType} != 'SETTLEMENT'")   
 					.marshal(jsonBusinessMessageDataFormat) 
@@ -133,11 +128,11 @@ public class InboundRoute extends RouteBuilder {
 					.to("seda:reversal?exchangePattern=InOnly")
 			.end()
 			
+			.log("[Inbound] [${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
 			.removeHeaders("resp_*")
 			.removeHeader("HttpMethod")
-			.log("output response selesai")
 			
 		;
 
@@ -146,9 +141,9 @@ public class InboundRoute extends RouteBuilder {
 			.to("direct:reversal")
 		;
 
-		from("seda:logandsave")
-			.log("Save tables")
+		from("seda:logandsave").routeId("savedb")
 			.process(saveInboundMessageProcessor)
+			.log("Message [${header.hdr_msgType}] saved.")
 		;
 
 

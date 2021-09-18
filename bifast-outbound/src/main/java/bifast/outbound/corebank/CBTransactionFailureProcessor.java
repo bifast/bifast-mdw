@@ -23,7 +23,9 @@ public class CBTransactionFailureProcessor implements Processor {
 		String orignReffId = (String) objChnlRequest.getClass().getMethod("getOrignReffId").invoke(objChnlRequest);
 		cbFailure.setReferenceId(orignReffId);
 
-		cbFailure.setDescription(cbResponse.getAddtInfo());
+		if (!(null == cbResponse.getAddtInfo()))
+			cbFailure.setDescription(cbResponse.getAddtInfo());
+		
 		cbFailure.setLocation("Corebank service call");
 		
 		if (chnlRequestClassName.equals("bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo"))

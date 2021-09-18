@@ -19,36 +19,29 @@ public class CorebankRoute extends RouteBuilder{
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
-	private MockCBDebitResponseProcessor mockDebitResponse;
-	@Autowired
-	private MockCBFIResponseProcessor mockFIResponse;
+	private MockCBResponseProcessor mockCBResponse;
 	@Autowired
 	private FaultProcessor faultProcessor;
 
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 	JacksonDataFormat cbInstructionWrapper = new JacksonDataFormat(CBInstructionWrapper.class);
-	JacksonDataFormat cbDebitResponseJDF = new JacksonDataFormat(CBDebitInstructionResponsePojo.class);
 
 	@Override
 	public void configure() throws Exception {
 		
 		chnlResponseJDF.setInclude("NON_NULL");
 		chnlResponseJDF.setInclude("NON_EMPTY");
+		
 		cbInstructionWrapper.setInclude("NON_NULL");
 		cbInstructionWrapper.setInclude("NON_EMPTY");
-		
-		cbDebitResponseJDF.setInclude("NON_NULL");
-		cbDebitResponseJDF.setInclude("NON_EMPTY");
-		cbDebitResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		onException(Exception.class) 
-			.log("dalam route callingCB")
+			.log("ERROR route callingCB")
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
 			.to("sql:update outbound_message set resp_status = 'ERROR-CB', "
 					+ " error_msg= :#${body.faultResponse.reason} "
-//					+ " error_msg= 'Error terkait service call ke CB' "
 					+ "where id= :#${header.hdr_idtable}  ")
 			.marshal(chnlResponseJDF)
 
@@ -60,9 +53,13 @@ public class CorebankRoute extends RouteBuilder{
 		;
 
 		from("direct:callcb").routeId("callingCB")
-			.log("Akan call corebank system")
+			.log("[ChRefId:${header.hdr_chnl_req_id}] [callingCB] started")
 			
 			.log("${body}")
+			
+			.unmarshal(cbInstructionWrapper)
+			
+			.log("tidak error")
 			.setHeader("hdr_errorlocation", constant("corebank service call"))		
 			.setHeader("HttpMethod", constant("POST"))
 //			.enrich("http:{{bifast.cb-url}}?"
@@ -70,10 +67,10 @@ public class CorebankRoute extends RouteBuilder{
 //					enrichmentAggregator)
 //			.convertBodyTo(String.class)
 			
-//			.process(mockFIResponse)
-			.process(mockDebitResponse)
-			.marshal(cbDebitResponseJDF)
-			.log("${body}")
+			.process(mockCBResponse)
+			.marshal(cbInstructionWrapper)
+			.log("output CB: ${body}")
+			.unmarshal(cbInstructionWrapper)
 
 		;
 	}

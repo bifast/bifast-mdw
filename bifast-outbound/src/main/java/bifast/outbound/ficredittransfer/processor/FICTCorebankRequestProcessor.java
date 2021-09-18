@@ -1,4 +1,4 @@
-package bifast.outbound.credittransfer;
+package bifast.outbound.ficredittransfer.processor;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -9,29 +9,24 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.corebank.CBDebitInstructionRequestPojo;
+import bifast.outbound.corebank.CBFITransferRequestPojo;
+import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 
 @Component
-public class CTCorebankRequestProcessor implements Processor {
+public class FICTCorebankRequestProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		// TODO Auto-generated method stub
 		
-//		ChnlCreditTransferRequestPojo chnlCTRequest = exchange.getMessage().getBody(ChnlCreditTransferRequestPojo.class);
-		ChnlCreditTransferRequestPojo chnlCTRequest = exchange.getIn().getHeader("hdr_channelRequest",ChnlCreditTransferRequestPojo.class);
+		ChnlFICreditTransferRequestPojo chnlCTRequest = exchange.getIn().getHeader("hdr_channelRequest",ChnlFICreditTransferRequestPojo.class);
 
-		CBDebitInstructionRequestPojo cbDebitRequest = new CBDebitInstructionRequestPojo();
+		CBFITransferRequestPojo cbDebitRequest = new CBFITransferRequestPojo();
 
-		cbDebitRequest.setAccountNumber(chnlCTRequest.getDbtrAccountNo());
-		cbDebitRequest.setAccountType(chnlCTRequest.getDbtrAccountType());
-		
 		DecimalFormat df = new DecimalFormat("#############.00");
 		BigDecimal amount = chnlCTRequest.getAmount();
 		cbDebitRequest.setAmount(df.format(amount));
 
-		cbDebitRequest.setDebtorName(chnlCTRequest.getDbtrName());
-		
 		cbDebitRequest.setPaymentInfo(chnlCTRequest.getPaymentInfo());
 		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

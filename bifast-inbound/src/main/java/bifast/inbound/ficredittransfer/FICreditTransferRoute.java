@@ -49,7 +49,7 @@ public class FICreditTransferRoute extends RouteBuilder {
 		
 		from("direct:ficrdttransfer").routeId("ficrdttransfer")
 			
-			.log("FICT: ${body}")
+			.log("[ficrdttransfer] started")
 			// prepare untuk request ke corebank
 			.unmarshal(businessMessageJDF)
 			.process(fictCorebankRequestProcessor)

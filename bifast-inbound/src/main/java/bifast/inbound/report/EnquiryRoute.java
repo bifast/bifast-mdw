@@ -34,7 +34,7 @@ public class EnquiryRoute extends RouteBuilder {
 		businessMessageJDF.setInclude("NON_EMPTY");
 
 		messageReponseJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		messageReponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+//		messageReponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		messageReponseJDF.setInclude("NON_NULL");
 		messageReponseJDF.setInclude("NON_EMPTY");
 
@@ -59,25 +59,31 @@ public class EnquiryRoute extends RouteBuilder {
 				.to("direct:enquiry")
 			;
 		
-		from("direct:enquiry").routeId("enquiry")
+		from("direct:enquiry").routeId("Inbound-Enquiry")
 			.convertBodyTo(String.class)
 			
 			.unmarshal(messageRequestJDF)
+			.log("[Enquiry] [${body.msgType}:${body.endToEndId}] received.")
 			.setHeader("enq_request", simple("${body}"))
 			.process(enquiryProcessor)
-			
-			.choice()
-				.when().simple("${body} != null")
-					.log("Siap")
+
+			// unzip hasil query
+			.choice().when().simple("${body} != null")
 					.unmarshal().base64()
 					.unmarshal().zipDeflater()
-					.log("${body}")
 					.unmarshal(businessMessageJDF)
+			.end()
+
+			.choice()
+				.when().simple("${body} != null")
+					.log("[Enquiry] [${header.enq_request.msgType}:${header.enq_request.endToEndId}] found.")
+				.otherwise()
+					.log("[Enquiry] [${header.enq_request.msgType}:${header.enq_request.endToEndId}] not found.")
 			.end()
 
 			.process(responseProcessor)
 			.marshal(messageReponseJDF)
-			
+
 			.removeHeaders("enq_*")
 		;
 

@@ -28,71 +28,71 @@ public class Settlement {
 	private String crdtAccountNo;
 	@Column(length=100)
 	private String dbtrAccountNo;
-
-	public Settlement () {}
-
+	
+	@Column(length=100)
+	private String crdtBankAccountNo;
+	@Column(length=100)
+	private String dbtrBankAccountNo;
+	
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	public Long getLogMessageId() {
 		return logMessageId;
 	}
-
 	public void setLogMessageId(Long logMessageId) {
 		this.logMessageId = logMessageId;
 	}
-
 	public String getOrignBank() {
 		return orignBank;
 	}
-
 	public void setOrignBank(String orignBank) {
 		this.orignBank = orignBank;
 	}
-
 	public String getRecptBank() {
 		return recptBank;
 	}
-
 	public void setRecptBank(String recptBank) {
 		this.recptBank = recptBank;
 	}
-
 	public String getSettlConfBizMsgId() {
 		return settlConfBizMsgId;
 	}
-
 	public void setSettlConfBizMsgId(String settlConfBizMsgId) {
 		this.settlConfBizMsgId = settlConfBizMsgId;
 	}
-
 	public String getOrgnlCrdtTrnReqBizMsgId() {
 		return orgnlCrdtTrnReqBizMsgId;
 	}
-
 	public void setOrgnlCrdtTrnReqBizMsgId(String orgnlCrdtTrnReqBizMsgId) {
 		this.orgnlCrdtTrnReqBizMsgId = orgnlCrdtTrnReqBizMsgId;
 	}
-
 	public String getCrdtAccountNo() {
 		return crdtAccountNo;
 	}
-
 	public void setCrdtAccountNo(String crdtAccountNo) {
 		this.crdtAccountNo = crdtAccountNo;
 	}
-
 	public String getDbtrAccountNo() {
 		return dbtrAccountNo;
 	}
-
 	public void setDbtrAccountNo(String dbtrAccountNo) {
 		this.dbtrAccountNo = dbtrAccountNo;
+	}
+	public String getCrdtBankAccountNo() {
+		return crdtBankAccountNo;
+	}
+	public void setCrdtBankAccountNo(String crdtBankAccountNo) {
+		this.crdtBankAccountNo = crdtBankAccountNo;
+	}
+	public String getDbtrBankAccountNo() {
+		return dbtrBankAccountNo;
+	}
+	public void setDbtrBankAccountNo(String dbtrBankAccountNo) {
+		this.dbtrBankAccountNo = dbtrBankAccountNo;
 	}
 
 	

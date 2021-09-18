@@ -14,8 +14,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
-import bifast.outbound.pojo.ChannelFaultResponse;
+import bifast.outbound.accountenquiry.processor.AccountEnquiryMsgConstructProcessor;
+import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
+import bifast.outbound.accountenquiry.processor.SaveAETablesProcessor;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultProcessor;
@@ -37,21 +38,12 @@ public class AccountEnquiryRoute extends RouteBuilder{
 
 	@Autowired
 	private SaveAETablesProcessor saveAETableProcessor;
-	@Autowired
-	private ValidateAEInputProcessor validateInputProcessor;
 
-	JacksonDataFormat jsonChnlAccountEnqrRespFormat = new JacksonDataFormat(ChnlAccountEnquiryResponsePojo.class);
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
-	JacksonDataFormat faultJDF = new JacksonDataFormat(ChannelFaultResponse.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 
 	private void configureJsonDataFormat() {
-
-		jsonChnlAccountEnqrRespFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		jsonChnlAccountEnqrRespFormat.setInclude("NON_NULL");
-		jsonChnlAccountEnqrRespFormat.setInclude("NON_EMPTY");
-		jsonChnlAccountEnqrRespFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		businessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		businessMessageJDF.setInclude("NON_NULL");
@@ -59,15 +51,8 @@ public class AccountEnquiryRoute extends RouteBuilder{
 		businessMessageJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		businessMessageJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 		
-		faultJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		faultJDF.setInclude("NON_NULL");
-		faultJDF.setInclude("NON_EMPTY");
-		faultJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-
-//		chnlResponseJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		chnlResponseJDF.setInclude("NON_NULL");
 		chnlResponseJDF.setInclude("NON_EMPTY");
-//		chnlResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 	}
 	
@@ -97,7 +82,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			
 			.log("direct:acctenqr")
 			.setHeader("hdr_errorlocation", constant("AERoute/Cekpoint 1"))
-			.process(validateInputProcessor)
+//			.process(validateInputProcessor)
 			
 			.setHeader("hdr_errorlocation", constant("AERoute/AEMsgConstructProcessor"))
 			.process(AEMsgConstructProcessor)
@@ -135,7 +120,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 				// prepare untuk response ke channel
 				.setHeader("hdr_errorlocation", constant("AERoute/ResponseProcessor"))
 				.process(accountEnqrResponseProcessor)
-				.marshal(chnlResponseJDF)
+//				.marshal(chnlResponseJDF)
 //				.setHeader("resp_channel", simple("${body}"))
 
 				.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
@@ -152,7 +137,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 						+ "where id= :#${header.hdr_idtable}  ")
 
 				.process(timeoutFaultProcessor)
-				.marshal(chnlResponseJDF)
+//				.marshal(chnlResponseJDF)
 			.endDoTry().end()
 				
 			.removeHeaders("ae_*")
@@ -167,7 +152,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.setBody(simple("${header.ae_tmp}"))
 			.removeHeader("ae_tmp")
 		;
-		from("seda:saveAEtables")
+		from("seda:saveAEtables").routeId("saveAEtables")
 			.process(saveAETableProcessor)
 		;
 

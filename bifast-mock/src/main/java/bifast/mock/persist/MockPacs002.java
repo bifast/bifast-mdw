@@ -17,6 +17,8 @@ public class MockPacs002 {
     private String orgnlMsgName;
     private String trxType;
     private String orgnlEndToEndId;
+    @Column(length=5000)
+    private String fullMessage;
 
 
     public String getTrxType() {
@@ -26,8 +28,6 @@ public class MockPacs002 {
         this.trxType = trxType;
     }
     
-    @Column(length=5000)
-    private String fullMessage;
 
     public Long getId() {
         return Id;

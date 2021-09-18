@@ -11,7 +11,6 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs028MessageService;
 import bifast.library.iso20022.service.Pacs028Seed;
-import bifast.outbound.config.Config;
 import bifast.outbound.processor.UtilService;
 
 @Component
@@ -21,8 +20,6 @@ public class PaymentStatusRequestProcessor implements Processor {
 	private AppHeaderService appHeaderService;
 	@Autowired
 	private Pacs028MessageService pacs028MessageService;
-	@Autowired
-	private Config config;
 	@Autowired
 	private UtilService utilService;
 
@@ -34,13 +31,13 @@ public class PaymentStatusRequestProcessor implements Processor {
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		String bizMsgId = utilService.genOfiBusMsgId("000", "99");
 		String msgId = utilService.genMessageId("000");
-
-		hdr = appHeaderService.getAppHdr(config.getBicode(), "pacs.028.001.04", bizMsgId);
+		
+		hdr = appHeaderService.getAppHdr(psReq.getRecptBank(), "pacs.028.001.04", bizMsgId);
 
 		Pacs028Seed seed = new Pacs028Seed();	
 		seed.setMsgId(msgId);
 		seed.setOrgnlEndToEnd(psReq.getEndToEndId());
-
+	
 		Document doc = new Document();
 		doc.setFIToFIPmtStsReq(pacs028MessageService.paymentStatusRequest(seed));
 

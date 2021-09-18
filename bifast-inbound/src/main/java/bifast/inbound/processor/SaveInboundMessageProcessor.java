@@ -136,22 +136,27 @@ public class SaveInboundMessageProcessor implements Processor {
 		
 		String orgnBank = sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId();
 		String recptBank = sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId();
-		BankCode orgnBankCode = bankCodeRepo.findByBicCode(orgnBank).orElse(new BankCode());
-		BankCode recptBankCode = bankCodeRepo.findByBicCode(recptBank).orElse(new BankCode());
+//		BankCode orgnBankCode = bankCodeRepo.findByBicCode(orgnBank).orElse(new BankCode());
+//		BankCode recptBankCode = bankCodeRepo.findByBicCode(recptBank).orElse(new BankCode());
 
-		sttl.setOrignBank(orgnBankCode.getBankCode());
-		sttl.setRecptBank(recptBankCode.getBankCode());
+		sttl.setOrignBank(orgnBank);
+		sttl.setRecptBank(recptBank);
 
 		sttl.setOrignBank(sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
 		sttl.setRecptBank(sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
 		
 		sttl.setLogMessageId(inbMsg.getId());
-		sttl.setCrdtAccountNo(settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtrAcct().getId().getOthr().getId());
+
+		if (!(null == settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtrAcct()))
+			sttl.setCrdtAccountNo(settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtrAcct().getId().getOthr().getId());
+		
 //		sttl.setCrdtAccountType(orglBizMsgId);
 //		sttl.setCrdtId(orglBizMsgId);
 //		sttl.setCrdtIdType(orglBizMsgId);
 //		sttl.setCrdtName(orglBizMsgId);
-		sttl.setDbtrAccountNo(settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().getOthr().getId());
+		
+		if (!(null == settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct()))
+			sttl.setDbtrAccountNo(settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().getOthr().getId());
 //		sttl.setDbtrAccountType(orglBizMsgId);
 //		sttl.setDbtrId(orglBizMsgId);
 //		sttl.setDbtrIdType(orglBizMsgId);
@@ -159,6 +164,12 @@ public class SaveInboundMessageProcessor implements Processor {
 		
 //		sttl.setFullMessage(strMesg);
 		
+		sttl.setCrdtBankAccountNo(
+				settlBody.getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct().getId().getOthr().getId());
+		
+		sttl.setDbtrBankAccountNo(
+				settlBody.getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct().getId().getOthr().getId());
+
 		settlementRepo.save(sttl);
 
 	}

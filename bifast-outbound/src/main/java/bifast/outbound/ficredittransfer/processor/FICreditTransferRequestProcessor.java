@@ -1,4 +1,4 @@
-package bifast.outbound.ficredittransfer;
+package bifast.outbound.ficredittransfer.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -12,6 +12,7 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs009MessageService;
 import bifast.library.iso20022.service.Pacs009Seed;
 import bifast.outbound.config.Config;
+import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 import bifast.outbound.processor.UtilService;
 
 @Component
@@ -43,9 +44,11 @@ public class FICreditTransferRequestProcessor implements Processor {
 		
 		seedFICT.setMsgId(msgId);
 		seedFICT.setBizMsgId(hdr.getBizMsgIdr());
-		seedFICT.setAmount(chnReq.getAmount());
+		seedFICT.setAmount(chnReq.getAmount()); 
+		
 		seedFICT.setOrignBank(config.getBankcode());
 		seedFICT.setRecptBank(chnReq.getRecptBank());
+
 		seedFICT.setTrnType(msgType);
 
 		Document doc = new Document();

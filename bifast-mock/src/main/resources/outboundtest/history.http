@@ -21,13 +21,6 @@ Content-Type: application/json
 POST http://localhost:9001/services/api/enquiry HTTP/1.1
 Content-Type: application/json
 
-{
-    "MessageRequest": {
-        "msgType":"Settlement",
-        "endToEndId":"20210912MNDRIDJA010O0100000019"
-    }
-}
+{"MessageRequest":{"msgType":"Settlement","endToEndId":"20210917MNDRIDJA010O0100000171"}}
 
 ###
-{"MessageEnquiryResult":{"MessageNotFound":{"msgType":"Settlement",
-"endToEndId":"20210912MNDRIDJA010O0100000019"}}}

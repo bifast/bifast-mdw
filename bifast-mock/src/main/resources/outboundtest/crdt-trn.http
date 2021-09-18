@@ -4,14 +4,14 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "orignReffId" : "16740",
+    "orignReffId" : "11114",
     "channel" : "Internet Banking",
     "categoryPurpose" : "Investment",
-    "amount" : 8555002,
+    "amount" : 1467240,
 
     "dbtrIdType" : "01",    
     "dbtrName": "Andi Wijaya",
-    "dbtrId" : "01045",
+    "dbtrId" : "015645",
     "dbtrAccountNo" : "742534",
     "dbtrAccountType" : "CACC",
 

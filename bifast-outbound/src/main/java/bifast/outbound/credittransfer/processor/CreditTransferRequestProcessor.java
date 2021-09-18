@@ -1,4 +1,4 @@
-package bifast.outbound.credittransfer;
+package bifast.outbound.credittransfer.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -12,7 +12,7 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.outbound.config.Config;
-import bifast.outbound.corebank.CBDebitInstructionResponsePojo;
+import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
 import bifast.outbound.processor.UtilService;
 
 @Component
@@ -32,7 +32,6 @@ public class CreditTransferRequestProcessor implements Processor {
 
 
 		ChnlCreditTransferRequestPojo chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChnlCreditTransferRequestPojo.class);
-//		CBDebitInstructionResponsePojo cbResponse = exchange.getIn().getBody(CBDebitInstructionResponsePojo.class);
 		
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
 

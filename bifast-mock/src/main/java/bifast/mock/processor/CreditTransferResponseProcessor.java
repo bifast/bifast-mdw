@@ -25,8 +25,6 @@ public class CreditTransferResponseProcessor implements Processor{
 	@Autowired
 	private Pacs002MessageService pacs002Service;
 	@Autowired
-	private MessageHistory messageHistory;
-	@Autowired
 	private UtilService utilService;
 
 	@Override
@@ -76,11 +74,6 @@ public class CreditTransferResponseProcessor implements Processor{
 		BusinessMessage busMesg = new BusinessMessage();
 		busMesg.setAppHdr(hdr);
 		busMesg.setDocument(doc);
-
-
-
-		// messageHistory.save(msg.getAppHdr().getBizMsgIdr(), busMesg);
-		// messageHistory.listKey();
 
 		exchange.getMessage().setBody(busMesg);
 

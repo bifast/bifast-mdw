@@ -1,4 +1,4 @@
-package bifast.outbound.accountenquiry;
+package bifast.outbound.accountenquiry.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

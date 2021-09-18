@@ -1,4 +1,4 @@
-package bifast.outbound.accountenquiry;
+package bifast.outbound.accountenquiry.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,7 +45,8 @@ public class SaveAETablesProcessor implements Processor {
 
 		ChnlAccountEnquiryRequestPojo chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlAccountEnquiryRequestPojo.class);				
 		String encriptedMessage = exchange.getMessage().getHeader("ae_encrMessage", String.class);
-		
+		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
+
 		OutboundMessage outboundMessage = new OutboundMessage();
 		
 		String bizMsgIdr = outRequest.getAppHdr().getBizMsgIdr();
@@ -53,8 +54,7 @@ public class SaveAETablesProcessor implements Processor {
 		List<OutboundMessage> listOutboundMsg = outboundMsgRepo.findAllByBizMsgIdr(bizMsgIdr);
 		
 		if (listOutboundMsg.size() == 0 ) {
-			System.out.println("Insert table");
-			outboundMessage = insertOutboundMessage(chnlRequest, outRequest, encriptedMessage);
+			outboundMessage = insertOutboundMessage(chnlRequest, outRequest, encriptedMessage, chnlRefId);
 			exchange.getMessage().setHeader("hdr_idtable", outboundMessage.getId());
 
 		}
@@ -86,7 +86,8 @@ public class SaveAETablesProcessor implements Processor {
 
 	private OutboundMessage insertOutboundMessage (ChnlAccountEnquiryRequestPojo chnlRequest, 
 													BusinessMessage request, 
-													String encriptedMessage) {
+													String encriptedMessage,
+													String chnlRefId) {
 		OutboundMessage outboundMessage = new OutboundMessage();
 		
 		outboundMessage.setBizMsgIdr(request.getAppHdr().getBizMsgIdr());
@@ -96,10 +97,11 @@ public class SaveAETablesProcessor implements Processor {
 		
 		outboundMessage.setChannelRequestDT(LocalDateTime.now());
 		outboundMessage.setFullRequestMessage(encriptedMessage);
-		outboundMessage.setInternalReffId(chnlRequest.getChannelRefId());
+		outboundMessage.setInternalReffId(chnlRefId);
 
 		//channel kembalikan keposisi descriptive
 		String chnCode = chnlRequest.getChannel();
+		System.out.println(chnCode);
 		outboundMessage.setChannel(domainCodeRepo.findByGrpAndKey("CHANNEL.TYPE", chnCode).get().getValue());
 		
 		String requestClass = chnlRequest.getClass().getName();

@@ -1,4 +1,4 @@
-package bifast.outbound.ficredittransfer;
+package bifast.outbound.ficredittransfer.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
+import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 import bifast.outbound.model.BankCode;
 import bifast.outbound.model.DomainCode;
 import bifast.outbound.model.FICreditTransfer;
@@ -37,12 +38,12 @@ public class SaveFICTTablesProcessor implements Processor {
 
 		
 		BusinessMessage outRequest = exchange.getMessage().getHeader("fict_objreqbi", BusinessMessage.class);
-		
+		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
+
 		ChnlFICreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlFICreditTransferRequestPojo.class);				
 		String encriptedMessage = exchange.getMessage().getHeader("fict_encrMessage", String.class);
 		
 		String bizMsgIdr = outRequest.getAppHdr().getBizMsgIdr();
-		String chnlRefId = chnlRequest.getOrignReffId();
 
 		List<OutboundMessage> listOutboundMsg = outboundMsgRepo.findAllByBizMsgIdr(bizMsgIdr);
 		

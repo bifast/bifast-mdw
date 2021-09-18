@@ -29,8 +29,11 @@ public class EnquiryProcessor implements Processor{
 	
 		if (messageRequest.getMsgType().equals("Settlement")) {
 			List<Settlement> listSettlement = settlementRepo.findByOrgnlCrdtTrnReqBizMsgId(messageRequest.getEndToEndId());
+
+			System.out.println("Cari orgnlCrdtTrnReqBizMsgId = " + messageRequest.getEndToEndId());
 			
 			if (listSettlement.size() > 0) {
+				System.out.println("dan nemu");
 				Settlement settlement = listSettlement.get(0);
 				InboundMessage inboundMessage = inboundMessageRepo.findById(settlement.getLogMessageId()).orElse(new InboundMessage());
 
@@ -44,6 +47,9 @@ public class EnquiryProcessor implements Processor{
 		}
 		
 		else if (messageRequest.getMsgType().equals("Credit Transfer")) {
+			
+			System.out.println("Cari bizMsgIdr = " + messageRequest.getBizMsgIdr());
+
 			List<InboundMessage> listInboundMessage = inboundMessageRepo.findByBizMsgIdr(messageRequest.getBizMsgIdr());
 			if (listInboundMessage.size() > 0) {
 				String fullMessage = listInboundMessage.get(0).getFullRequestMessage();

@@ -10,6 +10,12 @@ public class CBInstructionWrapper {
 	@JsonProperty("DebitInstructionResponse")
 	private CBDebitInstructionResponsePojo cbDebitInstructionResponse;
 	
+	@JsonProperty("FITransferRequest")
+	private CBFITransferRequestPojo cbFITransferRequest;
+	
+	@JsonProperty("FITransferResponse")
+	private CBFITransferResponsePojo cbFITransferResponse;
+
 	public CBDebitInstructionRequestPojo getCbDebitInstructionRequest() {
 		return cbDebitInstructionRequest;
 	}
@@ -26,6 +32,21 @@ public class CBInstructionWrapper {
 		this.cbDebitInstructionResponse = cbDebitInstructionResponse;
 	}
 
-	
+	public CBFITransferRequestPojo getCbFITransferRequest() {
+		return cbFITransferRequest;
+	}
+
+	public void setCbFITransferRequest(CBFITransferRequestPojo cbFITransferRequest) {
+		this.cbFITransferRequest = cbFITransferRequest;
+	}
+
+	public CBFITransferResponsePojo getCbFITransferResponse() {
+		return cbFITransferResponse;
+	}
+
+	public void setCbFITransferResponse(CBFITransferResponsePojo cbFITransferResponse) {
+		this.cbFITransferResponse = cbFITransferResponse;
+	}
+
 	
 }

@@ -38,10 +38,10 @@ services:
         - SPRING.DATASOURCE.USERNAME=postgres 
         - SPRING.DATASOURCE.PASSWORD=postgres 
         - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-        - LOGGING.FILE.NAME=/home/logs/komi-outbound.log
+        - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - BIFAST.BANKCODE=SIHBIDJ1
       volumes: 
-        - /home/fransdm/workspace/bifast-log/inbound:/home/logs 
+        - /home/fransdm/workspace/bifast-log/inbound:/home/logs
       networks: 
         - docnet
 # Add VOLUMEs to allow backup of config, logs and databases
@@ -67,7 +67,7 @@ services:
         - BIFAST.BANKCODE=SIHBIDJ1
         - BIFAST.BICODE=INDOIDJA
       volumes: 
-        - /home/fransdm/workspace/bifast-log:/home/logs 
+        - /home/fransdm/workspace/bifast-log/outbound:/home/logs
       networks: 
         - docnet
 
@@ -78,6 +78,7 @@ services:
       restart: always
       depends_on: 
         - komidb
+        - inbound
       expose: 
         - "9006"
       ports: 
@@ -88,6 +89,7 @@ services:
         - SPRING.DATASOURCE.PASSWORD=postgres 
         - SPRING_JPA_HIBERNATE_DDL_AUTO=update
         - BIFAST.INBOUND-LOG-FOLDER=/home/logs
+        - KOMI.INBOUND-URL=bifast-inbound:9001/services/api
       networks: 
         - docnet
     

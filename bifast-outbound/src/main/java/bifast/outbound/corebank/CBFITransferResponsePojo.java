@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 public class CBFITransferResponsePojo {
 
 	private String transactionId;
-	private String transactionStatus;
+	private String status;
 	private String addtInfo;
 	private String responseTime;
 	
@@ -16,11 +16,11 @@ public class CBFITransferResponsePojo {
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
 	}
-	public String getTransactionStatus() {
-		return transactionStatus;
+	public String getStatus() {
+		return status;
 	}
-	public void setTransactionStatus(String transactionStatus) {
-		this.transactionStatus = transactionStatus;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	public String getAddtInfo() {
 		return addtInfo;

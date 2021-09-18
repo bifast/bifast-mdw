@@ -1,4 +1,4 @@
-package bifast.outbound.ficredittransfer;
+package bifast.outbound.ficredittransfer.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
+import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
+import bifast.outbound.ficredittransfer.ChnlFICreditTransferResponsePojo;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
 

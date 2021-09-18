@@ -1,14 +1,13 @@
-package bifast.outbound.credittransfer;
+package bifast.outbound.paymentstatus;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.paymentstatus.ChnlPaymentStatusRequestPojo;
 
 @Component
-public class InitPaymentStatusRequestCTProcessor implements Processor {
+public class BuildPaymentStatusRequestProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -17,6 +16,8 @@ public class InitPaymentStatusRequestCTProcessor implements Processor {
 		ChnlPaymentStatusRequestPojo request = new ChnlPaymentStatusRequestPojo();
 		
 		request.setEndToEndId(reqData.getAppHdr().getBizMsgIdr());
+		request.setRecptBank(reqData.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		
 		exchange.getIn().setBody(request);
 	}
 

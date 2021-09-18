@@ -1,4 +1,4 @@
-package bifast.outbound.credittransfer;
+package bifast.outbound.credittransfer.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
+import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
 import bifast.outbound.model.BankCode;
 import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.model.DomainCode;
@@ -37,17 +38,16 @@ public class SaveCTTablesProcessor implements Processor {
 
 		
 		BusinessMessage outRequest = exchange.getMessage().getHeader("ct_objreqbi", BusinessMessage.class);
+		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
 		
 		ChnlCreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlCreditTransferRequestPojo.class);				
 		String encriptedMessage = exchange.getMessage().getHeader("ct_encrMessage", String.class);
 		
 		String bizMsgIdr = outRequest.getAppHdr().getBizMsgIdr();
-		String chnlRefId = chnlRequest.getOrignReffId();
 
 		List<OutboundMessage> listOutboundMsg = outboundMsgRepo.findAllByBizMsgIdr(bizMsgIdr);
 		
 		if (listOutboundMsg.size() == 0 ) {
-			System.out.println("Insert table");
 			OutboundMessage outboundMessage = new OutboundMessage();
 
 			outboundMessage.setBizMsgIdr(bizMsgIdr);

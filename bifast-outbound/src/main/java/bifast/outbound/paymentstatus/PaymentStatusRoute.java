@@ -81,7 +81,7 @@ public class PaymentStatusRoute extends RouteBuilder {
 
 				.unmarshal(jsonBusinessMessageFormat)
 				.setHeader("ps_objresponsebi", simple("${body}"))
-				.marshal(jsonBusinessMessageFormat)
+//				.marshal(jsonBusinessMessageFormat)
 				
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
 				.setHeader("ps_status", simple("Timeout"))

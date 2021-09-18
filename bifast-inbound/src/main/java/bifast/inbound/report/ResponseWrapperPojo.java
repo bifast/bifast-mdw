@@ -2,6 +2,7 @@ package bifast.inbound.report;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -9,9 +10,9 @@ import bifast.library.iso20022.custom.BusinessMessage;
 @JsonRootName(value = "MessageEnquiryResult")
 public class ResponseWrapperPojo {
 
-    @XmlElement(name = "BusMsg", required = false)
+	@JsonProperty("BusMsg")
 	private BusinessMessage businessMessage;
-    @XmlElement(name = "MessageNotFound", required = false)
+	@JsonProperty("MessageNotFound")
 	private NotFoundResponsePojo messageNotFound;
 	
 	public BusinessMessage getBusinessMessage() {

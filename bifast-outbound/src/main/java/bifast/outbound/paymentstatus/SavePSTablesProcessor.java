@@ -32,7 +32,8 @@ public class SavePSTablesProcessor implements Processor {
 
 		
 		BusinessMessage outRequest = exchange.getMessage().getHeader("ps_objreqbi", BusinessMessage.class);
-		
+		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
+
 		ChnlPaymentStatusRequestPojo chnlRequest = exchange.getMessage().getHeader("ps_pymtstsreq", ChnlPaymentStatusRequestPojo.class);
 		
 		String encriptedMessage = exchange.getMessage().getHeader("ps_encrMessage", String.class);
@@ -50,10 +51,12 @@ public class SavePSTablesProcessor implements Processor {
 			outboundMessage.setChannelRequestDT(LocalDateTime.now());
 			outboundMessage.setFullRequestMessage(encriptedMessage);
 			
-			outboundMessage.setInternalReffId(chnlRequest.getEndToEndId());
+			outboundMessage.setInternalReffId(chnlRefId);
 			outboundMessage.setChannel("Other");
 			
-			BankCode bankCode = bankCodeRepo.findByBicCode(chnlRequest.getRecptBank()).orElse(new BankCode());
+			String rectpBank = outRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+
+			BankCode bankCode = bankCodeRepo.findByBicCode(rectpBank).orElse(new BankCode());
 			outboundMessage.setRecipientBank(bankCode.getBankCode());
 
 			outboundMessage = outboundMsgRepo.save(outboundMessage);
@@ -124,7 +127,7 @@ public class SavePSTablesProcessor implements Processor {
 		
 		else if (!(null == response.getDocument().getFiToFIPmtStsRpt())) {  // response ct pacs002
 			outboundMessage.setRespBizMsgId(response.getAppHdr().getBizMsgIdr());
-			outboundMessage.setRespStatus(response.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			outboundMessage.setRespStatus("SUCCESS");
 			
 		}			
 	
@@ -134,7 +137,7 @@ public class SavePSTablesProcessor implements Processor {
 			if (rjctMesg.length() > 400)
 				rjctMesg = rjctMesg.substring(0, 400);
 			
-			outboundMessage.setRespStatus("FAILURE");
+			outboundMessage.setRespStatus("ERROR-BI");
 			outboundMessage.setErrorMessage(rjctMesg);
 		}
 		
