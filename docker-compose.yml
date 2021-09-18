@@ -44,7 +44,6 @@ services:
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs
       networks: 
         - docnet
-# Add VOLUMEs to allow backup of config, logs and databases
 
     outbound:
       build: bifast-outbound
@@ -53,6 +52,8 @@ services:
       restart: always
       depends_on: 
         - komidb
+        - inbound
+        - mock
       expose: 
         - "9002"
       ports: 
@@ -66,6 +67,7 @@ services:
         - BIFAST.CICONNECTOR-URL=bifast-mock:9006/mock/cihub
         - BIFAST.BANKCODE=SIHBIDJ1
         - BIFAST.BICODE=INDOIDJA
+        - KOMI.INBOUND-URL=bifast-inbound:9001/services/api/enquiry
       volumes: 
         - /home/fransdm/workspace/bifast-log/outbound:/home/logs
       networks: 
