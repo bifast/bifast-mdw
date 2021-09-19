@@ -1,5 +1,7 @@
 package bifast.inbound.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,6 +35,11 @@ public class Settlement {
 	private String crdtBankAccountNo;
 	@Column(length=100)
 	private String dbtrBankAccountNo;
+	
+	private LocalDateTime receiveDate;
+	
+	@Column(length=5000)
+	private String fullMessage;
 	
 	public Long getId() {
 		return id;
@@ -93,6 +100,18 @@ public class Settlement {
 	}
 	public void setDbtrBankAccountNo(String dbtrBankAccountNo) {
 		this.dbtrBankAccountNo = dbtrBankAccountNo;
+	}
+	public LocalDateTime getReceiveDate() {
+		return receiveDate;
+	}
+	public void setReceiveDate(LocalDateTime receiveDate) {
+		this.receiveDate = receiveDate;
+	}
+	public String getFullMessage() {
+		return fullMessage;
+	}
+	public void setFullMessage(String fullMessage) {
+		this.fullMessage = fullMessage;
 	}
 
 	

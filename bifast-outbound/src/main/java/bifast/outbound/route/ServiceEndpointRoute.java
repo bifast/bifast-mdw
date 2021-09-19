@@ -88,38 +88,61 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.choice()
 				.when().simple("${header.hdr_msgType} == 'acctenqr'")
-					.log("Account Enquiry")
+					.log("[ChRefId:${header.hdr_chnlRefId}][AE] start.")
 					.to("direct:acctenqr")
 					
 				.when().simple("${header.hdr_msgType} == 'crdttrns'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][CT] start.")
 					.to("direct:ctreq")
 
 				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][FICT] start.")
 					.to("direct:fictreq")
 
 				.when().simple("${header.hdr_msgType} == 'pymtsts'")
-					.log("Payment Status Request")
+					.log("[ChRefId:${header.hdr_chnlRefId}][PS] start.")
 					.to("direct:paymentstatus")
 
-				.when().simple("${header.hdr_msgType} == 'reversect'")
-					.to("direct:ctreq")
-
 				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
-					.log("Proxy Registration")
+					.log("[ChRefId:${header.hdr_chnlRefId}][PREG] start.")
 					.to("direct:proxyregistration")
 
 				.when().simple("${header.hdr_msgType} == 'prxyrslt'")
-					.log("Proxy Resolution")
+					.log("[ChRefId:${header.hdr_chnlRefId}][PRES] start.")
 					.to("direct:proxyresolution")
 
 			.end()
 
 			.marshal(chnlResponseJDF)
+			
+			.choice()
+				.when().simple("${header.hdr_msgType} == 'acctenqr'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][AE] finish.")
+					
+				.when().simple("${header.hdr_msgType} == 'crdttrns'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][CT] finish.")
+	
+				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][FICT] finish.")
+	
+				.when().simple("${header.hdr_msgType} == 'pymtsts'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][PS] finish.")
+	
+				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][PREG] finish.")
+	
+				.when().simple("${header.hdr_msgType} == 'prxyrslt'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][PRES] finish.")
+	
+			.end()
 
-			.log("Proses ${header.hdr_msgType} selesai")
-			.removeHeaders("req*")
-			.removeHeaders("resp_*")
+			.process(saveChannelRequestProcessor)
+
+			.removeHeaders("req_*")
 			.removeHeaders("hdr_*")
+			.removeHeaders("fict_*")
+			.removeHeaders("ps_*")
+			.removeHeaders("ae_*")
 			.removeHeader("HttpMethod")
 
 		;

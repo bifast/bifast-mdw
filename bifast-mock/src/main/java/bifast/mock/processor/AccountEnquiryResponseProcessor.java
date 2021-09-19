@@ -31,15 +31,18 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
         Random rand = new Random();
-        int posbl4 = rand.nextInt(4);
+        // int posbl4 = rand.nextInt(4);
 
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
 		String bizMsgId = utilService.genRfiBusMsgId("510", "02");
 		String msgId = utilService.genMessageId("510");
 
+		String acctNo = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
+
 		Pacs002Seed seed = new Pacs002Seed();
 
-		if (posbl4 == 0) {
+		if (acctNo.startsWith("9")) {
+		// if (posbl4 == 0) {
 			seed.setStatus("RJCT");
 			seed.setReason("U001");
 		}
@@ -51,7 +54,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		
 		seed.setMsgId(msgId);
 		seed.setCreditorName(utilService.getFullName());
-		seed.setCreditorAccountNo("977004883004");
+		seed.setCreditorAccountNo(acctNo);
 		seed.setCreditorAccountIdType("CACC");
 		seed.setCreditorType("01");
 		seed.setCreditorId(String.format("KTP-2%08d", rand.nextInt(9999999)));

@@ -31,7 +31,7 @@ public class CreditTransferRequestProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 
-		ChnlCreditTransferRequestPojo chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChnlCreditTransferRequestPojo.class);
+		ChnlCreditTransferRequestPojo chnReq = exchange.getIn().getHeader("ct_channelRequest",ChnlCreditTransferRequestPojo.class);
 		
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
 

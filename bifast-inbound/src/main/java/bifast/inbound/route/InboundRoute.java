@@ -13,6 +13,7 @@ import bifast.inbound.credittransfer.CreditTransferProcessor;
 import bifast.inbound.ficredittransfer.FICreditTransferProcessor;
 import bifast.inbound.processor.CheckMessageTypeProcessor;
 import bifast.inbound.processor.SaveInboundMessageProcessor;
+import bifast.inbound.processor.SaveSettlementMessageProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 
@@ -21,6 +22,8 @@ public class InboundRoute extends RouteBuilder {
 
 	@Autowired
 	private SaveInboundMessageProcessor saveInboundMessageProcessor;
+	@Autowired
+	private SaveSettlementMessageProcessor saveSettlementMessageProcessor;
 	@Autowired
 	private CheckMessageTypeProcessor checkMsgTypeProcessor;
 	@Autowired
@@ -72,7 +75,7 @@ public class InboundRoute extends RouteBuilder {
 			
 			.process(checkMsgTypeProcessor)   // set header.hdr_msgType
 			
-			.log("[Inbound] [${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] received.")
+			.log("[Inbound][${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] received.")
 
 			.choice()
 
@@ -128,7 +131,7 @@ public class InboundRoute extends RouteBuilder {
 					.to("seda:reversal?exchangePattern=InOnly")
 			.end()
 			
-			.log("[Inbound] [${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
+			.log("[Inbound][${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
 			.removeHeaders("resp_*")
@@ -142,8 +145,12 @@ public class InboundRoute extends RouteBuilder {
 		;
 
 		from("seda:logandsave").routeId("savedb")
-			.process(saveInboundMessageProcessor)
-			.log("Message [${header.hdr_msgType}] saved.")
+			.choice()
+			.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
+				.process(saveSettlementMessageProcessor)
+			.otherwise()
+				.process(saveInboundMessageProcessor)
+			.end()
 		;
 
 

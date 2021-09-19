@@ -20,7 +20,7 @@ public class CTCorebankRequestProcessor implements Processor {
 		// TODO Auto-generated method stub
 		
 //		ChnlCreditTransferRequestPojo chnlCTRequest = exchange.getMessage().getBody(ChnlCreditTransferRequestPojo.class);
-		ChnlCreditTransferRequestPojo chnlCTRequest = exchange.getIn().getHeader("hdr_channelRequest",ChnlCreditTransferRequestPojo.class);
+		ChnlCreditTransferRequestPojo chnlCTRequest = exchange.getIn().getHeader("ct_channelRequest",ChnlCreditTransferRequestPojo.class);
 
 		CBDebitInstructionRequestPojo cbDebitRequest = new CBDebitInstructionRequestPojo();
 

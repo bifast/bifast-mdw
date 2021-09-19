@@ -32,7 +32,7 @@ public class AccountEnquiryMsgConstructProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChnlAccountEnquiryRequestPojo chnReq = exchange.getIn().getHeader("hdr_channelRequest",ChnlAccountEnquiryRequestPojo.class);
+		ChnlAccountEnquiryRequestPojo chnReq = exchange.getIn().getHeader("ae_channelRequest",ChnlAccountEnquiryRequestPojo.class);
 
 		String msgType = "510";
 		String bizMsgId = utilService.genOfiBusMsgId(msgType, chnReq.getChannel());

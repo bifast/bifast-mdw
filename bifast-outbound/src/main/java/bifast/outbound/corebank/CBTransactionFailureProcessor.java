@@ -13,14 +13,13 @@ public class CBTransactionFailureProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		Object objChnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", Object.class);
-		String chnlRequestClassName = objChnlRequest.getClass().getName();
-
+		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
+		
 		CBDebitInstructionResponsePojo cbResponse = exchange.getMessage().getHeader("ct_cbresponse", CBDebitInstructionResponsePojo.class);
 
 		ChnlFailureResponsePojo cbFailure = new ChnlFailureResponsePojo();
 
-		String orignReffId = (String) objChnlRequest.getClass().getMethod("getOrignReffId").invoke(objChnlRequest);
+		String orignReffId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
 		cbFailure.setReferenceId(orignReffId);
 
 		if (!(null == cbResponse.getAddtInfo()))
@@ -28,7 +27,7 @@ public class CBTransactionFailureProcessor implements Processor {
 		
 		cbFailure.setLocation("Corebank service call");
 		
-		if (chnlRequestClassName.equals("bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo"))
+		if (msgType.equals("crdttrns"))
 			cbFailure.setReason("Debit transaction failed");
 		
 		

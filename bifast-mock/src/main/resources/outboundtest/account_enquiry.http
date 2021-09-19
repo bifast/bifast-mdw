@@ -9,6 +9,6 @@ Content-Type: application/json
     "recptBank" : "014",
     "amount" : 9750000,
     "categoryPurpose" : "Purchase",
-    "creditorAccountNumber" : "9589224"
+    "creditorAccountNumber" : "943599"
   }
 }

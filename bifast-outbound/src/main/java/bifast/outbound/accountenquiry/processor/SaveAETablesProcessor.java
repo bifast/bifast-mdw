@@ -37,13 +37,14 @@ public class SaveAETablesProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		
-		BusinessMessage outRequest = exchange.getMessage().getHeader("req_objbi", BusinessMessage.class);
+//		BusinessMessage outRequest = exchange.getMessage().getHeader("req_objbi", BusinessMessage.class);ae_objreq_bi
+		BusinessMessage outRequest = exchange.getMessage().getHeader("ae_objreq_bi", BusinessMessage.class);
 		
 		// JANGAN LANJUT JIKA BELUM LOLOS outRequest Msg
 		if (null == outRequest) 
 			return;
 
-		ChnlAccountEnquiryRequestPojo chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlAccountEnquiryRequestPojo.class);				
+		ChnlAccountEnquiryRequestPojo chnlRequest = exchange.getMessage().getHeader("ae_channelRequest", ChnlAccountEnquiryRequestPojo.class);				
 		String encriptedMessage = exchange.getMessage().getHeader("ae_encrMessage", String.class);
 		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
 
@@ -101,7 +102,6 @@ public class SaveAETablesProcessor implements Processor {
 
 		//channel kembalikan keposisi descriptive
 		String chnCode = chnlRequest.getChannel();
-		System.out.println(chnCode);
 		outboundMessage.setChannel(domainCodeRepo.findByGrpAndKey("CHANNEL.TYPE", chnCode).get().getValue());
 		
 		String requestClass = chnlRequest.getClass().getName();

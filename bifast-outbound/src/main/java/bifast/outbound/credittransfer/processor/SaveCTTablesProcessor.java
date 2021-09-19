@@ -40,7 +40,7 @@ public class SaveCTTablesProcessor implements Processor {
 		BusinessMessage outRequest = exchange.getMessage().getHeader("ct_objreqbi", BusinessMessage.class);
 		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
 		
-		ChnlCreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlCreditTransferRequestPojo.class);				
+		ChnlCreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);				
 		String encriptedMessage = exchange.getMessage().getHeader("ct_encrMessage", String.class);
 		
 		String bizMsgIdr = outRequest.getAppHdr().getBizMsgIdr();

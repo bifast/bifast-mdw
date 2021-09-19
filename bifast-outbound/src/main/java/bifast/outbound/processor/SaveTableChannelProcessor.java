@@ -1,6 +1,7 @@
 package bifast.outbound.processor;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -37,9 +38,22 @@ public class SaveTableChannelProcessor implements Processor {
 		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
 		
 		ChannelTransaction chnlTable = new ChannelTransaction();
-		System.out.println("akan insert table channel untuk " + msgType);
+		Long tableId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
 		
-		if (msgType.equals("acctenqr")) {
+		if (!(null==tableId) ) {
+			
+			Optional<ChannelTransaction> optChannelTrx = channelTransactionRepo.findById(tableId);
+			if (optChannelTrx.isPresent()) {
+				chnlTable = optChannelTrx.get();
+				optChannelTrx.get().setResponseTime(LocalDateTime.now());
+				optChannelTrx.get().setStatus("SUCCESS");
+				channelTransactionRepo.save(chnlTable);
+			}
+			
+
+		}
+
+		else if (msgType.equals("acctenqr")) {
 			ChnlAccountEnquiryRequestPojo channelRequest = (ChnlAccountEnquiryRequestPojo) objChnReq;
 
 			chnlTable.setMsgName("Account Enquiry");
@@ -67,7 +81,6 @@ public class SaveTableChannelProcessor implements Processor {
 			chnlTable.setMsgName("Credit Transfer");
 			chnlTable.setTransactionId(chnlRefId);
 
-			System.out.println("channel: " + channelRequest.getChannel());
 			DomainCode channelDC = domainCodeRepo.findByGrpAndKey("CHANNEL.TYPE", channelRequest.getChannel()).orElse(new DomainCode());
 			chnlTable.setChannelCode(channelDC.getValue());
 

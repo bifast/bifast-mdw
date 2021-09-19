@@ -20,7 +20,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 
 		BusinessMessage busMesg = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
 		
-		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("hdr_channelRequest",ChnlAccountEnquiryRequestPojo.class);
+		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("ae_channelRequest",ChnlAccountEnquiryRequestPojo.class);
 		
 		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
 		

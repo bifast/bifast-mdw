@@ -58,7 +58,6 @@ public class ValidateInputProcessor implements Processor  {
 			DomainCode channelDC = domainCodeRepo.findByGrpAndValue("CHANNEL.TYPE", channel).orElseThrow();
 
 			Method setChannel = objRequest.getClass().getMethod("setChannel", String.class);
-			System.out.println("akan change channel");
 			setChannel.invoke(objRequest, channelDC.getKey());
 		}
 		

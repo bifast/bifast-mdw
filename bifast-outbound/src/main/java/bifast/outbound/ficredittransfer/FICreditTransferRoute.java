@@ -110,7 +110,6 @@ public class FICreditTransferRoute extends RouteBuilder {
 
 			.log("FI Credit Transfer")
 //			.process(validateRequest)
-			.setHeader("hdr_chnl_req_id", simple("${body.orignReffId}"))
 			.log("[fictreq] ChReqId:${body.orignReffId} started")
 
 			.process(fiCrdtTransferRequestProcessor)

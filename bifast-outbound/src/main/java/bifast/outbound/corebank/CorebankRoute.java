@@ -53,7 +53,7 @@ public class CorebankRoute extends RouteBuilder{
 		;
 
 		from("direct:callcb").routeId("callingCB")
-			.log("[ChRefId:${header.hdr_chnl_req_id}] [callingCB] started")
+			.log("[ChRefId:${header.hdr_chnlRefId}] [callingCB] started")
 			
 			.log("${body}")
 			

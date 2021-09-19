@@ -11,7 +11,6 @@ public class InitSettlementRequestProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		System.out.println("InitSettlementRequestProcessor");
 		BusinessMessage reqData = exchange.getMessage().getBody(BusinessMessage.class);
 		RequestPojo histReq = new RequestPojo();
 		

@@ -32,10 +32,9 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	@Autowired
 	private FaultProcessor faultProcessor;
 	@Autowired
-	private TimoutFaultProcessor timeoutFaultProcessor;
-	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
-
+	@Autowired
+	private TimoutFaultProcessor timeoutFaultProcessor;
 	@Autowired
 	private SaveAETablesProcessor saveAETableProcessor;
 
@@ -63,13 +62,13 @@ public class AccountEnquiryRoute extends RouteBuilder{
 		configureJsonDataFormat();
 
         onException(Exception.class).routeId("AE Exception Handler")
-        	.log("Fault di AE Excp, ${header.hdr_errorlocation}")
+        	.log("AE Excp, ${header.hdr_errorlocation}")
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
 			.to("sql:update outbound_message set resp_status = 'ERROR-KM', "
 					+ " error_msg= :#${body.faultResponse.reason} "
-					+ "where id= :#${header.hdr_idtable}  ")
+					+ "where id= :#${header.ae_table_id}  ")
 			.marshal(chnlResponseJDF)
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
@@ -80,17 +79,15 @@ public class AccountEnquiryRoute extends RouteBuilder{
 
 		from("direct:acctenqr").routeId("direct:acctenqr")
 			
-			.log("direct:acctenqr")
-			.setHeader("hdr_errorlocation", constant("AERoute/Cekpoint 1"))
-//			.process(validateInputProcessor)
-			
+			.setHeader("ae_channelRequest", simple("${body}"))
+
 			.setHeader("hdr_errorlocation", constant("AERoute/AEMsgConstructProcessor"))
 			.process(AEMsgConstructProcessor)
-			.setHeader("req_objbi", simple("${body}"))
+//			.setHeader("req_objbi", simple("${body}"))
+			.setHeader("ae_objreq_bi", simple("${body}"))
 			
 			.marshal(businessMessageJDF)
-			.setHeader("hdr_errorlocation", constant("AERoute/saveTabelInit"))
-
+			
 			.to("seda:encryptAEbody")
 			.to("seda:saveAEtables")
 			
@@ -99,7 +96,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.doTry()
 				.setHeader("hdr_errorlocation", constant("AERoute/sendCIHub"))
-				.log("akan call cihub")
 	
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich("http:{{bifast.ciconnector-url}}?"
@@ -108,36 +104,30 @@ public class AccountEnquiryRoute extends RouteBuilder{
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
 				.to("seda:encryptAEbody")
-				.log("selesai call cihub")
+
 				.setHeader("hdr_fullresponsemessage", simple("${body}"))
 				.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-	
-				.setHeader("hdr_errorlocation", constant("AERoute/processResponse"))
-	
+		
 				.unmarshal(businessMessageJDF)
 				.setHeader("resp_objbi", simple("${body}"))
 				
 				// prepare untuk response ke channel
 				.setHeader("hdr_errorlocation", constant("AERoute/ResponseProcessor"))
 				.process(accountEnqrResponseProcessor)
-//				.marshal(chnlResponseJDF)
-//				.setHeader("resp_channel", simple("${body}"))
 
 				.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
 				// save audit tables
-				.setHeader("hdr_errorlocation", constant("AERoute/updateTable"))
 				.to("seda:saveAEtables?exchangePattern=InOnly")
 
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-	    		.log(LoggingLevel.ERROR, "Timeout process Account Enquiry ref:${header.hdr_channelRequest.channelRefId}")
+	    		.log(LoggingLevel.ERROR, "[AE][ChnlRefId:${header.hdr_chnlRefId}] timeout")
 		    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
 				.to("sql:update outbound_message set resp_status = 'TIMEOUT', "
 						+ " error_msg= 'Timeout' "
-						+ "where id= :#${header.hdr_idtable}  ")
+						+ "where id= :#${header.ae_table_id}  ")
 
 				.process(timeoutFaultProcessor)
-//				.marshal(chnlResponseJDF)
 			.endDoTry().end()
 				
 			.removeHeaders("ae_*")
@@ -153,7 +143,9 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.removeHeader("ae_tmp")
 		;
 		from("seda:saveAEtables").routeId("saveAEtables")
+			.setHeader("hdr_errorlocation", constant("AERoute/saveTabel"))
 			.process(saveAETableProcessor)
+			.setHeader("ae_table_id", simple("${header.hdr_idtable}"))
 		;
 
 		
