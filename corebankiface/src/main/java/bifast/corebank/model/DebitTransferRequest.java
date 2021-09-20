@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name="DEBIT_TRANSFER_REQUEST")
+@Entity(name="CB_DEBIT_TRANSFER_REQUEST")
 public class DebitTransferRequest {
 
 	@Id 

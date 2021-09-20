@@ -5,19 +5,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import bifast.corebank.model.Account;
+import bifast.corebank.model.CbAccount;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<CbAccount, Long> {
 
-	@Query("SELECT account FROM Account account WHERE account.accountNo = :accountNumber ")
-    Account getAccountByAccountNumber(@Param("accountNumber") String accountNumber);
+	@Query("SELECT a FROM CbAccount a WHERE a.accountNo =:accountNumber ")
+    CbAccount getAccountByAccountNumber(@Param("accountNumber") String accountNumber);
 	
-    @Query("SELECT account FROM Account account WHERE account.intrRefId =:transactionId and account.accountNo = :accountNumber and account.amount = :amount")
-    Account getAccountInquiry(@Param("transactionId") String transactionId,
+    @Query("SELECT a FROM CbAccount a WHERE a.intrRefId =:transactionId and a.accountNo = :accountNumber and a.amount = :amount")
+    CbAccount getAccountInquiry(@Param("transactionId") String transactionId,
     						  @Param("accountNumber") String accountNumber,
     						  @Param("amount") BigDecimal amount);
 

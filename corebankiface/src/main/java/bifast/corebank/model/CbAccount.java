@@ -10,7 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Account {
+public class CbAccount {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)

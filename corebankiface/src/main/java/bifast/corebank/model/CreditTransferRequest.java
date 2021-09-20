@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name="CREDIT_TRANSFER_REQUEST")
+@Entity(name="CB_CREDIT_TRANSFER_REQUEST")
 public class CreditTransferRequest {
 
 	@Id 
