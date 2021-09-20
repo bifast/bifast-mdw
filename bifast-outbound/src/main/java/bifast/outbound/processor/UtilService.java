@@ -1,19 +1,15 @@
 package bifast.outbound.processor;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 import java.util.Optional;
 
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import bifast.library.config.LibConfig;
+import bifast.outbound.config.Config;
 import bifast.outbound.model.MessageCounter;
 import bifast.outbound.repository.MessageCounterRepository;
 
@@ -22,7 +18,7 @@ import bifast.outbound.repository.MessageCounterRepository;
 public class UtilService {
 
 	@Autowired
-	private LibConfig config;
+	private Config config;
 	@Autowired
 	private MessageCounterRepository messageCounterRepo;
 

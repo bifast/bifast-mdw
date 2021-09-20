@@ -67,8 +67,8 @@ public class PaymentStatusRoute extends RouteBuilder {
 //				
 				.setHeader("hdr_errorlocation", constant("PS/call-CIHUB"))
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{bifast.ciconnector-url}}?"
-						+ "socketTimeout={{bifast.timeout}}&" 
+				.enrich("http:{{komi.ciconnector-url}}?"
+						+ "socketTimeout={{komi.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)

@@ -77,8 +77,10 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	    	.handled(true)
       	;
 
-		from("direct:acctenqr").routeId("direct:acctenqr")
+		from("direct:acctenqr").routeId("AccountEnquiryRoute")
 			
+			.log("[ChRefId:${header.hdr_chnlRefId}][AE] start.")
+
 			.setHeader("ae_channelRequest", simple("${body}"))
 
 			.setHeader("hdr_errorlocation", constant("AERoute/AEMsgConstructProcessor"))
@@ -90,16 +92,15 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			
 			.to("seda:encryptAEbody")
 			.to("seda:saveAEtables")
-			
-			
+				
 			// kirim ke CI-HUB
 			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.doTry()
 				.setHeader("hdr_errorlocation", constant("AERoute/sendCIHub"))
 	
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{bifast.ciconnector-url}}?"
-						+ "socketTimeout={{bifast.timeout}}&" 
+				.enrich("http:{{komi.ciconnector-url}}?"
+						+ "socketTimeout={{komi.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
@@ -121,7 +122,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 				.to("seda:saveAEtables?exchangePattern=InOnly")
 
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-	    		.log(LoggingLevel.ERROR, "[AE][ChnlRefId:${header.hdr_chnlRefId}] timeout")
+	    		.log(LoggingLevel.ERROR, "[ChnlRefId:${header.hdr_chnlRefId}][AE] call CI-HUB timeout")
 		    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
 				.to("sql:update outbound_message set resp_status = 'TIMEOUT', "
 						+ " error_msg= 'Timeout' "

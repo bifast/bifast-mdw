@@ -35,13 +35,13 @@ public class EnquiryProcessor implements Processor{
 			if (listSettlement.size() > 0) {
 				System.out.println("dan nemu");
 				Settlement settlement = listSettlement.get(0);
-				InboundMessage inboundMessage = inboundMessageRepo.findById(settlement.getLogMessageId()).orElse(new InboundMessage());
+//				InboundMessage inboundMessage = inboundMessageRepo.findById(settlement.getLogMessageId()).orElse(new InboundMessage());
 
-				String fullMessage = inboundMessage.getFullRequestMessage();
+				String fullMessage = settlement.getFullMessage();
 				if (null==fullMessage) {}
 				else if (fullMessage.isEmpty()) {} 
 				else {
-					response = inboundMessage.getFullRequestMessage();	
+					response = fullMessage;	
 				}
 			}
 		}

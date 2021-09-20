@@ -100,9 +100,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
-			.to("sql:update outbound_message set resp_status = 'ERROR-KM', "
-					+ " error_msg= :#${body.faultResponse.reason} "
-					+ "where id= :#${header.ct_table_id}  ")
+			.to("seda:saveCTtables?exchangePattern=InOnly")
 			.marshal(chnlResponseJDF)
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
@@ -113,7 +111,9 @@ public class CreditTransferRoute extends RouteBuilder {
 	  	;
 
 
-		from("direct:ctreq").routeId("crdt_trnsf")
+		from("direct:ctreq").routeId("CreditTransferRoute")
+		
+			.log("[ChRefId:${header.hdr_chnlRefId}][CT] start.")
 
 			.setHeader("ct_channelRequest", simple("${body}"))
 			
@@ -126,28 +126,24 @@ public class CreditTransferRoute extends RouteBuilder {
 					.log("Apakah AE Response SUCCESS or FAILED")
 					.choice()
 						.when().simple("${body.accountEnquiryResponse.status} == 'ACTC'")
-							.log("ternyata AE lolos")
+							.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "[ChRefId:${header.hdr_chnlRefId}][CT] AE passed.")
 							.to("direct:ct_aepass")
 						.otherwise()
-							.log("AE REJECT")
+							.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "[ChRefId:${header.hdr_chnlRefId}][CT] AE reject.")
 							.setHeader("ct_failure_point", constant("AERJCT"))
 							.process(crdtTransferResponseProcessor)
 					.endChoice()
-					.log("Selesai cek AE Response SUCCESS or FAILED")
-				.when().simple("${body.faultResponse} != null")
-					.log("kirim AE fault response")
 			.end()
-			.log("baru selesai proses AE")
 			
 			.removeHeaders("ct_*")
 			.removeHeaders("resp_*")
 			;
 		
-		from("direct:ct_aepass").routeId("ct_aepass")
+		from("direct:ct_aepass").routeId("CTAfterAERoute")
 
 			.process(crdtTransferProcessor)
 
-			.log("[CT][ChRefId:${header.hdr_chnlRefId}] processing...")
+			.log("[ChRefId:${header.hdr_chnlRefId}][CT] processing...")
 
 			.setHeader("ct_objreqbi", simple("${body}"))
 			.marshal(businessMessageJDF)
@@ -158,19 +154,17 @@ public class CreditTransferRoute extends RouteBuilder {
 			// invoke corebanking
 			.setHeader("hdr_errorlocation", constant("corebank service call"))		
 			.process(ctCorebankRequestProcessor)  // build request param
-			.marshal(cbDebitInstructionRequestJDF)			
+//			.marshal(cbDebitInstructionRequestJDF)			
 			.to("direct:callcb")
 			.setHeader("ct_cbresponse", simple("${body.cbDebitInstructionResponse}"))
 				
 			.choice()
 				.when().simple("${header.ct_cbresponse.status} == 'SUCCESS'")
-					.log("akan seda lolos corebank")
 					.to("seda:ct_lolos_corebank")
 
 				.when().simple("${header.ct_cbresponse.status} == 'FAILED'")
-					.log("Corebanking reject")
+					.log("[ChRefId:${header.hdr_chnlRefId}] Corebank reject.")
 					.setHeader("ct_failure_point", constant("CBRJCT"))
-//					.process(corebankTransactionFailureProcessor)
 					.process(crdtTransferResponseProcessor)
 					.to("sql:update outbound_message set resp_status = 'RJCT-CB', "
 							+ "error_msg = :#${header.ct_cbresponse.addtInfo} "
@@ -182,7 +176,7 @@ public class CreditTransferRoute extends RouteBuilder {
 		;
 
 
-		from("seda:ct_lolos_corebank").routeId("ct_after_cb_call")
+		from("seda:ct_lolos_corebank").routeId("CTAfterCBRoute")
 			.log("sudah di seda lolos corebank")
 			.setBody(simple("${header.ct_objreqbi}"))
 			
@@ -194,8 +188,8 @@ public class CreditTransferRoute extends RouteBuilder {
 				.setHeader("hdr_errorlocation", constant("CTRoute/pre-call-cihub"))		
 
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{bifast.ciconnector-url}}?"
-						+ "socketTimeout={{bifast.timeout}}&" 
+				.enrich("http:{{komi.ciconnector-url}}?"
+						+ "socketTimeout={{komi.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
@@ -203,7 +197,7 @@ public class CreditTransferRoute extends RouteBuilder {
 				.log("Selesai submit CT")
 				
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-    			.log(LoggingLevel.ERROR, "[CT][ChRefId:${header.hdr_chnlRefId}] call CI-HUB timeout")
+    			.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}][CT] call CI-HUB timeout")
 				.setHeader("ct_failure_point", constant("CIHUBTIMEOUT"))
     			.to("sql:update outbound_message set resp_status = 'TIMEOUT', "
     					+ " error_msg= 'Timeout' "
@@ -281,6 +275,8 @@ public class CreditTransferRoute extends RouteBuilder {
 	
 			.end()
 			
+			// TODO jika response RJCT, harus reversal ke corebanking
+			
 			// prepare untuk response ke channel
     		.setHeader("hdr_errorlocation", constant("CTRoute/ResponseProcessor"))
 			.process(crdtTransferResponseProcessor)
@@ -303,6 +299,14 @@ public class CreditTransferRoute extends RouteBuilder {
 			.process(saveCTTableProcessor)
 			.setHeader("ct_table_id", simple("${header.hdr_idtable}"))
 		;
+		from("seda:updateFaultTables")
+			.to("sql:update outbound_message set resp_status = 'ERROR-KM', "
+				+ " error_msg= :#${body.faultResponse.reason} "
+				+ "where id= :#${header.ct_table_id}  ")
+			.to("sql:update channel_transaction set status = 'ERROR-KM', "
+					+ " error_msg= :#${body.faultResponse.reason} "
+					+ "where id= :#${header.hdr_chnlTable_id}  ")
+			;
 
 	}
 }

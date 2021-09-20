@@ -64,11 +64,15 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				.consumes("application/json")
 				.to("direct:outbound")
 
-			.post("/history")
+			.get("/echo")
 				.consumes("application/json")
-				.to("direct:aa")
+				.to("direct:echo")
 		;
 
+		from("direct:echo")
+			.setBody(constant("{\"Halo\": \"Halo juga\"}"))
+		;
+		
 		from("direct:outbound").routeId("OutboundRoute")
 			.convertBodyTo(String.class)
 
@@ -88,11 +92,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.choice()
 				.when().simple("${header.hdr_msgType} == 'acctenqr'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][AE] start.")
 					.to("direct:acctenqr")
 					
 				.when().simple("${header.hdr_msgType} == 'crdttrns'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][CT] start.")
 					.to("direct:ctreq")
 
 				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")

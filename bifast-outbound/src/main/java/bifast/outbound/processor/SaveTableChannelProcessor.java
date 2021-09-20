@@ -49,7 +49,6 @@ public class SaveTableChannelProcessor implements Processor {
 				optChannelTrx.get().setStatus("SUCCESS");
 				channelTransactionRepo.save(chnlTable);
 			}
-			
 
 		}
 

@@ -94,8 +94,8 @@ public class ProxyRoute extends RouteBuilder {
 			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.setHeader("hdr_errorlocation", constant("PrxyRoute/sendCIHub"))
 			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:{{bifast.ciconnector-url}}?"
-					+ "socketTimeout={{bifast.timeout}}&" 
+			.enrich("http:{{komi.ciconnector-url}}?"
+					+ "socketTimeout={{komi.timeout}}&" 
 					+ "bridgeEndpoint=true",
 					enrichmentAggregator)
 			.convertBodyTo(String.class)
@@ -140,8 +140,8 @@ public class ProxyRoute extends RouteBuilder {
 
 //			// kirim ke CI-HUB
 			.setHeader("HttpMethod", constant("POST"))
-			.enrich("http:{{bifast.ciconnector-url}}?"
-					+ "socketTimeout={{bifast.timeout}}&" 
+			.enrich("http:{{komi.ciconnector-url}}?"
+					+ "socketTimeout={{komi.timeout}}&" 
 					+ "bridgeEndpoint=true",
 					enrichmentAggregator)
 			.convertBodyTo(String.class)

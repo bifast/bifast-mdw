@@ -96,11 +96,11 @@ public class CiHubRoute extends RouteBuilder {
 			.process(checkMessageTypeProcessor)
 			.log("${header.msgType}")
 
-			.setHeader("delay", simple("${random(400,3000)}"))
-			.choice()
-				.when(simple("${header.msgType} == 'PaymentStatusRequest'"))
-					.setHeader("delay", constant(500))
-			.end()
+			// .setHeader("delay", simple("${random(400,3000)}"))
+			// .choice()
+			// 	.when(simple("${header.msgType} == 'PaymentStatusRequest'"))
+			// 		.setHeader("delay", constant(500))
+			// .end()
 
 			.choice()
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")
@@ -124,7 +124,7 @@ public class CiHubRoute extends RouteBuilder {
 					.log("Akan fICreditTransferResponseProcessor: ${body}")
 					.process(creditResponseStoreProcessor)
 					.log("After creditResponseStoreProcessor: ${body}")
-					
+
 					.setBody(simple("${header.hdr_ctResponseObj}"))
 
 					.setExchangePattern(ExchangePattern.InOnly)
@@ -136,8 +136,6 @@ public class CiHubRoute extends RouteBuilder {
 					.choice()
 						.when().simple("${body} != null")
 							.log("nemu payment status")
-							// .unmarshal().base64()
-							// .unmarshal().zipDeflater()
 							.unmarshal(jsonBusinessMessageDataFormat)
 						.otherwise()
 							.log("Nggak nemu untuk response payment status")
@@ -157,7 +155,21 @@ public class CiHubRoute extends RouteBuilder {
 				.otherwise()	
 					.log("Other message")
 			.end()
-				
+
+			.choice()
+				.when().simple("${header.hdr_account_no} startsWith '8' ")
+					.setHeader("delay", simple("${random(2000,3000)}"))
+				.otherwise()
+					.setHeader("delay", constant(500))
+			.end()		
+
+			.choice()
+			.when().simple("${header.hdr_account_no} startsWith '88' ")
+				.setHeader("delay_sttl", simple("${random(2200,3000)}"))
+			.otherwise()
+				.setHeader("delay_sttl", constant(500))
+			.end()		
+			.log("Delay ${header.delay}")
 			.delay(simple("${header.delay}"))
 
 			// .process(rejectMessageProcessor)
@@ -169,7 +181,7 @@ public class CiHubRoute extends RouteBuilder {
 			.log("${body}")
 			// .log("delay selama ${header.delay}s")
 			.removeHeader("msgType")
-			.removeHeader("delay")
+			.removeHeaders("delay*")
 			.removeHeader("objRequest")
 			.removeHeaders("hdr_*")
 		;
@@ -180,7 +192,7 @@ public class CiHubRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
 			.log("${body}")
-			.delay(3500)
+			.delay(500)
 			.log("end-delay")
 			.unmarshal(jsonBusinessMessageDataFormat)
 			.process(proxyRegistrationResponseProcessor)
@@ -194,15 +206,14 @@ public class CiHubRoute extends RouteBuilder {
 
 
 		from("seda:settlement").routeId("Settlement")
-			.log("Proses Settlement (delayed)")
-			.log("response status: ${header.hdr_ctRespondStatus}")
+			.log("Response: ${header.hdr_ctRespondStatus}")
 			.choice()
 				.when().simple("${header.hdr_ctRespondStatus} == 'ACTC'")
 					.log("Akan proses settlement")
 					.marshal(jsonBusinessMessageDataFormat)
 					.process(settlementProcessor)
 					.marshal(jsonBusinessMessageDataFormat)
-					.delay(1000)
+					.delay(simple("${header.delay_sttl}"))
 					.log("After settlementProcessor: ${body}")
 					.to("rest:post:inbound?host={{komi.inbound-url}}&"
 							+ "bridgeEndpoint=true")

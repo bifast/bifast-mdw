@@ -38,7 +38,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		String msgId = utilService.genMessageId("510");
 
 		String acctNo = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
-
+		System.out.println("nomor rekening: " + acctNo);
 		Pacs002Seed seed = new Pacs002Seed();
 
 		if (acctNo.startsWith("9")) {

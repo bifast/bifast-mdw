@@ -47,27 +47,28 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:1.3
+      image: fransmzh/komi-outbound:1.4
       container_name: bifast-outbound
       restart: always
       depends_on: 
         - komidb
-        - inbound
         - mock
       expose: 
         - "9002"
       ports: 
         - "9002:9002"
       environment: 
+        - KOMI.CICONNECTOR-URL=bifast-mock:9006/mock/cihub
+        - KOMI.BANKCODE=SIHBIDJ1
+        - KOMI.BICODE=INDOIDJA
+        - KOMI.INBOUND-URL=bifast-inbound:9001/services/api/enquiry
+        - LOGGING.FILE.NAME=/home/logs/komi-outbound.log
+        - LOGGING.LEVEL.BIFAST.OUTBOUND=DEBUG
         - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
         - SPRING.DATASOURCE.USERNAME=postgres 
         - SPRING.DATASOURCE.PASSWORD=postgres 
+        - SPRING.MAIN.BANNER-MODE=OFF 
         - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-        - LOGGING.FILE.NAME=/home/logs/komi-outbound.log
-        - BIFAST.CICONNECTOR-URL=bifast-mock:9006/mock/cihub
-        - BIFAST.BANKCODE=SIHBIDJ1
-        - BIFAST.BICODE=INDOIDJA
-        - KOMI.INBOUND-URL=bifast-inbound:9001/services/api/enquiry
       volumes: 
         - /home/fransdm/workspace/bifast-log/outbound:/home/logs
       networks: 

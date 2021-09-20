@@ -120,7 +120,7 @@ public class FICreditTransferRoute extends RouteBuilder {
 			.to("seda:saveFICTtables")
 
 			.process(fiCTCorebankRequestProcessor)
-			.marshal(cbFITransferRequestJDF)
+//			.marshal(cbFITransferRequestJDF)
 			.log("10: ${body}")
 			.to("direct:callcb")
 			.log("20: ${body}")
@@ -153,8 +153,8 @@ public class FICreditTransferRoute extends RouteBuilder {
 				.log("${body}")
 				.setHeader("hdr_errorlocation", constant("FICT/call-CIHUB"))
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{bifast.ciconnector-url}}?"
-						+ "socketTimeout={{bifast.timeout}}&" 
+				.enrich("http:{{komi.ciconnector-url}}?"
+						+ "socketTimeout={{komi.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)

@@ -30,16 +30,21 @@ public class CreditTransferResponseProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		Random rand = new Random();
+		// Random rand = new Random();
 		String bizMsgId = utilService.genRfiBusMsgId("010", "02");
 		String msgId = utilService.genMessageId("010");
+
+		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
+
+		String norek = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
+		exchange.getMessage().setHeader("hdr_account_no", norek);
 
 		Pacs002Seed seed = new Pacs002Seed();
 		
 		seed.setMsgId(msgId);
 		
-        int posbl4 = rand.nextInt(4);
-		if (posbl4 == 0) {
+        // int posbl4 = rand.nextInt(4);
+		if (norek.startsWith("5")) {
 			seed.setStatus("RJCT");
 			seed.setReason("U001");
 			seed.setAdditionalInfo("Haati hati banyak penipuan");
@@ -60,7 +65,6 @@ public class CreditTransferResponseProcessor implements Processor{
 		else
 			exchange.getMessage().setHeader("hdr_ctRespondStatus", "RJCT");
 			
-		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
 
 		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, msg);
 

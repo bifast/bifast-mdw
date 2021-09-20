@@ -10,24 +10,29 @@ public class MockCBResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		CBInstructionWrapper cbRequestObj = exchange.getMessage().getBody(CBInstructionWrapper.class);
+		Object cbRequestObj = exchange.getMessage().getBody(Object.class);
+		
+		String requestClassName = cbRequestObj.getClass().getName();
+		
+		
 		CBInstructionWrapper cbResponse = new CBInstructionWrapper();
 
 		String status = "";
 		
-		if (!(null == cbRequestObj.getCbDebitInstructionRequest())) {
+		if (requestClassName.equals("bifast.outbound.corebank.CBDebitInstructionRequestPojo")) {
 
-			CBDebitInstructionRequestPojo request = (CBDebitInstructionRequestPojo) cbRequestObj.getCbDebitInstructionRequest();
+			CBDebitInstructionRequestPojo request = (CBDebitInstructionRequestPojo) cbRequestObj;
 			
 			if (request.getTransactionId().startsWith("9")) 
 				status = "FAILED";
 			else 
 				status = "SUCCESS";
 				
-			CBDebitInstructionResponsePojo response = new CBDebitInstructionResponsePojo();		
+			CBDebitInstructionResponsePojo response = new CBDebitInstructionResponsePojo();	
+			
 			response.setAccountNumber("HAHA");
 			response.setStatus(status);
-			response.setAddtInfo("rekening tidak ada");
+			response.setAddtInfo("Info tambahan disini");
 			
 			cbResponse.setCbDebitInstructionResponse(response);
 			exchange.getIn().setBody(cbResponse);
@@ -35,7 +40,7 @@ public class MockCBResponseProcessor implements Processor {
 		
 		else {
 			
-			CBFITransferRequestPojo request = (CBFITransferRequestPojo) cbRequestObj.getCbFITransferRequest();
+			CBFITransferRequestPojo request = (CBFITransferRequestPojo) cbRequestObj;
 			
 			if (request.getTransactionId().startsWith("9")) 
 				status = "FAILED";

@@ -76,7 +76,6 @@ public class SaveCTTablesProcessor implements Processor {
 		// DISINI UNTUK UPDATE TABLE
 
 		else {
-			System.out.println("Update table");
 
 			OutboundMessage outboundMessage = listOutboundMsg.get(0);
 
