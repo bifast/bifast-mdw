@@ -12,6 +12,9 @@ public class Pacs009Seed {
 	private String recptBank; 
 	private String channel; 
 	private String paymentInfo;
+	private String debtorBank;
+	private String creditorBank;
+	
 	
 	public String getMsgId() {
 		return msgId;
@@ -60,6 +63,18 @@ public class Pacs009Seed {
 	}
 	public void setPaymentInfo(String paymentInfo) {
 		this.paymentInfo = paymentInfo;
+	}
+	public String getDebtorBank() {
+		return debtorBank;
+	}
+	public void setDebtorBank(String debtorBank) {
+		this.debtorBank = debtorBank;
+	}
+	public String getCreditorBank() {
+		return creditorBank;
+	}
+	public void setCreditorBank(String creditorBank) {
+		this.creditorBank = creditorBank;
 	}  
 
 	

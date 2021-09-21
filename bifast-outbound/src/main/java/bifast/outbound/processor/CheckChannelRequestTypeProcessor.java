@@ -28,7 +28,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		else if  (!(null == req.getFiCreditTransferRequest())) {
 			exchange.getMessage().setHeader("hdr_msgType", "ficrdttrns");
 			exchange.getMessage().setBody(req.getFiCreditTransferRequest());
-			exchange.getMessage().setHeader("hdr_chnlRefId", req.getFiCreditTransferRequest().getOrignReffId());
+			exchange.getMessage().setHeader("hdr_chnlRefId", req.getFiCreditTransferRequest().getIntrnRefId());
 		}
 		
 		else if (!(null == req.getPaymentStatusRequest())) {
@@ -37,11 +37,6 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 			exchange.getMessage().setHeader("hdr_chnlRefId", req.getPaymentStatusRequest().getChannelRefId());
 		}
 		
-//		else if (!(null == req.getReverseCreditTransferRequest())) {
-//			exchange.getMessage().setHeader("hdr_msgType", "reversect");
-//			exchange.getMessage().setBody(req.getReverseCreditTransferRequest());
-//		}
-
 		else if (!(null == req.getProxyRegistrationReq())) {
 			exchange.getMessage().setHeader("hdr_msgType", "prxyrgst");
 			exchange.getMessage().setBody(req.getProxyRegistrationReq());

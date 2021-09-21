@@ -14,29 +14,26 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.accountenquiry.processor.AccountEnquiryMsgConstructProcessor;
+import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
-import bifast.outbound.accountenquiry.processor.SaveAETablesProcessor;
+import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.FaultProcessor;
-import bifast.outbound.processor.TimoutFaultProcessor;
+import bifast.outbound.processor.FaultResponseProcessor;
 
 @Component
 public class AccountEnquiryRoute extends RouteBuilder{
 
 	@Autowired
-	private AccountEnquiryMsgConstructProcessor AEMsgConstructProcessor;
+	private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired
 	private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
 	@Autowired
-	private FaultProcessor faultProcessor;
+	private FaultResponseProcessor faultProcessor;
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
-	private TimoutFaultProcessor timeoutFaultProcessor;
-	@Autowired
-	private SaveAETablesProcessor saveAETableProcessor;
+	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
 
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
@@ -62,41 +59,39 @@ public class AccountEnquiryRoute extends RouteBuilder{
 		configureJsonDataFormat();
 
         onException(Exception.class).routeId("AE Exception Handler")
-        	.log("AE Excp, ${header.hdr_errorlocation}")
+			.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}][AE] terjadi error")
+	    	.handled(true)
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
-			.to("sql:update outbound_message set resp_status = 'ERROR-KM', "
+			.to("sql:update channel_transaction set status = 'ERROR-KM', "
 					+ " error_msg= :#${body.faultResponse.reason} "
-					+ "where id= :#${header.ae_table_id}  ")
+					+ " where id= :#${header.hdr_chnlTable_id}  ")
 			.marshal(chnlResponseJDF)
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
 			.removeHeaders("ae_*")
 			.removeHeader("HttpMethod")
-	    	.handled(true)
       	;
 
 		from("direct:acctenqr").routeId("AccountEnquiryRoute")
 			
-			.log("[ChRefId:${header.hdr_chnlRefId}][AE] start.")
-
 			.setHeader("ae_channelRequest", simple("${body}"))
 
 			.setHeader("hdr_errorlocation", constant("AERoute/AEMsgConstructProcessor"))
-			.process(AEMsgConstructProcessor)
-//			.setHeader("req_objbi", simple("${body}"))
+			.process(buildAccountEnquiryRequestProcessor)
 			.setHeader("ae_objreq_bi", simple("${body}"))
 			
 			.marshal(businessMessageJDF)
 			
-			.to("seda:encryptAEbody")
-			.to("seda:saveAEtables")
+			.to("seda:encryptAEbody") 
+			.setHeader("ae_encrypt_request", simple("${header.ae_encrMessage}"))
 				
 			// kirim ke CI-HUB
-			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			.setHeader("ae_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			.log(LoggingLevel.DEBUG, "bifast.outbound.accountenquiry", "[ChRefId:${header.hdr_chnlRefId}][AE:${header.ae_objreq_bi.appHdr.bizMsgIdr}] call CI-HUB start.")
 			.doTry()
-				.setHeader("hdr_errorlocation", constant("AERoute/sendCIHub"))
+				.setHeader("hdr_errorlocation", constant("AERoute - call CIHub"))
 	
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich("http:{{komi.ciconnector-url}}?"
@@ -104,35 +99,46 @@ public class AccountEnquiryRoute extends RouteBuilder{
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
-				.to("seda:encryptAEbody")
 
-				.setHeader("hdr_fullresponsemessage", simple("${body}"))
-				.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-		
+				.log(LoggingLevel.DEBUG, "bifast.outbound.accountenquiry", "[ChRefId:${header.hdr_chnlRefId}][AE:${header.ae_objreq_bi.appHdr.bizMsgIdr}] call CI-HUB finish.")
+
+				.setHeader("ae_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+
+				.to("seda:encryptAEbody")
+				.setHeader("ae_encrypt_response", simple("${header.ae_encrMessage}"))
+	
 				.unmarshal(businessMessageJDF)
-				.setHeader("resp_objbi", simple("${body}"))
+				.setHeader("ae_objresp_bi", simple("${body}"))
 				
 				// prepare untuk response ke channel
 				.setHeader("hdr_errorlocation", constant("AERoute/ResponseProcessor"))
 				.process(accountEnqrResponseProcessor)
-
-				.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-
 				// save audit tables
 				.to("seda:saveAEtables?exchangePattern=InOnly")
 
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-	    		.log(LoggingLevel.ERROR, "[ChnlRefId:${header.hdr_chnlRefId}][AE] call CI-HUB timeout")
+				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}][AE:${header.ae_objreq_bi.appHdr.bizMsgIdr}] call CI-HUB timeout.")
 		    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
-				.to("sql:update outbound_message set resp_status = 'TIMEOUT', "
-						+ " error_msg= 'Timeout' "
-						+ "where id= :#${header.ae_table_id}  ")
+		    	.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
+		    	.setHeader("hdr_error_mesg", constant("Timeout waiting response from CI-HUB"))
+				.setHeader("ae_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+				.process(faultProcessor)
+				.to("seda:saveAEtables?exchangePattern=InOnly")
+			.doCatch(Exception.class)     // klo timeout maka kirim payment status
+				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}][AE:${header.ae_objreq_bi.appHdr.bizMsgIdr}] call CI-HUB generic error.")
+		    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))		    	
+				.setHeader("ae_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+		    	.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
+		    	.setHeader("hdr_error_mesg", simple("${exception.message}"))
+				.process(faultProcessor)
+				.to("seda:saveAEtables?exchangePattern=InOnly")
+		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 
-				.process(timeoutFaultProcessor)
 			.endDoTry().end()
 				
-			.removeHeaders("ae_*")
+			.setHeader("req_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
+			.removeHeaders("ae_*")
 		;
 
 		from("seda:encryptAEbody")
@@ -145,8 +151,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 		;
 		from("seda:saveAEtables").routeId("saveAEtables")
 			.setHeader("hdr_errorlocation", constant("AERoute/saveTabel"))
-			.process(saveAETableProcessor)
-			.setHeader("ae_table_id", simple("${header.hdr_idtable}"))
+			.process(saveAccountEnquiryProcessor)
 		;
 
 		

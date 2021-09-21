@@ -5,5 +5,5 @@ EXPOSE 9006
 ENTRYPOINT ["java","-jar","/usr/src/komi-mock.jar"]
 
 # mvn clean package -DskipTests
-# docker build -t fransmzh/komi-mock:1.3 .
-# docker push fransmzh/komi-mock:1.3
+# docker build -t fransmzh/komi-mock:1.4 .
+# docker push fransmzh/komi-mock:1.4

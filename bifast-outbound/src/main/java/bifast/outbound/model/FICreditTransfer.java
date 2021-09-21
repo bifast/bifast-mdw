@@ -19,8 +19,6 @@ public class FICreditTransfer {
 	@Column(name="INTR_REF_ID")
 	private String intrRefId;
 
-	private Long logMessageId;
-
 	@Column(name="ORIGN_BANK")
 	private String originatingBank;
 	
@@ -28,12 +26,14 @@ public class FICreditTransfer {
 	private String creditBic;
 	
 	private BigDecimal amount;	
-	private String status;
+//	private String status;
 
 	private LocalDateTime creDt;
 
 	@Column(name="REQ_BIZMSGID", length=50)
 	private String requestBizMsgIdr;
+	@Column(name="RESP_BIZMSGID", length=50)
+	private String responseBizMsgIdr;
 	
 	@Column(name="SETTLCONF_BIZMSGID", length=50)
 	private String SettlementBizMsgId;
@@ -41,7 +41,23 @@ public class FICreditTransfer {
 	@Column(length=20)
 	private String saf;
 	private Integer safCounter;
+		
+	@Column(name="CIHUB_REQ_TIME")
+	private LocalDateTime cihubRequestDT;
 	
+	@Column(name="CIHUB_RESP_TIME")
+	private LocalDateTime cihubResponseDT;	
+	
+	@Column(name="FULL_REQUEST_MSG", length=4000)
+	private String fullRequestMessage;
+
+	@Column(name="FULL_RESPONSE_MSG", length=4000)
+	private String fullResponseMsg;
+
+	@Column(length=20)
+	private String callStatus;
+	@Column(length=20)
+	private String responseStatus;
 	public Long getId() {
 		return id;
 	}
@@ -53,12 +69,6 @@ public class FICreditTransfer {
 	}
 	public void setIntrRefId(String intrRefId) {
 		this.intrRefId = intrRefId;
-	}
-	public Long getLogMessageId() {
-		return logMessageId;
-	}
-	public void setLogMessageId(Long logMessageId) {
-		this.logMessageId = logMessageId;
 	}
 	public String getOriginatingBank() {
 		return originatingBank;
@@ -84,12 +94,6 @@ public class FICreditTransfer {
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
 	public LocalDateTime getCreDt() {
 		return creDt;
 	}
@@ -101,6 +105,12 @@ public class FICreditTransfer {
 	}
 	public void setRequestBizMsgIdr(String requestBizMsgIdr) {
 		this.requestBizMsgIdr = requestBizMsgIdr;
+	}
+	public String getResponseBizMsgIdr() {
+		return responseBizMsgIdr;
+	}
+	public void setResponseBizMsgIdr(String responseBizMsgIdr) {
+		this.responseBizMsgIdr = responseBizMsgIdr;
 	}
 	public String getSettlementBizMsgId() {
 		return SettlementBizMsgId;
@@ -120,8 +130,43 @@ public class FICreditTransfer {
 	public void setSafCounter(Integer safCounter) {
 		this.safCounter = safCounter;
 	}
+	public LocalDateTime getCihubRequestDT() {
+		return cihubRequestDT;
+	}
+	public void setCihubRequestDT(LocalDateTime cihubRequestDT) {
+		this.cihubRequestDT = cihubRequestDT;
+	}
+	public LocalDateTime getCihubResponseDT() {
+		return cihubResponseDT;
+	}
+	public void setCihubResponseDT(LocalDateTime cihubResponseDT) {
+		this.cihubResponseDT = cihubResponseDT;
+	}
+	public String getFullRequestMessage() {
+		return fullRequestMessage;
+	}
+	public void setFullRequestMessage(String fullRequestMessage) {
+		this.fullRequestMessage = fullRequestMessage;
+	}
+	public String getFullResponseMsg() {
+		return fullResponseMsg;
+	}
+	public void setFullResponseMsg(String fullResponseMsg) {
+		this.fullResponseMsg = fullResponseMsg;
+	}
+	public String getCallStatus() {
+		return callStatus;
+	}
+	public void setCallStatus(String callStatus) {
+		this.callStatus = callStatus;
+	}
+	public String getResponseStatus() {
+		return responseStatus;
+	}
+	public void setResponseStatus(String responseStatus) {
+		this.responseStatus = responseStatus;
+	}
 	
-
 	
 	
 }

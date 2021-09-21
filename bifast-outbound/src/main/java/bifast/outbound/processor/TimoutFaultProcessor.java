@@ -31,6 +31,7 @@ public class TimoutFaultProcessor implements Processor {
 		channelResponse.setFaultResponse(reject);
 		
 		exchange.getMessage().setBody(channelResponse, ChannelResponseWrapper.class);
+				
 	}
 
 }

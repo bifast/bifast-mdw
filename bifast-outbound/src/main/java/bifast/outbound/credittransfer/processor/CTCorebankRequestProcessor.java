@@ -17,7 +17,6 @@ public class CTCorebankRequestProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		// TODO Auto-generated method stub
 		
 //		ChnlCreditTransferRequestPojo chnlCTRequest = exchange.getMessage().getBody(ChnlCreditTransferRequestPojo.class);
 		ChnlCreditTransferRequestPojo chnlCTRequest = exchange.getIn().getHeader("ct_channelRequest",ChnlCreditTransferRequestPojo.class);

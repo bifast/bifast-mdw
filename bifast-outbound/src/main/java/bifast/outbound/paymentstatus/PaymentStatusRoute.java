@@ -2,6 +2,7 @@ package bifast.outbound.paymentstatus;
 
 import java.net.SocketTimeoutException;
 
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class PaymentStatusRoute extends RouteBuilder {
 		from ("direct:paymentstatus")
 		
 			// cek settlement dulu
-			.log("di direct:paymentstatus")
+			.log(LoggingLevel.DEBUG, "bifast.outbound.paymentstatus", "[ChRefId:${header.hdr_chnlRefId}] PS processing..")
 			.setHeader("ps_pymtstsreq", simple("${body}"))
 			.process(paymentStatusRequestProcessor)
 			
@@ -81,7 +82,6 @@ public class PaymentStatusRoute extends RouteBuilder {
 
 				.unmarshal(jsonBusinessMessageFormat)
 				.setHeader("ps_objresponsebi", simple("${body}"))
-//				.marshal(jsonBusinessMessageFormat)
 				
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
 				.setHeader("ps_status", simple("Timeout"))
@@ -89,10 +89,9 @@ public class PaymentStatusRoute extends RouteBuilder {
 				
 			.end()
 			
-			.log("selesai dotry PS")
 			.setHeader("ps_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 
-			.to("seda:savePStables")
+			.to("seda:savePStables?exchangePattern=InOnly")
 
 			.removeHeaders("ps_*")
 		;

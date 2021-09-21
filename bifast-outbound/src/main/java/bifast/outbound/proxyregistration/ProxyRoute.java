@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.FaultProcessor;
+import bifast.outbound.processor.FaultResponseProcessor;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -34,7 +34,7 @@ public class ProxyRoute extends RouteBuilder {
 	@Autowired
 	private ValidatePrxyRegistrationProcessor validatePrxyRegsProcessor;
 	@Autowired
-	private FaultProcessor faultProcessor;
+	private FaultResponseProcessor faultProcessor;
 
 
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);

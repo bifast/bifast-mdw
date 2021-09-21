@@ -4,11 +4,11 @@ Content-Type: application/json
 
 {
   "AccountEnquiryRequest" : {
-    "channelRefId" : "1127",
+    "channelRefId" : "5658",
     "channel" : "Internet Banking",
     "recptBank" : "014",
-    "amount" : 550000,
+    "amount" : 54678,
     "categoryPurpose" : "Purchase",
-    "creditorAccountNumber" : "144655531"
+    "creditorAccountNumber" : "82277531"
   }
 }

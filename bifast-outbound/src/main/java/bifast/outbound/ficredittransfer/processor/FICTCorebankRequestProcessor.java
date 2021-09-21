@@ -21,20 +21,20 @@ public class FICTCorebankRequestProcessor implements Processor {
 		
 		ChnlFICreditTransferRequestPojo chnlCTRequest = exchange.getIn().getHeader("hdr_channelRequest",ChnlFICreditTransferRequestPojo.class);
 
-		CBFITransferRequestPojo cbDebitRequest = new CBFITransferRequestPojo();
+		CBFITransferRequestPojo cbFITransferRequest = new CBFITransferRequestPojo();
 
 		DecimalFormat df = new DecimalFormat("#############.00");
 		BigDecimal amount = chnlCTRequest.getAmount();
-		cbDebitRequest.setAmount(df.format(amount));
+		cbFITransferRequest.setAmount(df.format(amount));
 
-		cbDebitRequest.setPaymentInfo(chnlCTRequest.getPaymentInfo());
+		cbFITransferRequest.setPaymentInfo(chnlCTRequest.getPaymentInfo());
 		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		cbDebitRequest.setRequestTime(LocalDateTime.now().format(dtf));
+		cbFITransferRequest.setRequestTime(LocalDateTime.now().format(dtf));
 
-		cbDebitRequest.setTransactionId(chnlCTRequest.getOrignReffId());
+		cbFITransferRequest.setTransactionId(chnlCTRequest.getIntrnRefId());
 		
-		exchange.getMessage().setBody(cbDebitRequest);
+		exchange.getMessage().setBody(cbFITransferRequest);
 
 	}
 

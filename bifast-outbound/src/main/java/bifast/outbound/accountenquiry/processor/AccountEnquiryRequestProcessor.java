@@ -3,7 +3,6 @@ package bifast.outbound.accountenquiry.processor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -17,8 +16,7 @@ import bifast.outbound.config.Config;
 import bifast.outbound.processor.UtilService;
 
 @Component
-@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
-public class AccountEnquiryMsgConstructProcessor implements Processor {
+public class AccountEnquiryRequestProcessor implements Processor {
 
 	@Autowired
 	private Config config;
@@ -36,7 +34,8 @@ public class AccountEnquiryMsgConstructProcessor implements Processor {
 
 		String msgType = "510";
 		String bizMsgId = utilService.genOfiBusMsgId(msgType, chnReq.getChannel());
-		String msgId = utilService.genMessageId(msgType);
+//		String msgId = utilService.genMessageId(msgType);
+		String msgId = utilService.genMsgId(msgType, chnReq.getChannelRefId());
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
@@ -56,6 +55,7 @@ public class AccountEnquiryMsgConstructProcessor implements Processor {
 		Document doc = new Document();
 		doc.setFiToFICstmrCdtTrf(pacs008MessageService.accountEnquiryRequest(seedAcctEnquiry));
 
+		
 		BusinessMessage busMsg = new BusinessMessage();
 		busMsg.setAppHdr(hdr);
 		busMsg.setDocument(doc);

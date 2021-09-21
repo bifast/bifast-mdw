@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration  // so  Sprint creates bean in application context
-@ConfigurationProperties(prefix = "bifast")
+@ConfigurationProperties(prefix = "komi")
 public class LibConfig {
 
 	private String bankcode;

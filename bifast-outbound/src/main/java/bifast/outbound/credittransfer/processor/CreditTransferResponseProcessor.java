@@ -50,7 +50,8 @@ public class CreditTransferResponseProcessor implements Processor {
 			
 			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
 			chnResponse.setReason("Corebank Service Reject");
-			chnResponse.setStatus(cbResponse.getStatus());
+			if (cbResponse.getStatus().equals("FAILED"))
+				chnResponse.setStatus("REJECT-CB");
 			chnResponse.setAddtInfo(cbResponse.getAddtInfo());
 	
 			channelResponseWr.setCreditTransferResponse(chnResponse);
@@ -70,7 +71,7 @@ public class CreditTransferResponseProcessor implements Processor {
 
 		else {
 			
-			BusinessMessage obj_crdtrnResp = exchange.getMessage().getHeader("ct_objresponsebi", BusinessMessage.class);
+			BusinessMessage obj_crdtrnResp = exchange.getMessage().getHeader("ct_biresponse", BusinessMessage.class);
 
 			if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 		
@@ -93,7 +94,6 @@ public class CreditTransferResponseProcessor implements Processor {
 					if (!(null == biResp.getOrgnlTxRef().getCdtr().getPty().getNm()))
 						chnResponse.setCreditorName(biResp.getOrgnlTxRef().getCdtr().getPty().getNm());
 		
-				
 				if (biResp.getSplmtryData().size() >0 ) {
 					
 					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId()))

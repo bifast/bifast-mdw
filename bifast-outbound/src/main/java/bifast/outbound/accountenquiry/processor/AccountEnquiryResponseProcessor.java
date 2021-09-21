@@ -18,7 +18,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage busMesg = exchange.getMessage().getHeader("resp_objbi", BusinessMessage.class);
+		BusinessMessage busMesg = exchange.getMessage().getHeader("ae_objresp_bi", BusinessMessage.class);
 		
 		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("ae_channelRequest",ChnlAccountEnquiryRequestPojo.class);
 		

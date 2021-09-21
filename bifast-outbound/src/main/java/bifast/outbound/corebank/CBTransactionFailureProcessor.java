@@ -15,7 +15,7 @@ public class CBTransactionFailureProcessor implements Processor {
 
 		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 		
-		CBDebitInstructionResponsePojo cbResponse = exchange.getMessage().getHeader("ct_cbresponse", CBDebitInstructionResponsePojo.class);
+		CBDebitInstructionResponsePojo cbResponse = exchange.getMessage().getHeader("hdr_cbresponse", CBDebitInstructionResponsePojo.class);
 
 		ChnlFailureResponsePojo cbFailure = new ChnlFailureResponsePojo();
 

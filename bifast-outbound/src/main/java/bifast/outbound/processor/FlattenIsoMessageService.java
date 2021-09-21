@@ -1,4 +1,4 @@
-package bifast.outbound.repository;
+package bifast.outbound.processor;
 
 import org.springframework.stereotype.Service;
 

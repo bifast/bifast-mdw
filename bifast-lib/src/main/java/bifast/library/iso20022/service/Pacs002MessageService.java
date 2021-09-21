@@ -281,7 +281,7 @@ public class Pacs002MessageService {
 		FinancialInstitutionIdentification18 cdtrFinInstnId = new FinancialInstitutionIdentification18();
 		cdtrFinInstnId.setOthr(cdtrOthr);
 		BranchAndFinancialInstitutionIdentification6 cdtrAgt = new BranchAndFinancialInstitutionIdentification6();
-		cdtrAgt.setFinInstnId(dbtrFinInstnId);
+		cdtrAgt.setFinInstnId(cdtrFinInstnId);
 		Party40Choice cdtr = new Party40Choice();
 		cdtr.setAgt(cdtrAgt);
 

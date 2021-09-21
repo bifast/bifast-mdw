@@ -129,7 +129,7 @@ public class SaveTablesProcessor implements Processor {
 		// dari XMLGregorianCalender ubah ke LocalDateTime
 		accountEnquiry.setCreDt(accountEnqReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
 		accountEnquiry.setIntrRefId(auditTab.getInternalReffId());
-		accountEnquiry.setLogMessageId(auditTab.getId());
+//		accountEnquiry.setLogMessageId(auditTab.getId());
 		accountEnquiry.setOriginatingBank(orgnlBank);
 		accountEnquiry.setRecipientBank(auditTab.getRecipientBank());
 		
@@ -147,7 +147,7 @@ public class SaveTablesProcessor implements Processor {
 
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 		ct.setCrdtTrnRequestBizMsgIdr(auditTab.getBizMsgIdr());
-		ct.setStatus(auditTab.getRespStatus());
+		ct.setResponseStatus(auditTab.getRespStatus());
 		
 		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 		ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
@@ -175,7 +175,7 @@ public class SaveTablesProcessor implements Processor {
 		ct.setMsgType("Credit Transfer");
 		ct.setOriginatingBank(orgnlBank);
 		ct.setRecipientBank(auditTab.getRecipientBank());
-		ct.setLogMessageId(auditTab.getId());
+//		ct.setLogMessageId(auditTab.getId());
 		
 		creditTransferRepo.save(ct);
 		
@@ -205,12 +205,12 @@ public class SaveTablesProcessor implements Processor {
 		ct.setAmount(fiCreditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 		ct.setCreDt(fiCreditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
 		
-		ct.setStatus(auditTab.getRespStatus());
+		ct.setCallStatus(auditTab.getRespStatus());
 		ct.setIntrRefId(auditTab.getInternalReffId());
 		ct.setMsgType("FI to FI Credit Transfer");
 		ct.setOriginatingBank(orgnlBank);
 		ct.setRecipientBank(auditTab.getRecipientBank());
-		ct.setLogMessageId(auditTab.getId());
+//		ct.setLogMessageId(auditTab.getId());
 		
 		creditTransferRepo.save(ct);
 	}

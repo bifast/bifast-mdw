@@ -42,11 +42,22 @@ public class SaveTableChannelProcessor implements Processor {
 		
 		if (!(null==tableId) ) {
 			
+			String errCode = exchange.getMessage().getHeader("hdr_error_status", String.class);
+			String errMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
 			Optional<ChannelTransaction> optChannelTrx = channelTransactionRepo.findById(tableId);
+			
 			if (optChannelTrx.isPresent()) {
 				chnlTable = optChannelTrx.get();
 				optChannelTrx.get().setResponseTime(LocalDateTime.now());
-				optChannelTrx.get().setStatus("SUCCESS");
+				
+				if (null==errCode)
+					optChannelTrx.get().setStatus("SUCCESS");
+				else
+					optChannelTrx.get().setStatus(errCode);
+				
+				if (!(null==errMesg))
+					optChannelTrx.get().setErrorMsg(errMesg);
+					
 				channelTransactionRepo.save(chnlTable);
 			}
 

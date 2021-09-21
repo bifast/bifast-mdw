@@ -1,7 +1,7 @@
 # Credit Transfer Request from channel on generic endpoint
 
-# norek 9.. akan direject oleh AE CIHUB
 # orignRefId 9.. akan reject by CB
+# norek 9.. akan direject oleh AE CIHUB
 # jika norek 8xx akan response timeout
 # jika norek 88x time out reply dan settlement
 # norek 5xx akan response reject
@@ -12,11 +12,11 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "orignReffId" : "44613",
+    "orignReffId" : "310015",
     "channel" : "Internet Banking",
     "categoryPurpose" : "Investment",
-    "amount" : 872500,
-    "crdtAccountNo" : "869",
+    "amount" : 8276200,
+    "crdtAccountNo" : "1822352",
     "crdtAccountType" : "SVGS",
     "dbtrIdType" : "01",    
     "dbtrName": "Fandi Wijaya",

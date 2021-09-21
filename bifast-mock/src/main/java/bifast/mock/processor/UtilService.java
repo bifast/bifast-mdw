@@ -75,8 +75,8 @@ public class UtilService {
 	public String getFullName () {
 
 		List<MockNames> names = mockNamesRepo.findAll();
-		System.out.println(names.size());
-        Random rand = new Random();
+
+		Random rand = new Random();
         int posbl1 = rand.nextInt(names.size());
         int posbl2 = rand.nextInt(names.size());
         if (posbl1 == posbl2)

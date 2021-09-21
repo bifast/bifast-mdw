@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.inbound.credittransfer.CreditTransferProcessor;
+import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
 import bifast.inbound.ficredittransfer.FICreditTransferProcessor;
 import bifast.inbound.processor.CheckMessageTypeProcessor;
 import bifast.inbound.processor.SaveInboundMessageProcessor;
@@ -20,6 +21,8 @@ import bifast.library.iso20022.custom.BusinessMessage;
 @Component
 public class InboundRoute extends RouteBuilder {
 
+	@Autowired
+	private SaveCreditTransferProcessor saveCreditTransferProcessor;
 	@Autowired
 	private SaveInboundMessageProcessor saveInboundMessageProcessor;
 	@Autowired
@@ -149,7 +152,8 @@ public class InboundRoute extends RouteBuilder {
 			.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
 				.process(saveSettlementMessageProcessor)
 			.otherwise()
-				.process(saveInboundMessageProcessor)
+				.process(saveCreditTransferProcessor)
+//				.process(saveInboundMessageProcessor)
 			.end()
 		;
 

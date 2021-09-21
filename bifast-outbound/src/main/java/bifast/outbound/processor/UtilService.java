@@ -75,11 +75,12 @@ public class UtilService {
 		return msgId;
 	}
 
-//	public XMLGregorianCalendar CalenderConvert(String v) throws Exception {
-//		GregorianCalendar cal = new GregorianCalendar();
-//        cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(v));
-//        XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar( cal);
-//		return calendar;
-//	}
+	public String genMsgId (String trxType, String intrnRefId) {
+		String strToday = LocalDateTime.now().format(formatter);
+		String leading = "00000000".concat(intrnRefId);
+		int l = leading.length();
+		String msgId = strToday + config.getBankcode() + trxType + leading.substring(l-8);
+		return msgId;
+	}
 
 }

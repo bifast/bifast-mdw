@@ -12,14 +12,16 @@ public class MockCBResponseProcessor implements Processor {
 
 		Object cbRequestObj = exchange.getMessage().getBody(Object.class);
 		
-		String requestClassName = cbRequestObj.getClass().getName();
+		String requestClassName = cbRequestObj.getClass().getSimpleName();
 		
+		System.out.println("mock db " + requestClassName);
 		
 		CBInstructionWrapper cbResponse = new CBInstructionWrapper();
 
 		String status = "";
+		CBDebitInstructionResponsePojo response = new CBDebitInstructionResponsePojo();	
 		
-		if (requestClassName.equals("bifast.outbound.corebank.CBDebitInstructionRequestPojo")) {
+		if (requestClassName.equals("CBDebitInstructionRequestPojo")) {
 
 			CBDebitInstructionRequestPojo request = (CBDebitInstructionRequestPojo) cbRequestObj;
 			
@@ -27,35 +29,31 @@ public class MockCBResponseProcessor implements Processor {
 				status = "FAILED";
 			else 
 				status = "SUCCESS";
-				
-			CBDebitInstructionResponsePojo response = new CBDebitInstructionResponsePojo();	
 			
+			response.setTransactionId(request.getTransactionId());
 			response.setAccountNumber("HAHA");
 			response.setStatus(status);
 			response.setAddtInfo("Info tambahan disini");
 			
-			cbResponse.setCbDebitInstructionResponse(response);
-			exchange.getIn().setBody(cbResponse);
 		}
 		
 		else {
 			
 			CBFITransferRequestPojo request = (CBFITransferRequestPojo) cbRequestObj;
-			
+
+			response.setTransactionId(request.getTransactionId());
+
 			if (request.getTransactionId().startsWith("9")) 
 				status = "FAILED";
 			else 
 				status = "SUCCESS";
 
-			CBFITransferResponsePojo response = new CBFITransferResponsePojo();
-			response.setStatus("SUCCESS");
-			response.setAddtInfo("rekening ada");
-			exchange.getIn().setBody(response);
-			
-			cbResponse.setCbFITransferResponse(response);
-			exchange.getIn().setBody(cbResponse);
 		}
+		response.setStatus(status);
+		response.setAddtInfo("Info tambahan disini");
 
+		cbResponse.setCbDebitInstructionResponse(response);
+		exchange.getIn().setBody(cbResponse);
 	}
 
 }

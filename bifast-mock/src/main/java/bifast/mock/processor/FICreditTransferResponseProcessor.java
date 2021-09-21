@@ -29,6 +29,10 @@ public class FICreditTransferResponseProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
+		BusinessMessage req = exchange.getMessage().getBody(BusinessMessage.class);
+		String rcptBank = req.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+		exchange.getMessage().setHeader("hdr_rcptBank", rcptBank);
+
 		String bizMsgId = utilService.genRfiBusMsgId("019", "99");
 		String msgId = utilService.genMessageId("019");
 

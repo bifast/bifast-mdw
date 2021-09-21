@@ -183,7 +183,7 @@ public class SaveInboundMessageProcessor implements Processor {
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 		ct.setCrdtTrnRequestBizMsgIdr(inboundMsg.getAppHdr().getBizMsgIdr());
 		
-		ct.setStatus(logTable.getRespStatus());
+		ct.setResponseStatus(logTable.getRespStatus());
 		
 		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 		ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
@@ -241,8 +241,6 @@ public class SaveInboundMessageProcessor implements Processor {
 
 		ct.setOriginatingBank(orgnBankCode.getBankCode());
 		ct.setRecipientBank(recptBankCode.getBankCode());
-		
-		ct.setLogMessageId(logTable.getId());
 		
 		ct.setReversal(reversal);
 		

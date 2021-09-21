@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.FaultProcessor;
+import bifast.outbound.processor.FaultResponseProcessor;
 
 @Component
 public class CorebankRoute extends RouteBuilder{
@@ -19,7 +19,7 @@ public class CorebankRoute extends RouteBuilder{
 	@Autowired
 	private MockCBResponseProcessor mockCBResponse;
 	@Autowired
-	private FaultProcessor faultProcessor;
+	private FaultResponseProcessor faultProcessor;
 	@Autowired
 	private SaveCBTableProcessor saveCBTableProcessor;
 
@@ -40,11 +40,7 @@ public class CorebankRoute extends RouteBuilder{
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
-			.to("sql:update outbound_message set resp_status = 'ERROR-CB', "
-					+ " error_msg= :#${body.faultResponse.reason} "
-					+ "where id= :#${header.hdr_idtable}  ")
 			.marshal(chnlResponseJDF)
-
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
 			.removeHeaders("ct_*")
@@ -65,8 +61,15 @@ public class CorebankRoute extends RouteBuilder{
 //			.convertBodyTo(String.class)
 			
 			.process(mockCBResponse)
-			.setHeader("cb_response", simple("${body}"))
+//			.setHeader("hdr_cbresponse", simple("${body}"))
 
+			.choice()
+				.when().simple("${body.cbDebitInstructionResponse.status} != 'SUCCESS'")
+					.setHeader("hdr_error_status", constant("REJECT-CB"))
+					.setHeader("hdr_error_mesg", simple("${body.cbDebitInstructionResponse.addtInfo}"))
+//					.setHeader("hdr_error_mesg", constant("Transaksi CB gagal"))
+			.end()
+			
 			.to("seda:savecbtable?exchangePattern=InOnly")
 
 			.log("[ChRefId:${header.hdr_chnlRefId}][Corebank] finish")
@@ -75,7 +78,6 @@ public class CorebankRoute extends RouteBuilder{
 		;
 		
 		from("seda:savecbtable").routeId("save_cb_trns")
-			.log("Akan save table")
 			.log(LoggingLevel.DEBUG, "bifast.outbound.corebank", "[ChRefId:${header.hdr_chnlRefId}] Akan save table.")
 			.process(saveCBTableProcessor)
 			.log(LoggingLevel.DEBUG, "bifast.outbound.corebank", "[ChRefId:${header.hdr_chnlRefId}] corebank table saved.")

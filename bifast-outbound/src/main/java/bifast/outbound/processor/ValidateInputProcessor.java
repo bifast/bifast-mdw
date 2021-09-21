@@ -24,9 +24,6 @@ public class ValidateInputProcessor implements Processor  {
 	public void process(Exchange exchange) throws Exception {
 
 		Object objRequest = exchange.getIn().getBody(Object.class);
-
-		String className = objRequest.getClass().getName();
-		String requestType = domainCodeRepo.findByGrpAndKey("REQUEST.CLASS", className).orElse(new DomainCode()).getValue();
 		
 		Boolean validateChannel = false;
 		Boolean validateBank = false;
@@ -34,8 +31,7 @@ public class ValidateInputProcessor implements Processor  {
 
 		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 		
-		Method setChannelCode ;
-		
+	
 		if (msgType.equals("acctenqr")) {
 			validateChannel = true;
 			validateBank = true;
@@ -68,6 +64,27 @@ public class ValidateInputProcessor implements Processor  {
 			String bankCode = (String) getBank.invoke(objRequest);
 			BankCode bank = bankCodeRepo.findById(bankCode).orElseThrow();
 			setBank.invoke(objRequest, bank.getBicCode());
+			
+			try {
+				Method getDebtorBank = objRequest.getClass().getMethod("getDebtorBank");
+				Method setDebtorBank = objRequest.getClass().getMethod("setDebtorBank", String.class);
+				String debtorBank = (String) getDebtorBank.invoke(objRequest);
+				BankCode debtorBankCode = bankCodeRepo.findById(debtorBank).orElseThrow();
+				
+				setDebtorBank.invoke(objRequest, debtorBankCode.getBicCode());
+			}
+			catch(NoSuchMethodException e) {}
+
+			try {
+				Method getCreditorBank = objRequest.getClass().getMethod("getCreditorBank");
+				Method setCreditorBank = objRequest.getClass().getMethod("setCreditorBank", String.class);
+				String creditorBank = (String) getCreditorBank.invoke(objRequest);
+				BankCode creditorBankCode = bankCodeRepo.findById(creditorBank).orElseThrow();
+
+				setCreditorBank.invoke(objRequest, creditorBankCode.getBicCode());
+			}
+			catch(NoSuchMethodException e) {}
+
 		}
 		
 		if (validatePurpose) {

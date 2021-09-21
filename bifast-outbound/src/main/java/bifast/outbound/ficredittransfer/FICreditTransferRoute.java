@@ -10,16 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.corebank.CBFITransferRequestPojo;
 import bifast.outbound.corebank.CBTransactionFailureProcessor;
 import bifast.outbound.ficredittransfer.processor.FICTCorebankRequestProcessor;
 import bifast.outbound.ficredittransfer.processor.FICreditTransferRequestProcessor;
 import bifast.outbound.ficredittransfer.processor.FICreditTransferResponseProcessor;
-import bifast.outbound.ficredittransfer.processor.SaveFICTTablesProcessor;
+import bifast.outbound.ficredittransfer.processor.SaveFICreditTransferProcessor;
 import bifast.outbound.paymentstatus.BuildPaymentStatusRequestProcessor;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.FaultProcessor;
+import bifast.outbound.processor.FaultResponseProcessor;
 import bifast.outbound.report.InitSettlementRequestProcessor;
 import bifast.outbound.report.RequestPojo;
 import bifast.outbound.report.ResponsePojo;
@@ -38,7 +37,7 @@ public class FICreditTransferRoute extends RouteBuilder {
 	@Autowired
 	private FICreditTransferResponseProcessor fiCrdtTransferResponseProcessor;
 	@Autowired
-	private FaultProcessor faultProcessor;
+	private FaultResponseProcessor faultProcessor;
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
@@ -46,11 +45,11 @@ public class FICreditTransferRoute extends RouteBuilder {
 	@Autowired
 	private BuildPaymentStatusRequestProcessor initPaymentStatusRequestProcessor;
 	@Autowired
-	private SaveFICTTablesProcessor saveFICTTableProcessor;
+	private SaveFICreditTransferProcessor saveFICTTableProcessor;
 	@Autowired
 	private CBTransactionFailureProcessor corebankTransactionFailureProcessor;
 
-	JacksonDataFormat cbFITransferRequestJDF = new JacksonDataFormat(CBFITransferRequestPojo.class);
+//	JacksonDataFormat cbFITransferRequestJDF = new JacksonDataFormat(CBFITransferRequestPojo.class);
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
 	JacksonDataFormat settlementRequestJDF = new JacksonDataFormat(RequestPojo.class);
 	JacksonDataFormat settlementResponseJDF = new JacksonDataFormat(ResponsePojo.class);
@@ -74,13 +73,13 @@ public class FICreditTransferRoute extends RouteBuilder {
 		settlementResponseJDF.setInclude("NON_EMPTY");
 //		SettlementResponseJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 		
-		cbFITransferRequestJDF.setInclude("NON_NULL");
-		cbFITransferRequestJDF.setInclude("NON_EMPTY");
-		cbFITransferRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+//		cbFITransferRequestJDF.setInclude("NON_NULL");
+//		cbFITransferRequestJDF.setInclude("NON_EMPTY");
+//		cbFITransferRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		chnlResponseJDF.setInclude("NON_NULL");
 		chnlResponseJDF.setInclude("NON_EMPTY");
-//		chnlResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+		chnlResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 	}
 	
@@ -94,9 +93,6 @@ public class FICreditTransferRoute extends RouteBuilder {
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
-			.to("sql:update outbound_message set resp_status = 'ERROR-KM', "
-					+ " error_msg= :#${body.faultResponse.reason} "
-					+ "where id= :#${header.hdr_idtable}  ")
 			.marshal(chnlResponseJDF)
 			.removeHeaders("fict_*")
 			.removeHeaders("req_*")
@@ -108,24 +104,11 @@ public class FICreditTransferRoute extends RouteBuilder {
 
 		from("direct:fictreq").routeId("fictreq")
 
-			.log("FI Credit Transfer")
-//			.process(validateRequest)
-			.log("[fictreq] ChReqId:${body.orignReffId} started")
-
-			.process(fiCrdtTransferRequestProcessor)
-			.setHeader("fict_objreqbi", simple("${body}"))
-			.marshal(businessMessageJDF)
-
-			.to("seda:encryptFICTbody")
-			.to("seda:saveFICTtables")
+			.log("Prepare untuk call CB")
 
 			.process(fiCTCorebankRequestProcessor)
-//			.marshal(cbFITransferRequestJDF)
-			.log("10: ${body}")
 			.to("direct:callcb")
-			.log("20: ${body}")
-			.setHeader("fict_cbresponse", simple("${body.cbFITransferResponse}"))
-//			.unmarshal(cbFITransferResponseJDF)
+			.setHeader("hdr_cbresponse", simple("${body.cbDebitInstructionResponse}"))
 
 			// evalutate reponse cb
 			.choice()
@@ -133,8 +116,6 @@ public class FICreditTransferRoute extends RouteBuilder {
 					.to("seda:fict_corebank_accpt")
 				.when().simple("${header.fict_cbresponse.status} == 'FAILED'")
 					.process(corebankTransactionFailureProcessor)
-					.to("sql:update outbound_message set resp_status = 'RJCT-CB' "
-							+ "where id= :#${header.hdr_idtable}  ")
 			.end()
 
 			.removeHeaders("fict_*")
@@ -142,15 +123,19 @@ public class FICreditTransferRoute extends RouteBuilder {
 
 		
 		from("seda:fict_corebank_accpt")
-			.log("Akan call FI CT")
-			.setBody(simple("${header.fict_objreqbi}"))
-			.setHeader("fict_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-
+			.log("CB accepted")
+			.process(fiCrdtTransferRequestProcessor)
+			.setHeader("fict_objreqbi", simple("${body}"))
 			// kirim ke CI-HUB
 			.marshal(businessMessageJDF)
+		
+			.to("seda:encryptFICTbody")
+			.setHeader("fict_encr_request", simple("${header.fict_encrMessage}"))
+
+			// CALL CIHUB untuk FI CT
 			.doTry()
-				.log("Submit CT no: ${header.fict_objreqbi.appHdr.bizMsgIdr}")
-				.log("${body}")
+				.log("Submit CT : ${body}") 
+				.setHeader("fict_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 				.setHeader("hdr_errorlocation", constant("FICT/call-CIHUB"))
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich("http:{{komi.ciconnector-url}}?"
@@ -158,21 +143,27 @@ public class FICreditTransferRoute extends RouteBuilder {
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
-				
+				.log("hasil cihub: ${body}")
+				.to("seda:encryptFICTbody")
+				.setHeader("fict_encr_response", simple("${header.fict_encrMessage}"))
+
+				.setHeader("fict_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 				.unmarshal(businessMessageJDF)
+				.setHeader("fict_objresponsebi", simple("${body}"))	
+				
+				.to("seda:saveFICTtables?exchangePattern=InOnly")
 				
 			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-    			.log(LoggingLevel.ERROR, "Timeout process Credit Transfer ref:${header.hdr_channelRequest.orignReffId}")
-    			.to("sql:update outbound_message set resp_status = 'TIMEOUT', "
-    					+ " error_msg= 'Timeout' "
-    					+ "where id= :#${header.hdr_idtable}  ")
+    			.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}][FICT] call CI-HUB timeout")
+				.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
+
     			.setBody(constant(null))
     		.end()
     		
     		// kalo body==null berarti harus settlement
     		.choice()
     			.when().simple("${body} == null")
-    				.log("Cari settlement untuk : ${header.fict_objreqbi.appHdr.bizMsgIdr}")
+    				.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] call cari Settlement.")
     				.setBody(simple("${header.fict_objreqbi}"))
     				.process(initSettlementRequest)
     				.marshal(settlementRequestJDF)
@@ -184,6 +175,8 @@ public class FICreditTransferRoute extends RouteBuilder {
 								+ "bridgeEndpoint=true",
 								enrichmentAggregator)
 						.convertBodyTo(String.class)
+						
+						.log("Hasil enquiry Settlement: ${body}")
 						.unmarshal(settlementResponseJDF)
     				.doCatch(Exception.class)
 	   					.log("Error call settlement")
@@ -193,9 +186,12 @@ public class FICreditTransferRoute extends RouteBuilder {
 					.log("akan periksa hasil settlement call")
     	    		.choice()
 		    			.when().simple("${body.businessMessage} != null")
+		    				.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] nemu Settlement.")
 		    				.marshal(settlementResponseJDF)
+		    				.log("hasil settlement: ${body}")
 		    				.unmarshal(businessMessageJDF)
 		    			.when().simple("${body.messageNotFound} != null")
+	    					.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] tedak nemu Settlement.")
 			    			.setBody(constant(null))
 		    		.endChoice()
 
@@ -204,33 +200,18 @@ public class FICreditTransferRoute extends RouteBuilder {
 			.end()
 			
 			// EVALUATE HASIL ENQ SETTLEMENT
-			.log("selesai panggil settlment..")
 
-	    	// kalo masih body=null berarti harus Payment Status
+//	    	 kalo masih body=null berarti harus Payment Status
 			.choice().when().simple("${body} == null")
-				.log("tidak ada settlement, harus PS")
+				.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] tidak nemu Settlement, harus PS.")
     			.setBody(simple("${header.fict_objreqbi}"))
     			.process(initPaymentStatusRequestProcessor)
-    			.log("${body.recptBank}")
     			.to("direct:paymentstatus")
-//    			.unmarshal(businessMessageJDF)
 			.end()
 				
 			.choice()
-				.when().simple("${body} != null")
-					.log("Proses encryption")
-					.marshal(businessMessageJDF)
-					.log("${body}")
-					.setHeader("fict_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-					.to("seda:encryptFICTbody")
-
-					.unmarshal(businessMessageJDF)
-					.setHeader("fict_objresponsebi", simple("${body}"))	
-					.marshal(businessMessageJDF)
-					.log("After encription: ${body}")
-					
-				.otherwise()
-					.log("Masih null hasil PS nya")
+				.when().simple("${body} == null")
+					.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] PS juga gagal.")
 					.setHeader("fict_encrMessage", constant(null))	
 			    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
 			.end()
@@ -241,7 +222,7 @@ public class FICreditTransferRoute extends RouteBuilder {
 //			.marshal(chnlResponseJDF)
 
 			.setHeader("fict_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-			.to("seda:saveFICTtables?exchangePattern=InOnly")
+//			.to("seda:saveFICTtables?exchangePattern=InOnly")
 			
 			.removeHeaders("fict_*")
 		;
@@ -255,6 +236,7 @@ public class FICreditTransferRoute extends RouteBuilder {
 			.setBody(simple("${header.fict_tmp}"))
 		;
 		from("seda:saveFICTtables")
+			.log("akan save FI tables")
 			.process(saveFICTTableProcessor)
 		;
 

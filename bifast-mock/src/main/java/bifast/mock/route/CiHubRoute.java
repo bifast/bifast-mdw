@@ -96,12 +96,6 @@ public class CiHubRoute extends RouteBuilder {
 			.process(checkMessageTypeProcessor)
 			.log("${header.msgType}")
 
-			// .setHeader("delay", simple("${random(400,3000)}"))
-			// .choice()
-			// 	.when(simple("${header.msgType} == 'PaymentStatusRequest'"))
-			// 		.setHeader("delay", constant(500))
-			// .end()
-
 			.choice()
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")
 					.process(accountEnquiryResponseProcessor)
@@ -111,24 +105,36 @@ public class CiHubRoute extends RouteBuilder {
 					.setHeader("hdr_ctResponseObj",simple("${body}"))
 					.marshal(jsonBusinessMessageDataFormat)
 					.process(creditResponseStoreProcessor)
-					.log("selesi save mock-response")
 					.setBody(simple("${header.hdr_ctResponseObj}"))
 
-					.setExchangePattern(ExchangePattern.InOnly)
-					.to("seda:settlement")
+					.choice()
+						.when().simple("${header.hdr_account_no} startsWith '8' ")
+							.setHeader("delay", simple("${random(2000,3000)}"))
+						.otherwise()
+							.setHeader("delay", constant(500))
+					.endChoice()
+					// .setExchangePattern(ExchangePattern.InOnly)
+					.to("seda:settlement?exchangePattern=InOnly")
 
 				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
+		
 					.process(fICreditTransferResponseProcessor)
 					.setHeader("hdr_ctResponseObj",simple("${body}"))
 					.marshal(jsonBusinessMessageDataFormat)
-					.log("Akan fICreditTransferResponseProcessor: ${body}")
+					.log("Hasil fICreditTransferResponseProcessor: ${body}")
 					.process(creditResponseStoreProcessor)
-					.log("After creditResponseStoreProcessor: ${body}")
-
 					.setBody(simple("${header.hdr_ctResponseObj}"))
+					.log("${header.hdr_ctResponseObj.appHdr.bizSvc}")
 
-					.setExchangePattern(ExchangePattern.InOnly)
-					.to("seda:settlement")
+					.choice()
+						.when().simple("${header.hdr_rcptBank} == 'CITYIDJA' ")
+							.setHeader("delay", simple("${random(2000,3000)}"))
+						.otherwise()
+							.setHeader("delay", constant(500))
+					.endChoice()
+
+					// .setExchangePattern(ExchangePattern.InOnly)
+					// .to("seda:settlement?exchangePattern=InOnly")
 
 				.when().simple("${header.msgType} == 'PaymentStatusRequest'")
 					.log("Akan proses paymentStatusResponseProcessor")
@@ -156,30 +162,18 @@ public class CiHubRoute extends RouteBuilder {
 					.log("Other message")
 			.end()
 
-			.choice()
-				.when().simple("${header.hdr_account_no} startsWith '8' ")
-					.setHeader("delay", simple("${random(2000,3000)}"))
-				.otherwise()
-					.setHeader("delay", constant(500))
-			.end()		
-
-			.choice()
-			.when().simple("${header.hdr_account_no} startsWith '88' ")
-				.setHeader("delay_sttl", simple("${random(2200,3000)}"))
-			.otherwise()
-				.setHeader("delay_sttl", constant(500))
-			.end()		
-			.log("Delay ${header.delay}")
+			// .delay(3000)
+			.log("Delay ${header.delay} seconds..")
 			.delay(simple("${header.delay}"))
 
+			.log("${header.hdr_ctResponseObj.appHdr.bizSvc}")
 			// .process(rejectMessageProcessor)
+			// .setBody(simple("${header.hdr_ctResponseObj}"))
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
 
 			// .process(proxyResolutionResponseProcessor)
 
-			.log("Response dari mock")
-			.log("${body}")
-			// .log("delay selama ${header.delay}s")
+			.log("Response mock: ${body}")
 			.removeHeader("msgType")
 			.removeHeaders("delay*")
 			.removeHeader("objRequest")
@@ -207,6 +201,15 @@ public class CiHubRoute extends RouteBuilder {
 
 		from("seda:settlement").routeId("Settlement")
 			.log("Response: ${header.hdr_ctRespondStatus}")
+
+			.choice()
+			.when().simple("${header.hdr_account_no} startsWith '88' ")
+				.setHeader("delay_sttl", simple("${random(2200,3000)}"))
+				.log("settlment delay ${header.delay_sttl}")
+			.otherwise()
+				.setHeader("delay_sttl", constant(3500))
+			.end()
+
 			.choice()
 				.when().simple("${header.hdr_ctRespondStatus} == 'ACTC'")
 					.log("Akan proses settlement")
@@ -214,7 +217,6 @@ public class CiHubRoute extends RouteBuilder {
 					.process(settlementProcessor)
 					.marshal(jsonBusinessMessageDataFormat)
 					.delay(simple("${header.delay_sttl}"))
-					.log("After settlementProcessor: ${body}")
 					.to("rest:post:inbound?host={{komi.inbound-url}}&"
 							+ "bridgeEndpoint=true")
 			.end()

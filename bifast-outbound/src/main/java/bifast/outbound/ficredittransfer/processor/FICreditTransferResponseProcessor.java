@@ -18,8 +18,7 @@ public class FICreditTransferResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		System.out.println("FICreditTransferResponseProcessor");
-		
+	
 		ChnlFICreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlFICreditTransferRequestPojo.class);
 
 		BusinessMessage obj_ficrdtrnResp = exchange.getMessage().getHeader("fict_objresponsebi", BusinessMessage.class);
@@ -28,7 +27,7 @@ public class FICreditTransferResponseProcessor implements Processor {
 		if ((!(null==lastHttpResponse)) && (lastHttpResponse == 504)) {
 			ChnlFICreditTransferResponsePojo chnResponse = new ChnlFICreditTransferResponsePojo();
 			
-			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
+			chnResponse.setOrignReffId(chnRequest.getIntrnRefId());
 			chnResponse.setReason("Tidak terima response dari CI-Connector");
 			chnResponse.setStatus("Timeout");
 			
@@ -43,7 +42,7 @@ public class FICreditTransferResponseProcessor implements Processor {
 
 			ChnlFICreditTransferResponsePojo chnResponse = new ChnlFICreditTransferResponsePojo();
 			
-			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
+			chnResponse.setOrignReffId(chnRequest.getIntrnRefId());
 			// from CI-HUB response
 			chnResponse.setBizMsgId(obj_ficrdtrnResp.getAppHdr().getBizMsgIdr());
 			chnResponse.setStatus(biResp.getTxSts());

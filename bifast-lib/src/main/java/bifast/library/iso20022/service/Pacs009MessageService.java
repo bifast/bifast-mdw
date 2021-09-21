@@ -71,7 +71,7 @@ public class Pacs009MessageService {
 
 		// CdtTrfTxInf / Dbtr     (bukan DbtrAgt)
 		GenericFinancialIdentification1 orign = new GenericFinancialIdentification1();
-		orign.setId(seed.getOrignBank());
+		orign.setId(seed.getDebtorBank());
 		FinancialInstitutionIdentification18 othr = new FinancialInstitutionIdentification18();
 		othr.setOthr(orign);
 		BranchAndFinancialInstitutionIdentification6 finInstnId = new BranchAndFinancialInstitutionIdentification6();
@@ -81,13 +81,13 @@ public class Pacs009MessageService {
 		
 		// CdtTrfTxInf / CdtrAgt
 		GenericFinancialIdentification1 recpt = new GenericFinancialIdentification1();
-		recpt.setId(seed.getRecptBank());
+		recpt.setId(seed.getCreditorBank());
 		FinancialInstitutionIdentification18 othrRecpt = new FinancialInstitutionIdentification18();
 		othrRecpt.setOthr(recpt);
 		BranchAndFinancialInstitutionIdentification6 finInstnIdRecpt = new BranchAndFinancialInstitutionIdentification6();
-		finInstnIdRecpt.setFinInstnId(othr);
+		finInstnIdRecpt.setFinInstnId(othrRecpt);
 
-		cdtTrfTx.setCdtr(finInstnId);
+		cdtTrfTx.setCdtr(finInstnIdRecpt);
 		
 		// CdtTrfTxInf / RmtInf
 		RemittanceInformation2 rmtInf = new RemittanceInformation2();

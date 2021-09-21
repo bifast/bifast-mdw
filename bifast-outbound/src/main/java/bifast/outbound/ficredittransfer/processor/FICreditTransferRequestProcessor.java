@@ -51,6 +51,9 @@ public class FICreditTransferRequestProcessor implements Processor {
 
 		seedFICT.setTrnType(msgType);
 
+		seedFICT.setDebtorBank(chnReq.getDebtorBank());
+		seedFICT.setCreditorBank(chnReq.getCreditorBank());
+		
 		Document doc = new Document();
 		doc.setFiCdtTrf(pacs009MessageService.creditTransferRequest(seedFICT));
 

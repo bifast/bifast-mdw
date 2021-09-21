@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "AccountEnquiryRequest" : {
-    "channelRefId" : "14658",
+    "channelRefId" : "642658",
     "channel" : "Internet Banking",
     "recptBank" : "014",
     "amount" : 570000,

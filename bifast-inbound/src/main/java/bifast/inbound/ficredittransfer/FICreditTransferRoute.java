@@ -60,8 +60,8 @@ public class FICreditTransferRoute extends RouteBuilder {
 			// send ke corebank
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{bifast.corebank-url}}?"
-//						+ "socketTimeout={{bifast.timeout}}&" 
+				.enrich("http:{{komi.corebank-url}}?"
+//						+ "socketTimeout={{komi.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)

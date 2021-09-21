@@ -23,8 +23,8 @@ public class CreditResponseStoreProcessor implements Processor {
         String fullMsg = exchange.getMessage().getBody(String.class);
 
         String sts = exchange.getMessage().getHeader("hdr_ctRespondStatus", String.class);
-        System.out.println("Status: " + sts);
-        		// simpan sbg history
+
+        // simpan sbg history
 			MockPacs002 pacs002 = new MockPacs002();
 			pacs002.setBizMsgIdr(responseMsg.getAppHdr().getBizMsgIdr());
 	
@@ -35,8 +35,12 @@ public class CreditResponseStoreProcessor implements Processor {
 	        pacs002.setOrgnlMsgId(responseMsg.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).getOrgnlMsgId());
 			
 	        pacs002.setOrgnlMsgName(objRequest.getAppHdr().getMsgDefIdr());
-            pacs002.setTrxType("CreditConfirmation");
-	
+
+            if (responseMsg.getAppHdr().getMsgDefIdr().startsWith("pacs008"))
+                pacs002.setTrxType("CreditConfirmation");
+            else
+                pacs002.setTrxType("FICreditConfirmation");
+
 	        mockPacs002Repo.save(pacs002);
         
     }

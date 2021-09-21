@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import bifast.outbound.pojo.ChannelRequestWrapper;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
-import bifast.outbound.processor.FaultProcessor;
+import bifast.outbound.processor.FaultResponseProcessor;
 import bifast.outbound.processor.SaveTableChannelProcessor;
 import bifast.outbound.processor.ValidateInputProcessor;
 
@@ -20,7 +20,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	@Autowired
 	private CheckChannelRequestTypeProcessor checkChannelRequest;
 	@Autowired
-	private FaultProcessor faultProcessor;
+	private FaultResponseProcessor faultProcessor;
 	@Autowired
 	private ValidateInputProcessor validateInputProcessor;
 	@Autowired
@@ -39,13 +39,17 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		chnlResponseJDF.setInclude("NON_EMPTY");
 
         onException(Exception.class).routeId("Generic Exception Handler")
-        	.log("Fault di EndpointRoute, ${header.hdr_errorlocation}")
+        	.log(LoggingLevel.ERROR, "Fault di EndpointRoute, ${header.hdr_errorlocation}")
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 			.process(faultProcessor)
+			.log("chl_tab_id : ${header.hdr_chnlRefId}")
 			.to("sql:update outbound_message set resp_status = 'ERROR-KM', "
 					+ " error_msg= :#${body.faultResponse.reason} "
 					+ "where id= :#${header.hdr_idtable}  ")
+			.to("sql:update channel_transaction set status = 'ERROR-KM'"
+					+ ", error_msg= :#${body.faultResponse.reason} " 
+					+ "  where id= :#${header.hdr_chnlTable_id}  ")
 			.marshal(chnlResponseJDF)
 			.removeHeaders("req_*")
 			.removeHeaders("hdr_*")
@@ -73,7 +77,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.setBody(constant("{\"Halo\": \"Halo juga\"}"))
 		;
 		
-		from("direct:outbound").routeId("OutboundRoute")
+		from("direct:outbound").routeId("EndpointRoute")
 			.convertBodyTo(String.class)
 
 			.setHeader("hdr_errorlocation", constant("EndpointRoute"))
@@ -92,9 +96,11 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.choice()
 				.when().simple("${header.hdr_msgType} == 'acctenqr'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][AE] start.")
 					.to("direct:acctenqr")
 					
 				.when().simple("${header.hdr_msgType} == 'crdttrns'")
+					.log("[ChRefId:${header.hdr_chnlRefId}][CT] start.")
 					.to("direct:ctreq")
 
 				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
@@ -118,9 +124,10 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.marshal(chnlResponseJDF)
 			
 			.choice()
+					
 				.when().simple("${header.hdr_msgType} == 'acctenqr'")
 					.log("[ChRefId:${header.hdr_chnlRefId}][AE] finish.")
-					
+
 				.when().simple("${header.hdr_msgType} == 'crdttrns'")
 					.log("[ChRefId:${header.hdr_chnlRefId}][CT] finish.")
 	
