@@ -16,6 +16,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.pojo.ChannelRequestWrapper;
 import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.FlatMessageWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultResponseProcessor;
@@ -41,6 +42,7 @@ public class RouterEndpointRoute extends RouteBuilder {
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
 	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(ChannelRequestWrapper.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
+	JacksonDataFormat flatResponseJDF = new JacksonDataFormat(FlatMessageWrapper.class);
 
 	@Override
 	public void configure() throws Exception {
@@ -55,6 +57,10 @@ public class RouterEndpointRoute extends RouteBuilder {
 		chnlRequestJDF.setInclude("NON_EMPTY");
 		chnlResponseJDF.setInclude("NON_NULL");
 		chnlResponseJDF.setInclude("NON_EMPTY");
+
+		flatResponseJDF.setInclude("NON_NULL");
+		flatResponseJDF.setInclude("NON_EMPTY");
+		flatResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
         onException(Exception.class).routeId("Generic Exception Handler")
         	.log(LoggingLevel.ERROR, "Fault di EndpointRoute, ${header.hdr_errorlocation}")
@@ -130,7 +136,9 @@ public class RouterEndpointRoute extends RouteBuilder {
 
 			.end()
 
-			.marshal(chnlResponseJDF)
+			.log("${body}")
+			.marshal(flatResponseJDF)
+			
 			
 			.choice()
 					

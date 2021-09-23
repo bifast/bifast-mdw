@@ -92,9 +92,25 @@ public class FlattenIsoMessageService {
 
 				if (!(null == txInfAndSts.getOrgnlTxRef().getDbtr().getAgt()))
 					flatMsg.setDbtrAgtFinInstnId(txInfAndSts.getOrgnlTxRef().getDbtr().getAgt().getFinInstnId().getOthr().getId());
-				
+			}
+
+			if (!(null == txInfAndSts.getOrgnlTxRef().getDbtrAcct())) {
+
+				flatMsg.setDbtrAcctId(txInfAndSts.getOrgnlTxRef().getDbtrAcct().getId().getOthr().getId());
+				flatMsg.setDbtrAcctTp(txInfAndSts.getOrgnlTxRef().getDbtrAcct().getTp().getPrtry());
 				
 			}
+
+			if (!(null == txInfAndSts.getOrgnlTxRef().getDbtrAgt())) {
+				flatMsg.setDbtrAgtFinInstnId(txInfAndSts.getOrgnlTxRef().getDbtrAgt().getFinInstnId().getOthr().getId());
+
+			}
+
+			if (!(null == txInfAndSts.getOrgnlTxRef().getCdtrAgt())) {
+				flatMsg.setCdtrAgtFinInstnId(txInfAndSts.getOrgnlTxRef().getCdtrAgt().getFinInstnId().getOthr().getId());
+				
+			}
+		
 		}
 		
 		flatMsg.setCdtrNm(null);
@@ -102,7 +118,6 @@ public class FlattenIsoMessageService {
 		flatMsg.setCdtrAcctId(null);
 		flatMsg.setCdtrAcctTp(null);
 		flatMsg.setCdtrAgtAcctId(null);
-		flatMsg.setCdtrAgtFinInstnId(null);
 		flatMsg.setCdtrId(null);
 		flatMsg.setCdtrNm(null);
 		
@@ -111,11 +126,11 @@ public class FlattenIsoMessageService {
 		flatMsg.setCdtrTp(null);
 		flatMsg.setCdtrTwnNm(null);
 		
-		
-		flatMsg.setDbtrAcctId(null);
-		flatMsg.setDbtrAcctTp(null);
+
 		flatMsg.setDbtrAgtAcctId(null);
-		flatMsg.setCdtrAgtFinInstnId(null);
+		
+
+
 		flatMsg.setCdtrId(null);
 		flatMsg.setCdtrRsdntSts(null);
 		flatMsg.setCdtrTp(null);
@@ -124,7 +139,6 @@ public class FlattenIsoMessageService {
 		
 		flatMsg.setDbtrAcctId(null);
 		flatMsg.setDbtrAcctTp(null);
-		flatMsg.setDbtrAgtAcctId(null);
 		flatMsg.setDbtrId(null);
 		flatMsg.setDbtrRsdntSts(null);
 		flatMsg.setDbtrTp(null);
