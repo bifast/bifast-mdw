@@ -1,9 +1,8 @@
-package bifast.outbound.proxyregistration;
+package bifast.outbound.proxyregistration.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -15,9 +14,9 @@ import bifast.library.iso20022.service.Proxy003MessageService;
 import bifast.library.iso20022.service.Proxy003Seed;
 import bifast.outbound.config.Config;
 import bifast.outbound.processor.UtilService;
+import bifast.outbound.proxyregistration.ChnlProxyResolutionRequestPojo;
 
 @Component
-@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
 public class ProxyResolutionRequestProcessor implements Processor {
 
 	@Autowired

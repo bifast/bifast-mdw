@@ -4,7 +4,9 @@ Content-Type: application/json
 
 {
     "PaymentStatusRequest" : {
-      "endToEndId" : "20210912FASTIDJA010R0200000938",
+      "channelRefId": "241256",
+      "channel" : "Internet Banking",
+      "endToEndId" : "20210922SIHBIDJ1010O0100000100",
       "msgType" : "Credit Transfer",
 	    "recptBank" : "FASTIDJA"
     }

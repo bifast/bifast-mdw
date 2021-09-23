@@ -13,7 +13,7 @@ import bifast.outbound.repository.BankCodeRepository;
 import bifast.outbound.repository.DomainCodeRepository;
 
 @Component
-public class ValidateInputProcessor implements Processor  {
+public class ValidateProcessor implements Processor  {
 
 	@Autowired
 	private DomainCodeRepository domainCodeRepo;
@@ -47,41 +47,44 @@ public class ValidateInputProcessor implements Processor  {
 			validateChannel = true;
 			validateBank = true;
 		}
+
+		else if (msgType.equals("pymtsts")) {
+			validateChannel = true;
+		}
 		
+		else if (msgType.equals("prxyrgst")) {
+			validateChannel = true;
+		}
+
+		else if (msgType.equals("prxyrslt")) {
+			validateChannel = true;
+		}
+
 		if (validateChannel) {
 			Method getChannel = objRequest.getClass().getMethod("getChannel");
 			String channel = (String) getChannel.invoke(objRequest);
-			DomainCode channelDC = domainCodeRepo.findByGrpAndValue("CHANNEL.TYPE", channel).orElseThrow();
-
-			Method setChannel = objRequest.getClass().getMethod("setChannel", String.class);
-			setChannel.invoke(objRequest, channelDC.getKey());
+			DomainCode channelDC = domainCodeRepo.findByGrpAndKey("CHANNEL.TYPE", channel).orElseThrow();
 		}
 		
 		if (validateBank) {
 			
 			Method getBank = objRequest.getClass().getMethod("getRecptBank");
-			Method setBank = objRequest.getClass().getMethod("setRecptBank", String.class);
 			String bankCode = (String) getBank.invoke(objRequest);
-			BankCode bank = bankCodeRepo.findById(bankCode).orElseThrow();
-			setBank.invoke(objRequest, bank.getBicCode());
+			BankCode bank = bankCodeRepo.findByBicCode(bankCode).orElseThrow();
 			
 			try {
 				Method getDebtorBank = objRequest.getClass().getMethod("getDebtorBank");
-				Method setDebtorBank = objRequest.getClass().getMethod("setDebtorBank", String.class);
 				String debtorBank = (String) getDebtorBank.invoke(objRequest);
 				BankCode debtorBankCode = bankCodeRepo.findById(debtorBank).orElseThrow();
 				
-				setDebtorBank.invoke(objRequest, debtorBankCode.getBicCode());
 			}
 			catch(NoSuchMethodException e) {}
 
 			try {
 				Method getCreditorBank = objRequest.getClass().getMethod("getCreditorBank");
-				Method setCreditorBank = objRequest.getClass().getMethod("setCreditorBank", String.class);
 				String creditorBank = (String) getCreditorBank.invoke(objRequest);
 				BankCode creditorBankCode = bankCodeRepo.findById(creditorBank).orElseThrow();
 
-				setCreditorBank.invoke(objRequest, creditorBankCode.getBicCode());
 			}
 			catch(NoSuchMethodException e) {}
 
@@ -89,10 +92,8 @@ public class ValidateInputProcessor implements Processor  {
 		
 		if (validatePurpose) {
 			Method getPurpose = objRequest.getClass().getMethod("getCategoryPurpose");
-			Method setPurpose = objRequest.getClass().getMethod("setCategoryPurpose", String.class);
 			String purpose = (String) getPurpose.invoke(objRequest);
-			DomainCode channelDC = domainCodeRepo.findByGrpAndValue("CATEGORY.PURPOSE", purpose).orElseThrow();
-			setPurpose.invoke(objRequest, channelDC.getKey());
+			DomainCode channelDC = domainCodeRepo.findByGrpAndKey("CATEGORY.PURPOSE", purpose).orElseThrow();
 		}
 		
 			

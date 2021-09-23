@@ -1,4 +1,4 @@
-package bifast.outbound.proxyregistration;
+package bifast.outbound.proxyregistration.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -9,6 +9,8 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
+import bifast.outbound.proxyregistration.ChnlProxyRegistrationResponse;
 
 @Component
 public class ProxyRegistrationResponseProcessor implements Processor {
@@ -16,22 +18,42 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		BusinessMessage obj_crdtrnResp = exchange.getIn().getBody(BusinessMessage.class);
+		BusinessMessage prxyRegnResponse = exchange.getIn().getBody(BusinessMessage.class);
 
 		ChnlProxyRegistrationRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlProxyRegistrationRequestPojo.class);
 
 		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
 
-		if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
+
+		if (null == prxyRegnResponse) {
+
+			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
+
+			reject.setReferenceId(chnRequest.getOrignReffId());
+			
+			String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
+			String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
+			reject.setReason(errorStatus);
+			reject.setDescription(errorMesg);
+			
+//			reject.setLocation(rejectResp.getRsn().getErrLctn());
+//			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
+	
+			channelResponseWr.setFaultResponse(reject);
+			exchange.getIn().setBody(channelResponseWr);
+
+		}
+		
+		else if (null == prxyRegnResponse.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 
 			ChnlProxyRegistrationResponse chnResponse = new ChnlProxyRegistrationResponse();
-			ProxyRegistrationResponseV01 biResp = obj_crdtrnResp.getDocument().getPrxyRegnRspn();
+			ProxyRegistrationResponseV01 biResp = prxyRegnResponse.getDocument().getPrxyRegnRspn();
 
 			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
 			
 			// from CI-HUB response
-			chnResponse.setBizMsgId(obj_crdtrnResp.getAppHdr().getBizMsgIdr());
-			chnResponse.setResponseType(obj_crdtrnResp.getAppHdr().getBizSvc());
+			chnResponse.setBizMsgId(prxyRegnResponse.getAppHdr().getBizMsgIdr());
+//			chnResponse.setResponseType(prxyRegnResponse.getAppHdr().getBizSvc());
 			
 			chnResponse.setStatus(biResp.getRegnRspn().getPrxRspnSts().toString());
 			chnResponse.setReason(biResp.getRegnRspn().getStsRsnInf().getPrtry());
@@ -42,7 +64,7 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		}
 		
 		else {   // ternyata berupa message reject
-			MessageRejectV01 rejectResp = obj_crdtrnResp.getDocument().getMessageReject();
+			MessageRejectV01 rejectResp = prxyRegnResponse.getDocument().getMessageReject();
 
 			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
 

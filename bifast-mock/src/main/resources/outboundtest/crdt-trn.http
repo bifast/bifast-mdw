@@ -7,25 +7,52 @@
 # norek 5xx akan response reject
 # positif test refId bukan 9 dan norek bukan 8-9
 
-POST http://localhost:9002/services/komi/outbound HTTP/1.1
+#localhost:9002/komi-outbound/routing/
+#localhost:9002/komi-outbound/service/
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "orignReffId" : "310015",
+    "orignReffId" : "31411",
     "channel" : "Internet Banking",
     "categoryPurpose" : "Investment",
-    "amount" : 8276200,
-    "crdtAccountNo" : "1822352",
+    "amount" : 825200,
+    "crdtAccountNo" : "262222",
     "crdtAccountType" : "SVGS",
     "dbtrIdType" : "01",    
     "dbtrName": "Fandi Wijaya",
     "dbtrId" : "01445",
-    "dbtrAccountNo" : "74664",
+    "dbtrAccountNo" : "783784",
     "dbtrAccountType" : "CACC",
     "recptBank" : "014",
     "crdtIdType" : "02",   
-    "crdtName": "P6II",
+    "crdtName": "P AI",
+    "crdtId" : "C4403"
+  }
+}
+
+###
+POST http://localhost:9002/komi-outbound/routing HTTP/1.1
+Content-Type: application/json
+
+{
+  "CreditTransferRequest" : {
+    "orignReffId" : "321",
+    "channel" : "01",
+    "categoryPurpose" : "02",
+    "amount" : 825200,
+    "crdtAccountNo" : "262222",
+    "crdtAccountType" : "SVGS",
+    "dbtrIdType" : "01",    
+    "dbtrName": "Fandi Wijaya",
+    "dbtrId" : "01445",
+    "dbtrAccountNo" : "783784",
+    "dbtrAccountType" : "CACC",
+    "recptBank" : "BMRIIDJA",
+    "crdtIdType" : "02",   
+    "crdtName": "P AI",
     "crdtId" : "C4403"
   }
 }

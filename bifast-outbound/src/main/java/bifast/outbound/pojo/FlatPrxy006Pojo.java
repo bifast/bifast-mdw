@@ -1,12 +1,14 @@
 package bifast.outbound.pojo;
 
-public class FlatPacs002Pojo extends FlatMessageBase {
+import java.time.LocalDateTime;
+
+public class FlatPrxy006Pojo {
 	
 	private String msgId;
-	private String creDtTm;
+	private LocalDateTime creDtTm;
 	private String OrgnlMsgId;
 	private String OrgnlMsgNmId;
-	private String OrgnlCreDtTm;
+	private LocalDateTime OrgnlCreDtTm;
 	private String OrgnlEndToEndId;
 	private String OrgnlTxId;
 	private String TxSts;
@@ -41,10 +43,10 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	public void setMsgId(String msgId) {
 		this.msgId = msgId;
 	}
-	public String getCreDtTm() {
+	public LocalDateTime getCreDtTm() {
 		return creDtTm;
 	}
-	public void setCreDtTm(String creDtTm) {
+	public void setCreDtTm(LocalDateTime creDtTm) {
 		this.creDtTm = creDtTm;
 	}
 	public String getOrgnlMsgId() {
@@ -59,10 +61,10 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	public void setOrgnlMsgNmId(String orgnlMsgNmId) {
 		OrgnlMsgNmId = orgnlMsgNmId;
 	}
-	public String getOrgnlCreDtTm() {
+	public LocalDateTime getOrgnlCreDtTm() {
 		return OrgnlCreDtTm;
 	}
-	public void setOrgnlCreDtTm(String orgnlCreDtTm) {
+	public void setOrgnlCreDtTm(LocalDateTime orgnlCreDtTm) {
 		OrgnlCreDtTm = orgnlCreDtTm;
 	}
 	public String getOrgnlEndToEndId() {

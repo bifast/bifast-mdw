@@ -1,4 +1,4 @@
-package bifast.outbound.proxyregistration;
+package bifast.outbound.proxyregistration.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -14,6 +14,7 @@ import bifast.library.iso20022.service.Proxy001MessageService;
 import bifast.library.iso20022.service.Proxy001Seed;
 import bifast.outbound.config.Config;
 import bifast.outbound.processor.UtilService;
+import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
 
 @Component
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )

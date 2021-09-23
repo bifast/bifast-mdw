@@ -100,6 +100,13 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")
 					.process(accountEnquiryResponseProcessor)
 					
+					.choice()
+						.when().simple("${header.hdr_account_no} startsWith '8' ")
+							.setHeader("delay", simple("${random(2000,3000)}"))
+						.otherwise()
+							.setHeader("delay", constant(500))
+					.endChoice()
+
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
 					.process(creditTransferResponseProcessor)
 					.setHeader("hdr_ctResponseObj",simple("${body}"))

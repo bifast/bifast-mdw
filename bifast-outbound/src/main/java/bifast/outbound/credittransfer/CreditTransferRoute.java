@@ -17,10 +17,12 @@ import bifast.outbound.credittransfer.processor.CTCorebankRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
 import bifast.outbound.credittransfer.processor.SaveCreditTransferProcessor;
+import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 import bifast.outbound.paymentstatus.BuildPaymentStatusRequestProcessor;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultResponseProcessor;
+import bifast.outbound.processor.FlatResponseProcessor;
 import bifast.outbound.report.InitSettlementRequestProcessor;
 import bifast.outbound.report.RequestPojo;
 import bifast.outbound.report.ResponsePojo;
@@ -49,7 +51,11 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired
 	private SaveCreditTransferProcessor saveCTTableProcessor;
 	@Autowired
+	private StoreCreditTransferProcessor storeCTProcessor;
+	@Autowired
 	private BuildAERequestProcessor buildAERequestProcessor;
+	@Autowired
+	private FlatResponseProcessor flatResponseProcessor;
 
 	JacksonDataFormat cbDebitInstructionRequestJDF = new JacksonDataFormat(CBDebitInstructionRequestPojo.class);
 	JacksonDataFormat cbDebitInstructionResponseJDF = new JacksonDataFormat(CBDebitInstructionResponsePojo.class);
@@ -111,7 +117,22 @@ public class CreditTransferRoute extends RouteBuilder {
 	  	;
 
 
-		from("direct:ctreq").routeId("CreditTransferRoute")
+		from("direct:flatctreq").routeId("komi.flatct.start")
+			.setHeader("ct_channelRequest", simple("${body}"))
+			.process(crdtTransferProcessor)
+
+			.setHeader("ct_birequest", simple("${body}"))	
+			.to("direct:call-cihub")
+			.setHeader("ct_biresponse", simple("${body}"))
+
+			.process(flatResponseProcessor)
+			.process(storeCTProcessor)
+			
+			.removeHeaders("ct*")
+
+		;
+		
+		from("direct:ctreq").routeId("komi.ct.start")
 		
 			.setHeader("ct_channelRequest", simple("${body}"))
 			
@@ -121,13 +142,12 @@ public class CreditTransferRoute extends RouteBuilder {
 			// check hasilnya
 			.choice()
 				.when().simple("${body.accountEnquiryResponse} != null")
-					.log("Apakah AE Response SUCCESS or FAILED")
 					.choice()
 						.when().simple("${body.accountEnquiryResponse.status} == 'ACTC'")
-							.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "[ChRefId:${header.hdr_chnlRefId}][CT] AE passed.")
+							.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChRefId:${header.hdr_chnlRefId}][CT] AE passed.")
 							.to("direct:ct_aepass")
 						.otherwise()
-							.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "[ChRefId:${header.hdr_chnlRefId}][CT] AE reject.")
+							.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChRefId:${header.hdr_chnlRefId}][CT] AE reject.")
 							.setHeader("ct_failure_point", constant("AERJCT"))
 							.process(crdtTransferResponseProcessor)
 					    	.setHeader("hdr_error_status", constant("REJECT-CIHUB"))
@@ -139,21 +159,21 @@ public class CreditTransferRoute extends RouteBuilder {
 			.removeHeaders("resp_*")
 			;
 		
-		from("direct:ct_aepass").routeId("CTAfterAERoute")
+		from("direct:ct_aepass").routeId("komi.ct.afterAERoute")
 
-			.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "[ChRefId:${header.hdr_chnlRefId}][CT] direct:ct_aepass...")
+			.log(LoggingLevel.DEBUG, "komi.ct.afterAERoute", "[ChRefId:${header.hdr_chnlRefId}][CT] direct:ct_aepass...")
 
 			// invoke corebanking
 			.setHeader("hdr_errorlocation", constant("corebank service call"))		
 			.process(ctCorebankRequestProcessor)  // build request param
 			.to("direct:callcb")
-			.setHeader("hdr_cbresponse", simple("${body.cbDebitInstructionResponse}"))
-				
+			.setHeader("hdr_cbresponse", simple("${body}"))
+			
 			.choice()
-				.when().simple("${header.ct_cbresponse.status} == 'SUCCESS'")
+				.when().simple("${header.hdr_cbresponse.status} == 'SUCCESS'")
 					.to("seda:ct_lolos_corebank")
 
-				.when().simple("${header.ct_cbresponse.status} == 'FAILED'")
+				.when().simple("${header.hdr_cbresponse.status} == 'FAILED'")
 					.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Corebank reject.")
 					.setHeader("ct_failure_point", constant("CBRJCT"))
 					.setHeader("hdr_error_status", constant("REJECT-CB"))
@@ -165,67 +185,21 @@ public class CreditTransferRoute extends RouteBuilder {
 		;
 
 
-		from("seda:ct_lolos_corebank").routeId("CTAfterCBRoute")
-			.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "[ChRefId:${header.hdr_chnlRefId}] Corebank accept.")
+		from("seda:ct_lolos_corebank").routeId("komi.ct.after_cbcall")
+			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}] Corebank accept.")
 
 			.process(crdtTransferProcessor)
 			.setHeader("ct_birequest", simple("${body}"))
 		
 			// kirim ke CI-HUB
-			.setHeader("ct_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-			.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "Submit CT no: ${header.ct_birequest.appHdr.bizMsgIdr}")
 
-			.doTry()
-				.marshal(businessMessageJDF)
-				.to("seda:encryptCTbody")
-				.setHeader("ct_encr_request", simple("${header.ct_encrMessage}"))
-				
-				.log("sesudah marshal : ${body}")
-				
-				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{komi.ciconnector-url}}?"
-						+ "socketTimeout={{komi.timeout}}&" 
-						+ "bridgeEndpoint=true",
-						enrichmentAggregator)
-				.convertBodyTo(String.class)
-				
-				.log("Hasil call CT: ${body}")
-				.to("seda:encryptCTbody")
-				.setHeader("ct_encr_response", simple("${header.ct_encrMessage}"))
+			.setHeader("ct_birequest", simple("${body}"))	
+			.to("direct:call-cihub")
+			.setHeader("ct_biresponse", simple("${body}"))
+			
+			.process(storeCTProcessor)
 
-				.unmarshal(businessMessageJDF)
-				.setHeader("ct_biresponse", simple("${body}"))
-
-				.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "[ChRefId:${header.hdr_chnlRefId}][CT] call CI-HUB sukses.")
-
-				.setHeader("ct_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-				.to("seda:saveCTtables?exchangePattern=InOnly")
-
-			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-    			.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}][CT] call CI-HUB timeout")
-		    	.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
-		    	.setHeader("hdr_error_mesg", constant("Timeout waiting response from CI-HUB"))
-				.setHeader("ct_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-
-				.setHeader("ct_failure_point", constant("CIHUBTIMEOUT"))
-				.to("seda:saveCTtables?exchangePattern=InOnly")
-    			.setBody(constant(null))
-
-			.doCatch(Exception.class)     // klo timeout maka kirim payment status
-				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}][CT] call CI-HUB timeout")
-		    	.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
-		    	.setHeader("hdr_error_mesg", constant("Timeout waiting response from CI-HUB"))
-				.setHeader("ct_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-    			.setBody(constant(null))
-
-				.setHeader("ct_failure_point", constant("CIHUBERROR"))
-				.to("seda:saveAEtables?exchangePattern=InOnly")
-		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-	    	
-	    	.endDoTry()
-    		.end()
-
-			.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "[ChRefId:${header.hdr_chnlRefId}][CT] setelah call CIHUB.")
+			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] setelah call CIHUB.")
 
     		// periksa apakah ada hasil dari call cihub
     		.choice().when().simple("${body} == null")
@@ -238,7 +212,7 @@ public class CreditTransferRoute extends RouteBuilder {
 
     			.doTry()
 	    			.marshal(settlementRequestJDF)
-	    			.log("Settlement enquiry: ${body}")
+	    			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] Settlement request: ${body}")
 					.setHeader("HttpMethod", constant("POST"))
 					.enrich("http:{{komi.inbound-url}}?"
 							+ "bridgeEndpoint=true",
@@ -261,7 +235,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	    				.log("settlementResponse format: ${body}")
 	    				.unmarshal(businessMessageJDF)
 	    			.when().simple("${body.messageNotFound} != null")
-	    				.log(LoggingLevel.DEBUG, "bifast.outbound.credittransfer", "[ChRefId:${header.hdr_chnlRefId}][CT] Settlement not found.")
+	    				.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] Settlement not found.")
 		    			.setBody(constant(null))
 	    		.endChoice()
 		
@@ -272,11 +246,11 @@ public class CreditTransferRoute extends RouteBuilder {
     		// klo masih kosong, call Payment Status
     		.choice()
 				.when().simple("${body} == null")
-					.log("tidak ada settlement, harus PS")
+					.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] tidak ada settlement, harus PS.")
 		    		.setHeader("hdr_errorlocation", constant("CTRoute/PaymentStatus"))
 	    			.setBody(simple("${header.ct_objreqbi}"))
 	    			.process(initPaymentStatusRequestProcessor)
-	    			.to("direct:paymentstatus")
+	    			.to("direct:ps")
 //	    			.unmarshal(businessMessageJDF)
 			.endChoice()
 			.end()	
@@ -308,15 +282,15 @@ public class CreditTransferRoute extends RouteBuilder {
 		;
 
 
-		from("seda:encryptCTbody")
-			.setHeader("ct_tmp", simple("${body}"))
-			.marshal().zipDeflater()
-			.marshal().base64()
-			.setHeader("ct_encrMessage", simple("${body}"))
-			.setBody(simple("${header.ct_tmp}"))
-		;
+//		from("seda:encryptCTbody").routeId("komi.ct.encryption")
+//			.setHeader("ct_tmp", simple("${body}"))
+//			.marshal().zipDeflater()
+//			.marshal().base64()
+//			.setHeader("ct_encrMessage", simple("${body}"))
+//			.setBody(simple("${header.ct_tmp}"))
+//		;
 		
-		from("seda:saveCTtables")
+		from("seda:saveCTtables").routeId("komi.ct.save_logtable")
 			.process(saveCTTableProcessor)
 		;
 		

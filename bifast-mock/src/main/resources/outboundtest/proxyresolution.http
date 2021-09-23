@@ -4,8 +4,8 @@ Content-Type: application/json
 
 {
     "ProxyResolutionRequest": {
-        "orignReffId": "1B41",
-        "channel" : "01",
+        "orignReffId": "11441",
+        "channel" : "Internet Banking",
         "lookupType": "PXRS",
         "proxyType" : "02",
         "proxyValue" : "frans.mazhar@gmail.com"

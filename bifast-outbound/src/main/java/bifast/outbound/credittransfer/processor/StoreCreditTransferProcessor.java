@@ -15,7 +15,7 @@ import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.repository.CreditTransferRepository;
 
 @Component
-public class SaveCreditTransferProcessor implements Processor {
+public class StoreCreditTransferProcessor implements Processor {
 
 	@Autowired
 	private CreditTransferRepository creditTransferRepo;
@@ -23,20 +23,17 @@ public class SaveCreditTransferProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChnlCreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);				
+		CreditTransfer ct = new CreditTransfer();
 
-	
+		ChnlCreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);				
+		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
+
+		ct.setIntrRefId(chnlRefId);
+
 		BusinessMessage biRequest = exchange.getMessage().getHeader("ct_birequest", BusinessMessage.class);
+		
 		FIToFICustomerCreditTransferV08 creditTransferReq = biRequest.getDocument().getFiToFICstmrCdtTrf();
 
-		
-		String encrRequestMesg = exchange.getMessage().getHeader("ct_encr_request", String.class);
-		String encrResponseMesg = exchange.getMessage().getHeader("ct_encr_response", String.class);
-			
-		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
-		String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
-		
-		CreditTransfer ct = new CreditTransfer();
 		
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 
@@ -44,11 +41,6 @@ public class SaveCreditTransferProcessor implements Processor {
 
 		String strCiHubRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
 		String strCiHubResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-
-		if (null==strCiHubRequestTime) {
-			strCiHubRequestTime = exchange.getMessage().getHeader("ct_cihubRequestTime", String.class);
-			strCiHubResponseTime = exchange.getMessage().getHeader("ct_cihubResponseTime", String.class);
-		}
 		
 		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCiHubRequestTime, dtf);
 		ct.setCihubRequestDT(cihubRequestTime);
@@ -79,13 +71,13 @@ public class SaveCreditTransferProcessor implements Processor {
 		else
 			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		
 		
-		ct.setFullRequestMessage(encrRequestMesg);
+		String encrRequestMesg = exchange.getMessage().getHeader("hdr_encr_request", String.class);
+		String encrResponseMesg = exchange.getMessage().getHeader("hdr_encr_response", String.class);
 		
+		ct.setFullRequestMessage(encrRequestMesg);
 		if (!(null==encrResponseMesg))
 			ct.setFullResponseMsg(encrResponseMesg);
 
-		ct.setIntrRefId(chnlRequest.getOrignReffId());
-		
 		if (null==chnlRequest.getOrgnlEndToEndId())
 			ct.setMsgType("Credit Transfer");
 		else
@@ -103,8 +95,13 @@ public class SaveCreditTransferProcessor implements Processor {
 			ct.setResponseStatus(biResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
 		}
 		
-		if (!(null==errorStatus))
+		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
+//		String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
+		
+
+		if (!(null==errorStatus)) {
 			ct.setCallStatus(errorStatus);
+		}
 		else
 			ct.setCallStatus("SUCCESS");
 		

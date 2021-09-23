@@ -16,22 +16,48 @@ public class AccountEnquiry {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	private Long logMessageId;
+//	private Long logMessageId;
 	
 	@Column(length=20)
 	private String intrRefId;
 	
-	@Column(name="ORIGN_BANK")
+	@Column(name="BIZMSGID", length=50)
+	private String bizMsgIdr;
+
+	@Column(name="RESP_BIZMSGID", length=50)
+	private String respBizMsgIdr;
+
+	@Column(name="ORIGN_BANK", length=20)
 	private String originatingBank;
-	@Column(name="RECPT_BANK")
+	@Column(name="RECPT_BANK", length=20)
 	private String recipientBank;
 
 	private BigDecimal amount;
 	
+	@Column(length=50)
 	private String accountNo;
+
 	private LocalDateTime creDt;
+
+	@Column(length=20)
+	private String responseStatus;
+
+	@Column(name="CIHUB_REQ_TIME")
+	private LocalDateTime cihubRequestDT;
 	
-	public AccountEnquiry () {}
+	@Column(name="CIHUB_RESP_TIME")
+	private LocalDateTime cihubResponseDT;	
+	
+	@Column(name="FULL_REQUEST_MSG", length=4000)
+	private String fullRequestMessage;
+
+	@Column(name="FULL_RESPONSE_MSG", length=4000)
+	private String fullResponseMsg;
+	
+	private String callStatus;
+	
+	@Column(length=400)
+	private String errorMessage;
 
 	public Long getId() {
 		return id;
@@ -41,20 +67,28 @@ public class AccountEnquiry {
 		this.id = id;
 	}
 
-	public Long getLogMessageId() {
-		return logMessageId;
-	}
-
-	public void setLogMessageId(Long logMessageId) {
-		this.logMessageId = logMessageId;
-	}
-
 	public String getIntrRefId() {
 		return intrRefId;
 	}
 
 	public void setIntrRefId(String intrRefId) {
 		this.intrRefId = intrRefId;
+	}
+
+	public String getBizMsgIdr() {
+		return bizMsgIdr;
+	}
+
+	public void setBizMsgIdr(String bizMsgIdr) {
+		this.bizMsgIdr = bizMsgIdr;
+	}
+
+	public String getRespBizMsgIdr() {
+		return respBizMsgIdr;
+	}
+
+	public void setRespBizMsgIdr(String respBizMsgIdr) {
+		this.respBizMsgIdr = respBizMsgIdr;
 	}
 
 	public String getOriginatingBank() {
@@ -97,7 +131,61 @@ public class AccountEnquiry {
 		this.creDt = creDt;
 	}
 
+	public String getResponseStatus() {
+		return responseStatus;
+	}
 
-	
-	
+	public void setResponseStatus(String responseStatus) {
+		this.responseStatus = responseStatus;
+	}
+
+	public LocalDateTime getCihubRequestDT() {
+		return cihubRequestDT;
+	}
+
+	public void setCihubRequestDT(LocalDateTime cihubRequestDT) {
+		this.cihubRequestDT = cihubRequestDT;
+	}
+
+	public LocalDateTime getCihubResponseDT() {
+		return cihubResponseDT;
+	}
+
+	public void setCihubResponseDT(LocalDateTime cihubResponseDT) {
+		this.cihubResponseDT = cihubResponseDT;
+	}
+
+	public String getFullRequestMessage() {
+		return fullRequestMessage;
+	}
+
+	public void setFullRequestMessage(String fullRequestMessage) {
+		this.fullRequestMessage = fullRequestMessage;
+	}
+
+	public String getFullResponseMsg() {
+		return fullResponseMsg;
+	}
+
+	public void setFullResponseMsg(String fullResponseMsg) {
+		this.fullResponseMsg = fullResponseMsg;
+	}
+
+	public String getCallStatus() {
+		return callStatus;
+	}
+
+	public void setCallStatus(String callStatus) {
+		this.callStatus = callStatus;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
+
 }

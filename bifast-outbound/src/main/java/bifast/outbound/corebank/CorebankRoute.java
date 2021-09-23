@@ -7,6 +7,9 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultResponseProcessor;
@@ -23,17 +26,31 @@ public class CorebankRoute extends RouteBuilder{
 	@Autowired
 	private SaveCBTableProcessor saveCBTableProcessor;
 
+	JacksonDataFormat chnlDebitRequestJDF = new JacksonDataFormat(CBDebitInstructionRequestPojo.class);
+	JacksonDataFormat chnlFIRequestJDF = new JacksonDataFormat(CBFITransferRequestPojo.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 	JacksonDataFormat cbInstructionWrapper = new JacksonDataFormat(CBInstructionWrapper.class);
 
 	@Override
 	public void configure() throws Exception {
 		
+		chnlDebitRequestJDF.setInclude("NON_NULL");
+		chnlDebitRequestJDF.setInclude("NON_EMPTY");
+		chnlDebitRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+		chnlDebitRequestJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+		
+		chnlFIRequestJDF.setInclude("NON_NULL");
+		chnlFIRequestJDF.setInclude("NON_EMPTY");
+		chnlFIRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+		chnlFIRequestJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
 		chnlResponseJDF.setInclude("NON_NULL");
 		chnlResponseJDF.setInclude("NON_EMPTY");
 		
 		cbInstructionWrapper.setInclude("NON_NULL");
 		cbInstructionWrapper.setInclude("NON_EMPTY");
+		cbInstructionWrapper.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+		chnlFIRequestJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		onException(Exception.class) 
 			.log("ERROR route callingCB")
@@ -48,26 +65,29 @@ public class CorebankRoute extends RouteBuilder{
 			.handled(true);
 		;
 
-		from("direct:callcb").routeId("callingCB")
+		from("direct:callcb").routeId("komi.cb.corebank")
 			.log("[ChRefId:${header.hdr_chnlRefId}][Corebank] started")
-				
+			
 			.setHeader("cb_request", simple("${body}"))
 			
 			.setHeader("hdr_errorlocation", constant("corebank service call"))		
+
+			.marshal(cbInstructionWrapper)
+	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChRefId:${header.hdr_chnlRefId}] Post CB Request: ${body}")
 			.setHeader("HttpMethod", constant("POST"))
 //			.enrich("http:{{komi.cb-url}}?"
 //					+ "bridgeEndpoint=true",
 //					enrichmentAggregator)
 //			.convertBodyTo(String.class)
+//	 		.log(LoggingLevel.DEBUG, "bifast.outbound.corebank", "[ChRefId:${header.hdr_chnlRefId}] CB Response: ${body}")
 			
+	 		.unmarshal(cbInstructionWrapper)
 			.process(mockCBResponse)
-//			.setHeader("hdr_cbresponse", simple("${body}"))
 
 			.choice()
-				.when().simple("${body.cbDebitInstructionResponse.status} != 'SUCCESS'")
+				.when().simple("${body.status} != 'SUCCESS'")
 					.setHeader("hdr_error_status", constant("REJECT-CB"))
-					.setHeader("hdr_error_mesg", simple("${body.cbDebitInstructionResponse.addtInfo}"))
-//					.setHeader("hdr_error_mesg", constant("Transaksi CB gagal"))
+					.setHeader("hdr_error_mesg", simple("${body.addtInfo}"))
 			.end()
 			
 			.to("seda:savecbtable?exchangePattern=InOnly")
@@ -77,10 +97,9 @@ public class CorebankRoute extends RouteBuilder{
 			.removeHeaders("cb_*")
 		;
 		
-		from("seda:savecbtable").routeId("save_cb_trns")
-			.log(LoggingLevel.DEBUG, "bifast.outbound.corebank", "[ChRefId:${header.hdr_chnlRefId}] Akan save table.")
+		from("seda:savecbtable").routeId("komi.cb.save_logtable")
 			.process(saveCBTableProcessor)
-			.log(LoggingLevel.DEBUG, "bifast.outbound.corebank", "[ChRefId:${header.hdr_chnlRefId}] corebank table saved.")
+			.log(LoggingLevel.DEBUG, "komi.cb.save_logtable", "[ChRefId:${header.hdr_chnlRefId}] corebank table saved.")
 		;
 	}
 

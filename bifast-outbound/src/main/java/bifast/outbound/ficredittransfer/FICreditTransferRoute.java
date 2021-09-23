@@ -102,19 +102,20 @@ public class FICreditTransferRoute extends RouteBuilder {
 
 		// Untuk Proses Credit Transfer Request
 
-		from("direct:fictreq").routeId("fictreq")
+		from("direct:fictreq").routeId("fict.fictreq")
 
 			.log("Prepare untuk call CB")
 
 			.process(fiCTCorebankRequestProcessor)
 			.to("direct:callcb")
-			.setHeader("hdr_cbresponse", simple("${body.cbDebitInstructionResponse}"))
+			.setHeader("hdr_cbresponse", simple("${body}"))
+//			.setHeader("hdr_cbresponse", simple("${body.cbDebitInstructionResponse}"))
 
 			// evalutate reponse cb
 			.choice()
-				.when().simple("${header.fict_cbresponse.status} == 'SUCCESS'")
+				.when().simple("${header.hdr_cbresponse.status} == 'SUCCESS'")
 					.to("seda:fict_corebank_accpt")
-				.when().simple("${header.fict_cbresponse.status} == 'FAILED'")
+				.when().simple("${header.hdr_cbresponse.status} == 'FAILED'")
 					.process(corebankTransactionFailureProcessor)
 			.end()
 
@@ -228,15 +229,14 @@ public class FICreditTransferRoute extends RouteBuilder {
 		;
 
 
-		from("seda:encryptFICTbody")
+		from("seda:encryptFICTbody").routeId("fict.encryption")
 			.setHeader("fict_tmp", simple("${body}"))
 			.marshal().zipDeflater()
 			.marshal().base64()
 			.setHeader("fict_encrMessage", simple("${body}"))
 			.setBody(simple("${header.fict_tmp}"))
 		;
-		from("seda:saveFICTtables")
-			.log("akan save FI tables")
+		from("seda:saveFICTtables").routeId("fict.save_logtable")
 			.process(saveFICTTableProcessor)
 		;
 

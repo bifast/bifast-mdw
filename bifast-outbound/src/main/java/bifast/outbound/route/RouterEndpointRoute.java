@@ -21,16 +21,17 @@ import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultResponseProcessor;
 import bifast.outbound.processor.SaveTableChannelProcessor;
 import bifast.outbound.processor.ValidateAndTransformProcessor;
+import bifast.outbound.processor.ValidateProcessor;
 
 @Component
-public class ServiceEndpointRoute extends RouteBuilder {
+public class RouterEndpointRoute extends RouteBuilder {
 
 	@Autowired
 	private CheckChannelRequestTypeProcessor checkChannelRequest;
 	@Autowired
 	private FaultResponseProcessor faultProcessor;
 	@Autowired
-	private ValidateAndTransformProcessor validateInputProcessor;
+	private ValidateProcessor validateInputProcessor;
 	@Autowired
 	private SaveTableChannelProcessor saveChannelRequestProcessor;
 	@Autowired
@@ -78,14 +79,14 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		
 		rest("/")
 
-			.post("/service")
+			.post("/routing")
 				.consumes("application/json")
-				.to("direct:service")
+				.to("direct:router")
 
 		;
 
 		
-		from("direct:service").routeId("komi.endpointRoute")
+		from("direct:router").routeId("komi.direct:router")
 			.convertBodyTo(String.class)
 
 			.setHeader("hdr_errorlocation", constant("EndpointRoute"))
@@ -105,11 +106,11 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.choice()
 				.when().simple("${header.hdr_msgType} == 'acctenqr'")
 					.log("[ChRefId:${header.hdr_chnlRefId}][AE] start.")
-					.to("direct:acctenqr")
+					.to("direct:acctenqrflt")
 					
 				.when().simple("${header.hdr_msgType} == 'crdttrns'")
 					.log("[ChRefId:${header.hdr_chnlRefId}][CT] start.")
-					.to("direct:ctreq")
+					.to("direct:flatctreq")
 
 				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
 					.log("[ChRefId:${header.hdr_chnlRefId}][FICT] start.")
@@ -166,56 +167,56 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		
 
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
-//		from("direct:call-cihub").routeId("komi.call-cihub")
-//			.marshal(businessMessageJDF)
-//			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] Post CI-HUB request: ${body}")
-//	
-//			.setHeader("tmp_body", simple("${body}"))
-//			.marshal().zipDeflater()
-//			.marshal().base64()
-//			.setHeader("hdr_encr_request", simple("${body}"))
-//			.setBody(simple("${header.tmp_body}"))
-//			
-//			.setHeader("hdr_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//	
-//			.doTry()
-//				.setHeader("HttpMethod", constant("POST"))
-//				.enrich("http:{{komi.ciconnector-url}}?"
-//						+ "socketTimeout={{komi.timeout}}&" 
-//						+ "bridgeEndpoint=true",
-//						enrichmentAggregator)
-//				.convertBodyTo(String.class)				
-//				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] CI-HUB response: ${body}")
-//	
-//				.setHeader("tmp_body", simple("${body}"))
-//				.marshal().zipDeflater()
-//				.marshal().base64()
-//				.setHeader("hdr_encr_response", simple("${body}"))
-//				.setBody(simple("${header.tmp_body}"))
-//	
-//				.unmarshal(businessMessageJDF)
-//				.setHeader("hdr_error_status", constant(null))
-//	
-//			.doCatch(SocketTimeoutException.class)
-//				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Timeout")
-//				.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
-//				.setHeader("hdr_error_mesg", constant("Timeout menunggu response dari CIHUB"))
-//		    	.setBody(constant(null))
-//	
-//	    	.doCatch(Exception.class)
-//				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Error.")
-//		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-//				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
-//				.setHeader("hdr_error_mesg", simple("${exception.message}"))
-//		    	.setBody(constant(null))
-//	
-//			.endDoTry()
-//			.end()
-//	
-//			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//			
-//			.removeHeaders("tmp_*")
-//		;
+		from("direct:call-cihub").routeId("komi.call-cihub")
+			.marshal(businessMessageJDF)
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] Post CI-HUB request: ${body}")
+	
+			.setHeader("tmp_body", simple("${body}"))
+			.marshal().zipDeflater()
+			.marshal().base64()
+			.setHeader("hdr_encr_request", simple("${body}"))
+			.setBody(simple("${header.tmp_body}"))
+			
+			.setHeader("hdr_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+	
+			.doTry()
+				.setHeader("HttpMethod", constant("POST"))
+				.enrich("http:{{komi.ciconnector-url}}?"
+						+ "socketTimeout={{komi.timeout}}&" 
+						+ "bridgeEndpoint=true",
+						enrichmentAggregator)
+				.convertBodyTo(String.class)				
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] CI-HUB response: ${body}")
+	
+				.setHeader("tmp_body", simple("${body}"))
+				.marshal().zipDeflater()
+				.marshal().base64()
+				.setHeader("hdr_encr_response", simple("${body}"))
+				.setBody(simple("${header.tmp_body}"))
+	
+				.unmarshal(businessMessageJDF)
+				.setHeader("hdr_error_status", constant(null))
+	
+			.doCatch(SocketTimeoutException.class)
+				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Timeout")
+				.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
+				.setHeader("hdr_error_mesg", constant("Timeout menunggu response dari CIHUB"))
+		    	.setBody(constant(null))
+	
+	    	.doCatch(Exception.class)
+				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Error.")
+		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
+				.setHeader("hdr_error_mesg", simple("${exception.message}"))
+		    	.setBody(constant(null))
+	
+			.endDoTry()
+			.end()
+	
+			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			
+			.removeHeaders("tmp_*")
+		;
 
 	
 	}

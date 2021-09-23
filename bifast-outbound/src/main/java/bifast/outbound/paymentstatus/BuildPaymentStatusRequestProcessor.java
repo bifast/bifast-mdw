@@ -12,7 +12,8 @@ public class BuildPaymentStatusRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage reqData = exchange.getMessage().getBody(BusinessMessage.class);
+//		BusinessMessage reqData = exchange.getMessage().getBody(BusinessMessage.class);
+		BusinessMessage reqData = exchange.getMessage().getHeader("ct_birequest", BusinessMessage.class);
 		ChnlPaymentStatusRequestPojo request = new ChnlPaymentStatusRequestPojo();
 		
 		request.setEndToEndId(reqData.getAppHdr().getBizMsgIdr());

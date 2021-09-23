@@ -18,13 +18,34 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage busMesg = exchange.getMessage().getHeader("ae_objresp_bi", BusinessMessage.class);
+//		BusinessMessage busMesg = exchange.getMessage().getHeader("ae_objresp_bi", BusinessMessage.class);
 		
-		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("ae_channelRequest",ChnlAccountEnquiryRequestPojo.class);
+		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("ae_channel_request",ChnlAccountEnquiryRequestPojo.class);
 		
 		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
 		
-		if (null == busMesg.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
+		BusinessMessage busMesg = exchange.getIn().getBody(BusinessMessage.class);
+
+		if (null == busMesg) {
+			
+			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
+
+			reject.setReferenceId(chnReq.getChannelRefId());
+			
+			String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
+			String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
+			reject.setReason(errorStatus);
+			reject.setDescription(errorMesg);
+			
+//			reject.setLocation(rejectResp.getRsn().getErrLctn());
+//			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
+	
+			channelResponseWr.setFaultResponse(reject);
+			exchange.getIn().setBody(channelResponseWr);
+
+		}
+		
+		else if (null == busMesg.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
 			
 			PaymentTransaction110 biResp = busMesg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 	

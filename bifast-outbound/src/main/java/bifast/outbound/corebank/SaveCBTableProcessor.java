@@ -22,9 +22,10 @@ public class SaveCBTableProcessor implements Processor{
 
 		Object objCbRequest = exchange.getMessage().getHeader("cb_request", Object.class);
 		String requestClassName = objCbRequest.getClass().getSimpleName();
-		CBInstructionWrapper responseWr = exchange.getMessage().getBody(CBInstructionWrapper.class);
-
-		CBDebitInstructionResponsePojo debitResp = responseWr.getCbDebitInstructionResponse();
+		
+//		CBInstructionWrapper responseWr = exchange.getMessage().getBody(CBInstructionWrapper.class);		
+		CBDebitInstructionResponsePojo debitResp = exchange.getMessage().getBody(CBDebitInstructionResponsePojo.class);
+//		CBDebitInstructionResponsePojo debitResp = responseWr.getCbDebitInstructionResponse();
 
 		CorebankTransaction cb = new CorebankTransaction();
 

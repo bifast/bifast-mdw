@@ -10,21 +10,17 @@ public class MockCBResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		Object cbRequestObj = exchange.getMessage().getBody(Object.class);
-		
-		String requestClassName = cbRequestObj.getClass().getSimpleName();
-		
-		System.out.println("mock db " + requestClassName);
-		
-		CBInstructionWrapper cbResponse = new CBInstructionWrapper();
+		CBInstructionWrapper cbRequestWr = exchange.getMessage().getBody(CBInstructionWrapper.class);
+
+//		CBInstructionWrapper cbResponse = new CBInstructionWrapper();
 
 		String status = "";
 		CBDebitInstructionResponsePojo response = new CBDebitInstructionResponsePojo();	
 		
-		if (requestClassName.equals("CBDebitInstructionRequestPojo")) {
-
-			CBDebitInstructionRequestPojo request = (CBDebitInstructionRequestPojo) cbRequestObj;
+		if (!(null == cbRequestWr.getCbDebitInstructionRequest()))  {
 			
+			CBDebitInstructionRequestPojo request = cbRequestWr.getCbDebitInstructionRequest();
+		
 			if (request.getTransactionId().startsWith("9")) 
 				status = "FAILED";
 			else 
@@ -39,7 +35,7 @@ public class MockCBResponseProcessor implements Processor {
 		
 		else {
 			
-			CBFITransferRequestPojo request = (CBFITransferRequestPojo) cbRequestObj;
+			CBFITransferRequestPojo request = cbRequestWr.getCbFITransferRequest();
 
 			response.setTransactionId(request.getTransactionId());
 
@@ -52,8 +48,8 @@ public class MockCBResponseProcessor implements Processor {
 		response.setStatus(status);
 		response.setAddtInfo("Info tambahan disini");
 
-		cbResponse.setCbDebitInstructionResponse(response);
-		exchange.getIn().setBody(cbResponse);
+//		cbResponse.setCbDebitInstructionResponse(response);
+		exchange.getIn().setBody(response);
 	}
 
 }

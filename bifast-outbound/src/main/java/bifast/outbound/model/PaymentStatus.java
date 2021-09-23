@@ -15,83 +15,102 @@ public class PaymentStatus {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	@Column(name="BIZMSGID")
+	private String internRefId;
+	
+	@Column(length=5000)
+	private String requestFullMessage;
+	@Column(length=5000)
+	private String responseFullMessage;
+	
+	@Column(name="BIZMSGID", length=50)
 	private String BizMsgIdr;
 	
-	@Column(name="ORGN_ENDTOENDID")
+	@Column(name="ORGN_ENDTOENDID", length=50)
 	private String orgnlEndToEndId;
 	
 	private String status;
 	private String errorMsg;
 
-	private LocalDateTime updateDt;
+	private LocalDateTime requestDt;
+	private LocalDateTime responseDt;
+	
+//	private LocalDateTime updateDt;
 
 	private String saf;
 	private int retryCount;
-
+	
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+	public String getInternRefId() {
+		return internRefId;
+	}
+	public void setInternRefId(String internRefId) {
+		this.internRefId = internRefId;
+	}
+	public String getRequestFullMessage() {
+		return requestFullMessage;
+	}
+	public void setRequestFullMessage(String requestFullMessage) {
+		this.requestFullMessage = requestFullMessage;
+	}
+	public String getResponseFullMessage() {
+		return responseFullMessage;
+	}
+	public void setResponseFullMessage(String responseFullMessage) {
+		this.responseFullMessage = responseFullMessage;
+	}
 	public String getBizMsgIdr() {
 		return BizMsgIdr;
 	}
-
 	public void setBizMsgIdr(String bizMsgIdr) {
 		BizMsgIdr = bizMsgIdr;
 	}
-
 	public String getOrgnlEndToEndId() {
 		return orgnlEndToEndId;
 	}
-
 	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
 		this.orgnlEndToEndId = orgnlEndToEndId;
 	}
-
 	public String getStatus() {
 		return status;
 	}
-
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
 	public String getErrorMsg() {
 		return errorMsg;
 	}
-
 	public void setErrorMsg(String errorMsg) {
 		this.errorMsg = errorMsg;
 	}
-
-	public LocalDateTime getUpdateDt() {
-		return updateDt;
+	public LocalDateTime getRequestDt() {
+		return requestDt;
 	}
-
-	public void setUpdateDt(LocalDateTime updateDt) {
-		this.updateDt = updateDt;
+	public void setRequestDt(LocalDateTime requestDt) {
+		this.requestDt = requestDt;
 	}
-
+	public LocalDateTime getResponseDt() {
+		return responseDt;
+	}
+	public void setResponseDt(LocalDateTime responseDt) {
+		this.responseDt = responseDt;
+	}
 	public String getSaf() {
 		return saf;
 	}
-
 	public void setSaf(String saf) {
 		this.saf = saf;
 	}
-
 	public int getRetryCount() {
 		return retryCount;
 	}
-
 	public void setRetryCount(int retryCount) {
 		this.retryCount = retryCount;
 	}
-	
+
 	
 }
