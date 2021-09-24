@@ -15,7 +15,6 @@ public class Settlement {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-	private Long logMessageId;
 	@Column(length=20)
 	private String orignBank;
 	@Column(length=20)
@@ -46,12 +45,6 @@ public class Settlement {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public Long getLogMessageId() {
-		return logMessageId;
-	}
-	public void setLogMessageId(Long logMessageId) {
-		this.logMessageId = logMessageId;
 	}
 	public String getOrignBank() {
 		return orignBank;

@@ -28,6 +28,10 @@ public class StoreProxyResolutionProcessor implements Processor{
 		
 		ProxyMessage proxyMessage = new ProxyMessage();
 		
+		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
+		if (!(null == chnlTrxId))
+			proxyMessage.setChnlTrxId(chnlTrxId);
+
 		String encrRequestMesg = exchange.getMessage().getHeader("hdr_encr_request", String.class);
 		String encrResponseMesg = exchange.getMessage().getHeader("hdr_encr_response", String.class);
 		

@@ -28,6 +28,8 @@ public class FICreditTransfer {
 	private BigDecimal amount;	
 //	private String status;
 
+	private Long chnlTrxId;
+
 	private LocalDateTime creDt;
 
 	@Column(name="REQ_BIZMSGID", length=50)
@@ -58,6 +60,7 @@ public class FICreditTransfer {
 	private String callStatus;
 	@Column(length=20)
 	private String responseStatus;
+	
 	public Long getId() {
 		return id;
 	}
@@ -93,6 +96,12 @@ public class FICreditTransfer {
 	}
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
+	}
+	public Long getChnlTrxId() {
+		return chnlTrxId;
+	}
+	public void setChnlTrxId(Long chnlTrxId) {
+		this.chnlTrxId = chnlTrxId;
 	}
 	public LocalDateTime getCreDt() {
 		return creDt;

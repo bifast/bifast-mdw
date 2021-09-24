@@ -36,7 +36,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.setHeader("ae_objresp_bi", simple("${body}"))
 	
 			.process(accountEnqrResponseProcessor)
-			.process(saveAccountEnquiryProcessor)
+//			.process(saveAccountEnquiryProcessor)
 			
 			.removeHeaders("ae*")
 		;
@@ -53,7 +53,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.setHeader("ae_objresp_bi", simple("${body}"))
 	
 			.process(flatResponseProcessor)
-			.process(saveAccountEnquiryProcessor)
+//			.process(saveAccountEnquiryProcessor)
 			
 			.removeHeaders("ae*")
 	;

@@ -1,7 +1,5 @@
 package bifast.outbound.pojo;
 
-import java.time.LocalDateTime;
-
 public class FlatMessageBase {
 
 	private String frBic;

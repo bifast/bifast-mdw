@@ -101,7 +101,7 @@ public class CiHubRoute extends RouteBuilder {
 					.process(accountEnquiryResponseProcessor)
 					
 					.choice()
-						.when().simple("${header.hdr_account_no} startsWith '8' ")
+						.when().simple("${header.hdr_account_no} startsWith '77' ")
 							.setHeader("delay", simple("${random(2000,3000)}"))
 						.otherwise()
 							.setHeader("delay", constant(500))
@@ -121,7 +121,7 @@ public class CiHubRoute extends RouteBuilder {
 							.setHeader("delay", constant(500))
 					.endChoice()
 					// .setExchangePattern(ExchangePattern.InOnly)
-					.to("seda:settlement?exchangePattern=InOnly")
+					// .to("seda:settlement?exchangePattern=InOnly")
 
 				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
 		
@@ -146,12 +146,11 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'PaymentStatusRequest'")
 					.log("Akan proses paymentStatusResponseProcessor")
 					.process(paymentStatusResponseProcessor)
+					
 					.choice()
-						.when().simple("${body} != null")
-							.log("nemu payment status")
-							.unmarshal(jsonBusinessMessageDataFormat)
-						.otherwise()
-							.log("Nggak nemu untuk response payment status")
+						.when().simple("${body} == null")
+							.log("ga nemu payment status")
+							.setHeader("delay", simple("${random(2100,3000)}"))
 					.endChoice()
 
 				.when().simple("${header.msgType} == 'ReverseCreditTransferRequest'")
@@ -169,11 +168,10 @@ public class CiHubRoute extends RouteBuilder {
 					.log("Other message")
 			.end()
 
-			// .delay(3000)
 			.log("Delay ${header.delay} seconds..")
 			.delay(simple("${header.delay}"))
 
-			.log("${header.hdr_ctResponseObj.appHdr.bizSvc}")
+//			.log("${header.hdr_ctResponseObj.appHdr.bizSvc}")
 			// .process(rejectMessageProcessor)
 			// .setBody(simple("${header.hdr_ctResponseObj}"))
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection

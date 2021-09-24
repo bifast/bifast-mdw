@@ -39,6 +39,10 @@ public class SaveFICreditTransferProcessor implements Processor {
 		
 		ct.setAmount(ctRequest.getIntrBkSttlmAmt().getValue());
 		
+		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
+		if (!(null == chnlTrxId))
+			ct.setChnlTrxId(chnlTrxId);
+
 		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
 

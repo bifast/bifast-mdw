@@ -18,6 +18,7 @@ public class CorebankTransaction {
 	private String channelRefId;
 	
 	private String transactionType;
+	private Long chnlTrxId;
 
 	private BigDecimal debitAmount;
 	private BigDecimal creditAmount;
@@ -50,6 +51,12 @@ public class CorebankTransaction {
 	}
 	public void setTransactionType(String transactionType) {
 		this.transactionType = transactionType;
+	}
+	public Long getChnlTrxId() {
+		return chnlTrxId;
+	}
+	public void setChnlTrxId(Long chnlTrxId) {
+		this.chnlTrxId = chnlTrxId;
 	}
 	public BigDecimal getDebitAmount() {
 		return debitAmount;

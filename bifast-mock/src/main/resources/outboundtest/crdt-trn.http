@@ -2,10 +2,11 @@
 
 # orignRefId 9.. akan reject by CB
 # norek 9.. akan direject oleh AE CIHUB
+# norek 77xx akan timeout oleh AE CIHUB
 # jika norek 8xx akan response timeout
 # jika norek 88x time out reply dan settlement
 # norek 5xx akan response reject
-# positif test refId bukan 9 dan norek bukan 8-9
+# positif test refId bukan 9 dan norek bukan 77-8-9
 
 #localhost:9002/komi-outbound/routing/
 #localhost:9002/komi-outbound/service/
@@ -15,21 +16,21 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "orignReffId" : "31411",
+    "orignReffId" : "12550",
     "channel" : "Internet Banking",
     "categoryPurpose" : "Investment",
-    "amount" : 825200,
-    "crdtAccountNo" : "262222",
+    "amount" : 4222000,
+    "crdtAccountNo" : "8211131",
     "crdtAccountType" : "SVGS",
     "dbtrIdType" : "01",    
-    "dbtrName": "Fandi Wijaya",
-    "dbtrId" : "01445",
-    "dbtrAccountNo" : "783784",
+    "dbtrName": "Bambang Suo",
+    "dbtrId" : "014145",
+    "dbtrAccountNo" : "7155504",
     "dbtrAccountType" : "CACC",
     "recptBank" : "014",
     "crdtIdType" : "02",   
-    "crdtName": "P AI",
-    "crdtId" : "C4403"
+    "crdtName": "FARIS AI",
+    "crdtId" : "C22403"
   }
 }
 
@@ -39,7 +40,7 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "orignReffId" : "321",
+    "orignReffId" : "31121",
     "channel" : "01",
     "categoryPurpose" : "02",
     "amount" : 825200,

@@ -30,7 +30,11 @@ public class StoreCreditTransferProcessor implements Processor {
 
 		ct.setIntrRefId(chnlRefId);
 
-		BusinessMessage biRequest = exchange.getMessage().getHeader("ct_birequest", BusinessMessage.class);
+		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
+		if (!(null == chnlTrxId))
+			ct.setChnlTrxId(chnlTrxId);
+
+		BusinessMessage biRequest = exchange.getMessage().getHeader("hdr_cihub_request", BusinessMessage.class);
 		
 		FIToFICustomerCreditTransferV08 creditTransferReq = biRequest.getDocument().getFiToFICstmrCdtTrf();
 
@@ -71,8 +75,8 @@ public class StoreCreditTransferProcessor implements Processor {
 		else
 			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		
 		
-		String encrRequestMesg = exchange.getMessage().getHeader("hdr_encr_request", String.class);
-		String encrResponseMesg = exchange.getMessage().getHeader("hdr_encr_response", String.class);
+		String encrRequestMesg = exchange.getMessage().getHeader("cihubroute_encr_request", String.class);
+		String encrResponseMesg = exchange.getMessage().getHeader("cihubroute_encr_response", String.class);
 		
 		ct.setFullRequestMessage(encrRequestMesg);
 		if (!(null==encrResponseMesg))
@@ -88,7 +92,7 @@ public class StoreCreditTransferProcessor implements Processor {
 
 		
 		// CHECK RESPONSE
-		BusinessMessage biResponse = exchange.getMessage().getHeader("ct_biresponse", BusinessMessage.class);
+		BusinessMessage biResponse = exchange.getMessage().getHeader("hdr_cihub_response", BusinessMessage.class);
 
 		if (!(null==biResponse)) {
 			ct.setCrdtTrnResponseBizMsgIdr(biResponse.getAppHdr().getBizMsgIdr());
@@ -97,7 +101,7 @@ public class StoreCreditTransferProcessor implements Processor {
 		
 		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
 //		String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
-		
+	
 
 		if (!(null==errorStatus)) {
 			ct.setCallStatus(errorStatus);

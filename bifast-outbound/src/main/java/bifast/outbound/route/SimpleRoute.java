@@ -31,7 +31,7 @@ public class SimpleRoute extends RouteBuilder {
 	
 			.to("direct:call-cihub")
 				
-			.process(savePSTableProcessor)
+//			.process(savePSTableProcessor)
 			.process(paymentStatusResponseProcessor)
 
 			.removeHeaders("ps*")
@@ -46,7 +46,7 @@ public class SimpleRoute extends RouteBuilder {
 	
 			.to("direct:call-cihub")
 				
-			.process(savePSTableProcessor)
+//			.process(savePSTableProcessor)
 
 			.removeHeaders("ps*")
 		;

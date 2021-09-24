@@ -99,7 +99,6 @@ public class CorebankRoute extends RouteBuilder{
 		
 		from("seda:savecbtable").routeId("komi.cb.save_logtable")
 			.process(saveCBTableProcessor)
-			.log(LoggingLevel.DEBUG, "komi.cb.save_logtable", "[ChRefId:${header.hdr_chnlRefId}] corebank table saved.")
 		;
 	}
 

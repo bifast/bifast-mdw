@@ -16,6 +16,8 @@ public class ProxyMessage {
 	private Long id;
 	private String intrnRefId;
 	
+	private Long chnlTrxId;
+
 	private String operationType;
 	private String proxyType;
 	private String proxyValue;
@@ -59,6 +61,12 @@ public class ProxyMessage {
 	}
 	public void setIntrnRefId(String intrnRefId) {
 		this.intrnRefId = intrnRefId;
+	}
+	public Long getChnlTrxId() {
+		return chnlTrxId;
+	}
+	public void setChnlTrxId(Long chnlTrxId) {
+		this.chnlTrxId = chnlTrxId;
 	}
 	public String getOperationType() {
 		return operationType;

@@ -90,67 +90,71 @@ public class FlattenIsoMessageService {
 			
 				flatMsg.setDbtrNm(txInfAndSts.getOrgnlTxRef().getDbtr().getPty().getNm());
 
-				if (!(null == txInfAndSts.getOrgnlTxRef().getDbtr().getAgt()))
-					flatMsg.setDbtrAgtFinInstnId(txInfAndSts.getOrgnlTxRef().getDbtr().getAgt().getFinInstnId().getOthr().getId());
 			}
 
 			if (!(null == txInfAndSts.getOrgnlTxRef().getDbtrAcct())) {
 
 				flatMsg.setDbtrAcctId(txInfAndSts.getOrgnlTxRef().getDbtrAcct().getId().getOthr().getId());
-				flatMsg.setDbtrAcctTp(txInfAndSts.getOrgnlTxRef().getDbtrAcct().getTp().getPrtry());
+				
+				if (!(null== txInfAndSts.getOrgnlTxRef().getDbtrAcct().getTp()))
+						flatMsg.setDbtrAcctTp(txInfAndSts.getOrgnlTxRef().getDbtrAcct().getTp().getPrtry());
 				
 			}
 
 			if (!(null == txInfAndSts.getOrgnlTxRef().getDbtrAgt())) {
 				flatMsg.setDbtrAgtFinInstnId(txInfAndSts.getOrgnlTxRef().getDbtrAgt().getFinInstnId().getOthr().getId());
-
+				
 			}
 
 			if (!(null == txInfAndSts.getOrgnlTxRef().getCdtrAgt())) {
 				flatMsg.setCdtrAgtFinInstnId(txInfAndSts.getOrgnlTxRef().getCdtrAgt().getFinInstnId().getOthr().getId());
 				
 			}
-		
+			
+			if (!(null == txInfAndSts.getOrgnlTxRef().getCdtr())) {
+				
+				flatMsg.setCdtrNm(txInfAndSts.getOrgnlTxRef().getCdtr().getPty().getNm());
+
+			}
+
+			if (!(null == txInfAndSts.getOrgnlTxRef().getCdtrAcct())) {
+				
+				flatMsg.setCdtrAcctId(txInfAndSts.getOrgnlTxRef().getCdtrAcct().getId().getOthr().getId());
+				flatMsg.setCdtrAcctTp(txInfAndSts.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
+				
+			}
+				
 		}
 		
-		flatMsg.setCdtrNm(null);
+		if (!(null == txInfAndSts.getSplmtryData())) {
+			
+			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr())) {
+			
+				flatMsg.setDbtrTp(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr().getTp());
+				flatMsg.setDbtrId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr().getId());
+				flatMsg.setDbtrRsdntSts(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr().getRsdntSts());
+				flatMsg.setDbtrTwnNm(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr().getTwnNm());
 
-		flatMsg.setCdtrAcctId(null);
-		flatMsg.setCdtrAcctTp(null);
-		flatMsg.setCdtrAgtAcctId(null);
-		flatMsg.setCdtrId(null);
-		flatMsg.setCdtrNm(null);
-		
-		flatMsg.setCdtrRsdntSts(null);
-		
-		flatMsg.setCdtrTp(null);
-		flatMsg.setCdtrTwnNm(null);
-		
+			}					
 
-		flatMsg.setDbtrAgtAcctId(null);
-		
+			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr())) {
+				
+				flatMsg.setCdtrTp(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
+				flatMsg.setCdtrId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
+				flatMsg.setCdtrRsdntSts(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
+				flatMsg.setCdtrTwnNm(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
+				
+			}
 
-
-		flatMsg.setCdtrId(null);
-		flatMsg.setCdtrRsdntSts(null);
-		flatMsg.setCdtrTp(null);
-		flatMsg.setCdtrTwnNm(null);
-		flatMsg.setCreDtTm(null);
-		
-		flatMsg.setDbtrAcctId(null);
-		flatMsg.setDbtrAcctTp(null);
-		flatMsg.setDbtrId(null);
-		flatMsg.setDbtrRsdntSts(null);
-		flatMsg.setDbtrTp(null);
-		flatMsg.setDbtrTwnNm(null);
-		
-		
-		
-		
-		
-		flatMsg.setOrgnlTxId(null);
-		
-		
+			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct())) {
+				flatMsg.setDbtrAgtAcctId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct().getId().getOthr().getId());
+			}
+			
+			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct())) {
+				flatMsg.setCdtrAgtAcctId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct().getId().getOthr().getId());
+			}
+			
+		}
 		
 		return flatMsg;
 	}

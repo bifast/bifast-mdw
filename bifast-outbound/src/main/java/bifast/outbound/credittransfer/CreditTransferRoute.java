@@ -48,10 +48,10 @@ public class CreditTransferRoute extends RouteBuilder {
 	private InitSettlementRequestProcessor buildSettlementRequest;
 	@Autowired
 	private BuildPaymentStatusRequestProcessor initPaymentStatusRequestProcessor;
-	@Autowired
-	private SaveCreditTransferProcessor saveCTTableProcessor;
-	@Autowired
-	private StoreCreditTransferProcessor storeCTProcessor;
+//	@Autowired
+//	private SaveCreditTransferProcessor saveCTTableProcessor;
+//	@Autowired
+//	private StoreCreditTransferProcessor storeCTProcessor;
 	@Autowired
 	private BuildAERequestProcessor buildAERequestProcessor;
 	@Autowired
@@ -126,7 +126,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setHeader("ct_biresponse", simple("${body}"))
 
 			.process(flatResponseProcessor)
-			.process(storeCTProcessor)
+//			.process(storeCTProcessor)
 			
 			.removeHeaders("ct*")
 
@@ -193,11 +193,11 @@ public class CreditTransferRoute extends RouteBuilder {
 		
 			// kirim ke CI-HUB
 
-			.setHeader("ct_birequest", simple("${body}"))	
+//			.setHeader("ct_birequest", simple("${body}"))	
 			.to("direct:call-cihub")
-			.setHeader("ct_biresponse", simple("${body}"))
+//			.setHeader("ct_biresponse", simple("${body}"))
 			
-			.process(storeCTProcessor)
+//			.process(storeCTProcessor)
 
 			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] setelah call CIHUB.")
 
@@ -290,9 +290,9 @@ public class CreditTransferRoute extends RouteBuilder {
 //			.setBody(simple("${header.ct_tmp}"))
 //		;
 		
-		from("seda:saveCTtables").routeId("komi.ct.save_logtable")
-			.process(saveCTTableProcessor)
-		;
+//		from("seda:saveCTtables").routeId("komi.ct.save_logtable")
+//			.process(saveCTTableProcessor)
+//		;
 		
 	}
 }

@@ -33,6 +33,10 @@ public class SaveCBTableProcessor implements Processor{
 		cb.setStatus(debitResp.getStatus());
 		cb.setTrnsDt(LocalDateTime.now());
 		
+		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
+		if (!(null == chnlTrxId))
+			cb.setChnlTrxId(chnlTrxId);
+
 		if (requestClassName.equals("CBDebitInstructionRequestPojo")) {
 			CBDebitInstructionRequestPojo debitReq = (CBDebitInstructionRequestPojo) objCbRequest;
 

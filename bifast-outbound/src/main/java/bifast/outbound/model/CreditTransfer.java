@@ -19,7 +19,7 @@ public class CreditTransfer {
 	@Column(name="INTR_REF_ID")
 	private String intrRefId;
 
-//	private Long logMessageId;
+	private Long chnlTrxId;
 
 	private String msgType;
 	
@@ -84,6 +84,12 @@ public class CreditTransfer {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public Long getChnlTrxId() {
+		return chnlTrxId;
+	}
+	public void setChnlTrxId(Long chnlTrxId) {
+		this.chnlTrxId = chnlTrxId;
 	}
 	public String getIntrRefId() {
 		return intrRefId;

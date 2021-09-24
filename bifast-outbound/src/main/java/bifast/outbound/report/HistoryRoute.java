@@ -16,8 +16,8 @@ public class HistoryRoute extends RouteBuilder {
 	
 //	JacksonDataFormat BusinessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
 
-	@Autowired
-	private HistoryRetrievalProcessor historyRetrievalProcessor;
+//	@Autowired
+//	private HistoryRetrievalProcessor historyRetrievalProcessor;
 
 	@Override
 	public void configure() throws Exception {
@@ -30,7 +30,7 @@ public class HistoryRoute extends RouteBuilder {
 		from("direct:history")
 			.log("sedang di direct:history")
 
-			.process(historyRetrievalProcessor)
+//			.process(historyRetrievalProcessor)
 			.choice()
 				.when().simple("${body} != null")
 					.log("nemu datanya")

@@ -23,9 +23,7 @@ public class SaveAccountEnquiryProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage outRequest = exchange.getMessage().getHeader("ae_objreq_bi", BusinessMessage.class);
-
-
+		BusinessMessage outRequest = exchange.getMessage().getHeader("hdr_cihub_request", BusinessMessage.class);
 		
 		AccountEnquiry ae = new AccountEnquiry();
 
@@ -33,6 +31,10 @@ public class SaveAccountEnquiryProcessor implements Processor {
 
 		ae.setIntrRefId(chnlRequest.getChannelRefId());
 
+		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
+		if (!(null == chnlTrxId))
+			ae.setChnlTrxId(chnlTrxId);
+		
 		ae.setBizMsgIdr(outRequest.getAppHdr().getBizMsgIdr());
 
 		String orgnlBank = outRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
@@ -57,13 +59,13 @@ public class SaveAccountEnquiryProcessor implements Processor {
 		ae.setCihubRequestDT(ciHubRequestTime);
 		ae.setCihubResponseDT(ciHubResponseTime);
 		
-		String encrRequestMsg = exchange.getMessage().getHeader("hdr_encr_request", String.class);
-		String encrResponseMsg = exchange.getMessage().getHeader("hdr_encr_response", String.class);
+		String encrRequestMsg = exchange.getMessage().getHeader("cihubroute_encr_request", String.class);
+		String encrResponseMsg = exchange.getMessage().getHeader("cihubroute_encr_response", String.class);
 
 		ae.setFullRequestMessage(encrRequestMsg);
 		ae.setFullResponseMsg(encrResponseMsg);
 
-		BusinessMessage outResponse = exchange.getMessage().getHeader("ae_objresp_bi", BusinessMessage.class);
+		BusinessMessage outResponse = exchange.getMessage().getHeader("hdr_cihub_response", BusinessMessage.class);
 
 		if (!(null==outResponse)) {
 			ae.setRespBizMsgIdr(outResponse.getAppHdr().getBizMsgIdr());
@@ -78,6 +80,9 @@ public class SaveAccountEnquiryProcessor implements Processor {
 			if (!(null==errorMesg))
 				ae.setErrorMessage(errorMesg);
 		}
+		else
+			ae.setCallStatus("SUCCESS");
+
 		
 		
 		accountEnqrRepo.save(ae);

@@ -145,8 +145,6 @@ public class SaveInboundMessageProcessor implements Processor {
 		sttl.setOrignBank(sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
 		sttl.setRecptBank(sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
 		
-		sttl.setLogMessageId(inbMsg.getId());
-
 		if (!(null == settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtrAcct()))
 			sttl.setCrdtAccountNo(settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtrAcct().getId().getOthr().getId());
 		
@@ -285,7 +283,6 @@ public class SaveInboundMessageProcessor implements Processor {
 		ae.setAccountNo(aeReq.getCdtrAcct().getId().getOthr().getId());
 		ae.setAmount(aeReq.getIntrBkSttlmAmt().getValue());
 		ae.setCreDt(LocalDateTime.now());
-		ae.setLogMessageId(logTable.getId());
 		
 		String orgnBank = inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
 		String recptBank = inboundMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();

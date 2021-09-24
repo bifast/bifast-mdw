@@ -16,7 +16,7 @@ public class AccountEnquiry {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
-//	private Long logMessageId;
+	private Long chnlTrxId;
 	
 	@Column(length=20)
 	private String intrRefId;
@@ -65,6 +65,14 @@ public class AccountEnquiry {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getChnlTrxId() {
+		return chnlTrxId;
+	}
+
+	public void setChnlTrxId(Long chnlTrxId) {
+		this.chnlTrxId = chnlTrxId;
 	}
 
 	public String getIntrRefId() {

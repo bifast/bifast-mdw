@@ -26,14 +26,18 @@ public class StorePaymentStatusProcessor implements Processor{
 		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
 		ps.setInternRefId(chnlRefId);
 
-		BusinessMessage psRequest = exchange.getMessage().getHeader("ps_objreq_bi", BusinessMessage.class);
+		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
+		if (!(null == chnlTrxId))
+			ps.setChnlTrxId(chnlTrxId);
+
+		BusinessMessage psRequest = exchange.getMessage().getHeader("hdr_cihub_request", BusinessMessage.class);
 
 		ps.setInternRefId(chnlRefId);
 		ps.setBizMsgIdr(psRequest.getAppHdr().getBizMsgIdr());
 		ps.setOrgnlEndToEndId(psRequest.getDocument().getFiToFIPmtStsReq().getTxInf().get(0).getOrgnlEndToEndId());
 
-		String encrRequestMesg = exchange.getMessage().getHeader("hdr_encr_request", String.class);
-		String encrResponseMesg = exchange.getMessage().getHeader("hdr_encr_response", String.class);
+		String encrRequestMesg = exchange.getMessage().getHeader("cihubroute_encr_request", String.class);
+		String encrResponseMesg = exchange.getMessage().getHeader("cihubroute_encr_response", String.class);
 
 		ps.setRequestFullMessage(encrRequestMesg);
 		if (!(null==encrResponseMesg))

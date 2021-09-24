@@ -17,6 +17,8 @@ public class PaymentStatus {
 	
 	private String internRefId;
 	
+	private Long chnlTrxId;
+
 	@Column(length=5000)
 	private String requestFullMessage;
 	@Column(length=5000)
@@ -50,6 +52,12 @@ public class PaymentStatus {
 	}
 	public void setInternRefId(String internRefId) {
 		this.internRefId = internRefId;
+	}
+	public Long getChnlTrxId() {
+		return chnlTrxId;
+	}
+	public void setChnlTrxId(Long chnlTrxId) {
+		this.chnlTrxId = chnlTrxId;
 	}
 	public String getRequestFullMessage() {
 		return requestFullMessage;

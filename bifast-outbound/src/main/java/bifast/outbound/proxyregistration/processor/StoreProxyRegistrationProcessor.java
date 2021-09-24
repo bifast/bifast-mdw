@@ -28,6 +28,10 @@ public class StoreProxyRegistrationProcessor implements Processor{
 		
 		ProxyMessage proxyMessage = new ProxyMessage();
 		
+		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
+		if (!(null == chnlTrxId))
+			proxyMessage.setChnlTrxId(chnlTrxId);
+
 		proxyMessage.setAccountName(regRequest.getRegn().getPrxyRegn().getAcct().getNm());
 		proxyMessage.setAccountNumber(regRequest.getRegn().getPrxyRegn().getAcct().getId().getOthr().getId());
 		proxyMessage.setAccountType(regRequest.getRegn().getPrxyRegn().getAcct().getTp().getPrtry());
