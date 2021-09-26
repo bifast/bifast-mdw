@@ -8,27 +8,54 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
+@SuppressWarnings("serial")
 @Entity
-public class CbAccount {
+@Table(name = "CB_ACCOUNT")
+public class Account {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
+	@Column(name = "intr_ref_id")
 	private String intrRefId;
 	
+	@Column(name = "amount")
 	private BigDecimal amount;
+	
+	@Column(name = "account_type")
 	private String accountType;
+	
+	@Column(name = "account_no")
 	private String accountNo;
+	
+	@Column(name = "additional_info")
 	private String additionalInfo;
+	
+	@Column(name = "creditor_status")
 	private String creditorStatus;  // ACTIVE, INACTIVE, PENDING
+	
+	@Column(name = "creditor_account_number")
 	private String creditorAccountNumber;
+	
+	@Column(name = "creditor_account_type")
 	private String creditorAccountType;
+	
+	@Column(name = "creditor_name")
 	private String creditorName;
+	
+	@Column(name = "creditor_id")
 	private String creditorId;
+	
+	@Column(name = "creditor_type")
 	private String creditorType;
+	
+	@Column(name = "creditor_resident_status")
 	private String creditorResidentStatus;
+	
+	@Column(name = "creditor_town_name")
 	private String creditorTownName;
 	
 	

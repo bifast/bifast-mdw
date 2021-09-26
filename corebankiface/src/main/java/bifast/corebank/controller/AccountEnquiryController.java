@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import bifast.corebank.exception.DataNotFoundException;
-import bifast.corebank.model.CbAccount;
+import bifast.corebank.model.Account;
 
 import bifast.corebank.pojo.AccountEnquiryRequestPojo;
 import bifast.corebank.pojo.AccountEnquiryRequest;
@@ -42,10 +42,7 @@ public class AccountEnquiryController {
     @GetMapping("/accountenquiry")
     public AccountEnquiryResponsePojo getListByNoSo(@RequestBody AccountEnquiryRequestPojo accountEnquiryRequestPojo){
         
-        CbAccount account =  accountService.getAccountInquiry(
-        		accountEnquiryRequestPojo.getAccountEnquiryRequest().getTransactionId(),
-        		accountEnquiryRequestPojo.getAccountEnquiryRequest().getAccountNumber(),
-        		accountEnquiryRequestPojo.getAccountEnquiryRequest().getAmount());
+        Account account =  accountService.getAccountByAccountNumber(accountEnquiryRequestPojo.getAccountEnquiryRequest().getAccountNumber());
         
         AccountEnquiryResponsePojo  accountEnquiryResponsePojo = new AccountEnquiryResponsePojo();     
         AccountEnquiryResponse  accountEnquiryResponse = new AccountEnquiryResponse();     

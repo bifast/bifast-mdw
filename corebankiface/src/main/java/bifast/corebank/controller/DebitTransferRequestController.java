@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import bifast.corebank.exception.DataNotFoundException;
-import bifast.corebank.model.CbAccount;
+import bifast.corebank.model.Account;
 
 import bifast.corebank.model.DebitTransferRequest;
 import bifast.corebank.pojo.AccountEnquiryRequestPojo;
@@ -55,7 +55,7 @@ public class DebitTransferRequestController {
     @PostMapping("/DebitInstructionRequest")
     public DebitInstructionResponsePojo DebitInstructionRequest(@RequestBody DebitInstructionRequestPojo debitInstructionRequest) throws ParseException{
     	
-    	CbAccount account =  new CbAccount();
+    	Account account =  new Account();
     	account = accountService.getAccountByAccountNumber(debitInstructionRequest.getDebitInstructionRequest().getAccountNumber());
     	Date date = Calendar.getInstance().getTime();  
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import bifast.corebank.exception.DataNotFoundException;
-import bifast.corebank.model.CbAccount;
+import bifast.corebank.model.Account;
 
 import bifast.corebank.model.CreditTransferRequest;
 import bifast.corebank.pojo.AccountEnquiryRequestPojo;
@@ -57,7 +57,7 @@ public class CreditTransferRequestController {
     	
     	CreditTransferRequest creditTransferRequest = new CreditTransferRequest();
     	
-    	CbAccount account =  new CbAccount();
+    	Account account =  new Account();
     	account = accountService.getAccountByAccountNumber(creditInstructionRequest.getCreditInstructionRequest().getAccountNumber());
         
         CreditInstructionResponsePojo  creditInstructionResponsePojo = new CreditInstructionResponsePojo();   

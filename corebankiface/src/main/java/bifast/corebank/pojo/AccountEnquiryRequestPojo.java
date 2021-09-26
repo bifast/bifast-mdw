@@ -3,6 +3,7 @@ package bifast.corebank.pojo;
 public class AccountEnquiryRequestPojo {
 	
 	private String test;
+	
 	private AccountEnquiryRequest accountEnquiryRequest;
 	
 	public AccountEnquiryRequestPojo () {}
