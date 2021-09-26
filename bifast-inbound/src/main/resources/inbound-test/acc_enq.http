@@ -23,14 +23,14 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr" : "20210925FASTIDJA510ORB000001",
+      "BizMsgIdr" : "20210926MNDRIDJA510ORB000004",
       "MsgDefIdr" : "pacs.008.001.08",
       "CreDt" : "2021-09-25T09:00:00"
     },
     "Document" : {
       "FitoFICstmrCdtTrf" : {
         "GrpHdr" : {
-          "MsgId" : "20210925FASTIDJA51000000002",
+          "MsgId" : "20210926MNDRIDJA51000000004",
           "CreDtTm" : "2021-03-01T19:00:00",
           "NbOfTxs" : "1",
           "SttlmInf" : {
@@ -39,11 +39,11 @@ Content-Type: application/json
         },
         "CdtTrfTxInf" : [ {
           "PmtId" : {
-            "EndToEndId" : "20210925FASTIDJA510ORB000001",
-            "TxId" : "20210925FASTIDJA51000000002"
+            "EndToEndId" : "20210926MNDRIDJA510ORB000004",
+            "TxId" : "20210926MNDRIDJA51000000004"
           },
           "IntrBkSttlmAmt" : {
-            "Value" : "4566634.56",
+            "Value" : "4222200.00",
             "Ccy" : "IDR"
           },
           "ChrgBr" : "DEBT",
@@ -51,14 +51,14 @@ Content-Type: application/json
           "DbtrAgt" : {
             "FinInstnId" : {
               "Othr" : {
-                "Id" : "SIHBIDJ1"
+                "Id" : "MNDRIDJA"
               }
             }
           },
           "CdtrAgt" : {
             "FinInstnId" : {
               "Othr" : {
-                "Id" : "MNDRIDJA"
+                "Id" : "SIHBIDJ1"
               }
             }
           },
@@ -66,7 +66,7 @@ Content-Type: application/json
           "CdtrAcct" : {
             "Id" : {
               "Othr" : {
-                "Id" : "7723004444"
+                "Id" : "77556444"
               }
             }
           }
