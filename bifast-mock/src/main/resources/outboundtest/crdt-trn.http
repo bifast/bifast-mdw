@@ -16,20 +16,20 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "orignReffId" : "12550",
+    "orignReffId" : "15804",
     "channel" : "Internet Banking",
     "categoryPurpose" : "Investment",
-    "amount" : 4222000,
-    "crdtAccountNo" : "8211131",
+    "amount" : 467760,
+    "crdtAccountNo" : "182531",
     "crdtAccountType" : "SVGS",
     "dbtrIdType" : "01",    
     "dbtrName": "Bambang Suo",
-    "dbtrId" : "014145",
-    "dbtrAccountNo" : "7155504",
+    "dbtrId" : "64145",
+    "dbtrAccountNo" : "7785604",
     "dbtrAccountType" : "CACC",
     "recptBank" : "014",
     "crdtIdType" : "02",   
-    "crdtName": "FARIS AI",
+    "crdtName": "FARHAN AI",
     "crdtId" : "C22403"
   }
 }
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "orignReffId" : "31121",
+    "orignReffId" : "32421",
     "channel" : "01",
     "categoryPurpose" : "02",
     "amount" : 825200,

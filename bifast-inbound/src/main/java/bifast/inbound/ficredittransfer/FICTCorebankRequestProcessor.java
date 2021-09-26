@@ -10,7 +10,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.CBFICreditInstructionRequestPojo;
+import bifast.inbound.corebank.pojo.CBFICreditInstructionRequestPojo;
 import bifast.inbound.model.BankCode;
 import bifast.inbound.repository.BankCodeRepository;
 import bifast.library.iso20022.custom.BusinessMessage;

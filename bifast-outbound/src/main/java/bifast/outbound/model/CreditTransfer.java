@@ -18,9 +18,9 @@ public class CreditTransfer {
 	
 	@Column(name="INTR_REF_ID")
 	private String intrRefId;
-
+	
 	private Long chnlTrxId;
-
+	
 	private String msgType;
 	
 	@Column(name="ORIGN_BANK")
@@ -46,9 +46,6 @@ public class CreditTransfer {
 	
 	private BigDecimal amount;	
 	
-//	@Column(length=20)
-//	private String status;
-
 	private LocalDateTime creDt;
 
 	@Column(name="CRDTTRN_REQ_BIZMSGID")
@@ -65,6 +62,8 @@ public class CreditTransfer {
 	
 	@Column(name="CIHUB_RESP_TIME")
 	private LocalDateTime cihubResponseDT;	
+	
+	private Long cihubElapsedTime;
 	
 	@Column(name="FULL_REQUEST_MSG", length=4000)
 	private String fullRequestMessage;
@@ -85,17 +84,17 @@ public class CreditTransfer {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Long getChnlTrxId() {
-		return chnlTrxId;
-	}
-	public void setChnlTrxId(Long chnlTrxId) {
-		this.chnlTrxId = chnlTrxId;
-	}
 	public String getIntrRefId() {
 		return intrRefId;
 	}
 	public void setIntrRefId(String intrRefId) {
 		this.intrRefId = intrRefId;
+	}
+	public Long getChnlTrxId() {
+		return chnlTrxId;
+	}
+	public void setChnlTrxId(Long chnlTrxId) {
+		this.chnlTrxId = chnlTrxId;
 	}
 	public String getMsgType() {
 		return msgType;
@@ -205,6 +204,12 @@ public class CreditTransfer {
 	public void setCihubResponseDT(LocalDateTime cihubResponseDT) {
 		this.cihubResponseDT = cihubResponseDT;
 	}
+	public Long getCihubElapsedTime() {
+		return cihubElapsedTime;
+	}
+	public void setCihubElapsedTime(Long cihubElapsedTime) {
+		this.cihubElapsedTime = cihubElapsedTime;
+	}
 	public String getFullRequestMessage() {
 		return fullRequestMessage;
 	}
@@ -235,8 +240,6 @@ public class CreditTransfer {
 	public void setResponseStatus(String responseStatus) {
 		this.responseStatus = responseStatus;
 	}
-	
-	
 	
 
 }

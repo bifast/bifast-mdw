@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
-import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
 import bifast.outbound.processor.FlatResponseProcessor;
 
 @Component
@@ -18,8 +17,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
 	@Autowired
 	private FlatResponseProcessor flatResponseProcessor;
-	@Autowired
-	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
 	
 	@Override
 	public void configure() throws Exception {
@@ -36,7 +33,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.setHeader("ae_objresp_bi", simple("${body}"))
 	
 			.process(accountEnqrResponseProcessor)
-//			.process(saveAccountEnquiryProcessor)
 			
 			.removeHeaders("ae*")
 		;
@@ -53,7 +49,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.setHeader("ae_objresp_bi", simple("${body}"))
 	
 			.process(flatResponseProcessor)
-//			.process(saveAccountEnquiryProcessor)
 			
 			.removeHeaders("ae*")
 	;

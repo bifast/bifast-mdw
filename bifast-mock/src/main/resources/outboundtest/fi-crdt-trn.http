@@ -9,9 +9,9 @@ Content-Type: application/json
 
 {
   "FICreditTransferRequest" : {
-    "intrnRefId" : "962001",
+    "intrnRefId" : "6011",
     "channel" : "Over the Counter",
-    "amount" : 781000,
+    "amount" : 711660,
     "recptBank" : "008",
     "creditorBank" : "014",
     "debtorBank" : "213",

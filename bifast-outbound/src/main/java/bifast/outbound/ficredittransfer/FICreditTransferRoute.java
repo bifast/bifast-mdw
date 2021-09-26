@@ -88,34 +88,36 @@ public class FICreditTransferRoute extends RouteBuilder {
 
 		configureJsonDataFormat();
 
-        onException(Exception.class).routeId("FICT Exception Handler")
-	    	.log("Fault di FICT Excp, ${header.hdr_errorlocation}")
-	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
-			.process(faultProcessor)
-			.marshal(chnlResponseJDF)
-			.removeHeaders("fict_*")
-			.removeHeaders("req_*")
-			.removeHeaders("hdr_*")
-	    	.handled(true)
-	  	;
+//        onException(Exception.class).routeId("FICT Exception Handler")
+//	    	.log("Fault di FICT Excp, ${header.hdr_errorlocation}")
+//	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+//	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
+//			.process(faultProcessor)
+//			.marshal(chnlResponseJDF)
+//			.removeHeaders("fict_*")
+//			.removeHeaders("req_*")
+//			.removeHeaders("hdr_*")
+//	    	.handled(true)
+//	  	;
 
 		// Untuk Proses Credit Transfer Request
 
-		from("direct:fictreq").routeId("fict.fictreq")
+		from("direct:fictreq").routeId("komi.fict.callcb")
 
 			.log("Prepare untuk call CB")
+			.log(LoggingLevel.DEBUG, "komi.fict.callcb", "[ChRefId:${header.hdr_chnlRefId}] prepare call CB...")
 
 			.process(fiCTCorebankRequestProcessor)
 			.to("direct:callcb")
-			.setHeader("hdr_cbresponse", simple("${body}"))
-//			.setHeader("hdr_cbresponse", simple("${body.cbDebitInstructionResponse}"))
+			.setHeader("fict_cbresponse", simple("${body}"))
+			
 
 			// evalutate reponse cb
 			.choice()
-				.when().simple("${header.hdr_cbresponse.status} == 'SUCCESS'")
+				.when().simple("${header.fict_cbresponse.status} == 'SUCCESS'")
+					.log(LoggingLevel.DEBUG, "komi.fict.callcb", "[ChRefId:${header.hdr_chnlRefId}] prepare call CB...")
 					.to("seda:fict_corebank_accpt")
-				.when().simple("${header.hdr_cbresponse.status} == 'FAILED'")
+				.when().simple("${header.fict_cbresponse.status} == 'FAILED'")
 					.process(corebankTransactionFailureProcessor)
 			.end()
 
@@ -123,48 +125,51 @@ public class FICreditTransferRoute extends RouteBuilder {
 		;
 
 		
-		from("seda:fict_corebank_accpt")
-			.log("CB accepted")
+		from("seda:fict_corebank_accpt").routeId("komi.fict.cihub")
+			.log(LoggingLevel.DEBUG, "komi.fict.cihub", "[ChRefId:${header.hdr_chnlRefId}] Corebank accepted.")
+			
 			.process(fiCrdtTransferRequestProcessor)
 			.setHeader("fict_objreqbi", simple("${body}"))
+			
 			// kirim ke CI-HUB
-			.marshal(businessMessageJDF)
-		
-			.to("seda:encryptFICTbody")
-			.setHeader("fict_encr_request", simple("${header.fict_encrMessage}"))
+			.to("direct:call-cihub")
 
-			// CALL CIHUB untuk FI CT
-			.doTry()
-				.log("Submit CT : ${body}") 
-				.setHeader("fict_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-				.setHeader("hdr_errorlocation", constant("FICT/call-CIHUB"))
-				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{komi.ciconnector-url}}?"
-						+ "socketTimeout={{komi.timeout}}&" 
-						+ "bridgeEndpoint=true",
-						enrichmentAggregator)
-				.convertBodyTo(String.class)
-				.log("hasil cihub: ${body}")
-				.to("seda:encryptFICTbody")
-				.setHeader("fict_encr_response", simple("${header.fict_encrMessage}"))
-
-				.setHeader("fict_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-				.unmarshal(businessMessageJDF)
-				.setHeader("fict_objresponsebi", simple("${body}"))	
-				
-				.to("seda:saveFICTtables?exchangePattern=InOnly")
-				
-			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
-    			.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}][FICT] call CI-HUB timeout")
-				.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
-
-    			.setBody(constant(null))
-    		.end()
+//			.marshal(businessMessageJDF)
+//			.to("seda:encryptFICTbody")
+//			.setHeader("fict_encr_request", simple("${header.fict_encrMessage}"))
+//
+//			// CALL CIHUB untuk FI CT
+//			.doTry()
+//				.log("Submit CT : ${body}") 
+//				.setHeader("fict_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+//				.setHeader("hdr_errorlocation", constant("FICT/call-CIHUB"))
+//				.setHeader("HttpMethod", constant("POST"))
+//				.enrich("http:{{komi.ciconnector-url}}?"
+//						+ "socketTimeout={{komi.timeout}}&" 
+//						+ "bridgeEndpoint=true",
+//						enrichmentAggregator)
+//				.convertBodyTo(String.class)
+//				.log("hasil cihub: ${body}")
+//				.to("seda:encryptFICTbody")
+//				.setHeader("fict_encr_response", simple("${header.fict_encrMessage}"))
+//
+//				.setHeader("fict_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+//				.unmarshal(businessMessageJDF)
+//				.setHeader("fict_objresponsebi", simple("${body}"))	
+//				
+//				.to("seda:saveFICTtables?exchangePattern=InOnly")
+//				
+//			.doCatch(SocketTimeoutException.class)     // klo timeout maka kirim payment status
+//    			.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}][FICT] call CI-HUB timeout")
+//				.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
+//
+//    			.setBody(constant(null))
+//    		.end()
     		
     		// kalo body==null berarti harus settlement
     		.choice()
     			.when().simple("${body} == null")
-    				.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] call cari Settlement.")
+    				.log(LoggingLevel.DEBUG, "komi.fict.cihub", "[ChRefId:${header.hdr_chnlRefId}][FICT] call cari Settlement.")
     				.setBody(simple("${header.fict_objreqbi}"))
     				.process(initSettlementRequest)
     				.marshal(settlementRequestJDF)
@@ -180,19 +185,20 @@ public class FICreditTransferRoute extends RouteBuilder {
 						.log("Hasil enquiry Settlement: ${body}")
 						.unmarshal(settlementResponseJDF)
     				.doCatch(Exception.class)
-	   					.log("Error call settlement")
+		    			.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Settlement Enquiry error")
+				    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
     	    			.setBody(constant(null))
     				.end()
 
-					.log("akan periksa hasil settlement call")
+    	    		// jika berupa settlement, ubah object type dari settlementResponse jadi BusinessMessage
     	    		.choice()
 		    			.when().simple("${body.businessMessage} != null")
-		    				.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] nemu Settlement.")
+		    				.log(LoggingLevel.DEBUG, "komi.fict.cihub", "[ChRefId:${header.hdr_chnlRefId}][FICT] nemu Settlement.")
 		    				.marshal(settlementResponseJDF)
 		    				.log("hasil settlement: ${body}")
 		    				.unmarshal(businessMessageJDF)
 		    			.when().simple("${body.messageNotFound} != null")
-	    					.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] tedak nemu Settlement.")
+	    					.log(LoggingLevel.DEBUG, "komi.fict.cihub", "[ChRefId:${header.hdr_chnlRefId}][FICT] tidak nemu Settlement.")
 			    			.setBody(constant(null))
 		    		.endChoice()
 
@@ -204,41 +210,36 @@ public class FICreditTransferRoute extends RouteBuilder {
 
 //	    	 kalo masih body=null berarti harus Payment Status
 			.choice().when().simple("${body} == null")
-				.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] tidak nemu Settlement, harus PS.")
+				.log(LoggingLevel.DEBUG, "komi.fict.cihub", "[ChRefId:${header.hdr_chnlRefId}][FICT] tidak nemu Settlement, harus PS.")
     			.setBody(simple("${header.fict_objreqbi}"))
     			.process(initPaymentStatusRequestProcessor)
-    			.to("direct:paymentstatus")
+    			.to("direct:ps")
 			.end()
 				
 			.choice()
-				.when().simple("${body} == null")
-					.log(LoggingLevel.DEBUG, "bifast.outbound.ficredittransfer", "[ChRefId:${header.hdr_chnlRefId}][FICT] PS juga gagal.")
-					.setHeader("fict_encrMessage", constant(null))	
+			
+				.when().simple("${body} != null")
+					.setHeader("fict_biresponse", simple("${body}"))
+					.marshal(businessMessageJDF)
+			    	.setHeader("hdr_error_status", constant(null))
+			    	.setHeader("hdr_error_mesg", constant(null))
+
+				.otherwise()
+					.log(LoggingLevel.DEBUG, "komi.fict.cihub", "[ChRefId:${header.hdr_chnlRefId}][FICT] PS juga gagal.")
+					.setHeader("ct_failure_point", constant("PSTIMEOUT"))
 			    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
+			    	.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
+			    	.setHeader("hdr_error_mesg", constant("Timeout waiting CIHUB response"))
+
 			.end()
 				
-	
 			// prepare untuk response ke channel
 			.process(fiCrdtTransferResponseProcessor)
-//			.marshal(chnlResponseJDF)
-
-			.setHeader("fict_channelResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//			.to("seda:saveFICTtables?exchangePattern=InOnly")
 			
 			.removeHeaders("fict_*")
 		;
 
 
-		from("seda:encryptFICTbody").routeId("fict.encryption")
-			.setHeader("fict_tmp", simple("${body}"))
-			.marshal().zipDeflater()
-			.marshal().base64()
-			.setHeader("fict_encrMessage", simple("${body}"))
-			.setBody(simple("${header.fict_tmp}"))
-		;
-		from("seda:saveFICTtables").routeId("fict.save_logtable")
-			.process(saveFICTTableProcessor)
-		;
 
 	}
 }

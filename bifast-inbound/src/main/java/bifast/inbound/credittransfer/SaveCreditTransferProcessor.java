@@ -2,8 +2,10 @@ package bifast.inbound.credittransfer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.MessageHistory;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +14,7 @@ import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.model.DomainCode;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.repository.DomainCodeRepository;
+import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
@@ -23,13 +26,18 @@ public class SaveCreditTransferProcessor implements Processor {
 	private DomainCodeRepository domainCodeRepo;
 	@Autowired
 	private CreditTransferRepository creditTrnRepo;
+	@Autowired
+	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		 
+		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
+
+		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");
+
 		BusinessMessage rcvBi = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
 		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
-		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
 
 		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 
@@ -60,26 +68,35 @@ public class SaveCreditTransferProcessor implements Processor {
 		// simpan data waktu 
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
 
-		String strCihubRequestTime = exchange.getMessage().getHeader("req_cihubRequestTime", String.class);
-		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCihubRequestTime, dtf);
-		ct.setCihubRequestDT(cihubRequestTime);
+//		String strCihubRequestTime = exchange.getMessage().getHeader("req_cihubRequestTime", String.class);
+//		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCihubRequestTime, dtf);
+//		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
 
-		String strCihubResponseTime = exchange.getMessage().getHeader("req_cihubResponseTime", String.class);
-		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCihubResponseTime, dtf);
-		ct.setCihubResponseDT(cihubResponseTime);
+//		String strCihubResponseTime = exchange.getMessage().getHeader("req_cihubResponseTime", String.class);
+//		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCihubResponseTime, dtf);
+//		ct.setCihubResponseDT(cihubResponseTime);
+		
+		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
 
+		ct.setCihubElapsedTime(routeElapsed);
 		
 		String reversal = exchange.getMessage().getHeader("resp_reversal",String.class);
 
-		
+		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
+
 		
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 		ct.setCrdtTrnRequestBizMsgIdr(hdr.getBizMsgIdr());
 		
 	
 		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
-		ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
 		
+
+		if (!(null == creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp()))
+			ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
+		
+
 		// jika node splmtryData ada, ambil data custType dari sini; jika tidak maka cek apakah ada di prvtId atau orgId
 		
 		if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0) {	
@@ -87,18 +104,23 @@ public class SaveCreditTransferProcessor implements Processor {
 				ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
 		}
 		
-		else if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId())) {
+		else if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr())) {
 				ct.setCreditorType("01");
 			}
 
 		else 
 			ct.setCreditorType("02");
-	
-		if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId()))
-			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
-		else
-			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
-			
+		
+
+		if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr())) {
+
+			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId()))
+				ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+			else
+				ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
+
+		}
+		
 		ct.setCreDt(LocalDateTime.now());
 		
 		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());

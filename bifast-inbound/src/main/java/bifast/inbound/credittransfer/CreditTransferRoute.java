@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import bifast.inbound.corebank.CBCreditInstructionRequestPojo;
-import bifast.inbound.corebank.CBCreditInstructionResponsePojo;
+import bifast.inbound.corebank.pojo.CBCreditInstructionRequestPojo;
+import bifast.inbound.corebank.pojo.CBCreditInstructionResponsePojo;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.library.iso20022.custom.BusinessMessage;
 

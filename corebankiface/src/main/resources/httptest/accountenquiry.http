@@ -1,0 +1,17 @@
+
+POST http://localhost:9001/services/api/accountenquiry HTTP/1.1
+Content-Type: application/json
+
+{
+  "accountEnquiryRequest" : {
+    "transactionId" : "040502345",
+    "accountNumber" : "7723004444",
+    "amount" 	    : 200000.00
+  }
+}
+
+###
+POST http://localhost:9001/services/api/accountenquiry HTTP/1.1
+Content-Type: application/json
+
+{"AccountEnquiryRequest":{"transactionId":"50000005","accountNumber":"98774321","amount":4566634.56}}

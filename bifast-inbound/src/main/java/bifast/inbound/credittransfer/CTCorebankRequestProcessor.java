@@ -9,7 +9,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.CBDebitInstructionRequestPojo;
+import bifast.inbound.corebank.pojo.CBDebitInstructionRequestPojo;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
 

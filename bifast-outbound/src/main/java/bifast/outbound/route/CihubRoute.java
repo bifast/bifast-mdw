@@ -15,6 +15,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
 import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
+import bifast.outbound.ficredittransfer.processor.SaveFICreditTransferProcessor;
 import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.SetTransactionTypeProcessor;
@@ -34,6 +35,8 @@ public class CihubRoute extends RouteBuilder {
 	private StoreCreditTransferProcessor storeCreditTransferProcessor;
 	@Autowired
 	private StorePaymentStatusProcessor storePaymentStatusProcessor;
+	@Autowired
+	private SaveFICreditTransferProcessor saveFICreditTransferProcessor;
 
 	@Override
 	public void configure() throws Exception {
@@ -50,17 +53,17 @@ public class CihubRoute extends RouteBuilder {
 		
 			.process(setTransactionTypeProcessor)
 			.log("${header.hdr_trxname}")		
-
-			.setHeader("hdr_cihub_request", simple("${body}"))
 			
+			.setHeader("hdr_cihub_request", simple("${body}"))
+
 			.marshal(businessMessageJDF)
 
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] Post CI-HUB request: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] Post ${header.hdr_trxname} request: ${body}")
 	
 			.setHeader("tmp_body", simple("${body}"))
 			.marshal().zipDeflater()
 			.marshal().base64()
-//			.setHeader("hdr_encr_request", simple("${body}"))
+
 			.setHeader("cihubroute_encr_request", simple("${body}"))
 			.setBody(simple("${header.tmp_body}"))
 			
@@ -108,6 +111,8 @@ public class CihubRoute extends RouteBuilder {
 					.process(saveAccountEnquiryProcessor)
 				.when().simple("${header.hdr_trxname} == 'Credit Transfer'")
 					.process(storeCreditTransferProcessor)
+				.when().simple("${header.hdr_trxname} == 'FI to FI Credit Transfer'")
+					.process(saveFICreditTransferProcessor)
 				.when().simple("${header.hdr_trxname} == 'Payment Status'")
 					.process(storePaymentStatusProcessor)
 			.end()

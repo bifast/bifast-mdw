@@ -253,14 +253,14 @@ public class SaveInboundMessageProcessor implements Processor {
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 
 		ct.setRequestBizMsgIdr(logTable.getBizMsgIdr());
-		ct.setStatus(logTable.getRespStatus());
+		ct.setResponseStatus(logTable.getRespStatus());
 		
 		
 		// dari XMLGregorianCalender ubah ke LocalDateTime
 		ct.setCreDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
 		
 //		ct.setIntrRefId(logTable.getInternalReffId());
-		ct.setLogMessageId(logTable.getId());
+//		ct.setLogMessageId(logTable.getId());
 
 		String orgnlBank = inboundMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
 		String debtorBic = creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getFinInstnId().getOthr().getId();

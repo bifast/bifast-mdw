@@ -48,6 +48,8 @@ public class AccountEnquiry {
 	@Column(name="CIHUB_RESP_TIME")
 	private LocalDateTime cihubResponseDT;	
 	
+	private Long cihubElapsedTime;
+	
 	@Column(name="FULL_REQUEST_MSG", length=4000)
 	private String fullRequestMessage;
 
@@ -161,6 +163,14 @@ public class AccountEnquiry {
 
 	public void setCihubResponseDT(LocalDateTime cihubResponseDT) {
 		this.cihubResponseDT = cihubResponseDT;
+	}
+
+	public Long getCihubElapsedTime() {
+		return cihubElapsedTime;
+	}
+
+	public void setCihubElapsedTime(Long cihubElapsedTime) {
+		this.cihubElapsedTime = cihubElapsedTime;
 	}
 
 	public String getFullRequestMessage() {

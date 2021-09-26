@@ -9,7 +9,7 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "FASTIDJA"
+              "Id" : "MNDRIDJA"
             }
           }
         }
@@ -18,19 +18,19 @@ Content-Type: application/json
         "Fiid" : {
           "FinInstnId" : {
             "Othr" : {
-              "Id" : "MNDRIDJA"
+              "Id" : "SIHBIDJ1"
             }
           }
         }
       },
-      "BizMsgIdr" : "20210914FASTIDJA510ORB00000001",
+      "BizMsgIdr" : "20210925FASTIDJA510ORB000001",
       "MsgDefIdr" : "pacs.008.001.08",
-      "CreDt" : "2021-09-12T09:00:00"
+      "CreDt" : "2021-09-25T09:00:00"
     },
     "Document" : {
       "FitoFICstmrCdtTrf" : {
         "GrpHdr" : {
-          "MsgId" : "20210912FASTIDJA51000000002",
+          "MsgId" : "20210925FASTIDJA51000000002",
           "CreDtTm" : "2021-03-01T19:00:00",
           "NbOfTxs" : "1",
           "SttlmInf" : {
@@ -39,11 +39,11 @@ Content-Type: application/json
         },
         "CdtTrfTxInf" : [ {
           "PmtId" : {
-            "EndToEndId" : "20210914FASTIDJA510ORB00000001",
-            "TxId" : "20210912FASTIDJA51000000002"
+            "EndToEndId" : "20210925FASTIDJA510ORB000001",
+            "TxId" : "20210925FASTIDJA51000000002"
           },
           "IntrBkSttlmAmt" : {
-            "Value" : "51234.56",
+            "Value" : "4566634.56",
             "Ccy" : "IDR"
           },
           "ChrgBr" : "DEBT",
@@ -51,7 +51,7 @@ Content-Type: application/json
           "DbtrAgt" : {
             "FinInstnId" : {
               "Othr" : {
-                "Id" : "FASTIDJA"
+                "Id" : "SIHBIDJ1"
               }
             }
           },
@@ -66,7 +66,7 @@ Content-Type: application/json
           "CdtrAcct" : {
             "Id" : {
               "Othr" : {
-                "Id" : "98774321"
+                "Id" : "7723004444"
               }
             }
           }

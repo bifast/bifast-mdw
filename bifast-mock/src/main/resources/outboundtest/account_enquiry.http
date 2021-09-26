@@ -5,12 +5,12 @@ Content-Type: application/json
 
 {
   "AccountEnquiryRequest" : {
-    "channelRefId" : "46149",
+    "channelRefId" : "41449",
     "channel" : "Internet Banking",
     "recptBank" : "014",
-    "amount" : 1990000,
+    "amount" : 1390000,
     "categoryPurpose" : "Purchase",
-    "creditorAccountNumber" : "7712589"
+    "creditorAccountNumber" : "677589"
   }
 }
 
@@ -21,10 +21,10 @@ Content-Type: application/json
 
 {
   "AccountEnquiryRequest" : {
-    "channelRefId" : "4511168",
+    "channelRefId" : "41468",
     "channel" : "01",
     "recptBank" : "BMRIIDJA",
-    "amount" : 54500,
+    "amount" : 1545500,
     "categoryPurpose" : "01",
     "creditorAccountNumber" : "1814449"
   }

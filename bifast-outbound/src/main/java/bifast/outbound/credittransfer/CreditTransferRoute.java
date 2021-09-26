@@ -1,7 +1,5 @@
 package bifast.outbound.credittransfer;
 
-import java.net.SocketTimeoutException;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
@@ -16,12 +14,9 @@ import bifast.outbound.credittransfer.processor.BuildAERequestProcessor;
 import bifast.outbound.credittransfer.processor.CTCorebankRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
-import bifast.outbound.credittransfer.processor.SaveCreditTransferProcessor;
-import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 import bifast.outbound.paymentstatus.BuildPaymentStatusRequestProcessor;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.FaultResponseProcessor;
 import bifast.outbound.processor.FlatResponseProcessor;
 import bifast.outbound.report.InitSettlementRequestProcessor;
 import bifast.outbound.report.RequestPojo;
@@ -41,17 +36,11 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired
 	private CreditTransferResponseProcessor crdtTransferResponseProcessor;
 	@Autowired
-	private FaultResponseProcessor faultProcessor;
-	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
 	private InitSettlementRequestProcessor buildSettlementRequest;
 	@Autowired
 	private BuildPaymentStatusRequestProcessor initPaymentStatusRequestProcessor;
-//	@Autowired
-//	private SaveCreditTransferProcessor saveCTTableProcessor;
-//	@Autowired
-//	private StoreCreditTransferProcessor storeCTProcessor;
 	@Autowired
 	private BuildAERequestProcessor buildAERequestProcessor;
 	@Autowired
@@ -100,21 +89,20 @@ public class CreditTransferRoute extends RouteBuilder {
 
 		configureJsonDataFormat();
 
-
-        onException(Exception.class).routeId("CT Exception Handler")
-	    	.log("Fault di CT Excp, ${header.hdr_errorlocation}")
-	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
-			.process(faultProcessor)
-			.to("seda:saveCTtables?exchangePattern=InOnly")
-			.marshal(chnlResponseJDF)
-			.removeHeaders("hdr_*")
-			.removeHeaders("req_*")
-			.removeHeaders("ct_*")
-			.removeHeaders("ps_*")
-			.removeHeader("HttpMethod")
-	    	.handled(true)
-	  	;
+//        onException(Exception.class).routeId("CT Exception Handler")
+//	    	.log("Fault di CT Excp, ${header.hdr_errorlocation}")
+//	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+//	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
+//			.process(faultProcessor)
+//			.to("seda:saveCTtables?exchangePattern=InOnly")
+//			.marshal(chnlResponseJDF)
+//			.removeHeaders("hdr_*")
+//			.removeHeaders("req_*")
+//			.removeHeaders("ct_*")
+//			.removeHeaders("ps_*")
+//			.removeHeader("HttpMethod")
+//	    	.handled(true)
+//	  	;
 
 
 		from("direct:flatctreq").routeId("komi.flatct.start")
@@ -193,17 +181,12 @@ public class CreditTransferRoute extends RouteBuilder {
 		
 			// kirim ke CI-HUB
 
-//			.setHeader("ct_birequest", simple("${body}"))	
 			.to("direct:call-cihub")
-//			.setHeader("ct_biresponse", simple("${body}"))
-			
-//			.process(storeCTProcessor)
 
 			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] setelah call CIHUB.")
 
     		// periksa apakah ada hasil dari call cihub
     		.choice().when().simple("${body} == null")
-    			.log("after call cihub, body is null}")
     			// check settlement
     			
 				.setHeader("hdr_errorlocation", constant("CTRoute/pre-inq-settlement"))		
@@ -218,7 +201,7 @@ public class CreditTransferRoute extends RouteBuilder {
 							+ "bridgeEndpoint=true",
 							enrichmentAggregator)
 					.convertBodyTo(String.class)
-					.log("Hasil call settlement: ${body}")
+	    			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] Settlement response: ${body}")
 					
 					.unmarshal(settlementResponseJDF)
 					.log("call settlement finish")
@@ -232,7 +215,6 @@ public class CreditTransferRoute extends RouteBuilder {
 	    		.choice()
 	    			.when().simple("${body.businessMessage} != null")
 	    				.marshal(settlementResponseJDF)
-	    				.log("settlementResponse format: ${body}")
 	    				.unmarshal(businessMessageJDF)
 	    			.when().simple("${body.messageNotFound} != null")
 	    				.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] Settlement not found.")
@@ -251,7 +233,6 @@ public class CreditTransferRoute extends RouteBuilder {
 	    			.setBody(simple("${header.ct_objreqbi}"))
 	    			.process(initPaymentStatusRequestProcessor)
 	    			.to("direct:ps")
-//	    			.unmarshal(businessMessageJDF)
 			.endChoice()
 			.end()	
 
@@ -264,7 +245,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			    	.setHeader("hdr_error_mesg", constant(null))
 
 				.otherwise()
-					.log("Body null akhirnya")
+					.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}] PS juga gagal.")
 					.setHeader("ct_failure_point", constant("PSTIMEOUT"))
 			    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
 			    	.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
@@ -280,19 +261,6 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			.removeHeaders("ct_*")
 		;
-
-
-//		from("seda:encryptCTbody").routeId("komi.ct.encryption")
-//			.setHeader("ct_tmp", simple("${body}"))
-//			.marshal().zipDeflater()
-//			.marshal().base64()
-//			.setHeader("ct_encrMessage", simple("${body}"))
-//			.setBody(simple("${header.ct_tmp}"))
-//		;
-		
-//		from("seda:saveCTtables").routeId("komi.ct.save_logtable")
-//			.process(saveCTTableProcessor)
-//		;
 		
 	}
 }

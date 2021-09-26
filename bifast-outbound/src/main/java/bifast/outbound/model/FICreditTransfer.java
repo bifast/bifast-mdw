@@ -19,6 +19,7 @@ public class FICreditTransfer {
 	@Column(name="INTR_REF_ID")
 	private String intrRefId;
 
+
 	@Column(name="ORIGN_BANK")
 	private String originatingBank;
 	

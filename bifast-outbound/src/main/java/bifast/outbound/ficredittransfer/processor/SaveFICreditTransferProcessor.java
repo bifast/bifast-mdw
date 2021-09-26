@@ -22,21 +22,15 @@ public class SaveFICreditTransferProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		System.out.println("Mulai");
-		
+		ChnlFICreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlFICreditTransferRequestPojo.class);
+	
 		BusinessMessage biReqBM = exchange.getMessage().getHeader("fict_objreqbi", BusinessMessage.class);
 		CreditTransferTransaction44 ctRequest = biReqBM.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0);
 
-		String strCihubRequestTime = exchange.getMessage().getHeader("fict_cihubRequestTime", String.class);
-		String strCihubResponseTime = exchange.getMessage().getHeader("fict_cihubResponseTime", String.class);
-		
-		String encrRequestMesg = exchange.getMessage().getHeader("fict_encr_request", String.class);
-		String encrResponseMesg = exchange.getMessage().getHeader("fict_encr_response", String.class);
-		
-		
-		ChnlFICreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlFICreditTransferRequestPojo.class);
 		FICreditTransfer ct = new FICreditTransfer();
 		
+		ct.setIntrRefId(chnRequest.getIntrnRefId());
+
 		ct.setAmount(ctRequest.getIntrBkSttlmAmt().getValue());
 		
 		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
@@ -46,12 +40,14 @@ public class SaveFICreditTransferProcessor implements Processor {
 		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
 
+		String strCihubRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
+		String strCihubResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
+
 		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCihubRequestTime, dtf);
 		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCihubResponseTime, dtf);
 
 		ct.setCihubRequestDT(cihubRequestTime);
 		ct.setCihubResponseDT(cihubResponseTime);
-	
 		
 		ct.setCreditBic(ctRequest.getCdtr().getFinInstnId().getOthr().getId());
 		
@@ -59,14 +55,17 @@ public class SaveFICreditTransferProcessor implements Processor {
 
 		ct.setDebtorBic(ctRequest.getDbtr().getFinInstnId().getOthr().getId());
 		
+		String encrRequestMesg = exchange.getMessage().getHeader("cihubroute_encr_request", String.class);
+		String encrResponseMesg = exchange.getMessage().getHeader("cihubroute_encr_response", String.class);
+
 		ct.setFullRequestMessage(encrRequestMesg);
 		ct.setFullResponseMsg(encrResponseMesg);
 		
-		ct.setIntrRefId(chnRequest.getIntrnRefId());
 		ct.setOriginatingBank(biReqBM.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 		ct.setRequestBizMsgIdr(biReqBM.getAppHdr().getBizMsgIdr());
 		
-		BusinessMessage biResponseBM = exchange.getMessage().getHeader("fict_objresponsebi", BusinessMessage.class);
+//		BusinessMessage biResponseBM = exchange.getMessage().getHeader("fict_objresponsebi", BusinessMessage.class);
+		BusinessMessage biResponseBM = exchange.getMessage().getHeader("hdr_cihub_response", BusinessMessage.class);
 
 		if (!(null== biResponseBM)) {
 			ct.setResponseBizMsgIdr(biResponseBM.getAppHdr().getBizMsgIdr());

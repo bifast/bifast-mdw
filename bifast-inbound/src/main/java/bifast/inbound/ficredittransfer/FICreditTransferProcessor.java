@@ -5,7 +5,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.CBFICreditInstructionResponsePojo;
+import bifast.inbound.corebank.pojo.CBFICreditInstructionResponsePojo;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;

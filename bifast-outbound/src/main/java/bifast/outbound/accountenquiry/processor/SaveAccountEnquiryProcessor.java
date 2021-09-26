@@ -27,9 +27,9 @@ public class SaveAccountEnquiryProcessor implements Processor {
 		
 		AccountEnquiry ae = new AccountEnquiry();
 
-		ChnlAccountEnquiryRequestPojo chnlRequest = exchange.getMessage().getHeader("ae_channel_request", ChnlAccountEnquiryRequestPojo.class);				
+		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);				
 
-		ae.setIntrRefId(chnlRequest.getChannelRefId());
+		ae.setIntrRefId(chnlRefId);
 
 		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
 		if (!(null == chnlTrxId))

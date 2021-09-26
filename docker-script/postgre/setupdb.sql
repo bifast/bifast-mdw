@@ -180,7 +180,6 @@ CREATE TABLE public.fi_credit_transfer (
 	credit_bic varchar(255) NULL,
 	debtor_bic varchar(255) NULL,
 	intr_ref_id varchar(255) NULL,
-	log_message_id int8 NULL,
 	orign_bank varchar(255) NULL,
 	req_bizmsgid varchar(50) NULL,
 	saf varchar(20) NULL,
@@ -195,19 +194,6 @@ CREATE TABLE public.fi_credit_transfer (
 	response_status varchar(20) NULL,
 	chnl_trx_id int8 NULL,
 	CONSTRAINT fi_credit_transfer_pkey PRIMARY KEY (id)
-);
-
-
--- public.inbound_counter definition
-
--- Drop table
-
--- DROP TABLE public.inbound_counter;
-
-CREATE TABLE public.inbound_counter (
-	tanggal int4 NOT NULL,
-	last_number int4 NULL,
-	CONSTRAINT inbound_counter_pkey PRIMARY KEY (tanggal)
 );
 
 
@@ -274,50 +260,6 @@ CREATE TABLE public.message_counter (
 CREATE TABLE public.mock_names (
 	"name" varchar(255) NOT NULL,
 	CONSTRAINT mock_names_pkey PRIMARY KEY (name)
-);
-
-
--- public.mock_pacs002 definition
-
--- Drop table
-
--- DROP TABLE public.mock_pacs002;
-
-CREATE TABLE public.mock_pacs002 (
-	id int8 NOT NULL,
-	biz_msg_idr varchar(255) NULL,
-	full_message varchar(5000) NULL,
-	orgnl_end_to_end_id varchar(255) NULL,
-	orgnl_msg_id varchar(255) NULL,
-	orgnl_msg_name varchar(255) NULL,
-	trx_type varchar(255) NULL,
-	CONSTRAINT mock_pacs002_pkey PRIMARY KEY (id)
-);
-
-
--- public.outbound_message definition
-
--- Drop table
-
--- DROP TABLE public.outbound_message;
-
-CREATE TABLE public.outbound_message (
-	id int8 NOT NULL,
-	bizmsgid varchar(255) NULL,
-	channel varchar(255) NULL,
-	chnl_req_time timestamp NULL,
-	chnl_resp_time timestamp NULL,
-	cihub_req_time timestamp NULL,
-	cihub_resp_time timestamp NULL,
-	error_msg varchar(500) NULL,
-	full_request_msg varchar(4000) NULL,
-	full_response_msg varchar(4000) NULL,
-	intrn_ref_id varchar(255) NULL,
-	message_name varchar(255) NULL,
-	recpt_bank varchar(255) NULL,
-	resp_bizmsgid varchar(255) NULL,
-	resp_status varchar(255) NULL,
-	CONSTRAINT outbound_message_pkey PRIMARY KEY (id)
 );
 
 
@@ -435,6 +377,78 @@ CREATE TABLE public.settlement (
 	receive_date timestamp NULL,
 	CONSTRAINT settlement_pkey PRIMARY KEY (id)
 );
+
+
+-- public.vweb_tx_logs source
+
+CREATE OR REPLACE VIEW public.vweb_tx_logs
+AS SELECT chnl.request_time AS "timestamp",
+    chnl.transaction_id AS uuid,
+    ae.orign_bank AS source_bic,
+    ae.recpt_bank AS destination_bic,
+    chnl.debtor_account_number AS source_account_number,
+    ae.account_no AS destination_account_number,
+    ae.amount,
+    'IDR'::text AS currency,
+    chnl.status AS status_code,
+    chnl.error_msg AS status_message,
+    chnl.debtor_account_name AS source_account_name,
+    chnl.creditor_account_name AS destination_account_name,
+    'Account Enquiry'::text AS transaction_type,
+    'Outbound'::text AS transaction_direction
+   FROM channel_transaction chnl
+     JOIN account_enquiry ae ON ae.chnl_trx_id = chnl.id
+UNION
+ SELECT chnl.request_time AS "timestamp",
+    chnl.transaction_id AS uuid,
+    ct.orign_bank AS source_bic,
+    ct.recpt_bank AS destination_bic,
+    ct.debtor_acct_no AS source_account_number,
+    ct.creditor_acct_no AS destination_account_number,
+    ct.amount,
+    'IDR'::text AS currency,
+    chnl.status AS status_code,
+    chnl.error_msg AS status_message,
+    chnl.debtor_account_name AS source_account_name,
+    chnl.creditor_account_name AS destination_account_name,
+    'Credit Transfer'::text AS transaction_type,
+    'Outbound'::text AS transaction_direction
+   FROM channel_transaction chnl
+     JOIN credit_transfer ct ON ct.chnl_trx_id = chnl.id
+UNION
+ SELECT chnl.request_time AS "timestamp",
+    chnl.transaction_id AS uuid,
+    fict.debtor_bic AS source_bic,
+    fict.credit_bic AS destination_bic,
+    ''::character varying AS source_account_number,
+    ''::character varying AS destination_account_number,
+    fict.amount,
+    'IDR'::text AS currency,
+    chnl.status AS status_code,
+    chnl.error_msg AS status_message,
+    ''::character varying AS source_account_name,
+    ''::character varying AS destination_account_name,
+    'Credit Transfer'::text AS transaction_type,
+    'Outbound'::text AS transaction_direction
+   FROM channel_transaction chnl
+     JOIN fi_credit_transfer fict ON fict.chnl_trx_id = chnl.id
+UNION
+ SELECT chnl.request_time AS "timestamp",
+    chnl.transaction_id AS uuid,
+    'SIHBIDJ1'::character varying AS source_bic,
+    chnl.recpt_bank AS destination_bic,
+    chnl.debtor_account_number AS source_account_number,
+    chnl.creditor_account_number AS destination_account_number,
+    chnl.amount,
+    'IDR'::text AS currency,
+    chnl.status AS status_code,
+    chnl.error_msg AS status_message,
+    chnl.debtor_account_name AS source_account_name,
+    chnl.creditor_account_name AS destination_account_name,
+    'FI Credit Transfer'::text AS transaction_type,
+    'Outbound'::text AS transaction_direction
+   FROM channel_transaction chnl
+     JOIN payment_status ps ON ps.chnl_trx_id = chnl.id;
 
 INSERT INTO public.account_enquiry (id,account_no,amount,cre_dt,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,cihub_resp_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id) VALUES
 	 (4169,'7712589',1990000.00,'2021-09-24 20:03:35.125','46149','SIHBIDJ1','CENAIDJA','20210924SIHBIDJ1510O0100000060','TIMEOUT-CIHUB','2021-09-24 08:03:35','2021-09-24 08:03:37','Timeout menunggu response dari CIHUB','eJyVUstuwjAQ/BefAdkhPMItiQO4KlCB1UvVAyThoRIHOYtEi/j3rm0itVVRqaU4u94dz3i0ZxId
@@ -620,21 +634,78 @@ N0UqVFufKufBplBbJcPKuB7rrgWmnr/LMeY4tGPjxX0+fgxE5okEKJD7Cl2o9+IwEwkvYflB0LUE
 CNa4JYEVOEwI5LkD1jhq2xrJj4YGeYwzuGpZEkaQGWY4al2bWtUnwLxAHHR/950/TDP9zhJl9G/U
 SW8rrW3ZyKaIHhZRkiM9Lo3x4lh14/w13AklhFjEQHl1S8o8xpCZ+LY6FODzIxWZ6mbi/VDd8utA
 hAnIMDmXfNOneERsbI8scIYyEapVa0D8Q5hSsWVkXXbwgX0B4U/SLA==
-','20210924CENAIDJA510R0200001718','ACTC',4229);INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
+','20210924CENAIDJA510R0200001718','ACTC',4229),
+	 (4271,'7712589',1990000.00,'2021-09-25 19:34:30.725','46149','SIHBIDJ1','CENAIDJA','20210925SIHBIDJ1510O0100000023','TIMEOUT-CIHUB','2021-09-25 07:34:30','2021-09-25 07:34:33','Timeout menunggu response dari CIHUB','eJyVUstuwjAQ/BefKbIDKZhbEvNwVaACq5eqB0jCQyUOchaJFvHvXdtEaquiUktxdr07nvFoTyQ+
+VONqTXonEu33o8zYaOD37Tbzfy11BVq6bAobV7UZmctRLMUDI2dcDaLKG3FJfxIhLrrg4u0HapCW
+nAQ0YJQHYX11yOiUMupW0CINgp0iX/nm/SKtmpR28WNN2sVqYnIBl2vuKL8LQsV4r9XutShBJlGm
+hyLX4PVBOZBJBYVJMlBmZQ+HpjbBKfpdEK72PWvzmk8VVxgbZLKcrtSxwjrDbA6wK6R2TC4eg7Pj
+cTYk1givQx1dy8uJPBXg3evrTJW4XVP03SK84C/lSCY1mPjNyYgK58jzYnfIrVTObSe6al+YvuOR
+FDOLSTZmHVvnRT9WWBRLsGadfRSt4R8D4557A+brsHiMZ3ToNIW68Qes02FB2OVuxF7t9gkuqNaF
+',NULL,NULL,NULL,4270),
+	 (4275,'677589',1390000.00,'2021-09-25 19:36:12.716','41449','SIHBIDJ1','CENAIDJA','20210925SIHBIDJ1510O0100000025','SUCCESS','2021-09-25 07:36:12','2021-09-25 07:36:13',NULL,'eJyVUstuwjAQ/BefAdmBAOGWxAFcFajA6qXqAZLwUImDnEWiRfx71zaR2qqo1FKcXe+OZzzaM4mO
+1aTakMGZhIfDONMmGrp9t8vcXwlVgRI2m8HWVk1GFmIcCf7AyAVXg8jyTlycTEPEhVdctPtADcKQ
+E496jAaeX1/tMzqjjNrl+aRBsJPna9d8WKZVi9I+fqxF+1iNdc7hek2TBk3PlywYtLsD5hFk4mV6
+LHIFTh+UQxFXUOg4A6nX5nCkaxOsot8F4eqwTieo+WRxg7FBpqvZWp4qrDPMFgD7QijLZOMJWDse
+5yNijHA65Mm2vJzJUwHOvURlssTtlqLvFuEFfylHMqFAR29WRlhYR56X+2NupLYD04mumhem73gk
++Nxg4q3eRMZ5nkQSi3wFxqyLi8IN/GNg7HPvwHwdFodxjBadplA3/oB1ez2/H9gJezXbJ15b1lY=
+','eJyNUdtuwjAM/ZUpz4CS0MLoW0hhdNMAlexp2kPXC0OiadWGMYb49zkundg0pLlqLo7tc459JONd
+/ViviXckoixnSWVP02bdbJJm14GujQ7wtjBv+GpvRE7mIvDvBTmBdYgq/pm3CmZjyGPnvPHmEzgE
+Fpxwyhkdcbct7TIaUk7RBgPSIRDpp1kTXEZx3aOUw896jMKrrFLfnMt06ajLXcW41x94jBNA8ot4
+l6faNPxMMQ2WuVmZOizRdVe1LUA+f9NBc1y3RVP5dTz1EehM6AQgiPcMXajWejvRiSpg+QHQtgQA
+FvQMwi0GpkCdK8GWC3OcEbFgCEOEVBKuVlYNI8gQGY5W17Iy1QFiniAPuv/yXT9MM/suE4P6l+Zg
+t7nVJrQp9I3IX6NqH5kNsSOzcSKOTTvSXwMeDIfu7QgjVXmJK4WUBIe+Krc5+PzIREhwot+35SUF
+m0goAyVY8kEtu6DfGQ4d1zrDOtGmEYxBaq+RLe2jstMLfGBfxYDTxw==
+','20210925CENAIDJA510R0200000066','ACTC',4274),
+	 (4277,'825331',422260.00,'2021-09-25 19:39:26.291','11004','SIHBIDJ1','CENAIDJA','20210925SIHBIDJ1510O0100000026','SUCCESS','2021-09-25 07:39:26','2021-09-25 07:39:27',NULL,'eJyVUstuwjAQ/BefAdmGIMItiXm4KlCB1UvVAyThoRIHOYtEi/j3rm0itVVRqaVs1t6dnfHIZxIf
+q0m1If0ziQ6HcWZsNvRxt8v8X0tdgZZuN4Otq9odWchxLMUDIxdcDaLKO3HJYBohLrri4t0HapCW
+nHDKGQ15UI8OGJ1RRt3iXdIg2CnytW8+LNOqRWkPP9aiPawmJhdwHdOkYZMHioX9dthHLDKJMj0W
+uQavD8qhTCooTJKBMmt7ODK1CU7R74JwMYydmk8VNxgbZLqardWpwjrD3QJgX0jtmFw+AWfH43xE
+rBFehzq5lpczeSrAuzfQmSox3FL03SIc8JdyJJMaTPzmZESFc+R5uT/mCOxwzrsUTbUXTN/xRIq5
+hSRbs4mt8WIQKyyKFVivLj6LNvCP9+Juewfm61vxGM/o0GkKdeMPWI8H7bZ/mK82fAKXFdYH
+','eJyNUdtOwkAQ/RUzz0B2t1Shb2ULUo1A2vXJ+ND0gjXttmkXFQn/7uyWGjSSuE1nL3M558wcYLZr
+H9otOAdw63qZNPq06GyeJ90ufdkq6ZvbWr0Yr74Bn69c37tz4YhrAKL6Z17oL2eYR095s/wTOfga
+HBhhlEyZ3Ze2KQkII7goWhgARnpp1gXXUdyOCGH40xHVXt6knjqVGZLpkNmCMseaOuwaEMmr4l2Z
+StXxU9XC35QqVG1Qm6fbpm+B4fM3HcPFIqxHE+VlPPHhy8yVCUKA84RdaLaymMtEVGh+APQtQYA1
+6UAI1hh0KVjnQrAmg3YMGszAgMsFx6uW1eIIMoOMR61r06hmjzGPmIfdf/6uH6SZ9vNEGf0btdfb
+SmsLX6OsyYurZZTkoOelg9w4Vv08f013wmzLoiZS1Oeg3OUczMTDuijxzYtUZNjN5VtRn+PrRCAU
+ZZiS92IzRPE34wkhuilBm0jVqTVB4l0aqsQyso7P+OH6Atxm0kk=
+','20210925CENAIDJA510R0200001200','ACTC',4276),
+	 (4283,'182531',467760.00,'2021-09-25 19:43:19.577','15804','SIHBIDJ1','CENAIDJA','20210925SIHBIDJ1510O0100000031','SUCCESS','2021-09-25 07:43:19','2021-09-25 07:43:20',NULL,'eJyVUstuwjAQ/BefAdmBQMItiXm4KlCB1UvVAyThoRIHOYtEi/j3rm0itVVRqaVs1t4dz3i0ZxIf
+q0m1If0ziQ6HcaZNNnRxt8vcXwlVgRJ2N4OtrZodWYhxLPgDIxdcDSLLO3HJYBohLrri4t0HahCG
+nHjUYzT0/Ppqn9EZZdSuNiMNgp08X7vmwzKtWpQG+LEWDbCa6JzD9ZomDZueL1nY77T7LCTIxMv0
+WOQKnD4ohyKpoNBJBlKvzeFI1yZYRb8LwsX8gHZqPlncYGyQ6Wq2lqcK60b7AmBfCGWZbD4Ba8fj
+fESMEU6HPNmWlzN5KsC5N1CZLDHcUvTdIrzgL+VIJhTo+M3KiArryPNyf8wR2On2el2KppoHpu94
+IvjcQJKt3sTGeD6IJRb5CoxXF5dFG/jHvNjX3oH5OisO4xgtOk2hbvwBY4Hnt91gvprwCaoW1h0=
+','eJyNUm1vgjAQ/itLP0/TFnHANwSdbJkS7D4tfmC8OBIpBOqcM/73XQ9Z3DKTldCX63P3PHfXI5ns
+2qd2Q5wjcet6njZ6N+vmoki7VQayVTLA01K94a0+EW+6cAP/wSUnGLdEVP/0WwXzCfixs9+k+AQN
+gSYnnHJGbW72oU1GI8opDmaQWwJIP8s7cB0n7ZBSDj8bMgq3XpP56hxmQO0BNwXjzshwmE2Aya+S
+XZlJ1elT1SwIS7VSbVSj6b7pS4B6/paDSixm9WyivM4nPgKZuzIFCuK8QBWajdxOZSoqmH4Q9CUB
+giXtSKjBgANdIM4VsBZjWnRENBnSENcTHhx1Wi20IEdm2Oq8wkY1B8A8gx9Uf/0dP8pyfe+lCvMP
+1UEvC52bW77GzT5Wxc08TguiO6ZhbpKovqO/+sssbhoMkaK+pPVczyPY81W9LcHmxypGfVP5vq0v
+FWhHQnUFMOSjCAfwDMY2v7PHYIzaVKouXwSJvUSx1MDETmv4YHwBvDzTLw==
+','20210925CENAIDJA510R0200000013','ACTC',4282);INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
 	 (4215,1000200.00,'Internet Banking','FARIS AI','8289331','Fandi Ahmad','7100004','Timeout menunggu response dari CIHUB','Credit Transfer','014','2021-09-24 21:43:57.07041','2021-09-24 21:43:59.218936','TIMEOUT-CIHUB','15502'),
 	 (4172,54500.00,'Internet Banking',NULL,'1814449',NULL,NULL,NULL,'Account Enquiry','008','2021-09-24 20:11:08.394747','2021-09-24 20:11:09.388125','SUCCESS','4511168'),
 	 (4217,1000200.00,'Internet Banking','FARIS AI','8289331','Fandi Ahmad','7110004',NULL,'Credit Transfer','014','2021-09-24 21:47:26.780557','2021-09-24 21:47:29.593947','SUCCESS','15530'),
 	 (4174,8650000.00,'Internet Banking','P AI','11844292','Fandi Wijaya','782444',NULL,'Credit Transfer','014','2021-09-24 20:12:55.068922','2021-09-24 20:12:56.296226','SUCCESS','21211'),
 	 (4229,4222000.00,'Internet Banking','FARIS AI','8211131','Bambang Suo','7155504',NULL,'Credit Transfer','014','2021-09-24 22:05:37.514305','2021-09-24 22:05:40.95248','SUCCESS','12550'),
+	 (4274,1390000.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-09-25 19:36:12.697836','2021-09-25 19:36:13.280701','SUCCESS','41449'),
 	 (4179,781000.00,'Over the Counter',NULL,NULL,NULL,NULL,'rekening tidak aktif','FI Credit Transfer','008','2021-09-24 20:16:32.176756','2021-09-24 20:16:32.187235','REJECT-CB','962001'),
+	 (4276,422260.00,'Internet Banking','FARHAN AI','825331','Bambang Suo','7155604',NULL,'Credit Transfer','014','2021-09-25 19:39:26.250063','2021-09-25 19:39:31.01464','SUCCESS','11004'),
 	 (4181,89994500.00,'Internet Banking','P AI','110044292','Fandi Wijaya','785544',NULL,'Credit Transfer','014','2021-09-24 20:27:12.676883','2021-09-24 20:27:14.435353','SUCCESS','211411'),
-	 (4186,8904000.00,'Internet Banking','FARIS AI','8000292','Fandi Wijaya','7850004','Timeout waiting CIHUB response','Credit Transfer','014','2021-09-24 20:34:10.874679','2021-09-24 20:34:15.684737','TIMEOUT-CIHUB','210071'),
-	 (4192,8904000.00,'Internet Banking','FARIS AI','2000292','Fandi Wijaya','7850004',NULL,'Credit Transfer','014','2021-09-24 21:05:53.365443','2021-09-24 21:05:54.52164','SUCCESS','21861'),
-	 (4197,8904000.00,'Internet Banking','FARIS AI','2111132','Fandi Wijaya','7154004',NULL,'Credit Transfer','014','2021-09-24 21:14:38.837862','2021-09-24 21:14:40.623406','SUCCESS','21862');
+	 (4282,467760.00,'Internet Banking','FARHAN AI','182531','Bambang Suo','7785604',NULL,'Credit Transfer','014','2021-09-25 19:43:19.562176','2021-09-25 19:43:20.705859','SUCCESS','15804');
 INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
+	 (4186,8904000.00,'Internet Banking','FARIS AI','8000292','Fandi Wijaya','7850004','Timeout waiting CIHUB response','Credit Transfer','014','2021-09-24 20:34:10.874679','2021-09-24 20:34:15.684737','TIMEOUT-CIHUB','210071'),
+	 (4287,711660.00,'Over the Counter',NULL,NULL,NULL,NULL,NULL,'FI Credit Transfer','008','2021-09-25 19:44:04.420082','2021-09-25 19:44:05.056608','SUCCESS','6011'),
+	 (4257,781000.00,'Over the Counter',NULL,NULL,NULL,NULL,NULL,'FI Credit Transfer','008','2021-09-25 06:45:34.736657','2021-09-25 06:45:35.38268','SUCCESS','6241'),
+	 (4192,8904000.00,'Internet Banking','FARIS AI','2000292','Fandi Wijaya','7850004',NULL,'Credit Transfer','014','2021-09-24 21:05:53.365443','2021-09-24 21:05:54.52164','SUCCESS','21861'),
+	 (4261,781000.00,'Over the Counter',NULL,NULL,NULL,NULL,NULL,'FI Credit Transfer','008','2021-09-25 06:50:53.660159','2021-09-25 06:50:54.94655','SUCCESS','6000'),
+	 (4197,8904000.00,'Internet Banking','FARIS AI','2111132','Fandi Wijaya','7154004',NULL,'Credit Transfer','014','2021-09-24 21:14:38.837862','2021-09-24 21:14:40.623406','SUCCESS','21862'),
 	 (4202,800000.00,'Internet Banking','FARIS AI','2100323','Fandi Wijaya','7154004',NULL,'Credit Transfer','014','2021-09-24 21:28:28.581211','2021-09-24 21:28:30.827266','SUCCESS','21002'),
+	 (4270,1990000.00,'Internet Banking',NULL,'7712589',NULL,NULL,'Timeout menunggu response dari CIHUB','Account Enquiry','014','2021-09-25 19:34:30.664236','2021-09-25 19:34:33.04725','TIMEOUT-CIHUB','46149'),
 	 (4168,1990000.00,'Internet Banking',NULL,'7712589',NULL,NULL,'Timeout menunggu response dari CIHUB','Account Enquiry','014','2021-09-24 20:03:35.1136','2021-09-24 20:03:37.204071','TIMEOUT-CIHUB','46149'),
-	 (4207,1800200.00,'Internet Banking','FARIS AI','9234323','Fandi Ahmad','7100004','Account Enquiry reject.','Credit Transfer','014','2021-09-24 21:32:48.951207','2021-09-24 21:32:49.50314','REJECT-CIHUB','21002'),
+	 (4207,1800200.00,'Internet Banking','FARIS AI','9234323','Fandi Ahmad','7100004','Account Enquiry reject.','Credit Transfer','014','2021-09-24 21:32:48.951207','2021-09-24 21:32:49.50314','REJECT-CIHUB','21002');
+INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
 	 (4170,54500.00,'Internet Banking',NULL,'1819199',NULL,NULL,NULL,'Account Enquiry','008','2021-09-24 20:08:40.30641','2021-09-24 20:08:41.145749','SUCCESS','452168');INSERT INTO public.corebank_transaction (transaction_id,addt_info,channel_ref_id,credit_amount,creditor_bank,cstm_account_name,cstm_account_no,cstm_account_type,debit_amount,debtor_bank,status,transaction_type,trns_dt,chnl_trx_id) VALUES
 	 (4160,'Info tambahan disini','21211',NULL,NULL,'Fandi Wijaya','782444','CACC',8650000.00,NULL,'SUCCESS','Debit','2021-09-24 08:41:44.056383',4158),
 	 (4176,'Info tambahan disini','21211',NULL,NULL,'Fandi Wijaya','782444','CACC',8650000.00,NULL,'SUCCESS','Debit','2021-09-24 20:12:55.663967',4174),
@@ -645,7 +716,13 @@ INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_
 	 (4199,'Info tambahan disini','21862',NULL,NULL,'Fandi Wijaya','7154004','CACC',8904000.00,NULL,'SUCCESS','Debit','2021-09-24 21:14:40.041811',4197),
 	 (4204,'Info tambahan disini','21002',NULL,NULL,'Fandi Wijaya','7154004','CACC',800000.00,NULL,'SUCCESS','Debit','2021-09-24 21:28:30.19042',4202),
 	 (4219,'Info tambahan disini','15530',NULL,NULL,'Fandi Ahmad','7110004','CACC',1000200.00,NULL,'SUCCESS','Debit','2021-09-24 21:47:27.35598',4217),
-	 (4231,'Info tambahan disini','12550',NULL,NULL,'Bambang Suo','7155504','CACC',4222000.00,NULL,'SUCCESS','Debit','2021-09-24 22:05:38.661493',4229);INSERT INTO public.credit_transfer (id,settlconf_bizmsgid,amount,call_status,cihub_req_time,cihub_resp_time,crdttrn_req_bizmsgid,crdttrn_resp_bizmsgid,cre_dt,creditor_acct_no,creditor_acct_type,creditor_id,creditor_type,debtor_acct_no,debtor_acct_type,debtor_id,debtor_type,full_request_msg,full_response_msg,intr_ref_id,msg_type,orign_bank,recpt_bank,resp_status,reversal,chnl_trx_id) VALUES
+	 (4231,'Info tambahan disini','12550',NULL,NULL,'Bambang Suo','7155504','CACC',4222000.00,NULL,'SUCCESS','Debit','2021-09-24 22:05:38.661493',4229);
+INSERT INTO public.corebank_transaction (transaction_id,addt_info,channel_ref_id,credit_amount,creditor_bank,cstm_account_name,cstm_account_no,cstm_account_type,debit_amount,debtor_bank,status,transaction_type,trns_dt,chnl_trx_id) VALUES
+	 (4258,'Info tambahan disini','6241',NULL,NULL,NULL,NULL,NULL,781000.00,NULL,'SUCCESS','FI Transfer','2021-09-25 06:45:34.751895',4257),
+	 (4262,'Info tambahan disini','6000',NULL,NULL,NULL,NULL,NULL,781000.00,NULL,'SUCCESS','FI Transfer','2021-09-25 06:50:53.750503',4261),
+	 (4278,'Info tambahan disini','11004',NULL,NULL,'Bambang Suo','7155604','CACC',422260.00,NULL,'SUCCESS','Debit','2021-09-25 19:39:27.516226',4276),
+	 (4284,'Info tambahan disini','15804',NULL,NULL,'Bambang Suo','7785604','CACC',467760.00,NULL,'SUCCESS','Debit','2021-09-25 19:43:20.127085',4282),
+	 (4288,'Info tambahan disini','6011',NULL,NULL,NULL,NULL,NULL,711660.00,NULL,'SUCCESS','FI Transfer','2021-09-25 19:44:04.42843',4287);INSERT INTO public.credit_transfer (id,settlconf_bizmsgid,amount,call_status,cihub_req_time,cihub_resp_time,crdttrn_req_bizmsgid,crdttrn_resp_bizmsgid,cre_dt,creditor_acct_no,creditor_acct_type,creditor_id,creditor_type,debtor_acct_no,debtor_acct_type,debtor_id,debtor_type,full_request_msg,full_response_msg,intr_ref_id,msg_type,orign_bank,recpt_bank,resp_status,reversal,chnl_trx_id) VALUES
 	 (4221,NULL,1000200.00,'TIMEOUT-CIHUB','2021-09-24 09:47:27','2021-09-24 09:47:29','20210924SIHBIDJ1010O0100000091',NULL,'2021-09-24 21:47:27.375','8289331','SVGS','C22403','02','7110004','CACC','014145','01','eJyVUstO6zAQ/RXkdUG2G9THLo+2GEFbNRYbxCIkbVqRpJEzRUDVf2c8SbgFtbpgyYnteZxzZmbP
 vF11X6VsuGduWd4kxp7G9XezSep/oYoKCkW3GazJam8sVDeeCm4FO+DqML39ZZw/mroY5zZx3uYD
 OSgLziSXgg+k06bmgs9w0xoI1mHoGSxXtXMZxdUV533c4or30eqbZQBNmks+uJSOlmLo9IayxxAp
@@ -656,6 +733,33 @@ jxI01dLn5hWOR+ixmSEuHOFcs8MTjZBN48YxtCP2Y+B6wjJyiLX+JsV3fZ99ZUjhDxNP/fpFzPG0
 1zH/BLsLFV646kvtzKSnxPpSOrzbiiXY82L7sj/odsUJseHDJKTnsMxyfAoiiAhkVLxm5Nm2w8a1
 A5AcP0mr4omIHD4Bm/466A==
 ','','15530','Credit Transfer','SIHBIDJ1','CENAIDJA',NULL,NULL,4217),
+	 (4280,NULL,422260.00,'TIMEOUT-CIHUB','2021-09-25 07:39:27','2021-09-25 07:39:29','20210925SIHBIDJ1010O0100000027',NULL,'2021-09-25 19:39:27.536','825331','SVGS','C22403','02','7155604','CACC','014145','01','eJyVUttu4jAQ/ZXKz7SyTdICb7lw8aoFRCxeqj6EBFK0uclxqraIf+94kiBagbZryYntuZ1zZg7E
+raunKiGjA3HKchYrc5o03/0+bv65yCudC7wt9CtazY0EYuYK/w8jR1g9IotfxnnjuQNxThvn7j8B
+gzDFCaec0SG3u9SU0QVsXPyB9Ah4+ttd41yGUXVH6QA2u6MDsHpq6+s2zS0d3nJbsuGoPxxBLFTy
+i6jOtrlu8OliIrxKZ8qLtVQ78zhVnQiI6DKgFs2pnsyuVOyR+Waxk+8V2BncAq3TTORYCc9PGuV4
+XE2JEaLBId/R5flAlplu1BvnsSzgcw3Rd4kgwb+QQzFILssWzGOUml6pzFyWSqsPiKfMuHk6+VjW
+qvxpAZPItXL/IhEnQ03XYVpvwcHinN9TaIuRKDIhwl9htleVuKZ1/tiVYPQ3GtWeGwndMNuEeXIT
+1AWYGuZL9abPJ+i5HSHKLGbZ5PiCE2TSOFGkuwn7MW8PzLbvqYWg5TcmnuN55JQh0f8x8NiuX8Sc
+D3sTcyI8cVYzZ37jiBPdhUousfU4t2i/Y4t1r7MdcLvfZxfIButpgM9BmWbw5Ic6xBrj/C1Fz64d
+Jq7rf3z+xA2LF8Rx/AIt5jsH
+',NULL,'11004','Credit Transfer','SIHBIDJ1','CENAIDJA',NULL,NULL,4276),
+	 (4286,NULL,467760.00,'SUCCESS','2021-09-25 07:43:20','2021-09-25 07:43:20','20210925SIHBIDJ1010O0100000032','20210925CENAIDJA010R0200000696','2021-09-25 19:43:20.147','182531','SVGS','C22403','02','7785604','CACC','64145','01','eJyVUtlu4jAU/ZXKz7SynYTtLQuLRy0gYvWl6kNIIEWTTY6p2kH8+1zfJIhWoOlYcmL7buece4/E
+O9RPdUrGR+JW1TxR5jRtvvt90vwLUdS6EHhb6je0mhsJxdwTwS9GTrB6RJY/jPMnCxfi3DbO2/8B
+DMIUJ5xyRkfc6VJTRpewcVmc9Ah4Bttd41xFcf1A6RA2e6BDsPpqG+g2zT0d3XNHstHYtsacEqgU
+lPEh3xa6wafLqfBrnSs/0VLtzONMdSIgouuAWjRWV0/mNyr2yGKz3MmPGuwMbqHWWS4KrITnJ41y
+PK5nxAjR4JAf6PJyJKtcN+pNikSW8LmF6KtEkOBfyKEYJJdVC+YxzkyvVG4uK6XVJ8RTZtx8nX6u
+Dqr6bgGTKLTyfiMRN0dNn6PssAUHuz8Y9Cm0xUgUmxARrDHbm0o907pg4kkwBhuNai+MhF6Ub6Ii
+vQsPJZga5iv1ri8n6KUdob7NbIecXnGATBY3jnU3YN/GbTAYOn1qI2b5hYjv+j45Z0j1f8w7dusH
+MZez3sSc+U7d9dxd3LnizHap0mtkfc5tanVsse5ttmzIHYtdIRs+z0J8Dqssh6cg0hHWmBTvGXp2
+3TBxXfuTyyduWLwijtNf1IM6yQ==
+','eJyNUttugkAQ/ZVmntXMLmrVNwSstKkS2D41PhBBayIrgfXSGv+9swuYptG0Q9jL7Mw5J2f3DON9
++VquYXQGO8+nSaFXk2rcbJJqlr4slfTNbq4+zKnegePNbN99tuFC0QKx+2df5E/H1MfqvvHmizT4
+mhw4coZD3mugkWGIHHX0h31oAVW66aoqzuNl2UHk9LMOQzBQ0WGppYnQi4L5LPIo6xSpq2rwNg7b
+vCcYH3WtEUcgfne33GepVJVqtZv4QaYiVYa5ST0VjTFG5W2ROhjDx4ZNZPf55sVabgnVlytbJkQE
+o/dzlf3N0DhVMyBaFrSupbPMFNc2DIwNOIDLgu7idAPdk4nY0XCPYt7QWLxhIZy/9YiToQHbEQ5t
+tXUlXf7KMNNSexcUqvikmjdqontfXPHDdKXPnUQZjwP1qaeZ9s8rjhv5EMXZPkmLGMxjifJtRkhu
+rGID78nDNv8JIGgHyEiHUf4igja9n6416FIqLBOpKrGmRBylYULLqLos6KP4Bm3T4s4=
+','15804','Credit Transfer','SIHBIDJ1','CENAIDJA','ACTC',NULL,4282),
 	 (4233,NULL,4222000.00,'TIMEOUT-CIHUB','2021-09-24 10:05:38','2021-09-24 10:05:40','20210924SIHBIDJ1010O0100000101',NULL,'2021-09-24 22:05:38.679','8211131','SVGS','C22403','02','7155504','CACC','014145','01','eJyVUttu4jAQ/ZXKz7SyTaJS3nIB6qoFRKy+VH0ICaRoEydynKpdxL/veJIgWoHateTE9tzOOTN7
 4jf1U52R8Z54VXWfanuatt/dLm3/SqjaKIG3hXlDq72RSNz7Inxg5ABrQGT5y7hgMvcgzuvi/N1f
 wCBsccIpZ/SOO31qyugCtl1wJgMCnuFm2zpXcVLfUDqCzW7oCKyB3oSmS3NN7665IzkfU3c8HBGo
@@ -821,13 +925,49 @@ INSERT INTO public.domain_code (id,grp,"key",value) VALUES
 	 (6,'org.apache.http.NoHttpResponseException','Connection error'),
 	 (7,'java.net.SocketException','Connection reset'),
 	 (3,'java.net.SocketTimeoutException','Timeout'),
-	 (8,'org.apache.camel.http.common.HttpOperationFailedException','HTTP call error');INSERT INTO public.inbound_counter (tanggal,last_number) VALUES
-	 (20210915,50000032),
-	 (20210911,50000006),
-	 (20210912,50000006),
-	 (20210913,50000052),
-	 (20210921,50000006),
-	 (20210914,50000018);INSERT INTO public.m_bic (bank_code,bank_name,bic_code,change_who,created_date,last_update_date) VALUES
+	 (8,'org.apache.camel.http.common.HttpOperationFailedException','HTTP call error');INSERT INTO public.fi_credit_transfer (id,settlconf_bizmsgid,amount,cre_dt,credit_bic,debtor_bic,intr_ref_id,orign_bank,req_bizmsgid,saf,saf_counter,status,call_status,cihub_req_time,cihub_resp_time,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id) VALUES
+	 (4260,NULL,781000.00,'2021-09-25 06:45:34.776','CENAIDJA','SUNIIDJA','6241','SIHBIDJ1','20210925SIHBIDJ1019O0300000015',NULL,NULL,NULL,'SUCCESS','2021-09-25 06:45:34','2021-09-25 06:45:35','eJyNUstuwjAQ/BefAdmB0JpbHhRclYeC6QVxgCRQ1MREzkaCIv69aye0qtSKWoq91u7szE58IX5V
+Tso9GVyIVxTjRJvoqd4Ph6Q+lVAlKGFvM3izWXMjCzH2RfjMyBVXi8jjP3H+JBKI8xqcf/hADcKQ
+E4c6jHLHvbWmjM9ol9rFXNIiWBmmu7q42MRlh1KOH+tQjtlApyE0bdqUtx1X0v6g5w66PYJM4TGu
+8lRBrS9OQOqdiUf6NrsV8ruORkT/RiPzP4haZLqd7eSpxDzD2wIgy4WyTDaegKEIXqIRMfMHVoc8
+2ZLVhcxzqE0bqkQecftL0U9nsME95UiGzWXRiAlgf55XujDxXIM+I5xzq0ko0P67Vevl1q/XTVal
+WPDwyLAZWm58iA1EhJE1dwv63oNZTr9+vJ37HiAYTr1vQITG1MqXJWjMr1SVZevrdW0e0iezHs8/
+','eJyNkt9vgjAQx/+XPqtp+WFW3hBwdsnAQH1afNgEnMkoBOriZva/71qocYtGm1B617v7fnK9I5rt
+u+dui7wj8ptmkbfqNO/33S7v/4KJTgqmrUS+61tloSCKfRY++egH1gjx+s68jC1mkEeGvNnuGxiY
+EkcWtgimlmNKY0JTSrFaU2KjEYLIsCj74OZ1000wtuAjE4KRLpV9bhQaT6NsmcRZBN6gLUI5FB9j
+OrYcbtme43q2g0A/rDf7qhCyp5b1nC0rmckubbTrsTWN0ZSXIRUgcR9co8ar63pJuxUfUJWJ0hc5
+CCHv5dh7/ym4plODAmhM0egUGlc6eGgD1W3A1ARc4HA5nhqONTzY4QJCJHJew3aNI8H2gOIaJahz
+G5oftAzyAx6AqfrbwYSUWhmOqsHLVrZfELOCJBiO9al+WpTqPnyT+iH8rbw1YquYnY1mkN+b+Gem
+AUFtv65q5/M=
+','20210924CENAIDJA019R9900000613','ACTC',4257),
+	 (4264,NULL,781000.00,'2021-09-25 06:50:53.783','CENAIDJA','SUNIIDJA','6000','SIHBIDJ1','20210925SIHBIDJ1019O0300000017',NULL,NULL,NULL,'SUCCESS','2021-09-25 06:50:53','2021-09-25 06:50:54','eJyNUstuwjAQ/BefAdlBKZhbHhRclYeC6QVxgCRQ1MREzkaCIv69aye0qlRELcVea3d2Zie+EL8q
+J+WeDC7EK4pxok30XO+HQ1KfSqgSlLC3GbzbrLmRhRj7Inxh5IqrReTxnzh/EgnEeQ3OP3yiBmHI
+iUMdRrnj3lpTxme0S+1iPdIiWBmmu7q42MRlh1KOH+tQjtlApyE0bdqUtx1X0qeBSwdulyBTeIyr
+PFVQ64sTkHpn4pG+zW6F/K2jEdG/0cj8DlGLTLeznTyVmGd4WwBkuVCWycYTMBTBazQiZv7A6pAn
+W7K6kHkOtWlDlcgjbvcU/XYGGzxSjmTYXBaNmAD253mlCxPPNegzwjm3moQC7X9YtV5u/XrbZFWK
+Bb0+w2ZoufEhNhARRtbcLehHD2Y5/f7xdu5HgGA49X4AERpTK1+WoDG/UlWWra/XtXlIX7Qvz0E=
+','eJyNklFvgjAQx7/LPatpQXTwhoCzSwYG6tPiwybgTEYhUBc343fftYDZFo02ofSud/f/5XpHmO2b
+52YLzhHcqlqktTrN2323S9u/YKKRgmkrku/6VlngBaHL/CcXTrgGwMs78xK2mGEe7fJmu29kYEoc
+DGJQYhvjvjShdmzbBBedTikMACP9LG+Dq9dNMyLEwI+OKAFdKvncKDQeB8kyCpMAvV6d+bIrPiT2
+0Bhzw3Qs4lhjQH2/3OyLTMiWWpZztixkIpu40q7Hum+MprwMqQiJMTF7NV5c14vqrfjAqkzkrkhR
+CJyXY+v9p2D1neoVCH2AwTk0LHRw1wZbt4HYfcAFDouTieYw4bTGBztcQAhEykvcrnFExOxQpr0S
+1rkNzQ9aBlyPe2iq/jY4IblWxqNq8LKW9RfGrDAJh2N9rh9nubr336R+CHcrb43YKmS/RtNL7038
+M9OIoLYfqWXn8A==
+','20210924CENAIDJA019R9900001771','ACTC',4261),
+	 (4290,NULL,711660.00,'2021-09-25 19:44:04.448','CENAIDJA','SUNIIDJA','6011','SIHBIDJ1','20210925SIHBIDJ1019O0300000034',NULL,NULL,NULL,'SUCCESS','2021-09-25 07:44:04','2021-09-25 07:44:05','eJyNUstuwjAQ/BefAdkhUJlbHhRclYeC6QVxgCRQ1MREzkaCIv69aye0qlRELcVea3d2Zie+EL8q
+J+WeDC7EK4pxok30XO+HQ1KfSqgSlLC3GbzbrLmRhRj7Inxh5IqrReTxnzh/EgnEeQ3OP3yiBmHI
+iUMdRrnTu7WmjM9ol9rVdUmLYGWY7uriYhOXHUo5fqxDOWYDnYbQtGlT3nZ6kvGB6w6oS5ApPMZV
+niqo9cUJSL0z8UjfZrdC/tbRiOjdaGR+h6hFptvZTp5KzDO8LQCyXCjLZOMJGIrgNRoRM39gdciT
+LVldyDyH2rShSuQRt3uKfjuDDR4pRzJsLotGTAD787zShYnnGvQZ4ZxbTUKB9j+sWi+3fr1tsirF
+gifG+n2KlhsfYgMRYWTN3YJ+9GCW0+8fb+d+BAiGU+8HEKExtfJlCRrzK1Vl2fp6XZuH9AW7wM9I
+','eJyNkl1vgjAUhv9Lr9W0BZeUOwScXTIwUK8WLzY+nMkoBOriZvbfd1rosi0abULpxznnffL2nNDi
+0D/2O+SdkN+2q6LTq+Uw7/fF8Jdc9kpys0vUq7nVOxREsc/DBx99wZgg0dyYl/HVAvLImLfYfwID
+1+KIYkowo3NbGhOWMoZhEHw3RxMEkWFZDcHtc97PMKbwkRnByJTK3nONJtIoWydxFsFp0JWhGotP
+MZvSuSDUc10Puwj0wyY/1KVUA7Vqlnxdq0z1aWuO7jtrjKE8D2kIHYdaNVFf1ku6nXyDqlxWvixA
+CHlPp+H0v4J1alTA2NEe2NC4NsGjDczYgJkNOM/BLMcWHux4BiGShWhgusSRYGdEca0S1LkOLY5G
+BvmBCGCr/e2hQyqjDEtt8LpT3QfEbCAJmmP7Uz8tK30fvijzEP5OXWuxTcx/tWZQ3Jr4p6cBQU/f
+lT3n5g==
+','20210925CENAIDJA019R9900001065','ACTC',4287);INSERT INTO public.m_bic (bank_code,bank_name,bic_code,change_who,created_date,last_update_date) VALUES
 	 ('213','BANK TABUNGAN PENSIUNAN NASIONAL','SUNIIDJA','system','2021-08-10 14:35:00','2021-08-10 14:35:00'),
 	 ('008','BANK MANDIRI (PERSERO), PT','BMRIIDJA','system','2021-08-10 14:35:00','2021-08-10 14:35:00'),
 	 ('014','PT Bank BCA','CENAIDJA','adminBIC@btpn.com','2021-08-12 14:21:28',NULL),
@@ -840,13 +980,14 @@ INSERT INTO public.domain_code (id,grp,"key",value) VALUES
 	 (20210917,178),
 	 (20210918,376),
 	 (20210915,140),
+	 (20210925,35),
 	 (20210914,51),
 	 (20210921,284),
 	 (20210922,211),
 	 (20210916,184),
-	 (20210919,190),
-	 (20210924,104);
+	 (20210919,190);
 INSERT INTO public.message_counter (tanggal,last_number) VALUES
+	 (20210924,104),
 	 (20210923,64);INSERT INTO public.mock_names ("name") VALUES
 	 ('Anton'),
 	 ('Andrea'),
@@ -877,10 +1018,7 @@ INSERT INTO public.mock_names ("name") VALUES
 	 ('Erwin'),
 	 ('Reni'),
 	 ('Winata'),
-	 ('Hadi');INSERT INTO public.mock_pacs002 (id,biz_msg_idr,full_message,orgnl_end_to_end_id,orgnl_msg_id,orgnl_msg_name,trx_type) VALUES
-	 (4232,'20210924CENAIDJA010R0200000627','{"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"BizMsgIdr":"20210924CENAIDJA010R0200000627","MsgDefIdr":"pacs.002.001.10","BizSvc":"CTRESPONSE","CreDt":"2021-09-24T22:05:38"},"Document":{"FitoFIPmtStsRpt":{"GrpHdr":{"MsgId":"20210924CENAIDJA01000000771","CreDtTm":"2021-09-24T22:05:38"},"OrgnlGrpInfAndSts":[{"OrgnlMsgId":"20210924SIHBIDJ101000000102","OrgnlMsgNmId":"pacs.008.001.08"}],"TxInfAndSts":[{"OrgnlEndToEndId":"20210924SIHBIDJ1010O0100000101","OrgnlTxId":"20210924SIHBIDJ101000000102","TxSts":"ACTC","StsRsnInf":[{"Rsn":{"Prtry":"U000"}}],"OrgnlTxRef":{"Cdtr":{"Pty":{"Nm":"Adiputro Susilo"}}},"SplmtryData":[{"Envlp":{"Cdtr":{"Tp":"01","Id":"KTP-2004384","RsdntSts":"01","TwnNm":"0300"}}}]}]}}}}','20210924SIHBIDJ1010O0100000101','20210924SIHBIDJ101000000102','pacs.008.001.08','CreditConfirmation'),
-	 (4220,'20210924CENAIDJA010R0200001961','{"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"BizMsgIdr":"20210924CENAIDJA010R0200001961","MsgDefIdr":"pacs.002.001.10","BizSvc":"CTRESPONSE","CreDt":"2021-09-24T21:47:27"},"Document":{"FitoFIPmtStsRpt":{"GrpHdr":{"MsgId":"20210924CENAIDJA01000000384","CreDtTm":"2021-09-24T21:47:27"},"OrgnlGrpInfAndSts":[{"OrgnlMsgId":"20210924SIHBIDJ101000000092","OrgnlMsgNmId":"pacs.008.001.08"}],"TxInfAndSts":[{"OrgnlEndToEndId":"20210924SIHBIDJ1010O0100000091","OrgnlTxId":"20210924SIHBIDJ101000000092","TxSts":"ACTC","StsRsnInf":[{"Rsn":{"Prtry":"U000"}}],"OrgnlTxRef":{"Cdtr":{"Pty":{"Nm":"Indarto Wirawan"}}},"SplmtryData":[{"Envlp":{"Cdtr":{"Tp":"01","Id":"KTP-2004384","RsdntSts":"01","TwnNm":"0300"}}}]}]}}}}','20210924SIHBIDJ1010O0100000091','20210924SIHBIDJ101000000092','pacs.008.001.08','CreditConfirmation'),
-	 (4226,'20210924CENAIDJA010R0200001310','{"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"BizMsgIdr":"20210924CENAIDJA010R0200001310","MsgDefIdr":"pacs.002.001.10","BizSvc":"CTRESPONSE","CreDt":"2021-09-24T21:59:58"},"Document":{"FitoFIPmtStsRpt":{"GrpHdr":{"MsgId":"20210924CENAIDJA01000000338","CreDtTm":"2021-09-24T21:59:58"},"OrgnlGrpInfAndSts":[{"OrgnlMsgId":"20210924SIHBIDJ101000000097","OrgnlMsgNmId":"pacs.008.001.08"}],"TxInfAndSts":[{"OrgnlEndToEndId":"20210924SIHBIDJ1010O0100000096","OrgnlTxId":"20210924SIHBIDJ101000000097","TxSts":"ACTC","StsRsnInf":[{"Rsn":{"Prtry":"U000"}}],"OrgnlTxRef":{"Cdtr":{"Pty":{"Nm":"Sjafril Adam"}}},"SplmtryData":[{"Envlp":{"Cdtr":{"Tp":"01","Id":"KTP-2004384","RsdntSts":"01","TwnNm":"0300"}}}]}]}}}}','20210924SIHBIDJ1010O0100000096','20210924SIHBIDJ101000000097','pacs.008.001.08','CreditConfirmation');INSERT INTO public.payment_status (id,bizmsgid,error_msg,intern_ref_id,orgn_endtoendid,request_dt,request_full_message,response_dt,response_full_message,retry_count,saf,status,chnl_trx_id) VALUES
+	 ('Hadi');INSERT INTO public.payment_status (id,bizmsgid,error_msg,intern_ref_id,orgn_endtoendid,request_dt,request_full_message,response_dt,response_full_message,retry_count,saf,status,chnl_trx_id) VALUES
 	 (4191,'20210924SIHBIDJ1000O9900000072','Timeout menunggu response dari CIHUB','210071','20210924SIHBIDJ1010O0100000070','2021-09-24 08:34:13','eJyNUMtuwjAQ/Jc9Q7R+FLBvCYHiSjQIckM9VCRAJOKksZFQEf+OnceNA3tYe727M+O5Q3Q1a3MC
 eYewrldZ42/LLhdF1p1aaWO1aqvEntuur2CnVpGKvwg8XIwgrd7cmy++Q7cX9ntR8e80KE8OFClB
 QfkAjYiJENjGlMII3GScH7vh+vdgAqSzAJEEyF133uSx7WHGKMaUpxQl45IwcExxdbiWubadPlst
@@ -932,4 +1070,54 @@ zHTOmEHvjemcAL9d7toiEbJTLcuVGxQykk1YYeqxHoxBlb+LxDGbaQMbL27z+fVe5IDqitQUMRAR
 4+3cZX8yDE4NDBplZHQt9Qos7m2Yow0UKDZwF8df0B0R8xKmWxR+TwP7gQVw/tbDj0hDTItbECrr
 Grj8FJlhq7wLalmfoOYVuuDeN1f8MEnVuRVL9DiQJ7V4yj8zzqpW1uVd1DZZXhL8W6IqLwDK3sot
 4jvikFffEThEBL8ApT/zYAw/kD6d65AKm1jITi2W8A+BVHSKsi4beGB8AXOX414=
-',0,NULL,'SUCCESS',4229);
+',0,NULL,'SUCCESS',4229),
+	 (4281,'20210925SIHBIDJ1000O9900000029',NULL,'11004','20210925SIHBIDJ1010O0100000027','2021-09-25 07:39:30','eJyNUE1vwjAM/S8+Q+WkC116aykfmbR1Gr0hDhMtUImmXROkaYj/PqcpNw48RXYc288vvkJ6Me/m
+CPEVkq5bl727Lb2t69J7rbSxWg1Rbk9D1kWwUetUZW8MboQJFO2TffPFR0J9ydiX1n+kQbnhwJEz
+lFzcqRExlxIHcAkToMqsOvji7ntvAuSvASIL8IWy877K7EgzRTnlomAyDukg0KSs3V+aSluvz7ZL
+9dnYjTVf1Y97WvX3FQx6HsvxIL5xWtFAzGYhF1EoIowEd5v4VfoA8Zb+3R/1eaHLoiXzmJJhjiMx
+j+C2c0v5B37Gc9g=
+','2021-09-25 07:39:30','eJyNUtFugjAU/ZXlPqtpq2bgGwJOtgwIdE+LD0TAmUkhUJ2b8d93W8Asi2YroeXe3nvO4bQnmO+b
+52YDsxNYVbVMa/W1aOftNm1X4YlGCk9HgXzTuyoC2/Utz3m04IxjALz8Z1/sLefYR7u++fYLNXiK
+HBhhlJhs2kMTSiLCCA46NQkMACudLG+Lq2TdjAhh+NIRVbsIFR/WShqP3DgM/NjFrF1njuzAh8Qc
+simnbDY2Z+wekN8p1/siE7JVLcuFFxYylk1U6dRD3RujVV4X2Sqc0J6NF7f5gnojdojqidwSKRLB
+7PXUZn8z9E51DPivBgwupX6hizsbDG0DMeC8wrM4XkF3RcpLnG5RBD0N6uxYEOdvPfyoacCyuY2h
+sq7Bw881M34q78Ja1p9Y84JNeO6rC36U5WrfTqX2OJSfavGVf55Ik1qWd+57CfqmxNWuQBgnkYnG
+dsVhV/3s5hgBUaegZT/xcIiXZzI2JpiKmlTIVqku4R9C05CxlnRe4YPjG8xx4ac=
+',0,NULL,'SUCCESS',4276);INSERT INTO public.vweb_tx_logs ("timestamp",uuid,source_bic,destination_bic,source_account_number,destination_account_number,amount,currency,status_code,status_message,source_account_name,destination_account_name,transaction_type,transaction_direction) VALUES
+	 ('2021-09-25 19:39:26.250063','11004','SIHBIDJ1','CENAIDJA','7155604','825331',422260.00,'IDR','SUCCESS',NULL,'Bambang Suo','FARHAN AI','Credit Transfer','Outbound'),
+	 ('2021-09-24 21:14:38.837862','21862','SIHBIDJ1','CENAIDJA','7154004','2111132',8904000.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','FARIS AI','Credit Transfer','Outbound'),
+	 ('2021-09-25 19:34:30.664236','46149','SIHBIDJ1','CENAIDJA',NULL,'7712589',1990000.00,'IDR','TIMEOUT-CIHUB','Timeout menunggu response dari CIHUB',NULL,NULL,'Account Enquiry','Outbound'),
+	 ('2021-09-25 19:39:26.250063','11004','SIHBIDJ1','014','7155604','825331',422260.00,'IDR','SUCCESS',NULL,'Bambang Suo','FARHAN AI','FI Credit Transfer','Outbound'),
+	 ('2021-09-24 20:12:55.068922','21211','SIHBIDJ1','CENAIDJA','782444','11844292',8650000.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','P AI','Account Enquiry','Outbound'),
+	 ('2021-09-24 22:05:37.514305','12550','SIHBIDJ1','014','7155504','8211131',4222000.00,'IDR','SUCCESS',NULL,'Bambang Suo','FARIS AI','FI Credit Transfer','Outbound'),
+	 ('2021-09-24 20:34:10.874679','210071','SIHBIDJ1','014','7850004','8000292',8904000.00,'IDR','TIMEOUT-CIHUB','Timeout waiting CIHUB response','Fandi Wijaya','FARIS AI','FI Credit Transfer','Outbound'),
+	 ('2021-09-24 21:47:26.780557','15530','SIHBIDJ1','CENAIDJA','7110004','8289331',1000200.00,'IDR','SUCCESS',NULL,'Fandi Ahmad','FARIS AI','Credit Transfer','Outbound'),
+	 ('2021-09-24 21:43:57.07041','15502','SIHBIDJ1','CENAIDJA','7100004','8289331',1000200.00,'IDR','TIMEOUT-CIHUB','Timeout menunggu response dari CIHUB','Fandi Ahmad','FARIS AI','Account Enquiry','Outbound'),
+	 ('2021-09-24 22:05:37.514305','12550','SIHBIDJ1','CENAIDJA','7155504','8211131',4222000.00,'IDR','SUCCESS',NULL,'Bambang Suo','FARIS AI','Credit Transfer','Outbound');
+INSERT INTO public.vweb_tx_logs ("timestamp",uuid,source_bic,destination_bic,source_account_number,destination_account_number,amount,currency,status_code,status_message,source_account_name,destination_account_name,transaction_type,transaction_direction) VALUES
+	 ('2021-09-25 19:39:26.250063','11004','SIHBIDJ1','CENAIDJA','7155604','825331',422260.00,'IDR','SUCCESS',NULL,'Bambang Suo','FARHAN AI','Account Enquiry','Outbound'),
+	 ('2021-09-25 19:44:04.420082','6011','SUNIIDJA','CENAIDJA','','',711660.00,'IDR','SUCCESS',NULL,'','','Credit Transfer','Outbound'),
+	 ('2021-09-24 21:05:53.365443','21861','SIHBIDJ1','CENAIDJA','7850004','2000292',8904000.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','FARIS AI','Credit Transfer','Outbound'),
+	 ('2021-09-24 21:47:26.780557','15530','SIHBIDJ1','CENAIDJA','7110004','8289331',1000200.00,'IDR','SUCCESS',NULL,'Fandi Ahmad','FARIS AI','Account Enquiry','Outbound'),
+	 ('2021-09-25 06:45:34.736657','6241','SUNIIDJA','CENAIDJA','','',781000.00,'IDR','SUCCESS',NULL,'','','Credit Transfer','Outbound'),
+	 ('2021-09-24 20:34:10.874679','210071','SIHBIDJ1','CENAIDJA','7850004','8000292',8904000.00,'IDR','TIMEOUT-CIHUB','Timeout waiting CIHUB response','Fandi Wijaya','FARIS AI','Account Enquiry','Outbound'),
+	 ('2021-09-25 19:43:19.562176','15804','SIHBIDJ1','CENAIDJA','7785604','182531',467760.00,'IDR','SUCCESS',NULL,'Bambang Suo','FARHAN AI','Account Enquiry','Outbound'),
+	 ('2021-09-25 19:36:12.697836','41449','SIHBIDJ1','CENAIDJA',NULL,'677589',1390000.00,'IDR','SUCCESS',NULL,NULL,NULL,'Account Enquiry','Outbound'),
+	 ('2021-09-24 21:32:48.951207','21002','SIHBIDJ1','CENAIDJA','7100004','9234323',1800200.00,'IDR','REJECT-CIHUB','Account Enquiry reject.','Fandi Ahmad','FARIS AI','Account Enquiry','Outbound'),
+	 ('2021-09-24 20:27:12.676883','211411','SIHBIDJ1','CENAIDJA','785544','110044292',89994500.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','P AI','Account Enquiry','Outbound');
+INSERT INTO public.vweb_tx_logs ("timestamp",uuid,source_bic,destination_bic,source_account_number,destination_account_number,amount,currency,status_code,status_message,source_account_name,destination_account_name,transaction_type,transaction_direction) VALUES
+	 ('2021-09-25 06:50:53.660159','6000','SUNIIDJA','CENAIDJA','','',781000.00,'IDR','SUCCESS',NULL,'','','Credit Transfer','Outbound'),
+	 ('2021-09-24 20:03:35.1136','46149','SIHBIDJ1','CENAIDJA',NULL,'7712589',1990000.00,'IDR','TIMEOUT-CIHUB','Timeout menunggu response dari CIHUB',NULL,NULL,'Account Enquiry','Outbound'),
+	 ('2021-09-24 21:14:38.837862','21862','SIHBIDJ1','CENAIDJA','7154004','2111132',8904000.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','FARIS AI','Account Enquiry','Outbound'),
+	 ('2021-09-24 21:28:28.581211','21002','SIHBIDJ1','CENAIDJA','7154004','2100323',800000.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','FARIS AI','Account Enquiry','Outbound'),
+	 ('2021-09-24 20:12:55.068922','21211','SIHBIDJ1','CENAIDJA','782444','11844292',8650000.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','P AI','Credit Transfer','Outbound'),
+	 ('2021-09-24 22:05:37.514305','12550','SIHBIDJ1','CENAIDJA','7155504','8211131',4222000.00,'IDR','SUCCESS',NULL,'Bambang Suo','FARIS AI','Account Enquiry','Outbound'),
+	 ('2021-09-25 19:43:19.562176','15804','SIHBIDJ1','CENAIDJA','7785604','182531',467760.00,'IDR','SUCCESS',NULL,'Bambang Suo','FARHAN AI','Credit Transfer','Outbound'),
+	 ('2021-09-24 20:11:08.394747','4511168','SIHBIDJ1','BMRIIDJA',NULL,'1814449',54500.00,'IDR','SUCCESS',NULL,NULL,NULL,'Account Enquiry','Outbound'),
+	 ('2021-09-24 21:28:28.581211','21002','SIHBIDJ1','CENAIDJA','7154004','2100323',800000.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','FARIS AI','Credit Transfer','Outbound'),
+	 ('2021-09-24 21:05:53.365443','21861','SIHBIDJ1','CENAIDJA','7850004','2000292',8904000.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','FARIS AI','Account Enquiry','Outbound');
+INSERT INTO public.vweb_tx_logs ("timestamp",uuid,source_bic,destination_bic,source_account_number,destination_account_number,amount,currency,status_code,status_message,source_account_name,destination_account_name,transaction_type,transaction_direction) VALUES
+	 ('2021-09-24 21:47:26.780557','15530','SIHBIDJ1','014','7110004','8289331',1000200.00,'IDR','SUCCESS',NULL,'Fandi Ahmad','FARIS AI','FI Credit Transfer','Outbound'),
+	 ('2021-09-24 20:34:10.874679','210071','SIHBIDJ1','CENAIDJA','7850004','8000292',8904000.00,'IDR','TIMEOUT-CIHUB','Timeout waiting CIHUB response','Fandi Wijaya','FARIS AI','Credit Transfer','Outbound'),
+	 ('2021-09-24 20:27:12.676883','211411','SIHBIDJ1','CENAIDJA','785544','110044292',89994500.00,'IDR','SUCCESS',NULL,'Fandi Wijaya','P AI','Credit Transfer','Outbound'),
+	 ('2021-09-24 20:08:40.30641','452168','SIHBIDJ1','BMRIIDJA',NULL,'1819199',54500.00,'IDR','SUCCESS',NULL,NULL,NULL,'Account Enquiry','Outbound');

@@ -1,15 +1,15 @@
-package bifast.inbound.corebank;
+package bifast.inbound.corebank.pojo;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonRootName("CreditInstructionRequest")
-public class CBCreditInstructionRequestPojo {
+@JsonRootName("FICreditInstructionRequest")
+public class CBFICreditInstructionRequestPojo {
 
 	private String transactionId;
-	private String accountNumber;
-	private String accountType;
 	private String amount;
-	private String creditorName;
+	private String debtorBank;
+	private String creditorBank;
+	
 	private String paymentInfo;
 	private String requestTime;
 	
@@ -19,29 +19,23 @@ public class CBCreditInstructionRequestPojo {
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
 	}
-	public String getAccountNumber() {
-		return accountNumber;
-	}
-	public void setAccountNumber(String accountNumber) {
-		this.accountNumber = accountNumber;
-	}
-	public String getAccountType() {
-		return accountType;
-	}
-	public void setAccountType(String accountType) {
-		this.accountType = accountType;
-	}
 	public String getAmount() {
 		return amount;
 	}
 	public void setAmount(String amount) {
 		this.amount = amount;
 	}
-	public String getCreditorName() {
-		return creditorName;
+	public String getDebtorBank() {
+		return debtorBank;
 	}
-	public void setCreditorName(String creditorName) {
-		this.creditorName = creditorName;
+	public void setDebtorBank(String debtorBank) {
+		this.debtorBank = debtorBank;
+	}
+	public String getCreditorBank() {
+		return creditorBank;
+	}
+	public void setCreditorBank(String creditorBank) {
+		this.creditorBank = creditorBank;
 	}
 	public String getPaymentInfo() {
 		return paymentInfo;
@@ -55,6 +49,7 @@ public class CBCreditInstructionRequestPojo {
 	public void setRequestTime(String requestTime) {
 		this.requestTime = requestTime;
 	}
-
+	
+	
 	
 }
