@@ -16,21 +16,21 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "orignReffId" : "15804",
+    "orignReffId" : "15551",
     "channel" : "Internet Banking",
     "categoryPurpose" : "Investment",
-    "amount" : 467760,
-    "crdtAccountNo" : "182531",
+    "amount" : 438417,
+    "crdtAccountNo" : "921751",
     "crdtAccountType" : "SVGS",
     "dbtrIdType" : "01",    
-    "dbtrName": "Bambang Suo",
+    "dbtrName": "Andrea Suo",
     "dbtrId" : "64145",
-    "dbtrAccountNo" : "7785604",
+    "dbtrAccountNo" : "7744404",
     "dbtrAccountType" : "CACC",
     "recptBank" : "014",
     "crdtIdType" : "02",   
     "crdtName": "FARHAN AI",
-    "crdtId" : "C22403"
+    "crdtId" : "C224403"
   }
 }
 

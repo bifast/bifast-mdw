@@ -28,11 +28,6 @@ public class SaveAccountEnquiryProcessor implements Processor {
 
 		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY,List.class);
 		
-		for (MessageHistory mh : listHistory) {
-			System.out.println(mh.getRouteId() + " " + mh.getNode().getId() + " " + mh.getElapsed());
-		}
-		
-//		long elapsedForwardMsgtype = utilService.getElapsedFromMessageHistory(listHistory, "forward_msgtype");
 		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");
 		
 		BusinessMessage bmRequest = exchange.getMessage().getHeader("hdr_frBIobj", BusinessMessage.class);
@@ -53,16 +48,14 @@ public class SaveAccountEnquiryProcessor implements Processor {
 //		ae.setChnlTrxId(null);
 		
 		ae.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-		ae.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
 		ae.setCihubElapsedTime(routeElapsed);
 
-		ae.setCreDt(LocalDateTime.now());
+//		ae.setCreDt(LocalDateTime.now());
 //		ae.setErrorMessage(null);
 		
 		ae.setFullRequestMessage(fullRequestMesg);
 		ae.setFullResponseMsg(fullResponseMesg);
 		
-//		ae.setIntrRefId(null);
 		ae.setOriginatingBank(bmRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 		ae.setRecipientBank(bmRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 

@@ -2,14 +2,17 @@ package bifast.outbound.paymentstatus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.MessageHistory;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.model.PaymentStatus;
+import bifast.outbound.processor.UtilService;
 import bifast.outbound.repository.PaymentStatusRepository;
 
 @Component 
@@ -17,9 +20,15 @@ public class StorePaymentStatusProcessor implements Processor{
 
 	@Autowired
 	private PaymentStatusRepository paymentStatusRepo;
+	@Autowired
+	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
+
+		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
+
+		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");
 
 		PaymentStatus ps = new PaymentStatus();
 		
@@ -43,16 +52,18 @@ public class StorePaymentStatusProcessor implements Processor{
 		if (!(null==encrResponseMesg))
 			ps.setResponseFullMessage(encrResponseMesg);
 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-		String strPSRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-		String strPSResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
+//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
+//		String strPSRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
+//		String strPSResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
+//		LocalDateTime psRequestTime = LocalDateTime.parse(strPSRequestTime, dtf);
+//		LocalDateTime psResponseTime = LocalDateTime.parse(strPSResponseTime, dtf);
+//		ps.setRequestDt(psRequestTime);
+//		ps.setResponseDt(psResponseTime);
 
-		LocalDateTime psRequestTime = LocalDateTime.parse(strPSRequestTime, dtf);
-		LocalDateTime psResponseTime = LocalDateTime.parse(strPSResponseTime, dtf);
+		ps.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+		ps.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
+		ps.setCihubElapsedTime(routeElapsed);
 
-		ps.setRequestDt(psRequestTime);
-		ps.setResponseDt(psResponseTime);
-		
 		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
     	String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
     	

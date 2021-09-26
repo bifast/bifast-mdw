@@ -37,7 +37,7 @@ public class AccountEnquiry {
 	@Column(length=50)
 	private String accountNo;
 
-	private LocalDateTime creDt;
+//	private LocalDateTime creDt;
 
 	@Column(length=20)
 	private String responseStatus;
@@ -45,8 +45,8 @@ public class AccountEnquiry {
 	@Column(name="CIHUB_REQ_TIME")
 	private LocalDateTime cihubRequestDT;
 	
-	@Column(name="CIHUB_RESP_TIME")
-	private LocalDateTime cihubResponseDT;	
+//	@Column(name="CIHUB_RESP_TIME")
+//	private LocalDateTime cihubResponseDT;	
 	
 	private Long cihubElapsedTime;
 	
@@ -133,14 +133,6 @@ public class AccountEnquiry {
 		this.accountNo = accountNo;
 	}
 
-	public LocalDateTime getCreDt() {
-		return creDt;
-	}
-
-	public void setCreDt(LocalDateTime creDt) {
-		this.creDt = creDt;
-	}
-
 	public String getResponseStatus() {
 		return responseStatus;
 	}
@@ -157,13 +149,13 @@ public class AccountEnquiry {
 		this.cihubRequestDT = cihubRequestDT;
 	}
 
-	public LocalDateTime getCihubResponseDT() {
-		return cihubResponseDT;
-	}
-
-	public void setCihubResponseDT(LocalDateTime cihubResponseDT) {
-		this.cihubResponseDT = cihubResponseDT;
-	}
+//	public LocalDateTime getCihubResponseDT() {
+//		return cihubResponseDT;
+//	}
+//
+//	public void setCihubResponseDT(LocalDateTime cihubResponseDT) {
+//		this.cihubResponseDT = cihubResponseDT;
+//	}
 
 	public Long getCihubElapsedTime() {
 		return cihubElapsedTime;

@@ -1,4 +1,5 @@
 drop view vweb_tx_logs;
+
 create or replace view vweb_tx_logs as
 select 
 	chnl.request_time as timestamp,
@@ -70,4 +71,22 @@ select
 	'FI Credit Transfer' as transaction_type,
 	'Outbound' as transaction_direction
 from channel_transaction chnl
-join payment_status ps on ps.chnl_trx_id = chnl.id ;
+join payment_status ps on ps.chnl_trx_id = chnl.id
+UNION
+select 
+	ae.cihub_req_time as timestamp,
+	ae.bizmsgid as uuid,
+	ae.orign_bank as source_bic,
+	ae.recpt_bank as destination_bic,
+	'' as source_account_number,
+	ae.account_no as destination_account_number,
+	ae.amount as amount,
+	'IDR' as currency,
+	ae.call_status as status_code,
+	'' as status_message,
+	'' as source_account_name,
+	'' as destination_account_name,
+	'Account Enquiry' as transaction_type,
+	'Inbound' as transaction_direction
+from account_enquiry ae
+where ae.recpt_bank = 'SIHBIDJ1';

@@ -42,7 +42,8 @@ public class ProxyMessage {
 	
 	private LocalDateTime requestDt;
 	private LocalDateTime responseDt;
-	
+	private Long cihubElapsedTime;
+
 	@Column(length=50)
 	private String callStatus;
 	@Column(length=50)
@@ -169,6 +170,12 @@ public class ProxyMessage {
 	}
 	public void setResponseDt(LocalDateTime responseDt) {
 		this.responseDt = responseDt;
+	}
+	public Long getCihubElapsedTime() {
+		return cihubElapsedTime;
+	}
+	public void setCihubElapsedTime(Long cihubElapsedTime) {
+		this.cihubElapsedTime = cihubElapsedTime;
 	}
 	public String getCallStatus() {
 		return callStatus;

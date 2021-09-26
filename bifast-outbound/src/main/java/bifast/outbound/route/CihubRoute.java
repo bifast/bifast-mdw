@@ -49,9 +49,9 @@ public class CihubRoute extends RouteBuilder {
 		
 
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
-		from("direct:call-cihub").routeId("komi.call-cihub")
+		from("direct:call-cihub").routeId("komi.call-cihub").messageHistory()
 		
-			.process(setTransactionTypeProcessor)
+			.process(setTransactionTypeProcessor).id("start_route")
 			.log("${header.hdr_trxname}")		
 			
 			.setHeader("hdr_cihub_request", simple("${body}"))
@@ -67,7 +67,7 @@ public class CihubRoute extends RouteBuilder {
 			.setHeader("cihubroute_encr_request", simple("${body}"))
 			.setBody(simple("${header.tmp_body}"))
 			
-			.setHeader("hdr_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+//			.setHeader("hdr_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 	
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
@@ -106,7 +106,7 @@ public class CihubRoute extends RouteBuilder {
 			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.setHeader("hdr_cihub_response", simple("${body}"))
 			
-			.choice()
+			.choice().id("end_route")
 				.when().simple("${header.hdr_trxname} == 'Account Enquiry'")
 					.process(saveAccountEnquiryProcessor)
 				.when().simple("${header.hdr_trxname} == 'Credit Transfer'")
@@ -117,7 +117,7 @@ public class CihubRoute extends RouteBuilder {
 					.process(storePaymentStatusProcessor)
 			.end()
 
-			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+//			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			
 			.removeHeaders("tmp_*")
 			.removeHeaders("cihubroute_*")

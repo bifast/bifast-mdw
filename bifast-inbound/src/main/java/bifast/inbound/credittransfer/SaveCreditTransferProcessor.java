@@ -1,7 +1,6 @@
 package bifast.inbound.credittransfer;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.camel.Exchange;
@@ -32,6 +31,7 @@ public class SaveCreditTransferProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		 
+		@SuppressWarnings("unchecked")
 		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
 
 		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");
@@ -66,19 +66,16 @@ public class SaveCreditTransferProcessor implements Processor {
 		ct.setMsgType(msgName);
 
 		// simpan data waktu 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-
+//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
 //		String strCihubRequestTime = exchange.getMessage().getHeader("req_cihubRequestTime", String.class);
 //		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCihubRequestTime, dtf);
 //		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-
 //		String strCihubResponseTime = exchange.getMessage().getHeader("req_cihubResponseTime", String.class);
 //		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCihubResponseTime, dtf);
 //		ct.setCihubResponseDT(cihubResponseTime);
 		
 		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
 		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
-
 		ct.setCihubElapsedTime(routeElapsed);
 		
 		String reversal = exchange.getMessage().getHeader("resp_reversal",String.class);

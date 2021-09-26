@@ -35,7 +35,8 @@ public class PaymentStatus {
 
 	private LocalDateTime requestDt;
 	private LocalDateTime responseDt;
-	
+	private Long cihubElapsedTime;
+
 //	private LocalDateTime updateDt;
 
 	private String saf;
@@ -106,6 +107,12 @@ public class PaymentStatus {
 	}
 	public void setResponseDt(LocalDateTime responseDt) {
 		this.responseDt = responseDt;
+	}
+	public Long getCihubElapsedTime() {
+		return cihubElapsedTime;
+	}
+	public void setCihubElapsedTime(Long cihubElapsedTime) {
+		this.cihubElapsedTime = cihubElapsedTime;
 	}
 	public String getSaf() {
 		return saf;

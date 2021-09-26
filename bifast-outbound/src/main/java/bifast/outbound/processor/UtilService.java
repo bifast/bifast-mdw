@@ -1,11 +1,15 @@
 package bifast.outbound.processor;
 
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Optional;
 
+import org.apache.camel.MessageHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,5 +86,43 @@ public class UtilService {
 		String msgId = strToday + config.getBankcode() + trxType + leading.substring(l-8);
 		return msgId;
 	}
+	
+	public long getElapsedFromMessageHistory (List<MessageHistory> list, String nodeId) {
+		long elapsed = -1;
+		for (MessageHistory msg : list) {
+			if (nodeId == msg.getNode().getId())
+				elapsed = msg.getElapsed();
+		}
+		return elapsed;
+	}
+
+	public LocalDateTime getTimestampFromMessageHistory (List<MessageHistory> list, String nodeId) {
+		LocalDateTime ldt = LocalDateTime.now();
+		for (MessageHistory msg : list) {
+			if (nodeId == msg.getNode().getId()) {
+				long time = msg.getTime();
+				ldt = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
+			}
+		}
+
+		return ldt;
+	}
+
+	public long getRouteElapsed (List<MessageHistory> messageList, String routeId) {
+		long start = 0;
+		long end = 0;
+		for (MessageHistory msg : messageList) {
+			if ( (msg.getRouteId().equals(routeId)) && 
+				 (msg.getNode().getId().equals("start_route")) ) {
+				start = msg.getTime();
+			}
+			if ( (msg.getRouteId().equals(routeId)) && 
+					 (msg.getNode().getId().equals("end_route")) ) {
+				end = msg.getTime();
+				}
+		}
+		return (end-start);
+	}
+
 
 }

@@ -56,7 +56,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			.log("CT: ${body}")
 			// prepare untuk request ke corebank
-			.unmarshal(businessMessageJDF)
+//			.unmarshal(businessMessageJDF)
 			.process(ctCorebankRequestProcessor)
 			.setHeader("ct_cbrequest", simple("${body}"))
 			.marshal(cbCreditTransferRequestJDF)
@@ -80,7 +80,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			// process corebank response
 			.process(creditTransferProcessor)
-			.marshal(businessMessageJDF)
+//			.marshal(businessMessageJDF)
 			
 			.removeHeaders("ct_*")
 

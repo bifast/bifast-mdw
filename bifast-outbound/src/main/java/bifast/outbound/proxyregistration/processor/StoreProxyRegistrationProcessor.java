@@ -2,8 +2,10 @@ package bifast.outbound.proxyregistration.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.MessageHistory;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.outbound.model.ProxyMessage;
+import bifast.outbound.processor.UtilService;
 import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.repository.ProxyMessageRepository;
 
@@ -19,9 +22,15 @@ public class StoreProxyRegistrationProcessor implements Processor{
 
 	@Autowired
 	private ProxyMessageRepository proxyMessageRepo;
+	@Autowired
+	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
+
+		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY,List.class);
+
+		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
 
 		BusinessMessage proxyRequest = exchange.getMessage().getHeader("prx_birequest", BusinessMessage.class);
 		ProxyRegistrationV01 regRequest = proxyRequest.getDocument().getPrxyRegn();
@@ -56,18 +65,21 @@ public class StoreProxyRegistrationProcessor implements Processor{
 		
 		proxyMessage.setResidentStatus(regRequest.getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts());
 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
+//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
+//
+//		String strPrxyReqTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
+//		String strPrxyRespTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
+//	
+//		LocalDateTime prxyRequestTime = LocalDateTime.parse(strPrxyReqTime, dtf);
+//		
+//		LocalDateTime prxyResponseTime = LocalDateTime.parse(strPrxyRespTime, dtf);
+//
+//		proxyMessage.setRequestDt(prxyRequestTime);
+//		proxyMessage.setResponseDt(prxyResponseTime);
+		proxyMessage.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+		proxyMessage.setResponseDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
+		proxyMessage.setCihubElapsedTime(routeElapsed);
 
-		String strPrxyReqTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-		String strPrxyRespTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-	
-		LocalDateTime prxyRequestTime = LocalDateTime.parse(strPrxyReqTime, dtf);
-		
-		LocalDateTime prxyResponseTime = LocalDateTime.parse(strPrxyRespTime, dtf);
-
-		proxyMessage.setRequestDt(prxyRequestTime);
-		proxyMessage.setResponseDt(prxyResponseTime);
-		
 		proxyMessage.setScndIdType(regRequest.getRegn().getPrxyRegn().getScndId().getTp());
 		proxyMessage.setScndValue(regRequest.getRegn().getPrxyRegn().getScndId().getVal());
 		proxyMessage.setTownName(regRequest.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());

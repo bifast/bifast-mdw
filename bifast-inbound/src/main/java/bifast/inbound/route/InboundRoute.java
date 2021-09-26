@@ -14,7 +14,6 @@ import bifast.inbound.credittransfer.CreditTransferProcessor;
 import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
 import bifast.inbound.ficredittransfer.FICreditTransferProcessor;
 import bifast.inbound.processor.CheckMessageTypeProcessor;
-//import bifast.inbound.processor.SaveInboundMessageProcessor;
 import bifast.inbound.processor.SaveSettlementMessageProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
@@ -26,8 +25,6 @@ public class InboundRoute extends RouteBuilder {
 	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
 	@Autowired
 	private SaveCreditTransferProcessor saveCreditTransferProcessor;
-//	@Autowired
-//	private SaveInboundMessageProcessor saveInboundMessageProcessor;
 	@Autowired
 	private SaveSettlementMessageProcessor saveSettlementMessageProcessor;
 	@Autowired
@@ -74,11 +71,8 @@ public class InboundRoute extends RouteBuilder {
 
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
 
-			.setHeader("req_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
 
-			.setHeader("hdr_msgName", simple("${body.appHdr.msgDefIdr}"))
-			
 			.process(checkMsgTypeProcessor).id("process1")   // set header.hdr_msgType
 
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] received.")
@@ -89,17 +83,14 @@ public class InboundRoute extends RouteBuilder {
 					.setBody(constant(null))
 					
 				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
-					.marshal(jsonBusinessMessageDataFormat)
-//					.process(accountEnquiryProcessor)
 					.to("direct:accountenq")
-					.unmarshal(jsonBusinessMessageDataFormat)
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '010'")    // terima credit transfer
-					.marshal(jsonBusinessMessageDataFormat)
+//					.marshal(jsonBusinessMessageDataFormat)
 //					.process(creditTransferProcessor)
 					.to("direct:crdttransfer")
-					.unmarshal(jsonBusinessMessageDataFormat)
+//					.unmarshal(jsonBusinessMessageDataFormat)
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '011'")     // reverse CT
@@ -127,9 +118,6 @@ public class InboundRoute extends RouteBuilder {
 					.setBody(simple("${header.hdr_tmp}"))
 			.end()
 			
-			.setHeader("req_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-
-			.log("${body}")
 			.to("seda:logandsave?exchangePattern=InOnly")
 			.id("end_route")
 
@@ -139,7 +127,7 @@ public class InboundRoute extends RouteBuilder {
 					.to("seda:reversal?exchangePattern=InOnly")
 			.end()
 			
-			.log("[Inbound][${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
+			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
 			.removeHeaders("resp_*")
@@ -163,7 +151,6 @@ public class InboundRoute extends RouteBuilder {
 			.otherwise()
 				.log("${header.hdr_msgType}")
 				.process(saveCreditTransferProcessor)
-//				.process(saveInboundMessageProcessor)
 			.end()
 		;
 

@@ -1,9 +1,9 @@
 package bifast.outbound.credittransfer.processor;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.MessageHistory;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +12,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
 import bifast.outbound.model.CreditTransfer;
+import bifast.outbound.processor.UtilService;
 import bifast.outbound.repository.CreditTransferRepository;
 
 @Component
@@ -19,9 +20,16 @@ public class StoreCreditTransferProcessor implements Processor {
 
 	@Autowired
 	private CreditTransferRepository creditTransferRepo;
+	@Autowired
+	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
+
+		@SuppressWarnings("unchecked")
+		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
+
+		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
 
 		CreditTransfer ct = new CreditTransfer();
 
@@ -41,15 +49,17 @@ public class StoreCreditTransferProcessor implements Processor {
 		
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-
-		String strCiHubRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-		String strCiHubResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-		
-		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCiHubRequestTime, dtf);
-		ct.setCihubRequestDT(cihubRequestTime);
-		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCiHubResponseTime, dtf);
-		ct.setCihubResponseDT(cihubResponseTime);
+//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
+//		String strCiHubRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
+//		String strCiHubResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
+//		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCiHubRequestTime, dtf);
+//		ct.setCihubRequestDT(cihubRequestTime);
+//		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCiHubResponseTime, dtf);
+//		ct.setCihubResponseDT(cihubResponseTime);
+	
+		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
+		ct.setCihubElapsedTime(routeElapsed);
 
 		ct.setCrdtTrnRequestBizMsgIdr(biRequest.getAppHdr().getBizMsgIdr());
 		

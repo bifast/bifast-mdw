@@ -2,8 +2,10 @@ package bifast.outbound.ficredittransfer.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.MessageHistory;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,16 +14,23 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs009.CreditTransferTransaction44;
 import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 import bifast.outbound.model.FICreditTransfer;
+import bifast.outbound.processor.UtilService;
 import bifast.outbound.repository.FICreditTransferRepository;
 
 @Component
 public class SaveFICreditTransferProcessor implements Processor {
 	@Autowired
 	private FICreditTransferRepository fiCreditTransferRepo;
-	
+	@Autowired
+	private UtilService utilService;
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
+		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
+
+		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
+		
 		ChnlFICreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlFICreditTransferRequestPojo.class);
 	
 		BusinessMessage biReqBM = exchange.getMessage().getHeader("fict_objreqbi", BusinessMessage.class);
@@ -38,17 +47,21 @@ public class SaveFICreditTransferProcessor implements Processor {
 			ct.setChnlTrxId(chnlTrxId);
 
 		
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
+//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
 
-		String strCihubRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-		String strCihubResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-
-		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCihubRequestTime, dtf);
-		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCihubResponseTime, dtf);
-
-		ct.setCihubRequestDT(cihubRequestTime);
-		ct.setCihubResponseDT(cihubResponseTime);
+//		String strCihubRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
+//		String strCihubResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
+//
+//		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCihubRequestTime, dtf);
+//		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCihubResponseTime, dtf);
+//
+//		ct.setCihubRequestDT(cihubRequestTime);
+//		ct.setCihubResponseDT(cihubResponseTime);
 		
+		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
+		ct.setCihubElapsedTime(routeElapsed);
+
 		ct.setCreditBic(ctRequest.getCdtr().getFinInstnId().getOthr().getId());
 		
 		ct.setCreDt(biReqBM.getDocument().getFiCdtTrf().getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
