@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonRootName("AccountEnquiryRequest")
+
 public class AccountEnquiryRequest {
 
 	private String transactionId;
