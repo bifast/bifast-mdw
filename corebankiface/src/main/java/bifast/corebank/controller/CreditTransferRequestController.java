@@ -66,7 +66,7 @@ public class CreditTransferRequestController {
     	DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
     	String strDate = dateFormat.format(date);
     	
-        if(account != null) {
+    	 if (!(null == account)) {
         	if(!account.getCreditorStatus().equals("HOLD") ) {
 	        	creditTransferRequest.setTransactionId(creditInstructionRequest.getCreditInstructionRequest().getTransactionId());
 	        	creditTransferRequest.setAccountNumber(creditInstructionRequest.getCreditInstructionRequest().getAccountNumber());

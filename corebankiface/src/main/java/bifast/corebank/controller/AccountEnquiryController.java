@@ -46,13 +46,8 @@ public class AccountEnquiryController {
         
         AccountEnquiryResponsePojo  accountEnquiryResponsePojo = new AccountEnquiryResponsePojo();     
         AccountEnquiryResponse  accountEnquiryResponse = new AccountEnquiryResponse();     
-        if (account == null) {
-        	throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found");
-        }else {
-        	
+        if (!(null == account)) {
             accountEnquiryResponse.setTransactionId(account.getIntrRefId());
-            
-            accountEnquiryResponse.setTransactionId(accountEnquiryRequestPojo.getAccountEnquiryRequest().getTransactionId());
             accountEnquiryResponse.setCreditorStatus(account.getCreditorStatus());
             accountEnquiryResponse.setAccountType(account.getAccountType());
             accountEnquiryResponse.setAccountNumber(account.getAccountNo());
@@ -66,6 +61,13 @@ public class AccountEnquiryController {
             accountEnquiryResponse.setAdditionalInfo(account.getAdditionalInfo());
             
             accountEnquiryResponsePojo.setAccountEnquiryResponse(accountEnquiryResponse);
+        	
+        }else {
+        	accountEnquiryResponse.setTransactionId(accountEnquiryRequestPojo.getAccountEnquiryRequest().getTransactionId());
+        	accountEnquiryResponse.setAccountNumber(accountEnquiryRequestPojo.getAccountEnquiryRequest().getAccountNumber());
+        	accountEnquiryResponse.setCreditorStatus("NOTVALID");
+        	accountEnquiryResponse.setAdditionalInfo("Nomor rekening tidak ditemukan");
+        	accountEnquiryResponsePojo.setAccountEnquiryResponse(accountEnquiryResponse);
         }
         
         

@@ -70,7 +70,7 @@ public class DebitTransferRequestController {
     	debitTransferRequest.setDebitorName(debitInstructionRequest.getDebitInstructionRequest().getDebitorName());
     	debitTransferRequest.setPaymentInfo(debitInstructionRequest.getDebitInstructionRequest().getPaymentInfo());
         
-    	if(account != null) {
+    	 if (!(null == account)) {
     		if(!account.getCreditorStatus().equals("HOLD") ) {
     			if(debitInstructionRequest.getDebitInstructionRequest().getRequestTime() != null) {
 	        		Date requestTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").parse(debitInstructionRequest.getDebitInstructionRequest().getRequestTime());
