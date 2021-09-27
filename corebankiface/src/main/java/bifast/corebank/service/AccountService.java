@@ -29,4 +29,9 @@ public class AccountService {
         return accountEnquiryRepository.getAccountByAccountNumber(accountNumber);
     }
     
+    public Account save(Account account) {
+
+        return accountEnquiryRepository.save(account);
+    }
+    
 }

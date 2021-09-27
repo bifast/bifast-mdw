@@ -23,6 +23,7 @@ import bifast.corebank.pojo.AccountEnquiryResponse;
 import bifast.corebank.service.AccountService;
 import bifast.corebank.service.DebitTransferRequestService;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -72,26 +73,49 @@ public class DebitTransferRequestController {
         
     	 if (!(null == account)) {
     		if(!account.getCreditorStatus().equals("HOLD") ) {
-    			if(debitInstructionRequest.getDebitInstructionRequest().getRequestTime() != null) {
-	        		Date requestTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").parse(debitInstructionRequest.getDebitInstructionRequest().getRequestTime());
-	        		debitTransferRequest.setRequestTime(requestTime);
-	        	}
-	        	
-	        	debitTransferRequest =  debitTransferRequestService.save(debitTransferRequest);
-	            
-	            if (debitTransferRequest.getId() == null) {
-	            	throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found");
-	            }
-	            
-	            DebitInstructionResponse debitInstructionResponse =  new DebitInstructionResponse();
-	            debitInstructionResponse.setTransactionId(debitTransferRequest.getTransactionId());
-	            debitInstructionResponse.setStatus("SUCCESS");
-	            debitInstructionResponse.setAccountNumber(debitTransferRequest.getAccountNumber());
-	            debitInstructionResponse.setAmount(debitTransferRequest.getAmount());
-	            debitInstructionResponse.setAddtInfo(debitTransferRequest.getPaymentInfo());
-	            debitInstructionResponse.setResponseTime(strDate);
-	            
-	            debitInstructionResponsePojo.setDebitInstructionResponse(debitInstructionResponse);
+    			
+    			BigDecimal bgAmount = new BigDecimal(debitTransferRequest.getAmount());
+    			BigDecimal sisaSaldo = account.getSaldo().subtract(bgAmount); 
+    			
+    			if (sisaSaldo.compareTo(BigDecimal.ZERO) > 0) {
+    				if(debitInstructionRequest.getDebitInstructionRequest().getRequestTime() != null) {
+    	        		Date requestTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").parse(debitInstructionRequest.getDebitInstructionRequest().getRequestTime());
+    	        		debitTransferRequest.setRequestTime(requestTime);
+    	        	}
+    	        	
+    	        	debitTransferRequest =  debitTransferRequestService.save(debitTransferRequest);
+    	            
+    	            if (debitTransferRequest.getId() == null) {
+    	            	throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found");
+    	            }
+    	            
+    	            account.setSaldo(sisaSaldo);
+    	            accountService.save(account);
+    	            
+    	            DebitInstructionResponse debitInstructionResponse =  new DebitInstructionResponse();
+    	            debitInstructionResponse.setTransactionId(debitTransferRequest.getTransactionId());
+    	            debitInstructionResponse.setStatus("SUCCESS");
+    	            debitInstructionResponse.setAccountNumber(debitTransferRequest.getAccountNumber());
+    	            debitInstructionResponse.setAmount(debitTransferRequest.getAmount());
+    	            debitInstructionResponse.setAddtInfo(debitTransferRequest.getPaymentInfo());
+    	            debitInstructionResponse.setResponseTime(strDate);
+    	            
+    	            debitInstructionResponsePojo.setDebitInstructionResponse(debitInstructionResponse);
+    			}else {
+    				
+    				DebitInstructionResponse debitInstructionResponse =  new DebitInstructionResponse();
+                    debitInstructionResponse.setTransactionId(debitTransferRequest.getTransactionId());
+                    debitInstructionResponse.setStatus("FAILED");
+                    debitInstructionResponse.setReason("Saldo Tidak Mencukupi");
+                    debitInstructionResponse.setAccountNumber(debitTransferRequest.getAccountNumber());
+                    debitInstructionResponse.setAmount(debitTransferRequest.getAmount());
+                    debitInstructionResponse.setAddtInfo(debitTransferRequest.getPaymentInfo());
+                    debitInstructionResponse.setResponseTime(strDate);
+                    
+                    debitInstructionResponsePojo.setDebitInstructionResponse(debitInstructionResponse);
+    			}
+    			
+    			
     		}else {
     			 DebitInstructionResponse debitInstructionResponse =  new DebitInstructionResponse();
                  debitInstructionResponse.setTransactionId(debitTransferRequest.getTransactionId());

@@ -24,6 +24,7 @@ import bifast.corebank.pojo.AccountEnquiryResponse;
 import bifast.corebank.service.AccountService;
 import bifast.corebank.service.CreditTransferRequestService;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,6 +78,12 @@ public class CreditTransferRequestController {
 	        	
 	        	creditTransferRequest =  creditTransferRequestService.save(creditTransferRequest);
 	            
+	        	BigDecimal bgAmount = new BigDecimal(creditInstructionRequest.getCreditInstructionRequest().getAmount());
+	        	BigDecimal sisaSaldo = account.getSaldo().add(bgAmount); 
+	        	
+	        	account.setSaldo(sisaSaldo);
+ 	            accountService.save(account);
+	        	
 	            if (creditTransferRequest.getId() == null) {
 	            	throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found");
 	            }
