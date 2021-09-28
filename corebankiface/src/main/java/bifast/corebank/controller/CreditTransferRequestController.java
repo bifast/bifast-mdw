@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import bifast.corebank.exception.DataNotFoundException;
-import bifast.corebank.model.CbAccount;
+import bifast.corebank.model.Account;
 
 import bifast.corebank.model.CreditTransferRequest;
 import bifast.corebank.pojo.AccountEnquiryRequestPojo;
@@ -24,6 +24,7 @@ import bifast.corebank.pojo.AccountEnquiryResponse;
 import bifast.corebank.service.AccountService;
 import bifast.corebank.service.CreditTransferRequestService;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class CreditTransferRequestController {
     	
     	CreditTransferRequest creditTransferRequest = new CreditTransferRequest();
     	
-    	CbAccount account =  new CbAccount();
+    	Account account =  new Account();
     	account = accountService.getAccountByAccountNumber(creditInstructionRequest.getCreditInstructionRequest().getAccountNumber());
         
         CreditInstructionResponsePojo  creditInstructionResponsePojo = new CreditInstructionResponsePojo();   
@@ -66,7 +67,7 @@ public class CreditTransferRequestController {
     	DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
     	String strDate = dateFormat.format(date);
     	
-        if(account != null) {
+    	 if (!(null == account)) {
         	if(!account.getCreditorStatus().equals("HOLD") ) {
 	        	creditTransferRequest.setTransactionId(creditInstructionRequest.getCreditInstructionRequest().getTransactionId());
 	        	creditTransferRequest.setAccountNumber(creditInstructionRequest.getCreditInstructionRequest().getAccountNumber());
@@ -77,6 +78,12 @@ public class CreditTransferRequestController {
 	        	
 	        	creditTransferRequest =  creditTransferRequestService.save(creditTransferRequest);
 	            
+	        	BigDecimal bgAmount = new BigDecimal(creditInstructionRequest.getCreditInstructionRequest().getAmount());
+	        	BigDecimal sisaSaldo = account.getSaldo().add(bgAmount); 
+	        	
+	        	account.setSaldo(sisaSaldo);
+ 	            accountService.save(account);
+	        	
 	            if (creditTransferRequest.getId() == null) {
 	            	throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found");
 	            }

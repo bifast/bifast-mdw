@@ -3,6 +3,7 @@ package bifast.corebank.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,18 +16,25 @@ public class DebitTransferRequest {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
+	@Column(name = "transaction_id")
 	private String transactionId;
 	
+	@Column(name = "account_number")
 	private String accountNumber;
 	
+	@Column(name = "account_type")
 	private String accountType;
 	
+	@Column(name = "amount")
 	private String amount;
 	
+	@Column(name = "debitor_name")
 	private String debitorName;
 	
+	@Column(name = "payment_info")
 	private String paymentInfo;
 	
+	@Column(name = "request_time")
 	private Date requestTime;
 
 	public Long getId() {

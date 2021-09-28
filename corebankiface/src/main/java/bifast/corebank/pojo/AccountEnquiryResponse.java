@@ -8,13 +8,14 @@ public class AccountEnquiryResponse {
 	private String transactionId;
 	private String creditorStatus;  // ACTIVE, INACTIVE, PENDING
 	private String accountNumber;
+	private String additionalInfo;
 	private String accountType;
 	private String creditorName;
 	private String creditorId;
 	private String creditorType;
 	private String residentStatus;
 	private String townName;
-	private String additionalInfo;
+	
 	
 	
 	public AccountEnquiryResponse () {}

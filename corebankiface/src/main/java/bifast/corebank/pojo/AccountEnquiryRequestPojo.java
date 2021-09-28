@@ -1,8 +1,12 @@
 package bifast.corebank.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class AccountEnquiryRequestPojo {
 	
 	private String test;
+	
+	@JsonProperty("AccountEnquiryRequest")
 	private AccountEnquiryRequest accountEnquiryRequest;
 	
 	public AccountEnquiryRequestPojo () {}

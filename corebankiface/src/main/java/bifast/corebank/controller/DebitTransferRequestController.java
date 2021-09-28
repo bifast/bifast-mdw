@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import bifast.corebank.exception.DataNotFoundException;
-import bifast.corebank.model.CbAccount;
+import bifast.corebank.model.Account;
 
 import bifast.corebank.model.DebitTransferRequest;
 import bifast.corebank.pojo.AccountEnquiryRequestPojo;
@@ -23,6 +23,7 @@ import bifast.corebank.pojo.AccountEnquiryResponse;
 import bifast.corebank.service.AccountService;
 import bifast.corebank.service.DebitTransferRequestService;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,7 +56,7 @@ public class DebitTransferRequestController {
     @PostMapping("/DebitInstructionRequest")
     public DebitInstructionResponsePojo DebitInstructionRequest(@RequestBody DebitInstructionRequestPojo debitInstructionRequest) throws ParseException{
     	
-    	CbAccount account =  new CbAccount();
+    	Account account =  new Account();
     	account = accountService.getAccountByAccountNumber(debitInstructionRequest.getDebitInstructionRequest().getAccountNumber());
     	Date date = Calendar.getInstance().getTime();  
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
@@ -70,28 +71,51 @@ public class DebitTransferRequestController {
     	debitTransferRequest.setDebitorName(debitInstructionRequest.getDebitInstructionRequest().getDebitorName());
     	debitTransferRequest.setPaymentInfo(debitInstructionRequest.getDebitInstructionRequest().getPaymentInfo());
         
-    	if(account != null) {
+    	 if (!(null == account)) {
     		if(!account.getCreditorStatus().equals("HOLD") ) {
-    			if(debitInstructionRequest.getDebitInstructionRequest().getRequestTime() != null) {
-	        		Date requestTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").parse(debitInstructionRequest.getDebitInstructionRequest().getRequestTime());
-	        		debitTransferRequest.setRequestTime(requestTime);
-	        	}
-	        	
-	        	debitTransferRequest =  debitTransferRequestService.save(debitTransferRequest);
-	            
-	            if (debitTransferRequest.getId() == null) {
-	            	throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found");
-	            }
-	            
-	            DebitInstructionResponse debitInstructionResponse =  new DebitInstructionResponse();
-	            debitInstructionResponse.setTransactionId(debitTransferRequest.getTransactionId());
-	            debitInstructionResponse.setStatus("SUCCESS");
-	            debitInstructionResponse.setAccountNumber(debitTransferRequest.getAccountNumber());
-	            debitInstructionResponse.setAmount(debitTransferRequest.getAmount());
-	            debitInstructionResponse.setAddtInfo(debitTransferRequest.getPaymentInfo());
-	            debitInstructionResponse.setResponseTime(strDate);
-	            
-	            debitInstructionResponsePojo.setDebitInstructionResponse(debitInstructionResponse);
+    			
+    			BigDecimal bgAmount = new BigDecimal(debitTransferRequest.getAmount());
+    			BigDecimal sisaSaldo = account.getSaldo().subtract(bgAmount); 
+    			
+    			if (sisaSaldo.compareTo(BigDecimal.ZERO) > 0) {
+    				if(debitInstructionRequest.getDebitInstructionRequest().getRequestTime() != null) {
+    	        		Date requestTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").parse(debitInstructionRequest.getDebitInstructionRequest().getRequestTime());
+    	        		debitTransferRequest.setRequestTime(requestTime);
+    	        	}
+    	        	
+    	        	debitTransferRequest =  debitTransferRequestService.save(debitTransferRequest);
+    	            
+    	            if (debitTransferRequest.getId() == null) {
+    	            	throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Not Found");
+    	            }
+    	            
+    	            account.setSaldo(sisaSaldo);
+    	            accountService.save(account);
+    	            
+    	            DebitInstructionResponse debitInstructionResponse =  new DebitInstructionResponse();
+    	            debitInstructionResponse.setTransactionId(debitTransferRequest.getTransactionId());
+    	            debitInstructionResponse.setStatus("SUCCESS");
+    	            debitInstructionResponse.setAccountNumber(debitTransferRequest.getAccountNumber());
+    	            debitInstructionResponse.setAmount(debitTransferRequest.getAmount());
+    	            debitInstructionResponse.setAddtInfo(debitTransferRequest.getPaymentInfo());
+    	            debitInstructionResponse.setResponseTime(strDate);
+    	            
+    	            debitInstructionResponsePojo.setDebitInstructionResponse(debitInstructionResponse);
+    			}else {
+    				
+    				DebitInstructionResponse debitInstructionResponse =  new DebitInstructionResponse();
+                    debitInstructionResponse.setTransactionId(debitTransferRequest.getTransactionId());
+                    debitInstructionResponse.setStatus("FAILED");
+                    debitInstructionResponse.setReason("Saldo Tidak Mencukupi");
+                    debitInstructionResponse.setAccountNumber(debitTransferRequest.getAccountNumber());
+                    debitInstructionResponse.setAmount(debitTransferRequest.getAmount());
+                    debitInstructionResponse.setAddtInfo(debitTransferRequest.getPaymentInfo());
+                    debitInstructionResponse.setResponseTime(strDate);
+                    
+                    debitInstructionResponsePojo.setDebitInstructionResponse(debitInstructionResponse);
+    			}
+    			
+    			
     		}else {
     			 DebitInstructionResponse debitInstructionResponse =  new DebitInstructionResponse();
                  debitInstructionResponse.setTransactionId(debitTransferRequest.getTransactionId());
