@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.outbound.model.ProxyMessage;
-import bifast.outbound.processor.UtilService;
 import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.repository.ProxyMessageRepository;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class StoreProxyRegistrationProcessor implements Processor{

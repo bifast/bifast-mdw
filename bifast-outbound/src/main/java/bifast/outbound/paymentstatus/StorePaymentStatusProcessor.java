@@ -1,7 +1,5 @@
 package bifast.outbound.paymentstatus;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.camel.Exchange;
@@ -12,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.model.PaymentStatus;
-import bifast.outbound.processor.UtilService;
 import bifast.outbound.repository.PaymentStatusRepository;
+import bifast.outbound.service.UtilService;
 
 @Component 
 public class StorePaymentStatusProcessor implements Processor{
@@ -52,16 +50,9 @@ public class StorePaymentStatusProcessor implements Processor{
 		if (!(null==encrResponseMesg))
 			ps.setResponseFullMessage(encrResponseMesg);
 
-//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-//		String strPSRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-//		String strPSResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-//		LocalDateTime psRequestTime = LocalDateTime.parse(strPSRequestTime, dtf);
-//		LocalDateTime psResponseTime = LocalDateTime.parse(strPSResponseTime, dtf);
-//		ps.setRequestDt(psRequestTime);
-//		ps.setResponseDt(psResponseTime);
 
 		ps.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-		ps.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
+//		ps.setResponseDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
 		ps.setCihubElapsedTime(routeElapsed);
 
 		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);

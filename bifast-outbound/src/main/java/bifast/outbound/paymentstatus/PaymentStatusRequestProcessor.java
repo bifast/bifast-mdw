@@ -11,7 +11,7 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs028MessageService;
 import bifast.library.iso20022.service.Pacs028Seed;
-import bifast.outbound.processor.UtilService;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class PaymentStatusRequestProcessor implements Processor {

@@ -19,8 +19,8 @@ import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FlatResponseProcessor;
 import bifast.outbound.report.InitSettlementRequestProcessor;
-import bifast.outbound.report.RequestPojo;
-import bifast.outbound.report.ResponsePojo;
+import bifast.outbound.report.pojo.RequestPojo;
+import bifast.outbound.report.pojo.ResponsePojo;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;

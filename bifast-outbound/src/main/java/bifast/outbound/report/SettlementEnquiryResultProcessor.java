@@ -5,6 +5,7 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.report.pojo.ResponsePojo;
 
 @Component
 public class SettlementEnquiryResultProcessor implements Processor {

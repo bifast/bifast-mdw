@@ -13,7 +13,7 @@ import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.config.Config;
-import bifast.outbound.processor.UtilService;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class AccountEnquiryRequestProcessor implements Processor {

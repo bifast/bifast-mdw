@@ -1,7 +1,5 @@
 package bifast.outbound.route;
 
-import java.net.SocketTimeoutException;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
@@ -9,15 +7,9 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
-import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.pojo.ChannelRequestWrapper;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
-import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultResponseProcessor;
 import bifast.outbound.processor.SaveTableChannelProcessor;
 import bifast.outbound.processor.ValidateAndTransformProcessor;
@@ -33,23 +25,14 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	private ValidateAndTransformProcessor validateInputProcessor;
 	@Autowired
 	private SaveTableChannelProcessor saveChannelRequestProcessor;
-	@Autowired
-	private EnrichmentAggregator enrichmentAggregator;
 
 
-	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
 	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(ChannelRequestWrapper.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 	@Override
 	public void configure() throws Exception {
 
-		businessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		businessMessageJDF.setInclude("NON_NULL");
-		businessMessageJDF.setInclude("NON_EMPTY");
-		businessMessageJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		businessMessageJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-		
 		chnlRequestJDF.setInclude("NON_NULL");
 		chnlRequestJDF.setInclude("NON_EMPTY");
 		chnlResponseJDF.setInclude("NON_NULL");
@@ -165,59 +148,6 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		;
 		
 
-		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
-//		from("direct:call-cihub").routeId("komi.call-cihub")
-//			.marshal(businessMessageJDF)
-//			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] Post CI-HUB request: ${body}")
-//	
-//			.setHeader("tmp_body", simple("${body}"))
-//			.marshal().zipDeflater()
-//			.marshal().base64()
-//			.setHeader("hdr_encr_request", simple("${body}"))
-//			.setBody(simple("${header.tmp_body}"))
-//			
-//			.setHeader("hdr_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//	
-//			.doTry()
-//				.setHeader("HttpMethod", constant("POST"))
-//				.enrich("http:{{komi.ciconnector-url}}?"
-//						+ "socketTimeout={{komi.timeout}}&" 
-//						+ "bridgeEndpoint=true",
-//						enrichmentAggregator)
-//				.convertBodyTo(String.class)				
-//				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] CI-HUB response: ${body}")
-//	
-//				.setHeader("tmp_body", simple("${body}"))
-//				.marshal().zipDeflater()
-//				.marshal().base64()
-//				.setHeader("hdr_encr_response", simple("${body}"))
-//				.setBody(simple("${header.tmp_body}"))
-//	
-//				.unmarshal(businessMessageJDF)
-//				.setHeader("hdr_error_status", constant(null))
-//	
-//			.doCatch(SocketTimeoutException.class)
-//				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Timeout")
-//				.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
-//				.setHeader("hdr_error_mesg", constant("Timeout menunggu response dari CIHUB"))
-//		    	.setBody(constant(null))
-//	
-//	    	.doCatch(Exception.class)
-//				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Error.")
-//		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-//				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
-//				.setHeader("hdr_error_mesg", simple("${exception.message}"))
-//		    	.setBody(constant(null))
-//	
-//			.endDoTry()
-//			.end()
-//	
-//			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-//			
-//			.removeHeaders("tmp_*")
-//		;
-
-	
 	}
 
 }

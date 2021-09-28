@@ -4,62 +4,65 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FlatMessageWrapper {
 
-	@JsonProperty("Pacs002")
-	private FlatPacs002Pojo flatPacs002;
+	@JsonProperty("AccountEnquiryRequest")
+	private FlatPacs008Pojo accountEnquiryRequest;
 
-	@JsonProperty("Admi002")
-	private FlatAdmi002Pojo flatAdmi002;
+	@JsonProperty("AccountEnquiryResponse")
+	private FlatPacs002Pojo accountEnquiryResponse;
 
-	@JsonProperty("Prxy004")
-	private FlatPrxy004Pojo flatPrxy004;
+	@JsonProperty("CreditTransferRequest")
+	private FlatPacs008Pojo creditTransferRequest;
 
-	@JsonProperty("Prxy006")
-	private FlatPrxy006Pojo flatPrxy006;
+	@JsonProperty("CreditTransferResponse")
+	private FlatPacs002Pojo creditTransferResponse;
 
-	@JsonProperty("Pacs008")
-	private FlatPacs008Pojo flatPacs008;
+//	@JsonProperty("FICreditTransferRequest")
+//	private FlatPacs009Pojo fiCreditTransferRequest;
+
+	@JsonProperty("FICreditTransferResponse")
+	private FlatPacs002Pojo fiCreditTransferResponse;
 
 	@JsonProperty("FailureResponse")
 	private ChnlFailureResponsePojo faultResponse;
 
-	public FlatPacs002Pojo getFlatPacs002() {
-		return flatPacs002;
+	public FlatPacs008Pojo getAccountEnquiryRequest() {
+		return accountEnquiryRequest;
 	}
 
-	public void setFlatPacs002(FlatPacs002Pojo flatPacs002) {
-		this.flatPacs002 = flatPacs002;
+	public void setAccountEnquiryRequest(FlatPacs008Pojo accountEnquiryRequest) {
+		this.accountEnquiryRequest = accountEnquiryRequest;
 	}
 
-	public FlatAdmi002Pojo getFlatAdmi002() {
-		return flatAdmi002;
+	public FlatPacs002Pojo getAccountEnquiryResponse() {
+		return accountEnquiryResponse;
 	}
 
-	public void setFlatAdmi002(FlatAdmi002Pojo flatAdmi002) {
-		this.flatAdmi002 = flatAdmi002;
+	public void setAccountEnquiryResponse(FlatPacs002Pojo accountEnquiryResponse) {
+		this.accountEnquiryResponse = accountEnquiryResponse;
 	}
 
-	public FlatPrxy004Pojo getFlatPrxy004() {
-		return flatPrxy004;
+	public FlatPacs008Pojo getCreditTransferRequest() {
+		return creditTransferRequest;
 	}
 
-	public void setFlatPrxy004(FlatPrxy004Pojo flatPrxy004) {
-		this.flatPrxy004 = flatPrxy004;
+	public void setCreditTransferRequest(FlatPacs008Pojo creditTransferRequest) {
+		this.creditTransferRequest = creditTransferRequest;
 	}
 
-	public FlatPrxy006Pojo getFlatPrxy006() {
-		return flatPrxy006;
+	public FlatPacs002Pojo getCreditTransferResponse() {
+		return creditTransferResponse;
 	}
 
-	public void setFlatPrxy006(FlatPrxy006Pojo flatPrxy006) {
-		this.flatPrxy006 = flatPrxy006;
+	public void setCreditTransferResponse(FlatPacs002Pojo creditTransferResponse) {
+		this.creditTransferResponse = creditTransferResponse;
 	}
 
-	public FlatPacs008Pojo getFlatPacs008() {
-		return flatPacs008;
+	public FlatPacs002Pojo getFiCreditTransferResponse() {
+		return fiCreditTransferResponse;
 	}
 
-	public void setFlatPacs008(FlatPacs008Pojo flatPacs008) {
-		this.flatPacs008 = flatPacs008;
+	public void setFiCreditTransferResponse(FlatPacs002Pojo fiCreditTransferResponse) {
+		this.fiCreditTransferResponse = fiCreditTransferResponse;
 	}
 
 	public ChnlFailureResponsePojo getFaultResponse() {
@@ -70,6 +73,7 @@ public class FlatMessageWrapper {
 		this.faultResponse = faultResponse;
 	}
 
-	
+
+
 	
 }

@@ -13,7 +13,7 @@ import bifast.library.iso20022.service.Pacs009MessageService;
 import bifast.library.iso20022.service.Pacs009Seed;
 import bifast.outbound.config.Config;
 import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
-import bifast.outbound.processor.UtilService;
+import bifast.outbound.service.UtilService;
 
 @Component
 //@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )

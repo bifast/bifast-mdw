@@ -1,4 +1,4 @@
-package bifast.outbound.report;
+package bifast.outbound.report.pojo;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 

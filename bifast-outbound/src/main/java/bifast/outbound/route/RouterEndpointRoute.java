@@ -1,7 +1,5 @@
 package bifast.outbound.route;
 
-import java.net.SocketTimeoutException;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
@@ -18,10 +16,8 @@ import bifast.outbound.pojo.ChannelRequestWrapper;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.FlatMessageWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
-import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultResponseProcessor;
 import bifast.outbound.processor.SaveTableChannelProcessor;
-import bifast.outbound.processor.ValidateAndTransformProcessor;
 import bifast.outbound.processor.ValidateProcessor;
 
 @Component
@@ -35,8 +31,6 @@ public class RouterEndpointRoute extends RouteBuilder {
 	private ValidateProcessor validateInputProcessor;
 	@Autowired
 	private SaveTableChannelProcessor saveChannelRequestProcessor;
-	@Autowired
-	private EnrichmentAggregator enrichmentAggregator;
 
 
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
@@ -60,7 +54,7 @@ public class RouterEndpointRoute extends RouteBuilder {
 
 		flatResponseJDF.setInclude("NON_NULL");
 		flatResponseJDF.setInclude("NON_EMPTY");
-		flatResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+//		flatResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
         onException(Exception.class).routeId("Generic Exception Handler")
         	.log(LoggingLevel.ERROR, "Fault di EndpointRoute, ${header.hdr_errorlocation}")

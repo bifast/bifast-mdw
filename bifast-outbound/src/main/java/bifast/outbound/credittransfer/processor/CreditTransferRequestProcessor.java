@@ -13,7 +13,7 @@ import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.outbound.config.Config;
 import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
-import bifast.outbound.processor.UtilService;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class CreditTransferRequestProcessor implements Processor {

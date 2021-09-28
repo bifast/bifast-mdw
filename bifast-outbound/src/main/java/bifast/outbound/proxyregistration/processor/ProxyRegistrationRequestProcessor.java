@@ -13,8 +13,8 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Proxy001MessageService;
 import bifast.library.iso20022.service.Proxy001Seed;
 import bifast.outbound.config.Config;
-import bifast.outbound.processor.UtilService;
 import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
+import bifast.outbound.service.UtilService;
 
 @Component
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )

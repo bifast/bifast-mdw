@@ -12,8 +12,6 @@ import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
 public class SimpleRoute extends RouteBuilder {
 
 	@Autowired
-	private StorePaymentStatusProcessor savePSTableProcessor;
-	@Autowired
 	private PaymentStatusRequestProcessor paymentStatusRequestProcessor;
 	@Autowired
 	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
@@ -31,7 +29,6 @@ public class SimpleRoute extends RouteBuilder {
 	
 			.to("direct:call-cihub")
 				
-//			.process(savePSTableProcessor)
 			.process(paymentStatusResponseProcessor)
 
 			.removeHeaders("ps*")
@@ -46,7 +43,6 @@ public class SimpleRoute extends RouteBuilder {
 	
 			.to("direct:call-cihub")
 				
-//			.process(savePSTableProcessor)
 
 			.removeHeaders("ps*")
 		;

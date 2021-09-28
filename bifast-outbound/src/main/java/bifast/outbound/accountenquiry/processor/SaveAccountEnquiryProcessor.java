@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.model.AccountEnquiry;
-import bifast.outbound.processor.UtilService;
 import bifast.outbound.repository.AccountEnquiryRepository;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class SaveAccountEnquiryProcessor implements Processor {

@@ -14,8 +14,8 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs009.CreditTransferTransaction44;
 import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 import bifast.outbound.model.FICreditTransfer;
-import bifast.outbound.processor.UtilService;
 import bifast.outbound.repository.FICreditTransferRepository;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class SaveFICreditTransferProcessor implements Processor {

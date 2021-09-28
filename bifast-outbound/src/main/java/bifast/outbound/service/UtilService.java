@@ -1,11 +1,10 @@
-package bifast.outbound.processor;
+package bifast.outbound.service;
 
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,4 +124,55 @@ public class UtilService {
 	}
 
 
+	public String getMsgType (String bizDefIdr, String bizMsgIdr) {
+		
+		String msgType = "";
+		String code = bizMsgIdr.substring(16,19);
+		
+		if (bizDefIdr.startsWith("pacs.002")) {
+		
+			if (code.equals("010"))
+				msgType = "CreditTransferResponse";
+			
+			if (code.equals("019"))
+				msgType = "FICreditTransferResponse";
+
+			if (code.equals("510"))
+				msgType = "AccountEnquiryResponse";
+			
+		}
+			
+		else if (bizDefIdr.startsWith("pacs.008")) {
+
+			if (code.equals("510"))
+				msgType = "AccountEnquiryRequest";
+			
+			if (code.equals("010"))
+				msgType = "CreditTransferRequest";
+
+		}
+			
+		else if (bizDefIdr.startsWith("pacs.009"))   // FI request
+			msgType = "FICreditTransferRequest";
+
+		else if (bizDefIdr.startsWith("pacs.028"))   
+			msgType = "PaymentStatusRequest";
+
+		else if (bizDefIdr.startsWith("prxy.001"))   
+			msgType = "ProxyRegistrationRequest";
+		
+		else if (bizDefIdr.startsWith("prxy.002"))   
+			msgType = "ProxyRegistrationResponse";
+
+		else if (bizDefIdr.startsWith("prxy.003"))   
+			msgType = "ProxyResolutionRequest";
+		
+		else if (bizDefIdr.startsWith("prxy.004"))   
+			msgType = "ProxyResolutionResponse";
+
+		else if (bizDefIdr.startsWith("admi.002"))   
+			msgType = "MessageRejectResponse";
+
+		return msgType;
+	}
 }

@@ -1,4 +1,6 @@
-package bifast.outbound.processor;
+package bifast.outbound.service;
+
+import java.text.DecimalFormat;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -9,6 +11,7 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.GroupHeader91;
 import bifast.library.iso20022.pacs002.OriginalGroupHeader17;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
+import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.pojo.FlatAdmi002Pojo;
 import bifast.outbound.pojo.FlatPacs002Pojo;
 import bifast.outbound.pojo.FlatPacs008Pojo;
@@ -190,8 +193,126 @@ public class FlattenIsoMessageService {
 		
 		FlatPacs008Pojo flatMsg = new FlatPacs008Pojo();
 
+		BusinessApplicationHeaderV01 hdr = busMsg.getAppHdr();
 		
+		flatMsg.setFrBic(hdr.getFr().getFIId().getFinInstnId().getOthr().getId());
 		
+		flatMsg.setToBic(hdr.getTo().getFIId().getFinInstnId().getOthr().getId());
+			
+		flatMsg.setBizMsgIdr(hdr.getBizMsgIdr());
+		
+		flatMsg.setMsgDefIdr(hdr.getMsgDefIdr());
+
+		if (!(null == hdr.getBizSvc()))
+			flatMsg.setBizSvc(hdr.getBizSvc());
+		
+		flatMsg.setCreDt(strTgl(hdr.getCreDt()));
+
+		if (!(null == hdr.getCpyDplct()))
+			flatMsg.setCpyDplct(hdr.getCpyDplct().value());
+
+		if (!(null == hdr.isPssblDplct()))
+			flatMsg.setPssblDplct(hdr.isPssblDplct());
+		
+		FIToFICustomerCreditTransferV08 ct = busMsg.getDocument().getFiToFICstmrCdtTrf();
+		
+		flatMsg.setMsgId(ct.getGrpHdr().getMsgId()); 
+		
+		flatMsg.setCreDtTm(strTgl(ct.getGrpHdr().getCreDtTm()));
+		
+		flatMsg.setSettlementMtd(ct.getGrpHdr().getSttlmInf().getSttlmMtd().value());
+
+		flatMsg.setEndToEndId(ct.getCdtTrfTxInf().get(0).getPmtId().getEndToEndId());
+		
+		if (!(null == ct.getCdtTrfTxInf().get(0).getPmtId().getTxId()))
+			flatMsg.setTransactionId(ct.getCdtTrfTxInf().get(0).getPmtId().getTxId());
+		
+		if (!(null == ct.getCdtTrfTxInf().get(0).getPmtTpInf())) {
+			
+			if (!(null == ct.getCdtTrfTxInf().get(0).getPmtTpInf().getLclInstrm()))
+				flatMsg.setPaymentChannel(ct.getCdtTrfTxInf().get(0).getPmtTpInf().getLclInstrm().getPrtry());
+		
+			if (!(null == ct.getCdtTrfTxInf().get(0).getPmtTpInf().getCtgyPurp()))
+				flatMsg.setCategoryPurpose(ct.getCdtTrfTxInf().get(0).getPmtTpInf().getCtgyPurp().getPrtry());
+		}
+			
+		DecimalFormat df = new DecimalFormat("#############.00");
+		flatMsg.setAmount(df.format(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue()));	
+			
+		flatMsg.setCurrency(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getCcy());
+		
+		flatMsg.setChargeBearer(ct.getCdtTrfTxInf().get(0).getChrgBr().value());
+		
+		if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr())) {
+			
+			if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr().getNm())) 
+				flatMsg.setDebtorName(ct.getCdtTrfTxInf().get(0).getDbtr().getNm());
+
+			if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr().getId())) {
+
+				if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId()))
+					flatMsg.setDebtorOrgId(ct.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());
+	
+				if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId()))
+					flatMsg.setDebtorPrvId(ct.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
+
+			}
+		}
+
+		if (!(null == ct.getCdtTrfTxInf().get(0).getDbtrAcct())) {
+			flatMsg.setDebtorAccountNo(ct.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
+
+			if (!(null == ct.getCdtTrfTxInf().get(0).getDbtrAcct().getTp()))
+				flatMsg.setDebtorAccountType(ct.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
+		}
+		
+		flatMsg.setDebtorAgentId(ct.getCdtTrfTxInf().get(0).getDbtrAgt().getFinInstnId().getOthr().getId());
+		flatMsg.setCreditorAgentId(ct.getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getOthr().getId());
+
+		if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr())) {
+			
+			if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr().getNm())) 
+				flatMsg.setCreditorName(ct.getCdtTrfTxInf().get(0).getCdtr().getNm());
+
+			if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr().getId())) {
+
+				if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId()))
+					flatMsg.setCreditorOrgId(ct.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
+	
+				if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId()))
+					flatMsg.setCreditorPrvId(ct.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+
+			}
+		}
+
+		if (!(null == ct.getCdtTrfTxInf().get(0).getCdtrAcct())) {
+			flatMsg.setCreditorAccountNo(ct.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
+
+			if (!(null == ct.getCdtTrfTxInf().get(0).getCdtrAcct().getTp()))
+				flatMsg.setCreditorAccountType(ct.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
+		}
+
+		if (!(null == ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy())) {
+			flatMsg.setCreditorAccountProxyType(ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy().getTp().getPrtry());
+			flatMsg.setCreditorAccountProxyType(ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy().getId());
+		}
+
+		if (!(null == ct.getCdtTrfTxInf().get(0).getRmtInf())) {
+			flatMsg.setPaymentInfo(ct.getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0));
+		}
+
+		if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData())) {
+			
+		}
+
+//		private String debtorType;
+//		private String debtorResidentialStatus;
+//		private String debtorTownName;
+//		
+//		private String creditorType;
+//		private String creditorResidentialStatus;
+//		private String creditorTownName;
+
 		return flatMsg;
 	}
 

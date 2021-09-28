@@ -1,5 +1,7 @@
 package bifast.outbound.report;
 
+import bifast.outbound.report.pojo.RequestPojo;
+
 public class NotFoundResponsePojo {
 
 	private String msgType;

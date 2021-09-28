@@ -13,8 +13,8 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Proxy003MessageService;
 import bifast.library.iso20022.service.Proxy003Seed;
 import bifast.outbound.config.Config;
-import bifast.outbound.processor.UtilService;
 import bifast.outbound.proxyregistration.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class ProxyResolutionRequestProcessor implements Processor {
