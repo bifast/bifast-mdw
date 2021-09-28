@@ -1,2 +1,4 @@
 INSERT INTO cb_account VALUES (1, '7723004444', 'CACC', 'Satu dua tiga', 200000.00, '7723004444', 'CACC', '123455555', 'ANDI ANDI', 'Resident', 'ACCEPTED', 'Jakarta', 'Private', '040502345', 100000.00);
 INSERT INTO cb_account VALUES (2, '7723002222', 'CACC', 'Satu dua tiga', 200000.00, '7723002222', 'CACC', '123455555', 'Diana', 'Resident', 'HOLD', 'Jakarta', 'Private', '023232323',500000.00);
+INSERT INTO cb_users (id,username,password,role) VALUES (1,'user','$2a$10$5e3dB36HeRcozRgp8xQfw.tfD3Qsut8xu/NT9g/DSpVKg9Kzuitrq','USER');
+INSERT INTO cb_users (id,username,password,role) VALUES (2,'admin','$2a$10$5e3dB36HeRcozRgp8xQfw.tfD3Qsut8xu/NT9g/DSpVKg9Kzuitrq','ADMIN');
