@@ -4,7 +4,7 @@ services:
     komidb:
       container_name: komidb
       image: postgres:12.7
-      image: fransmzh/komi-db:1.4
+      image: fransmzh/komi-db:1.5
       restart: always
       environment:
         - POSTGRES_USER=postgres

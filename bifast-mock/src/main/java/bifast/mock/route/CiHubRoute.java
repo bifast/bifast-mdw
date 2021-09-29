@@ -110,9 +110,12 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
 					.process(creditTransferResponseProcessor)
 					.setHeader("hdr_ctResponseObj",simple("${body}"))
+					.log("hasil CT1: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 					.marshal(jsonBusinessMessageDataFormat)
+					.log("Hasil proses: ${body}")
 					.process(creditResponseStoreProcessor)
 					.setBody(simple("${header.hdr_ctResponseObj}"))
+					.log("hasil CT2: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 
 					.choice()
 						.when().simple("${header.hdr_account_no} startsWith '8' ")
@@ -120,8 +123,13 @@ public class CiHubRoute extends RouteBuilder {
 						.otherwise()
 							.setHeader("delay", constant(500))
 					.endChoice()
+					.log("hasil CT3: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
+
+					.log("Finish process CT")
+
 					// .setExchangePattern(ExchangePattern.InOnly)
-					// .to("seda:settlement?exchangePattern=InOnly")
+					.to("seda:settlement?exchangePattern=InOnly")
+					// .log("hasil CT4: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 
 				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
 		
@@ -168,20 +176,44 @@ public class CiHubRoute extends RouteBuilder {
 					.log("Other message")
 			.end()
 
-			.log("Delay ${header.delay} seconds..")
+			.log("hasil CT5: ${body.appHdr.bizSvc}")
+			.log("delay ${header.delay}")
 			.delay(simple("${header.delay}"))
-
-//			.log("${header.hdr_ctResponseObj.appHdr.bizSvc}")
-			// .process(rejectMessageProcessor)
-			// .setBody(simple("${header.hdr_ctResponseObj}"))
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
 
 			// .process(proxyResolutionResponseProcessor)
-
+			.log("hasil CT6: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 			.log("Response mock: ${body}")
 			.removeHeader("msgType")
 			.removeHeaders("delay*")
 			.removeHeader("objRequest")
+			.removeHeaders("hdr_*")
+		;
+		
+
+		from("seda:settlement").routeId("Settlement")
+			.log("Response: ${header.hdr_ctRespondStatus}")
+			.log("hasil CT11: ${body.appHdr.bizSvc}")
+
+			.setHeader("delay_sttl", constant(500))
+			// .filter().simple("${header.hdr_account_no} startsWith '88' ")
+			// 	.setHeader("delay_sttl", simple("${random(2000,4000)}"))
+			// .end()
+		
+			.filter().simple("${header.hdr_ctRespondStatus} == 'ACTC'")
+				.log("Akan proses settlement")
+				.marshal(jsonBusinessMessageDataFormat)
+				.process(settlementProcessor)
+				.log("hasil CT12: ${body.appHdr.bizSvc}")
+				.marshal(jsonBusinessMessageDataFormat)
+
+				.log("settlment delay ${header.delay_sttl}")
+				.delay(simple("${header.delay_sttl}"))
+				.to("rest:post:inbound?host={{komi.inbound-url}}&"
+						+ "bridgeEndpoint=true")
+				.log("kirim sttl: ${body}")
+			.end()
+			
 			.removeHeaders("hdr_*")
 		;
 		
@@ -197,38 +229,10 @@ public class CiHubRoute extends RouteBuilder {
 			.process(proxyRegistrationResponseProcessor)
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
 			.log("Response dari mock")
-			.log("${body}")
 
 			.removeHeader("msgType")
 			
 		;
-
-
-		from("seda:settlement").routeId("Settlement")
-			.log("Response: ${header.hdr_ctRespondStatus}")
-
-			.choice()
-			.when().simple("${header.hdr_account_no} startsWith '88' ")
-				.setHeader("delay_sttl", simple("${random(2200,3000)}"))
-				.log("settlment delay ${header.delay_sttl}")
-			.otherwise()
-				.setHeader("delay_sttl", constant(3500))
-			.end()
-
-			.choice()
-				.when().simple("${header.hdr_ctRespondStatus} == 'ACTC'")
-					.log("Akan proses settlement")
-					.marshal(jsonBusinessMessageDataFormat)
-					.process(settlementProcessor)
-					.marshal(jsonBusinessMessageDataFormat)
-					.delay(simple("${header.delay_sttl}"))
-					.to("rest:post:inbound?host={{komi.inbound-url}}&"
-							+ "bridgeEndpoint=true")
-			.end()
-			
-			.removeHeaders("hdr_*")
-		;
-		
 	}
 
 }

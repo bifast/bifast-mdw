@@ -9,31 +9,32 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	private String OrgnlCreDtTm;
 	private String OrgnlEndToEndId;
 	private String OrgnlTxId;
-	private String TxSts;
-	private String RsnInf;
-	private String RsnInfAddtlInf;
-	private String IntrBkSttlmDt;
+	private String txSts;
+	private String rsnInf;
+	private String rsnInfAddtlInf;
+	private String intrBkSttlmDt;
 	
-	private String DbtrNm;
-	private String DbtrAcctId;
-	private String DbtrAcctTp;
-	private String DbtrTp;
-	private String DbtrId;
-	private String DbtrRsdntSts;
-	private String DbtrTwnNm;
+	private String dbtrNm;
+	private String dbtrAcctId;
+	private String dbtrAcctTp;
+	private String dbtrTp;
+	private String dbtrId;
+	private String dbtrRsdntSts;
+	private String dbtrTwnNm;
 
-	private String CdtrNm;
-	private String CdtrAcctId;
-	private String CdtrAcctTp;
-	private String CdtrTp;
-	private String CdtrId;
-	private String CdtrRsdntSts;
-	private String CdtrTwnNm;
+	private String cdtrNm;
+	private String cdtrAcctId;
+	private String cdtrAcctTp;
+	private String cdtrTp;
+	private String cdtrId;
+	private String cdtrRsdntSts;
+	private String cdtrTwnNm;
 
-	private String DbtrAgtFinInstnId;
-	private String DbtrAgtAcctId;
-	private String CdtrAgtFinInstnId;
-	private String CdtrAgtAcctId;
+	private String dbtrAgtFinInstnId;
+	private String dbtrAgtAcctId;
+	private String cdtrAgtFinInstnId;
+	private String cdtrAgtAcctId;
+	
 	public String getMsgId() {
 		return msgId;
 	}
@@ -77,138 +78,137 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 		OrgnlTxId = orgnlTxId;
 	}
 	public String getTxSts() {
-		return TxSts;
+		return txSts;
 	}
 	public void setTxSts(String txSts) {
-		TxSts = txSts;
+		this.txSts = txSts;
 	}
 	public String getRsnInf() {
-		return RsnInf;
+		return rsnInf;
 	}
 	public void setRsnInf(String rsnInf) {
-		RsnInf = rsnInf;
+		this.rsnInf = rsnInf;
 	}
 	public String getRsnInfAddtlInf() {
-		return RsnInfAddtlInf;
+		return rsnInfAddtlInf;
 	}
 	public void setRsnInfAddtlInf(String rsnInfAddtlInf) {
-		RsnInfAddtlInf = rsnInfAddtlInf;
+		this.rsnInfAddtlInf = rsnInfAddtlInf;
 	}
 	public String getIntrBkSttlmDt() {
-		return IntrBkSttlmDt;
+		return intrBkSttlmDt;
 	}
 	public void setIntrBkSttlmDt(String intrBkSttlmDt) {
-		IntrBkSttlmDt = intrBkSttlmDt;
+		this.intrBkSttlmDt = intrBkSttlmDt;
 	}
 	public String getDbtrNm() {
-		return DbtrNm;
+		return dbtrNm;
 	}
 	public void setDbtrNm(String dbtrNm) {
-		DbtrNm = dbtrNm;
+		this.dbtrNm = dbtrNm;
 	}
 	public String getDbtrAcctId() {
-		return DbtrAcctId;
+		return dbtrAcctId;
 	}
 	public void setDbtrAcctId(String dbtrAcctId) {
-		DbtrAcctId = dbtrAcctId;
+		this.dbtrAcctId = dbtrAcctId;
 	}
 	public String getDbtrAcctTp() {
-		return DbtrAcctTp;
+		return dbtrAcctTp;
 	}
 	public void setDbtrAcctTp(String dbtrAcctTp) {
-		DbtrAcctTp = dbtrAcctTp;
+		this.dbtrAcctTp = dbtrAcctTp;
 	}
 	public String getDbtrTp() {
-		return DbtrTp;
+		return dbtrTp;
 	}
 	public void setDbtrTp(String dbtrTp) {
-		DbtrTp = dbtrTp;
+		this.dbtrTp = dbtrTp;
 	}
 	public String getDbtrId() {
-		return DbtrId;
+		return dbtrId;
 	}
 	public void setDbtrId(String dbtrId) {
-		DbtrId = dbtrId;
+		this.dbtrId = dbtrId;
 	}
 	public String getDbtrRsdntSts() {
-		return DbtrRsdntSts;
+		return dbtrRsdntSts;
 	}
 	public void setDbtrRsdntSts(String dbtrRsdntSts) {
-		DbtrRsdntSts = dbtrRsdntSts;
+		this.dbtrRsdntSts = dbtrRsdntSts;
 	}
 	public String getDbtrTwnNm() {
-		return DbtrTwnNm;
+		return dbtrTwnNm;
 	}
 	public void setDbtrTwnNm(String dbtrTwnNm) {
-		DbtrTwnNm = dbtrTwnNm;
+		this.dbtrTwnNm = dbtrTwnNm;
 	}
 	public String getCdtrNm() {
-		return CdtrNm;
+		return cdtrNm;
 	}
 	public void setCdtrNm(String cdtrNm) {
-		CdtrNm = cdtrNm;
+		this.cdtrNm = cdtrNm;
 	}
 	public String getCdtrAcctId() {
-		return CdtrAcctId;
+		return cdtrAcctId;
 	}
 	public void setCdtrAcctId(String cdtrAcctId) {
-		CdtrAcctId = cdtrAcctId;
+		this.cdtrAcctId = cdtrAcctId;
 	}
 	public String getCdtrAcctTp() {
-		return CdtrAcctTp;
+		return cdtrAcctTp;
 	}
 	public void setCdtrAcctTp(String cdtrAcctTp) {
-		CdtrAcctTp = cdtrAcctTp;
+		this.cdtrAcctTp = cdtrAcctTp;
 	}
 	public String getCdtrTp() {
-		return CdtrTp;
+		return cdtrTp;
 	}
 	public void setCdtrTp(String cdtrTp) {
-		CdtrTp = cdtrTp;
+		this.cdtrTp = cdtrTp;
 	}
 	public String getCdtrId() {
-		return CdtrId;
+		return cdtrId;
 	}
 	public void setCdtrId(String cdtrId) {
-		CdtrId = cdtrId;
+		this.cdtrId = cdtrId;
 	}
 	public String getCdtrRsdntSts() {
-		return CdtrRsdntSts;
+		return cdtrRsdntSts;
 	}
 	public void setCdtrRsdntSts(String cdtrRsdntSts) {
-		CdtrRsdntSts = cdtrRsdntSts;
+		this.cdtrRsdntSts = cdtrRsdntSts;
 	}
 	public String getCdtrTwnNm() {
-		return CdtrTwnNm;
+		return cdtrTwnNm;
 	}
 	public void setCdtrTwnNm(String cdtrTwnNm) {
-		CdtrTwnNm = cdtrTwnNm;
+		this.cdtrTwnNm = cdtrTwnNm;
 	}
 	public String getDbtrAgtFinInstnId() {
-		return DbtrAgtFinInstnId;
+		return dbtrAgtFinInstnId;
 	}
 	public void setDbtrAgtFinInstnId(String dbtrAgtFinInstnId) {
-		DbtrAgtFinInstnId = dbtrAgtFinInstnId;
+		this.dbtrAgtFinInstnId = dbtrAgtFinInstnId;
 	}
 	public String getDbtrAgtAcctId() {
-		return DbtrAgtAcctId;
+		return dbtrAgtAcctId;
 	}
 	public void setDbtrAgtAcctId(String dbtrAgtAcctId) {
-		DbtrAgtAcctId = dbtrAgtAcctId;
+		this.dbtrAgtAcctId = dbtrAgtAcctId;
 	}
 	public String getCdtrAgtFinInstnId() {
-		return CdtrAgtFinInstnId;
+		return cdtrAgtFinInstnId;
 	}
 	public void setCdtrAgtFinInstnId(String cdtrAgtFinInstnId) {
-		CdtrAgtFinInstnId = cdtrAgtFinInstnId;
+		this.cdtrAgtFinInstnId = cdtrAgtFinInstnId;
 	}
 	public String getCdtrAgtAcctId() {
-		return CdtrAgtAcctId;
+		return cdtrAgtAcctId;
 	}
 	public void setCdtrAgtAcctId(String cdtrAgtAcctId) {
-		CdtrAgtAcctId = cdtrAgtAcctId;
+		this.cdtrAgtAcctId = cdtrAgtAcctId;
 	}
-	
 	
 	
 

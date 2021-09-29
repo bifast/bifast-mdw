@@ -1,7 +1,5 @@
 package bifast.outbound.ficredittransfer.processor;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.camel.Exchange;
@@ -27,6 +25,7 @@ public class SaveFICreditTransferProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
+		@SuppressWarnings("unchecked")
 		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
 
 		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
@@ -45,19 +44,7 @@ public class SaveFICreditTransferProcessor implements Processor {
 		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
 		if (!(null == chnlTrxId))
 			ct.setChnlTrxId(chnlTrxId);
-
-		
-//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-
-//		String strCihubRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-//		String strCihubResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-//
-//		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCihubRequestTime, dtf);
-//		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCihubResponseTime, dtf);
-//
-//		ct.setCihubRequestDT(cihubRequestTime);
-//		ct.setCihubResponseDT(cihubResponseTime);
-		
+	
 		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
 		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
 		ct.setCihubElapsedTime(routeElapsed);
@@ -77,7 +64,6 @@ public class SaveFICreditTransferProcessor implements Processor {
 		ct.setOriginatingBank(biReqBM.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 		ct.setRequestBizMsgIdr(biReqBM.getAppHdr().getBizMsgIdr());
 		
-//		BusinessMessage biResponseBM = exchange.getMessage().getHeader("fict_objresponsebi", BusinessMessage.class);
 		BusinessMessage biResponseBM = exchange.getMessage().getHeader("hdr_cihub_response", BusinessMessage.class);
 
 		if (!(null== biResponseBM)) {

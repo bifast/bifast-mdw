@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.model.CreditTransfer;
-import bifast.inbound.model.DomainCode;
 import bifast.inbound.repository.CreditTransferRepository;
-import bifast.inbound.repository.DomainCodeRepository;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
@@ -21,8 +19,6 @@ import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 @Component
 public class SaveCreditTransferProcessor implements Processor {
 
-	@Autowired
-	private DomainCodeRepository domainCodeRepo;
 	@Autowired
 	private CreditTransferRepository creditTrnRepo;
 	@Autowired
@@ -39,7 +35,6 @@ public class SaveCreditTransferProcessor implements Processor {
 		BusinessMessage rcvBi = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
 		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
 
-		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 
 		CreditTransfer ct = new CreditTransfer();
 
@@ -59,20 +54,6 @@ public class SaveCreditTransferProcessor implements Processor {
 			ct.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
 			
 		}
-		
-		String trxCode = hdr.getBizMsgIdr().substring(16,19);
-		String msgName = domainCodeRepo.findByGrpAndKey("TRANSACTION.TYPE", trxCode).orElse(new DomainCode()).getValue();
-
-		ct.setMsgType(msgName);
-
-		// simpan data waktu 
-//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-//		String strCihubRequestTime = exchange.getMessage().getHeader("req_cihubRequestTime", String.class);
-//		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCihubRequestTime, dtf);
-//		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-//		String strCihubResponseTime = exchange.getMessage().getHeader("req_cihubResponseTime", String.class);
-//		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCihubResponseTime, dtf);
-//		ct.setCihubResponseDT(cihubResponseTime);
 		
 		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
 		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
@@ -137,7 +118,9 @@ public class SaveCreditTransferProcessor implements Processor {
 			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
 		else
 			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());
-		
+
+		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
+
 		if (msgType.equals("010"))
 			ct.setMsgType("Credit Transfer");
 		else

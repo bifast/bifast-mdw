@@ -39,7 +39,7 @@ public class AccountEnquiryController {
     @Autowired
     AccountService accountService;
     
-    @GetMapping("/accountenquiry")
+    @PostMapping("/accountenquiry")
     public AccountEnquiryResponsePojo getListByNoSo(@RequestBody AccountEnquiryRequestPojo accountEnquiryRequestPojo){
         
         Account account =  accountService.getAccountByAccountNumber(accountEnquiryRequestPojo.getAccountEnquiryRequest().getAccountNumber());

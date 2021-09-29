@@ -141,7 +141,7 @@ public class UtilService {
 				msgType = "AccountEnquiryResponse";
 			
 		}
-			
+		
 		else if (bizDefIdr.startsWith("pacs.008")) {
 
 			if (code.equals("510"))

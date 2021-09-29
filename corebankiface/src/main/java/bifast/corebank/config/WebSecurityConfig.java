@@ -50,10 +50,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
     protected void configure(HttpSecurity http) throws Exception
     {
-        http.httpBasic()
-            .and()
-            .authorizeRequests()
-            .anyRequest().authenticated();
+		http.httpBasic().and().authorizeRequests().antMatchers("/").permitAll().and()
+        .authorizeRequests().antMatchers(
+        		"/h2-console/**",
+        		"/h2/**",
+        		"/api/accountenquiry").permitAll()
+        .anyRequest().authenticated().and().sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		http.csrf().disable();
+		http.headers().frameOptions().disable();
     }
 
 }
