@@ -1,17 +1,29 @@
-
-POST http://localhost:9001/services/api/accountenquiry HTTP/1.1
+POST https://localhost:9012/api/accountenquiry HTTP/1.1
 Content-Type: application/json
 
 {
-  "accountEnquiryRequest" : {
-    "transactionId" : "040502345",
+  "AccountEnquiryRequest" : {
+    "transactionId" : "47169",
+    "categoryPurpose" : "01",
     "accountNumber" : "7723004444",
-    "amount" 	    : 200000.00
+    "amount" : 137400
   }
 }
 
 ###
-POST http://localhost:9001/services/api/accountenquiry HTTP/1.1
-Content-Type: application/json
 
-{"AccountEnquiryRequest":{"transactionId":"50000005","accountNumber":"98774321","amount":4566634.56}}
+POST https://localhost:9012/api/CreditInstructionRequest HTTP/1.1
+Content-Type: application/json
+Authorization: Basic user:password
+
+{
+    "CreditInstructionRequest" : {
+        "transactionId" : "47111",
+        "accountNumber" : "7723004444",
+        "accountType" : "CACC",
+        "amount" : 137400,
+        "creditorName" : "ANDI ANDI",
+        "paymentInfo" : "untuk bayar bayar",
+        "requestTime" : "2021-09-29 11:23:23"
+  }
+}
