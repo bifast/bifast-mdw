@@ -24,6 +24,7 @@ public class StorePaymentStatusProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
+		@SuppressWarnings("unchecked")
 		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
 
 		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");

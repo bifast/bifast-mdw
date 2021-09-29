@@ -1,7 +1,5 @@
 package bifast.outbound.report.pojo;
 
-import javax.xml.bind.annotation.XmlElement;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import bifast.library.iso20022.custom.BusinessMessage;
