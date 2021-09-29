@@ -78,9 +78,11 @@ public class HistoryRoute extends RouteBuilder {
 			.filter(simple("${body} != null"))
 				.unmarshal().base64()
 				.unmarshal().zipDeflater()
+				.log("${body}")
 				.unmarshal(businessMessageJDF)
 			.end()
 					
+
 			.process(messageFlattingProcessor)
 			
 			.marshal(FlatResponseJDF)
