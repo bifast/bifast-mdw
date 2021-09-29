@@ -55,7 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         		"/h2-console/**",
         		"/h2/**",
         		"/api/accountenquiry").permitAll()
-        .anyRequest().authenticated();
+        .anyRequest().authenticated().and().sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
 		http.csrf().disable();
 		http.headers().frameOptions().disable();
