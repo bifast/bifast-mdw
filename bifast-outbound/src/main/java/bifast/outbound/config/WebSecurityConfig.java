@@ -55,8 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 	        .authorizeRequests()
 	        	.antMatchers(
-	        		"/komi-outbound/report/**",
-	        		"/api/accountenquiry")
+	        		"/komi-outbound/report/**")
 	        		.permitAll()
 	        	.anyRequest().authenticated()
 	        .and()
