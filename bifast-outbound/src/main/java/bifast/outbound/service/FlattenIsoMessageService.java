@@ -302,7 +302,7 @@ public class FlattenIsoMessageService {
 			flatMsg.setPaymentInfo(ct.getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0));
 		}
 
-		if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData())) {
+		if (ct.getCdtTrfTxInf().get(0).getSplmtryData().size() > 0) {
 			
 			if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr())) {
 				
