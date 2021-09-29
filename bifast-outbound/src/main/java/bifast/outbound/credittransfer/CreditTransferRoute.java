@@ -114,7 +114,6 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setHeader("ct_biresponse", simple("${body}"))
 
 			.process(flatResponseProcessor)
-//			.process(storeCTProcessor)
 			
 			.removeHeaders("ct*")
 
@@ -128,19 +127,18 @@ public class CreditTransferRoute extends RouteBuilder {
 			.process(buildAERequestProcessor)
 			.to("direct:acctenqr")
 			// check hasilnya
-			.choice()
-				.when().simple("${body.accountEnquiryResponse} != null")
-					.choice()
-						.when().simple("${body.accountEnquiryResponse.status} == 'ACTC'")
-							.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChRefId:${header.hdr_chnlRefId}][CT] AE passed.")
-							.to("direct:ct_aepass")
-						.otherwise()
-							.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChRefId:${header.hdr_chnlRefId}][CT] AE reject.")
-							.setHeader("ct_failure_point", constant("AERJCT"))
-							.process(crdtTransferResponseProcessor)
-					    	.setHeader("hdr_error_status", constant("REJECT-CIHUB"))
-					    	.setHeader("hdr_error_mesg", constant("Account Enquiry reject."))
-					.endChoice()
+			.filter().simple("${body.accountEnquiryResponse} != null")
+				.choice()
+					.when().simple("${body.accountEnquiryResponse.status} == 'ACTC'")
+						.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChnlReq:${header.hdr_chnlRefId}] AE passed.")
+						.to("direct:ct_aepass")
+					.otherwise()
+						.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChnlReq:${header.hdr_chnlRefId}] AE reject.")
+						.setHeader("ct_failure_point", constant("AERJCT"))
+						.process(crdtTransferResponseProcessor)
+				    	.setHeader("hdr_error_status", constant("REJECT-CIHUB"))
+				    	.setHeader("hdr_error_mesg", constant("Account Enquiry reject."))
+				.endChoice()
 			.end()
 			
 			.removeHeaders("ct_*")
@@ -149,7 +147,7 @@ public class CreditTransferRoute extends RouteBuilder {
 		
 		from("direct:ct_aepass").routeId("komi.ct.afterAERoute")
 
-			.log(LoggingLevel.DEBUG, "komi.ct.afterAERoute", "[ChRefId:${header.hdr_chnlRefId}][CT] direct:ct_aepass...")
+			.log(LoggingLevel.DEBUG, "komi.ct.afterAERoute", "[ChnlReq:${header.hdr_chnlRefId}] direct:ct_aepass...")
 
 			// invoke corebanking
 			.setHeader("hdr_errorlocation", constant("corebank service call"))		
@@ -162,7 +160,7 @@ public class CreditTransferRoute extends RouteBuilder {
 					.to("seda:ct_lolos_corebank")
 
 				.when().simple("${header.hdr_cbresponse.status} == 'FAILED'")
-					.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Corebank reject.")
+					.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_chnlRefId}] Corebank reject.")
 					.setHeader("ct_failure_point", constant("CBRJCT"))
 					.setHeader("hdr_error_status", constant("REJECT-CB"))
 					.process(crdtTransferResponseProcessor)
@@ -174,7 +172,7 @@ public class CreditTransferRoute extends RouteBuilder {
 
 
 		from("seda:ct_lolos_corebank").routeId("komi.ct.after_cbcall")
-			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}] Corebank accept.")
+			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}] Corebank accept.")
 
 			.process(crdtTransferProcessor)
 			.setHeader("ct_birequest", simple("${body}"))
@@ -183,11 +181,12 @@ public class CreditTransferRoute extends RouteBuilder {
 
 			.to("direct:call-cihub")
 
-			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] setelah call CIHUB.")
+			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}] setelah call CIHUB.")
 
     		// periksa apakah ada hasil dari call cihub
-    		.choice().when().simple("${body} == null")
+    		.filter().simple("${body} == null")
     			// check settlement
+    			.log("Checkpoint 2244: ${body}")
     			
 				.setHeader("hdr_errorlocation", constant("CTRoute/pre-inq-settlement"))		
     			.setBody(simple("${header.ct_birequest}"))    			
@@ -195,13 +194,13 @@ public class CreditTransferRoute extends RouteBuilder {
 
     			.doTry()
 	    			.marshal(settlementRequestJDF)
-	    			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] Settlement request: ${body}")
+	    			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}] Settlement request: ${body}")
 					.setHeader("HttpMethod", constant("POST"))
 					.enrich("http:{{komi.inbound-url}}?"
 							+ "bridgeEndpoint=true",
 							enrichmentAggregator)
 					.convertBodyTo(String.class)
-	    			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] Settlement response: ${body}")
+	    			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}] Settlement response: ${body}")
 					
 					.unmarshal(settlementResponseJDF)
 					.log("call settlement finish")
@@ -217,35 +216,33 @@ public class CreditTransferRoute extends RouteBuilder {
 	    				.marshal(settlementResponseJDF)
 	    				.unmarshal(businessMessageJDF)
 	    			.when().simple("${body.messageNotFound} != null")
-	    				.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] Settlement not found.")
+	    				.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}] Settlement not found.")
 		    			.setBody(constant(null))
-	    		.endChoice()
+	    		.end()
 		
-    		.endChoice()
-    		.end()
+    		.end()  // end of filter ${body} == null
     		
 	    		
     		// klo masih kosong, call Payment Status
-    		.choice()
-				.when().simple("${body} == null")
-					.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}][CT] tidak ada settlement, harus PS.")
+    		.filter().simple("${body} == null")
+					.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}] tidak ada settlement, harus PS.")
 		    		.setHeader("hdr_errorlocation", constant("CTRoute/PaymentStatus"))
 	    			.setBody(simple("${header.ct_objreqbi}"))
 	    			.process(initPaymentStatusRequestProcessor)
 	    			.to("direct:ps")
-			.endChoice()
 			.end()	
 
 //				Check hasil akhir setelah settlement dan PS
 			.choice()
 				.when().simple("${body} != null")
 					.setHeader("ct_biresponse", simple("${body}"))
+					
 					.marshal(businessMessageJDF)
 			    	.setHeader("hdr_error_status", constant(null))
 			    	.setHeader("hdr_error_mesg", constant(null))
 
 				.otherwise()
-					.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChRefId:${header.hdr_chnlRefId}] PS juga gagal.")
+					.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}] PS juga gagal.")
 					.setHeader("ct_failure_point", constant("PSTIMEOUT"))
 			    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
 			    	.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))

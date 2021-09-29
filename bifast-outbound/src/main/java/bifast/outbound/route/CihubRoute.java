@@ -2,7 +2,9 @@ package bifast.outbound.route;
 
 import java.net.SocketTimeoutException;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 import bifast.outbound.ficredittransfer.processor.SaveFICreditTransferProcessor;
 import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.SetTransactionTypeProcessor;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class CihubRoute extends RouteBuilder {
@@ -28,8 +30,6 @@ public class CihubRoute extends RouteBuilder {
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
-	private SetTransactionTypeProcessor setTransactionTypeProcessor;
-	@Autowired
 	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
 	@Autowired
 	private StoreCreditTransferProcessor storeCreditTransferProcessor;
@@ -37,6 +37,8 @@ public class CihubRoute extends RouteBuilder {
 	private StorePaymentStatusProcessor storePaymentStatusProcessor;
 	@Autowired
 	private SaveFICreditTransferProcessor saveFICreditTransferProcessor;
+	@Autowired
+	private UtilService utilService;
 
 	@Override
 	public void configure() throws Exception {
@@ -51,8 +53,16 @@ public class CihubRoute extends RouteBuilder {
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
 		from("direct:call-cihub").routeId("komi.call-cihub").messageHistory()
 		
-			.process(setTransactionTypeProcessor).id("start_route")
-			.log("${header.hdr_trxname}")		
+
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					BusinessMessage bm = exchange.getIn().getBody(BusinessMessage.class);
+					String msgType = utilService.getMsgType(bm.getAppHdr().getMsgDefIdr(), bm.getAppHdr().getBizMsgIdr());
+					exchange.getMessage().setHeader("hdr_trxname", msgType);
+				}
+			})
+			.id("start_route")
+			.log("${header.hdr_trxname}")	
 			
 			.setHeader("hdr_cihub_request", simple("${body}"))
 
@@ -67,8 +77,6 @@ public class CihubRoute extends RouteBuilder {
 			.setHeader("cihubroute_encr_request", simple("${body}"))
 			.setBody(simple("${header.tmp_body}"))
 			
-//			.setHeader("hdr_cihubRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-	
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich("http:{{komi.ciconnector-url}}?"
@@ -107,18 +115,16 @@ public class CihubRoute extends RouteBuilder {
 			.setHeader("hdr_cihub_response", simple("${body}"))
 			
 			.choice().id("end_route")
-				.when().simple("${header.hdr_trxname} == 'Account Enquiry'")
+				.when().simple("${header.hdr_trxname} == 'AccountEnquiryRequest'")
 					.process(saveAccountEnquiryProcessor)
-				.when().simple("${header.hdr_trxname} == 'Credit Transfer'")
+				.when().simple("${header.hdr_trxname} == 'CreditTransferRequest'")
 					.process(storeCreditTransferProcessor)
-				.when().simple("${header.hdr_trxname} == 'FI to FI Credit Transfer'")
+				.when().simple("${header.hdr_trxname} == 'FICreditTransferRequest'")
 					.process(saveFICreditTransferProcessor)
-				.when().simple("${header.hdr_trxname} == 'Payment Status'")
+				.when().simple("${header.hdr_trxname} == 'PaymentStatusRequest'")
 					.process(storePaymentStatusProcessor)
 			.end()
 
-//			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-			
 			.removeHeaders("tmp_*")
 			.removeHeaders("cihubroute_*")
 		;

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.paymentstatus.PaymentStatusRequestProcessor;
 import bifast.outbound.paymentstatus.PaymentStatusResponseProcessor;
-import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
 
 @Component
 public class SimpleRoute extends RouteBuilder {
