@@ -7,5 +7,5 @@ EXPOSE 9001
 ENTRYPOINT ["java","-jar","/usr/src/komi-inbound.jar"]
 
 # mvn clean package -DskipTests
-# docker build -t fransmzh/komi-inbound:1.4 .
-# docker push fransmzh/komi-inbound:1.4
+# docker build -t fransmzh/komi-inbound:1.5 .
+# docker push fransmzh/komi-inbound:1.5
