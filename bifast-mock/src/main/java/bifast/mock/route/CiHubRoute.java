@@ -3,7 +3,6 @@ package bifast.mock.route;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
-import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -96,6 +95,8 @@ public class CiHubRoute extends RouteBuilder {
 			.process(checkMessageTypeProcessor)
 			.log("${header.msgType}")
 
+			.setHeader("delay", constant(300))
+
 			.choice()
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")
 					.process(accountEnquiryResponseProcessor)
@@ -120,15 +121,13 @@ public class CiHubRoute extends RouteBuilder {
 					.choice()
 						.when().simple("${header.hdr_account_no} startsWith '8' ")
 							.setHeader("delay", simple("${random(2000,3000)}"))
-						.otherwise()
-							.setHeader("delay", constant(500))
 					.endChoice()
 					.log("hasil CT3: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 
 					.log("Finish process CT")
 
 					// .setExchangePattern(ExchangePattern.InOnly)
-					.to("seda:settlement?exchangePattern=InOnly")
+//					.to("seda:settlement")
 					// .log("hasil CT4: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 
 				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
@@ -191,7 +190,7 @@ public class CiHubRoute extends RouteBuilder {
 		;
 		
 
-		from("seda:settlement").routeId("Settlement")
+		from("seda:settlement").routeId("Settlement").setExchangePattern(ExchangePattern.InOnly)
 			.log("Response: ${header.hdr_ctRespondStatus}")
 			.log("hasil CT11: ${body.appHdr.bizSvc}")
 
