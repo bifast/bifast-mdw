@@ -172,9 +172,9 @@ public class Pacs008MessageService {
 
 		CategoryPurpose1Choice ctgyPurp = new CategoryPurpose1Choice();
 		if (null==seed.getCategoryPurpose()) 
-			ctgyPurp.setPrtry("99");
+			ctgyPurp.setPrtry(seed.getTrnType() + "99");
 		else
-			ctgyPurp.setPrtry(seed.getCategoryPurpose());
+			ctgyPurp.setPrtry(seed.getTrnType() + seed.getCategoryPurpose());
 		pmtTpInf.setCtgyPurp(ctgyPurp);
 		
 		cdtTrfTxInf.setPmtTpInf(pmtTpInf);

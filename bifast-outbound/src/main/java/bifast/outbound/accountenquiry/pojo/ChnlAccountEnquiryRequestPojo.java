@@ -2,16 +2,27 @@ package bifast.outbound.accountenquiry.pojo;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("AccountEnquiryRequest")
 public class ChnlAccountEnquiryRequestPojo {
 
+	@JsonProperty("TransactionId")
 	private String channelRefId;
+
+	@JsonProperty("Channel")
 	private String channel;  //M
+	
+	@JsonProperty("RecipientBank")
 	private String recptBank; //M
+	
+	@JsonProperty("Amount")
 	private BigDecimal amount;  //M
+	
+	@JsonProperty("CategoryPurpose")
 	private String categoryPurpose;  //M
+	@JsonProperty("AccountNumber")
 	private String creditorAccountNumber; //M
 	
 	public ChnlAccountEnquiryRequestPojo() {}

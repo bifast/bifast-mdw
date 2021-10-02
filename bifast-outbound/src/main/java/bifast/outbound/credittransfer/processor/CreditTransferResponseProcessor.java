@@ -82,10 +82,14 @@ public class CreditTransferResponseProcessor implements Processor {
 				chnResponse.setOrignReffId(chnRequest.getOrignReffId());
 				chnResponse.setBizMsgId(obj_crdtrnResp.getAppHdr().getBizMsgIdr());
 				
-				chnResponse.setStatus(biResp.getTxSts());
+				if ((biResp.getTxSts().equals("ACSP")) || (biResp.getTxSts().equals("ACTC"))) 
+					chnResponse.setStatus("ACCEPTED");
+				else
+					chnResponse.setStatus("REJECTED");
+					
+
 				chnResponse.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
-				
-				
+
 				if (biResp.getStsRsnInf().get(0).getAddtlInf().size() > 0) {
 					chnResponse.setAddtInfo(biResp.getStsRsnInf().get(0).getAddtlInf().get(0));
 				}
@@ -102,11 +106,11 @@ public class CreditTransferResponseProcessor implements Processor {
 					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp()))
 						chnResponse.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
 			
-					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts()))
-						chnResponse.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
-			
-					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm()))
-						chnResponse.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
+//					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts()))
+//						chnResponse.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
+//			
+//					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm()))
+//						chnResponse.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
 			
 				}
 	

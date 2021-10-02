@@ -1,9 +1,16 @@
 package bifast.mock.processor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.AccountIdentification4Choice;
@@ -25,31 +32,30 @@ public class SettlementProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 	
-		BusinessMessage objRequest = exchange.getMessage().getHeader("objRequest", BusinessMessage.class);		
+		BusinessMessage in = exchange.getMessage().getBody(BusinessMessage.class);		
 
-		BusinessMessage in = exchange.getMessage().getHeader("hdr_ctResponseObj", BusinessMessage.class);
-		String fullMsg = exchange.getMessage().getBody(String.class);
+//		BusinessMessage in = exchange.getMessage().getHeader("hdr_ctResponseObj", BusinessMessage.class);
+		HashMap<String, String> frTable = exchange.getMessage().getHeader("sttl_tableqry", HashMap.class);
+		
 		String bizMsgId = "";
 		String msgId = "";
-		String msgType = exchange.getMessage().getHeader("msgType", String.class);
-		String orgnlMsgId = "";
+		String msgName = frTable.get("ORGNL_MSG_NAME");
+		
+		String orgnlMsgId = exchange.getMessage().getHeader("sttl_orgnlmsgid", String.class);
 
-		if (msgType.equals("CreditTransferRequest")) {
+		if (msgName.startsWith("pacs.008")) {
 			bizMsgId = utilService.genRfiBusMsgId("010", "02");
 			msgId = utilService.genMessageId("010");
-
-			orgnlMsgId = objRequest.getDocument().getFiToFICstmrCdtTrf().getGrpHdr().getMsgId();
 
 		} else {
 			bizMsgId = utilService.genRfiBusMsgId("019", "02");
 			msgId = utilService.genMessageId("019");
-			orgnlMsgId = objRequest.getDocument().getFiCdtTrf().getGrpHdr().getMsgId();
 		}
+		
+		if (msgName.startsWith("pacs.008")) {
 
-		if (msgType.equals("CreditTransferRequest")) {
-
-			String cdtrAcct = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
-			String dbtrAcct = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId();
+			String cdtrAcct = frTable.get("cdtr_acct");
+			String dbtrAcct = frTable.get("dbtr_acct"); 
 		
 			GenericAccountIdentification1 oth1 = new GenericAccountIdentification1();
 			oth1.setId(cdtrAcct);
@@ -76,7 +82,7 @@ public class SettlementProcessor implements Processor {
 	
 		in.getAppHdr().setBizMsgIdr(bizMsgId);
 		in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().setMsgId(msgId);
-		in.getAppHdr().setBizSvc("SETTLEMENTCONFIRMATION");
+		in.getAppHdr().setBizSvc("STTL");
 		
 		GenericAccountIdentification1 dbtrAgtAcctIdOth = new GenericAccountIdentification1();
 		dbtrAgtAcctIdOth.setId("123456");
@@ -106,14 +112,21 @@ public class SettlementProcessor implements Processor {
 		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setDbtrAgtAcct(dbtrAgtAcct);
 
 		
+		ObjectMapper map = new ObjectMapper();
+		map.registerModule(new JaxbAnnotationModule());
+		map.enable(SerializationFeature.WRAP_ROOT_VALUE);
+
+		String strSttl = map.writeValueAsString(in);
+		
 		MockPacs002 pacs002 = new MockPacs002();
 		pacs002.setBizMsgIdr(bizMsgId);
-		pacs002.setFullMessage(fullMsg);
-		pacs002.setOrgnlEndToEndId(objRequest.getAppHdr().getBizMsgIdr());
+		pacs002.setFullMessage(strSttl);
+		pacs002.setOrgnlEndToEndId(frTable.get("orgnl_end_to_end_id"));
 		pacs002.setOrgnlMsgId(orgnlMsgId);
-		pacs002.setOrgnlMsgName(objRequest.getAppHdr().getMsgDefIdr());
+		pacs002.setOrgnlMsgName(msgName);
+		pacs002.setSttl("DONE");
 
-		pacs002.setTrxType("SettlementConfirmation");
+		pacs002.setTrxType("STTL");
 		mockPacs002Repo.save(pacs002);
 
 		exchange.getMessage().setBody(in);

@@ -5,12 +5,12 @@ Content-Type: application/json
 
 {
   "AccountEnquiryRequest" : {
-    "channelRefId" : "47169",
-    "channel" : "Internet Banking",
-    "recptBank" : "014",
-    "amount" : 137400,
-    "categoryPurpose" : "Purchase",
-    "creditorAccountNumber" : "677589"
+    "TransactionId" : "556773",
+    "Channel" : "Internet Banking",
+    "RecipientBank" : "014",
+    "Amount" : 137400,
+    "CategoryPurpose" : "Purchase",
+    "AccountNumber" : "677589"
   }
 }
 

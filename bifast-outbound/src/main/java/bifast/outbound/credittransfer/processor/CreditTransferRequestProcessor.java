@@ -35,13 +35,18 @@ public class CreditTransferRequestProcessor implements Processor {
 		
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
 
-		String msgType = null;
-		if (null==chnReq.getOrgnlEndToEndId()) 
-			msgType = "010";
-		else {
-			msgType = "011";
-			seedCreditTrn.setEndToEndId(chnReq.getOrgnlEndToEndId());
-		}
+		String msgType = "";
+		if (null == chnReq.getCrdtProxyIdValue()) 
+			msgType = "010";	
+		else	
+			msgType = "110";	
+			
+//		if (null==chnReq.getOrgnlEndToEndId()) 
+//			msgType = "010";
+//		else {
+//			msgType = "011";
+//			seedCreditTrn.setEndToEndId(chnReq.getOrgnlEndToEndId());
+//		}
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
@@ -52,25 +57,30 @@ public class CreditTransferRequestProcessor implements Processor {
 		seedCreditTrn.setMsgId(msgId);
 		seedCreditTrn.setAmount(chnReq.getAmount());
 		seedCreditTrn.setBizMsgId(bizMsgId);
-		seedCreditTrn.setCategoryPurpose(chnReq.getCategoryPurpose());
+		seedCreditTrn.setCategoryPurpose(chnReq+chnReq.getCategoryPurpose());
 		
 		seedCreditTrn.setChannel(chnReq.getChannel());
 		
 		seedCreditTrn.setCrdtAccountNo(chnReq.getCrdtAccountNo());		
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
 		seedCreditTrn.setCrdtId(chnReq.getCrdtId());
-		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
+//		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
 		seedCreditTrn.setCrdtIdType(chnReq.getCrdtIdType());
 		
 		seedCreditTrn.setDbtrAccountNo(chnReq.getDbtrAccountNo());
 		seedCreditTrn.setDbtrAccountType(chnReq.getDbtrAccountType());
-		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
+//		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
 		seedCreditTrn.setDbtrId(chnReq.getDbtrId());
 		seedCreditTrn.setDbtrIdType(chnReq.getDbtrIdType());
 		seedCreditTrn.setOrignBank(config.getBankcode());
 		seedCreditTrn.setPaymentInfo(chnReq.getPaymentInfo());
 		seedCreditTrn.setRecptBank(chnReq.getRecptBank());
 		
+		if (!(null == chnReq.getCrdtProxyIdValue())) {
+			seedCreditTrn.setCrdtProxyIdType(msgId);
+			seedCreditTrn.setCrdtProxyIdValue(msgId);
+		}
+			
 		seedCreditTrn.setTrnType(msgType);
 		
 		if (!(null == chnReq.getCrdtProxyIdType())) {

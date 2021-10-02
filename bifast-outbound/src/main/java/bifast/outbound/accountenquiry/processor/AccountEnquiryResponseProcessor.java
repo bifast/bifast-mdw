@@ -61,6 +61,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			chnResp.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
 			chnResp.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
 			
+			chnResp.setCreditorAccountNumber(chnReq.getCreditorAccountNumber());
 			chnResp.setStatus(biResp.getTxSts());
 			chnResp.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
 					

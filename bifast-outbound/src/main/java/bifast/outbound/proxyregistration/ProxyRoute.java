@@ -1,7 +1,5 @@
 package bifast.outbound.proxyregistration;
 
-import java.net.SocketTimeoutException;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
@@ -15,7 +13,7 @@ import bifast.outbound.proxyregistration.processor.ProxyRegistrationRequestProce
 import bifast.outbound.proxyregistration.processor.ProxyRegistrationResponseProcessor;
 import bifast.outbound.proxyregistration.processor.ProxyResolutionRequestProcessor;
 import bifast.outbound.proxyregistration.processor.ProxyResolutionResponseProcessor;
-import bifast.outbound.proxyregistration.processor.StoreProxyRegistrationProcessor;
+import bifast.outbound.proxyregistration.processor.CreateProxyAccountMappingProcessor;
 import bifast.outbound.proxyregistration.processor.StoreProxyResolutionProcessor;
 
 @Component
@@ -26,7 +24,7 @@ public class ProxyRoute extends RouteBuilder {
 	@Autowired
 	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
 	@Autowired
-	private StoreProxyRegistrationProcessor storeProxyRegistrationProcessor;
+	private CreateProxyAccountMappingProcessor saveProxyMappingProcessor;
 	@Autowired
 	private StoreProxyResolutionProcessor storeProxyResolutionProcessor;
 	@Autowired
@@ -69,7 +67,10 @@ public class ProxyRoute extends RouteBuilder {
 			.setHeader("prx_biresponse", simple("${body}"))
 
 			.process(proxyRegistrationResponseProcessor)
-			.process(storeProxyRegistrationProcessor)
+
+			.filter().simple("${body.proxyRegistrationResponse.status} == 'ACTC'")
+				.process(saveProxyMappingProcessor)
+			.end()
 			
 			.removeHeaders("prx*")
 		;

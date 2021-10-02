@@ -68,11 +68,11 @@ public class PaymentStatusResponseProcessor implements Processor {
 				if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp()))
 					chnResponse.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
 		
-				if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts()))
-					chnResponse.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
+//				if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts()))
+//					chnResponse.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
 		
-				if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm()))
-					chnResponse.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
+//				if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm()))
+//					chnResponse.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
 		
 			}
 

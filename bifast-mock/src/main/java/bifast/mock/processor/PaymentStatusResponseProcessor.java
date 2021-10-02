@@ -24,8 +24,6 @@ import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
 import bifast.mock.persist.MockPacs002;
 import bifast.mock.persist.MockPacs002Repository;
-import bifast.mock.persist.OutboundMessage;
-import bifast.mock.persist.OutboundMessageRepository;
 
 @Component
 public class PaymentStatusResponseProcessor implements Processor{

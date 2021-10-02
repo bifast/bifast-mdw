@@ -31,7 +31,7 @@ public class AECorebankRequestProcessor implements Processor {
 		cbRequest.setAccountNumber(biReq.getCdtrAcct().getId().getOthr().getId());
 
 		cbRequest.setAmount(biReq.getIntrBkSttlmAmt().getValue());
-		cbRequest.setTransactionId("040502345");
+		cbRequest.setTransactionId(trxid);
 		
 		exchange.getMessage().setBody(cbRequest);
 	}

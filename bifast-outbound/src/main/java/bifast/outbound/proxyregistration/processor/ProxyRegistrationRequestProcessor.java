@@ -45,20 +45,20 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		Proxy001Seed seedProxyRegis = new Proxy001Seed();
 		
 		seedProxyRegis.setMsgId(msgId);
-		seedProxyRegis.setBizMsgId(hdr.getBizMsgIdr());
-		seedProxyRegis.setTrnType(trxType);
-		seedProxyRegis.setProxyTp(chnReq.getProxyTp());
-		seedProxyRegis.setProxyVal(chnReq.getProxyVal());
-		seedProxyRegis.setDsplNm(chnReq.getDisplayName());
-		seedProxyRegis.setAccTpPrtry(chnReq.getAccType());
-		seedProxyRegis.setAccName(chnReq.getAccName());
-		seedProxyRegis.setAccNumber(chnReq.getAccNumber());
-		seedProxyRegis.setScndIdTp(chnReq.getScndIdTp());
-		seedProxyRegis.setScndIdVal(chnReq.getScndIdVal());
-		seedProxyRegis.setCstmrTp(chnReq.getCstmrTp());
-		seedProxyRegis.setCstmrId(chnReq.getCstmrId());
-		seedProxyRegis.setCstmrRsdntSts(chnReq.getResidentialStatus());
-		seedProxyRegis.setCstmrTwnNm(chnReq.getTownName());
+//		seedProxyRegis.setBizMsgId(hdr.getBizMsgIdr());
+		seedProxyRegis.setRegistrationType(chnReq.getRegistrationType());
+		seedProxyRegis.setProxyType(chnReq.getProxyType());
+		seedProxyRegis.setProxyValue(chnReq.getProxyValue());
+		seedProxyRegis.setRegisterDisplayName(chnReq.getRegisterDisplayName());
+		seedProxyRegis.setRegisterAccountType(chnReq.getRegisterAccountType());
+		seedProxyRegis.setRegisterAccountName(chnReq.getRegisterAccountName());
+		seedProxyRegis.setRegisterAccountNumber(chnReq.getRegisterAccountNumber());
+		seedProxyRegis.setRegisterSecondIdType(chnReq.getRegisterSecondIdType());
+		seedProxyRegis.setRegisterSecondIdValue(chnReq.getRegisterSecondIdValue());
+		seedProxyRegis.setCustomerType(chnReq.getCustomerType());
+		seedProxyRegis.setCustomerId(chnReq.getCustomerId());
+		seedProxyRegis.setResidentialStatus(chnReq.getResidentialStatus());
+		seedProxyRegis.setTownName(chnReq.getTownName());
 		
 		Document doc = new Document();
 		doc.setPrxyRegn(proxy001MessageService.proxyRegistrationRequest(seedProxyRegis));

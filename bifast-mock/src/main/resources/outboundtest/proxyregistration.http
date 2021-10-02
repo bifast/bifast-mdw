@@ -1,23 +1,49 @@
 # Proxy Register  from channel
-POST http://localhost:9002/services/komi/outbound HTTP/1.1
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
 
 {
     "ProxyRegistrationRequest": {
-        "orignReffId": "55140",
+        "intrnRefId": "5540",
         "channel" : "Internet Banking",
-        "proxyTp" : "02",
-        "proxyVal" : "frans.mazhar@gmail.com",
-        "displayName" : "Andi aja",
-        "accNumber" : "14556",
-        "accType" : "SVGS",
-        "accName" : "Fras Manse",
-        "scndIdTp" : "01",
-        "scndIdVal" : "44443333",
-        "cstmrTp" : "01",
-        "cstmrId" : "220000022",
+        "registrationType" : "NEWR",
+        "proxyType" : "02",
+        "proxyValue" : "frans.mazhar@gmail.com",
+        "registerDisplayName" : "Andi aja",
+        "registerAccountNumber" : "14556",
+        "registerAccountType" : "SVGS",
+        "registerAccountName" : "Fras Manse",
+        "registerSecondIdType" : "01",
+        "registerSecondIdValue" : "44443333",
+        "customerType" : "01",
+        "customerId" : "220000022",
         "residentialStatus" : "01",
         "townName" : "0300"
     }
 }
 
+###
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+
+{
+    "ProxyRegistrationRequest": {
+        "intrnRefId": "5540",
+        "channel" : "Internet Banking",
+        "registrationType" : "PORT",
+        "proxyType" : "02",
+        "proxyValue" : "frans.mazhar@gmail.com",
+        "registerAgentId" : "BMRIIDJA",
+        "registerDisplayName" : "Andi aja",
+        "registerAccountNumber" : "14556",
+        "registerAccountType" : "SVGS",
+        "registerAccountName" : "Fras Manse",
+        "registerSecondIdType" : "01",
+        "registerSecondIdValue" : "44443333",
+        "customerType" : "01",
+        "customerId" : "220000022",
+        "residentialStatus" : "01",
+        "townName" : "0300"
+    }
+}

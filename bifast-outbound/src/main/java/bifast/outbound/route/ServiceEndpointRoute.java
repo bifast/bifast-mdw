@@ -50,8 +50,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.marshal(chnlResponseJDF)
 			.removeHeaders("req_*")
 			.removeHeaders("hdr_*")
-			.removeHeaders("fict_*")
-			.removeHeaders("ps_*")
+//			.removeHeaders("fict_*")
+//			.removeHeaders("ps_*")
 			.removeHeaders("ae_*")
 			.removeHeader("HttpMethod")
 	    	.handled(true)
@@ -87,27 +87,27 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.choice()
 				.when().simple("${header.hdr_msgType} == 'acctenqr'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][AE] start.")
+					.log("[ChnlReq:${header.hdr_chnlRefId}] Account Enquiry Request start.")
 					.to("direct:acctenqr")
 					
 				.when().simple("${header.hdr_msgType} == 'crdttrns'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][CT] start.")
-					.to("direct:ctreq")
+					.log("[ChnlReq:${header.hdr_chnlRefId}] Credit Transfer Request start.")
+					.to("direct:ct_aepass")
 
-				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][FICT] start.")
-					.to("direct:fictreq")
+//				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
+//					.log("[ChnlReq:${header.hdr_chnlRefId}][FICT] start.")
+//					.to("direct:fictreq")
 
-				.when().simple("${header.hdr_msgType} == 'pymtsts'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][PS] start.")
-					.to("direct:ps4chnl")
+//				.when().simple("${header.hdr_msgType} == 'pymtsts'")
+//					.log("[ChnlReq:${header.hdr_chnlRefId}][PS] start.")
+//					.to("direct:ps4chnl")
 
 				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][PREG] start.")
+					.log("[ChnlReq:${header.hdr_chnlRefId}][PREG] start.")
 					.to("direct:prxyrgst")
 
 				.when().simple("${header.hdr_msgType} == 'prxyrslt'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][PRES] start.")
+					.log("[ChnlReq:${header.hdr_chnlRefId}][PRES] start.")
 					.to("direct:proxyresolution")
 
 			.end()
@@ -117,16 +117,16 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.choice()
 					
 				.when().simple("${header.hdr_msgType} == 'acctenqr'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][AE] finish.")
+					.log("[ChRefId:${header.hdr_chnlRefId}] Account Enquiry Request finish.")
 
 				.when().simple("${header.hdr_msgType} == 'crdttrns'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][CT] finish.")
+					.log("[ChRefId:${header.hdr_chnlRefId}] Credit Transfer Request finish.")
 	
-				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][FICT] finish.")
-	
-				.when().simple("${header.hdr_msgType} == 'pymtsts'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][PS] finish.")
+//				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
+//					.log("[ChRefId:${header.hdr_chnlRefId}][FICT] finish.")
+//	
+//				.when().simple("${header.hdr_msgType} == 'pymtsts'")
+//					.log("[ChRefId:${header.hdr_chnlRefId}][PS] finish.")
 	
 				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
 					.log("[ChRefId:${header.hdr_chnlRefId}][PREG] finish.")
@@ -140,8 +140,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.removeHeaders("req_*")
 			.removeHeaders("hdr_*")
-			.removeHeaders("fict_*")
-			.removeHeaders("ps_*")
+//			.removeHeaders("fict_*")
+//			.removeHeaders("ps_*")
 			.removeHeaders("ae_*")
 			.removeHeader("HttpMethod")
 

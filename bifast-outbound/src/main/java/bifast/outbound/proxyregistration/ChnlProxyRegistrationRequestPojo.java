@@ -5,34 +5,37 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("ProxyRegistrationRequest")
 public class ChnlProxyRegistrationRequestPojo {
 	
-	private String orignReffId;
-
+	private String intrnRefId;
 	private String channel; 
+
+	private String senderAccountNumber;
+
+	private String registrationType;
+
+	private String proxyType;
+	private String proxyValue;
 	
-	private String proxyTp;
-	private String proxyVal;
+	private String registrationId;
+       
+	private String registerDisplayName;
+	private String registerAgentId;
+	private String registerAccountNumber;
+	private String registerAccountType;
+	private String registerAccountName;
 	
-	private String regnTp;
-	private String regnId;
-	private String displayName;
+	private String registerSecondIdType;
+	private String registerSecondIdValue;
     
-	private String accNumber;
-	private String accType;
-	private String accName;
-    
-	private String scndIdTp;
-	private String scndIdVal;
-    
-	private String cstmrId;
-	private String cstmrTp;
+	private String customerId;
+	private String customerType;
 	private String residentialStatus;
 	private String townName;
-
-    public String getOrignReffId() {
-		return orignReffId;
+	
+	public String getIntrnRefId() {
+		return intrnRefId;
 	}
-	public void setOrignReffId(String orignReffId) {
-		this.orignReffId = orignReffId;
+	public void setIntrnRefId(String intrnRefId) {
+		this.intrnRefId = intrnRefId;
 	}
 	public String getChannel() {
 		return channel;
@@ -40,77 +43,89 @@ public class ChnlProxyRegistrationRequestPojo {
 	public void setChannel(String channel) {
 		this.channel = channel;
 	}
-	public String getProxyTp() {
-		return proxyTp;
+	public String getSenderAccountNumber() {
+		return senderAccountNumber;
 	}
-	public void setProxyTp(String proxyTp) {
-		this.proxyTp = proxyTp;
+	public void setSenderAccountNumber(String senderAccountNumber) {
+		this.senderAccountNumber = senderAccountNumber;
 	}
-	public String getProxyVal() {
-		return proxyVal;
+	public String getRegistrationType() {
+		return registrationType;
 	}
-	public void setProxyVal(String proxyVal) {
-		this.proxyVal = proxyVal;
+	public void setRegistrationType(String registrationType) {
+		this.registrationType = registrationType;
 	}
-	public String getRegnTp() {
-		return regnTp;
+	public String getProxyType() {
+		return proxyType;
 	}
-	public void setRegnTp(String regnTp) {
-		this.regnTp = regnTp;
+	public void setProxyType(String proxyType) {
+		this.proxyType = proxyType;
 	}
-	public String getRegnId() {
-		return regnId;
+	public String getProxyValue() {
+		return proxyValue;
 	}
-	public void setRegnId(String regnId) {
-		this.regnId = regnId;
+	public void setProxyValue(String proxyValue) {
+		this.proxyValue = proxyValue;
 	}
-	public String getDisplayName() {
-		return displayName;
+	public String getRegistrationId() {
+		return registrationId;
 	}
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
+	public void setRegistrationId(String registrationId) {
+		this.registrationId = registrationId;
 	}
-	public String getAccNumber() {
-		return accNumber;
+	public String getRegisterDisplayName() {
+		return registerDisplayName;
 	}
-	public void setAccNumber(String accNumber) {
-		this.accNumber = accNumber;
+	public void setRegisterDisplayName(String registerDisplayName) {
+		this.registerDisplayName = registerDisplayName;
 	}
-	public String getAccType() {
-		return accType;
+	public String getRegisterAgentId() {
+		return registerAgentId;
 	}
-	public void setAccType(String accType) {
-		this.accType = accType;
+	public void setRegisterAgentId(String registerAgentId) {
+		this.registerAgentId = registerAgentId;
 	}
-	public String getAccName() {
-		return accName;
+	public String getRegisterAccountNumber() {
+		return registerAccountNumber;
 	}
-	public void setAccName(String accName) {
-		this.accName = accName;
+	public void setRegisterAccountNumber(String registerAccountNumber) {
+		this.registerAccountNumber = registerAccountNumber;
 	}
-	public String getScndIdTp() {
-		return scndIdTp;
+	public String getRegisterAccountType() {
+		return registerAccountType;
 	}
-	public void setScndIdTp(String scndIdTp) {
-		this.scndIdTp = scndIdTp;
+	public void setRegisterAccountType(String registerAccountType) {
+		this.registerAccountType = registerAccountType;
 	}
-	public String getScndIdVal() {
-		return scndIdVal;
+	public String getRegisterAccountName() {
+		return registerAccountName;
 	}
-	public void setScndIdVal(String scndIdVal) {
-		this.scndIdVal = scndIdVal;
+	public void setRegisterAccountName(String registerAccountName) {
+		this.registerAccountName = registerAccountName;
 	}
-	public String getCstmrId() {
-		return cstmrId;
+	public String getRegisterSecondIdType() {
+		return registerSecondIdType;
 	}
-	public void setCstmrId(String cstmrId) {
-		this.cstmrId = cstmrId;
+	public void setRegisterSecondIdType(String registerSecondIdType) {
+		this.registerSecondIdType = registerSecondIdType;
 	}
-	public String getCstmrTp() {
-		return cstmrTp;
+	public String getRegisterSecondIdValue() {
+		return registerSecondIdValue;
 	}
-	public void setCstmrTp(String cstmrTp) {
-		this.cstmrTp = cstmrTp;
+	public void setRegisterSecondIdValue(String registerSecondIdValue) {
+		this.registerSecondIdValue = registerSecondIdValue;
+	}
+	public String getCustomerId() {
+		return customerId;
+	}
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+	public String getCustomerType() {
+		return customerType;
+	}
+	public void setCustomerType(String customerType) {
+		this.customerType = customerType;
 	}
 	public String getResidentialStatus() {
 		return residentialStatus;
@@ -124,5 +139,6 @@ public class ChnlProxyRegistrationRequestPojo {
 	public void setTownName(String townName) {
 		this.townName = townName;
 	}
+
     
 }

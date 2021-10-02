@@ -40,7 +40,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		else if (!(null == req.getProxyRegistrationReq())) {
 			exchange.getMessage().setHeader("hdr_msgType", "prxyrgst");
 			exchange.getMessage().setBody(req.getProxyRegistrationReq());
-			exchange.getMessage().setHeader("hdr_chnlRefId", req.getProxyRegistrationReq().getOrignReffId());
+			exchange.getMessage().setHeader("hdr_chnlRefId", req.getProxyRegistrationReq().getIntrnRefId());
 		}
 
 		else if (!(null == req.getProxyResolutionReq())) {

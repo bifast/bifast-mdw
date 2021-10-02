@@ -5,9 +5,6 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.BuildCBResponseProcessor;
-import bifast.inbound.processor.EnrichmentAggregator;
-
 @Component
 public class AccountEnquiryRoute extends RouteBuilder {
 
@@ -15,10 +12,6 @@ public class AccountEnquiryRoute extends RouteBuilder {
 	private AECorebankReponseProcessor aeCorebankReponseProcessor;
 	@Autowired
 	private AECorebankRequestProcessor aeCorebankRequestProcessor;
-	@Autowired
-	private EnrichmentAggregator enrichmentAggregator;
-	@Autowired
-	private BuildCBResponseProcessor buildCBResponse;
 
 	@Override
 	public void configure() throws Exception {

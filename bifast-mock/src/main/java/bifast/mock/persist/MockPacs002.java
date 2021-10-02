@@ -19,6 +19,10 @@ public class MockPacs002 {
     private String orgnlEndToEndId;
     @Column(length=5000)
     private String fullMessage;
+    private String result;
+    private String sttl;
+    private String cdtrAcct;
+    private String dbtrAcct;
 
 
     public String getTrxType() {
@@ -65,6 +69,30 @@ public class MockPacs002 {
     public void setFullMessage(String fullMessage) {
         this.fullMessage = fullMessage;
     }
+	public String getResult() {
+		return result;
+	}
+	public void setResult(String result) {
+		this.result = result;
+	}
+	public String getCdtrAcct() {
+		return cdtrAcct;
+	}
+	public void setCdtrAcct(String cdtrAcct) {
+		this.cdtrAcct = cdtrAcct;
+	}
+	public String getDbtrAcct() {
+		return dbtrAcct;
+	}
+	public void setDbtrAcct(String dbtrAcct) {
+		this.dbtrAcct = dbtrAcct;
+	}
+	public String getSttl() {
+		return sttl;
+	}
+	public void setSttl(String sttl) {
+		this.sttl = sttl;
+	}
 
 
 

@@ -41,8 +41,6 @@ public class CiHubRoute extends RouteBuilder {
 	@Autowired
 	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
 	@Autowired
-	private SettlementProcessor settlementProcessor;
-	@Autowired
 	private CreditResponseStoreProcessor creditResponseStoreProcessor;
 
 	
@@ -103,7 +101,7 @@ public class CiHubRoute extends RouteBuilder {
 					
 					.choice()
 						.when().simple("${header.hdr_account_no} startsWith '77' ")
-							.setHeader("delay", simple("${random(2000,3000)}"))
+							.setHeader("delay", simple("${random(6000,7000)}"))
 						.otherwise()
 							.setHeader("delay", constant(500))
 					.endChoice()
@@ -111,20 +109,15 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
 					.process(creditTransferResponseProcessor)
 					.setHeader("hdr_ctResponseObj",simple("${body}"))
-					.log("hasil CT1: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 					.marshal(jsonBusinessMessageDataFormat)
-					.log("Hasil proses: ${body}")
 					.process(creditResponseStoreProcessor)
 					.setBody(simple("${header.hdr_ctResponseObj}"))
-					.log("hasil CT2: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 
 					.choice()
 						.when().simple("${header.hdr_account_no} startsWith '8' ")
-							.setHeader("delay", simple("${random(2000,3000)}"))
+							.setHeader("delay", simple("${random(6000,7000)}"))
 					.endChoice()
-					.log("hasil CT3: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 
-					.log("Finish process CT")
 
 					// .setExchangePattern(ExchangePattern.InOnly)
 //					.to("seda:settlement")
@@ -175,7 +168,6 @@ public class CiHubRoute extends RouteBuilder {
 					.log("Other message")
 			.end()
 
-			.log("hasil CT5: ${body.appHdr.bizSvc}")
 			.log("delay ${header.delay}")
 			.delay(simple("${header.delay}"))
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
@@ -190,31 +182,6 @@ public class CiHubRoute extends RouteBuilder {
 		;
 		
 
-		from("seda:settlement").routeId("Settlement").setExchangePattern(ExchangePattern.InOnly)
-			.log("Response: ${header.hdr_ctRespondStatus}")
-			.log("hasil CT11: ${body.appHdr.bizSvc}")
-
-			.setHeader("delay_sttl", constant(500))
-			// .filter().simple("${header.hdr_account_no} startsWith '88' ")
-			// 	.setHeader("delay_sttl", simple("${random(2000,4000)}"))
-			// .end()
-		
-			.filter().simple("${header.hdr_ctRespondStatus} == 'ACTC'")
-				.log("Akan proses settlement")
-				.marshal(jsonBusinessMessageDataFormat)
-				.process(settlementProcessor)
-				.log("hasil CT12: ${body.appHdr.bizSvc}")
-				.marshal(jsonBusinessMessageDataFormat)
-
-				.log("settlment delay ${header.delay_sttl}")
-				.delay(simple("${header.delay_sttl}"))
-				.to("rest:post:inbound?host={{komi.inbound-url}}&"
-						+ "bridgeEndpoint=true")
-				.log("kirim sttl: ${body}")
-			.end()
-			
-			.removeHeaders("hdr_*")
-		;
 		
 		from("direct:proxyRegistration").routeId("proxyRegistration")
 

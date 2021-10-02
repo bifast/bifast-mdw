@@ -1,5 +1,7 @@
 package bifast.inbound.route;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +14,6 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import bifast.inbound.accountenquiry.SaveAccountEnquiryProcessor;
 import bifast.inbound.credittransfer.CreditTransferProcessor;
 import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
-import bifast.inbound.ficredittransfer.FICreditTransferProcessor;
-import bifast.inbound.processor.CheckMessageTypeProcessor;
 import bifast.inbound.processor.SaveSettlementMessageProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
@@ -27,10 +27,6 @@ public class InboundRoute extends RouteBuilder {
 	private SaveCreditTransferProcessor saveCreditTransferProcessor;
 	@Autowired
 	private SaveSettlementMessageProcessor saveSettlementMessageProcessor;
-	@Autowired
-	private CheckMessageTypeProcessor checkMsgTypeProcessor;
-	@Autowired
-	private FICreditTransferProcessor fICreditTransferProcessor;
 	@Autowired
 	private CreditTransferProcessor creditTransferProcessor;
 	
@@ -73,8 +69,16 @@ public class InboundRoute extends RouteBuilder {
 
 			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
 
-			.process(checkMsgTypeProcessor).id("process1")   // set header.hdr_msgType
-
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					BusinessMessage inputMsg = exchange.getMessage().getBody(BusinessMessage.class);
+					String trnType = inputMsg.getAppHdr().getBizMsgIdr().substring(16,19);
+					if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) {
+						trnType = "SETTLEMENT";
+					}
+					exchange.getMessage().setHeader("hdr_msgType", trnType);
+				} }).id("process1")
+			
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] received.")
 
 			.choice().id("forward_msgtype")
@@ -87,20 +91,12 @@ public class InboundRoute extends RouteBuilder {
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '010'")    // terima credit transfer
-//					.marshal(jsonBusinessMessageDataFormat)
-//					.process(creditTransferProcessor)
 					.to("direct:crdttransfer")
-//					.unmarshal(jsonBusinessMessageDataFormat)
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '011'")     // reverse CT
 					.process(creditTransferProcessor)
 					.setHeader("hdr_toBIobj", simple("${body}"))
-
-				.when().simple("${header.hdr_msgType} == '019'")     // FI CT
-					.process(fICreditTransferProcessor)
-					.setHeader("hdr_toBIobj", simple("${body}"))
-
 
 				.otherwise()	
 					.log("[Inbound] Message ${header.hdr_msgType} tidak dikenal")

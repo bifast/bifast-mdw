@@ -20,6 +20,7 @@ import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 import bifast.outbound.ficredittransfer.processor.SaveFICreditTransferProcessor;
 import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
+import bifast.outbound.proxyregistration.processor.StoreProxyRegistrationProcessor;
 import bifast.outbound.service.UtilService;
 
 @Component
@@ -35,6 +36,8 @@ public class CihubRoute extends RouteBuilder {
 	private StoreCreditTransferProcessor storeCreditTransferProcessor;
 	@Autowired
 	private StorePaymentStatusProcessor storePaymentStatusProcessor;
+	@Autowired
+	private StoreProxyRegistrationProcessor storeProxyRegistrationProcessor;
 	@Autowired
 	private SaveFICreditTransferProcessor saveFICreditTransferProcessor;
 	@Autowired
@@ -68,7 +71,7 @@ public class CihubRoute extends RouteBuilder {
 
 			.marshal(businessMessageJDF)
 
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] Post ${header.hdr_trxname} request: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChReq:${header.hdr_chnlRefId}] Post ${header.hdr_trxname} request: ${body}")
 	
 			.setHeader("tmp_body", simple("${body}"))
 			.marshal().zipDeflater()
@@ -84,7 +87,7 @@ public class CihubRoute extends RouteBuilder {
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)				
-				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] CI-HUB response: ${body}")
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChReq:${header.hdr_chnlRefId}] CI-HUB response: ${body}")
 	
 				.setHeader("tmp_body", simple("${body}"))
 				.marshal().zipDeflater()
@@ -96,13 +99,13 @@ public class CihubRoute extends RouteBuilder {
 				.setHeader("hdr_error_status", constant(null))
 	
 			.doCatch(SocketTimeoutException.class)
-				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Timeout")
+				.log(LoggingLevel.ERROR, "[ChReq:${header.hdr_chnlRefId}] Call CI-HUB Timeout")
 				.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
 				.setHeader("hdr_error_mesg", constant("Timeout menunggu response dari CIHUB"))
 		    	.setBody(constant(null))
 	
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Error.")
+				.log(LoggingLevel.ERROR, "[ChReq:${header.hdr_chnlRefId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
 				.setHeader("hdr_error_mesg", simple("${exception.message}"))
@@ -123,6 +126,8 @@ public class CihubRoute extends RouteBuilder {
 					.process(saveFICreditTransferProcessor)
 				.when().simple("${header.hdr_trxname} == 'PaymentStatusRequest'")
 					.process(storePaymentStatusProcessor)
+				.when().simple("${header.hdr_trxname} == 'ProxyRegistrationRequest'")
+					.process(storeProxyRegistrationProcessor)
 			.end()
 
 			.removeHeaders("tmp_*")

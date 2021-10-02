@@ -3,129 +3,132 @@ package bifast.library.iso20022.service;
 public class Proxy001Seed {
 	
 	private String msgId;
-	private String trnType; 
-	private String bizMsgId;
 	
-	private String proxyTp;
-	private String proxyVal;
+	private String senderAccountNumber;
+
+	private String registrationType;
+
+	private String proxyType;
+	private String proxyValue;
 	
-	protected String regnTp;
-    protected String regnId;
-    protected String dsplNm;
+	private String registrationId;
+       
+	private String registerDisplayName;
+	private String registerAgentId;
+	private String registerAccountNumber;
+	private String registerAccountType;
+	private String registerAccountName;
+	
+	private String registerSecondIdType;
+	private String registerSecondIdValue;
     
-    protected String accNumber;
-    protected String accTpPrtry;
-    protected String accName;
-    
-    protected String scndIdTp;
-    protected String scndIdVal;
-    
-    protected String cstmrId;
-    protected String cstmrTp;
-    protected String cstmrRsdntSts;
-    protected String cstmrTwnNm;
-    
+	private String customerId;
+	private String customerType;
+	private String residentialStatus;
+	private String townName;
+	
 	public String getMsgId() {
 		return msgId;
 	}
 	public void setMsgId(String msgId) {
 		this.msgId = msgId;
 	}
-	public String getTrnType() {
-		return trnType;
+	public String getSenderAccountNumber() {
+		return senderAccountNumber;
 	}
-	public void setTrnType(String trnType) {
-		this.trnType = trnType;
+	public void setSenderAccountNumber(String senderAccountNumber) {
+		this.senderAccountNumber = senderAccountNumber;
 	}
-	public String getBizMsgId() {
-		return bizMsgId;
+	public String getRegistrationType() {
+		return registrationType;
 	}
-	public void setBizMsgId(String bizMsgId) {
-		this.bizMsgId = bizMsgId;
+	public void setRegistrationType(String registrationType) {
+		this.registrationType = registrationType;
 	}
-	public String getProxyTp() {
-		return proxyTp;
+	public String getProxyType() {
+		return proxyType;
 	}
-	public void setProxyTp(String proxyTp) {
-		this.proxyTp = proxyTp;
+	public void setProxyType(String proxyType) {
+		this.proxyType = proxyType;
 	}
-	public String getProxyVal() {
-		return proxyVal;
+	public String getProxyValue() {
+		return proxyValue;
 	}
-	public void setProxyVal(String proxyVal) {
-		this.proxyVal = proxyVal;
+	public void setProxyValue(String proxyValue) {
+		this.proxyValue = proxyValue;
 	}
-	public String getRegnTp() {
-		return regnTp;
+	public String getRegistrationId() {
+		return registrationId;
 	}
-	public void setRegnTp(String regnTp) {
-		this.regnTp = regnTp;
+	public void setRegistrationId(String registrationId) {
+		this.registrationId = registrationId;
 	}
-	public String getRegnId() {
-		return regnId;
+	public String getRegisterDisplayName() {
+		return registerDisplayName;
 	}
-	public void setRegnId(String regnId) {
-		this.regnId = regnId;
+	public void setRegisterDisplayName(String registerDisplayName) {
+		this.registerDisplayName = registerDisplayName;
 	}
-	public String getDsplNm() {
-		return dsplNm;
+	public String getRegisterAgentId() {
+		return registerAgentId;
 	}
-	public void setDsplNm(String dsplNm) {
-		this.dsplNm = dsplNm;
+	public void setRegisterAgentId(String registerAgentId) {
+		this.registerAgentId = registerAgentId;
 	}
-	public String getAccNumber() {
-		return accNumber;
+	public String getRegisterAccountNumber() {
+		return registerAccountNumber;
 	}
-	public void setAccNumber(String accNumber) {
-		this.accNumber = accNumber;
+	public void setRegisterAccountNumber(String registerAccountNumber) {
+		this.registerAccountNumber = registerAccountNumber;
 	}
-	public String getAccTpPrtry() {
-		return accTpPrtry;
+	public String getRegisterAccountType() {
+		return registerAccountType;
 	}
-	public void setAccTpPrtry(String accTpPrtry) {
-		this.accTpPrtry = accTpPrtry;
+	public void setRegisterAccountType(String registerAccountType) {
+		this.registerAccountType = registerAccountType;
 	}
-	public String getAccName() {
-		return accName;
+	public String getRegisterAccountName() {
+		return registerAccountName;
 	}
-	public void setAccName(String accName) {
-		this.accName = accName;
+	public void setRegisterAccountName(String registerAccountName) {
+		this.registerAccountName = registerAccountName;
 	}
-	public String getScndIdTp() {
-		return scndIdTp;
+	public String getRegisterSecondIdType() {
+		return registerSecondIdType;
 	}
-	public void setScndIdTp(String scndIdTp) {
-		this.scndIdTp = scndIdTp;
+	public void setRegisterSecondIdType(String registerSecondIdType) {
+		this.registerSecondIdType = registerSecondIdType;
 	}
-	public String getScndIdVal() {
-		return scndIdVal;
+	public String getRegisterSecondIdValue() {
+		return registerSecondIdValue;
 	}
-	public void setScndIdVal(String scndIdVal) {
-		this.scndIdVal = scndIdVal;
+	public void setRegisterSecondIdValue(String registerSecondIdValue) {
+		this.registerSecondIdValue = registerSecondIdValue;
 	}
-	public String getCstmrId() {
-		return cstmrId;
+	public String getCustomerId() {
+		return customerId;
 	}
-	public void setCstmrId(String cstmrId) {
-		this.cstmrId = cstmrId;
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
 	}
-	public String getCstmrTp() {
-		return cstmrTp;
+	public String getCustomerType() {
+		return customerType;
 	}
-	public void setCstmrTp(String cstmrTp) {
-		this.cstmrTp = cstmrTp;
+	public void setCustomerType(String customerType) {
+		this.customerType = customerType;
 	}
-	public String getCstmrRsdntSts() {
-		return cstmrRsdntSts;
+	public String getResidentialStatus() {
+		return residentialStatus;
 	}
-	public void setCstmrRsdntSts(String cstmrRsdntSts) {
-		this.cstmrRsdntSts = cstmrRsdntSts;
+	public void setResidentialStatus(String residentialStatus) {
+		this.residentialStatus = residentialStatus;
 	}
-	public String getCstmrTwnNm() {
-		return cstmrTwnNm;
+	public String getTownName() {
+		return townName;
 	}
-	public void setCstmrTwnNm(String cstmrTwnNm) {
-		this.cstmrTwnNm = cstmrTwnNm;
+	public void setTownName(String townName) {
+		this.townName = townName;
 	}
-    
+	
+
 }

@@ -22,7 +22,7 @@ public class ChannelResponseWrapper {
 //	@JsonProperty("PaymentStatusRequest")
 //	private ChnlPaymentStatusRequestPojo paymentStatusRequest;
 	
-	@JsonProperty("ProxyRegistrationRequest")
+	@JsonProperty("ProxyRegistrationResponse")
 	private ChnlProxyRegistrationResponse proxyRegistrationResponse;
 	
 	@JsonProperty("ProxyResolutionRequest")

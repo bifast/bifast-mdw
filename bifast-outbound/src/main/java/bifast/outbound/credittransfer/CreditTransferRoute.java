@@ -119,33 +119,34 @@ public class CreditTransferRoute extends RouteBuilder {
 
 		;
 		
-		from("direct:ctreq").routeId("komi.ct.start")
-		
-			.setHeader("ct_channelRequest", simple("${body}"))
-			
-			// Account Enquiry dulu
-			.process(buildAERequestProcessor)
-			.to("direct:acctenqr")
-			// check hasilnya
-			.filter().simple("${body.accountEnquiryResponse} != null")
-				.choice()
-					.when().simple("${body.accountEnquiryResponse.status} == 'ACTC'")
-						.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChnlReq:${header.hdr_chnlRefId}] AE passed.")
-						.to("direct:ct_aepass")
-					.otherwise()
-						.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChnlReq:${header.hdr_chnlRefId}] AE reject.")
-						.setHeader("ct_failure_point", constant("AERJCT"))
-						.process(crdtTransferResponseProcessor)
-				    	.setHeader("hdr_error_status", constant("REJECT-CIHUB"))
-				    	.setHeader("hdr_error_mesg", constant("Account Enquiry reject."))
-				.endChoice()
-			.end()
-			
-			.removeHeaders("ct_*")
-			.removeHeaders("resp_*")
-			;
+//		from("direct:ctreq").routeId("komi.ct.start")
+//		
+//			.setHeader("ct_channelRequest", simple("${body}"))
+//			
+//			// Account Enquiry dulu
+//			.process(buildAERequestProcessor)
+//			.to("direct:acctenqr")
+//			// check hasilnya
+//			.filter().simple("${body.accountEnquiryResponse} != null")
+//				.choice()
+//					.when().simple("${body.accountEnquiryResponse.status} == 'ACTC'")
+//						.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChnlReq:${header.hdr_chnlRefId}] AE passed.")
+//						.to("direct:ct_aepass")
+//					.otherwise()
+//						.log(LoggingLevel.DEBUG, "komi.ct.start", "[ChnlReq:${header.hdr_chnlRefId}] AE reject.")
+//						.setHeader("ct_failure_point", constant("AERJCT"))
+//						.process(crdtTransferResponseProcessor)
+//				    	.setHeader("hdr_error_status", constant("REJECT-CIHUB"))
+//				    	.setHeader("hdr_error_mesg", constant("Account Enquiry reject."))
+//				.endChoice()
+//			.end()
+//			
+//			.removeHeaders("ct_*")
+//			.removeHeaders("resp_*")
+//			;
 		
 		from("direct:ct_aepass").routeId("komi.ct.afterAERoute")
+			.setHeader("ct_channelRequest", simple("${body}"))
 
 			.log(LoggingLevel.DEBUG, "komi.ct.afterAERoute", "[ChnlReq:${header.hdr_chnlRefId}] direct:ct_aepass...")
 

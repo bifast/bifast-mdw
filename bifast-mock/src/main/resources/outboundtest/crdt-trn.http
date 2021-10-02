@@ -16,21 +16,22 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "orignReffId" : "14245",
-    "channel" : "Internet Banking",
-    "categoryPurpose" : "Investment",
-    "amount" : 438417,
-    "crdtAccountNo" : "871551",
-    "crdtAccountType" : "SVGS",
-    "dbtrIdType" : "01",    
-    "dbtrName": "Andrea Suo",
-    "dbtrId" : "64145",
-    "dbtrAccountNo" : "7744404",
-    "dbtrAccountType" : "CACC",
-    "recptBank" : "014",
-    "crdtIdType" : "02",   
-    "crdtName": "FARHAN AI",
-    "crdtId" : "C224403"
+    "TransactionId" : "156652",
+    "Channel" : "Internet Banking",
+    "CategoryPurpose" : "Investment",
+    "DebtorId" : "64145",
+    "DebtorIdType" : "01",
+    "DebtorAccountNumber" : "7744404",
+    "DebtorAccountType" : "CACC",
+    "Amount" : 438417,
+    "RecipientBank" : "014",
+    "CreditorId" : "C224403",
+    "CreditorIdType" : "01",
+    "CreditorAccountNumber" : "174551",
+    "CreditorAccountType" : "SVGS",
+    "CreditorProxyType" : "02", 
+    "CreditorProxyValue" : "fariz@gmail.com",
+    "PaymentInfo" : "untuk bayaran"
   }
 }
 
@@ -113,4 +114,136 @@ Content-Type: application/json
 POST http://localhost:9006/mock/cihub HTTP/1.1
 Content-Type: application/json
 
+{
+  "BusMsg": {
+    "AppHdr": {
+      "Fr": {
+        "Fiid": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "SIHBIDJ1"
+            }
+          }
+        }
+      },
+      "To": {
+        "Fiid": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "CENAIDJA"
+            }
+          }
+        }
+      },
+      "BizMsgIdr": "20210928SIHBIDJ1010O0100000026",
+      "MsgDefIdr": "pacs.008.001.08",
+      "CreDt": "2021-09-28T21:34:20"
+    },
+    "Document": {
+      "FitoFICstmrCdtTrf": {
+        "GrpHdr": {
+          "MsgId": "20210928SIHBIDJ101000000027",
+          "CreDtTm": "2021-09-28T21:34:20",
+          "NbOfTxs": "1",
+          "SttlmInf": {
+            "SttlmMtd": "CLRG"
+          }
+        },
+        "CdtTrfTxInf": [
+          {
+            "PmtId": {
+              "EndToEndId": "20210928SIHBIDJ1010O0100000026",
+              "TxId": "20210928SIHBIDJ101000000027"
+            },
+            "PmtTpInf": {
+              "LclInstrm": {
+                "Prtry": "01"
+              },
+              "CtgyPurp": {
+                "Prtry": "01"
+              }
+            },
+            "IntrBkSttlmAmt": {
+              "Value": "438417.00",
+              "Ccy": "IDR"
+            },
+            "ChrgBr": "DEBT",
+            "Dbtr": {
+              "Nm": "Andrea Suo",
+              "Id": {
+                "PrvtId": {
+                  "Othr": [
+                    {
+                      "Id": "64145"
+                    }
+                  ]
+                }
+              }
+            },
+            "DbtrAcct": {
+              "Id": {
+                "Othr": {
+                  "Id": "7744404"
+                }
+              },
+              "Tp": {
+                "Prtry": "CACC"
+              }
+            },
+            "DbtrAgt": {
+              "FinInstnId": {
+                "Othr": {
+                  "Id": "SIHBIDJ1"
+                }
+              }
+            },
+            "CdtrAgt": {
+              "FinInstnId": {
+                "Othr": {
+                  "Id": "CENAIDJA"
+                }
+              }
+            },
+            "Cdtr": {
+              "Nm": "FARHAN AI",
+              "Id": {
+                "OrgId": {
+                  "Othr": [
+                    {
+                      "Id": "C224403"
+                    }
+                  ]
+                }
+              }
+            },
+            "CdtrAcct": {
+              "Id": {
+                "Othr": {
+                  "Id": "8071551"
+                }
+              },
+              "Tp": {
+                "Prtry": "SVGS"
+              }
+            },
+            "SplmtryData": [
+              {
+                "Envlp": {
+                  "Dbtr": {
+                    "Tp": "01"
+                  },
+                  "Cdtr": {
+                    "Tp": "02"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+
+###
 {"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"BizMsgIdr":"20210928SIHBIDJ1010O0100000026","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-09-28T21:34:20"},"Document":{"FitoFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20210928SIHBIDJ101000000027","CreDtTm":"2021-09-28T21:34:20","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20210928SIHBIDJ1010O0100000026","TxId":"20210928SIHBIDJ101000000027"},"PmtTpInf":{"LclInstrm":{"Prtry":"01"},"CtgyPurp":{"Prtry":"01"}},"IntrBkSttlmAmt":{"Value":"438417.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{"Nm":"Andrea Suo","Id":{"PrvtId":{"Othr":[{"Id":"64145"}]}}},"DbtrAcct":{"Id":{"Othr":{"Id":"7744404"}},"Tp":{"Prtry":"CACC"}},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"Cdtr":{"Nm":"FARHAN AI","Id":{"OrgId":{"Othr":[{"Id":"C224403"}]}}},"CdtrAcct":{"Id":{"Othr":{"Id":"8071551"}},"Tp":{"Prtry":"SVGS"}},"SplmtryData":[{"Envlp":{"Dbtr":{"Tp":"01"},"Cdtr":{"Tp":"02"}}}]}]}}}}

@@ -1,20 +1,47 @@
 package bifast.outbound.accountenquiry.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("AccountEnquiryResponse")
+@JsonPropertyOrder({"orignReffId"
+					,"status"
+					,"reason"
+					,"creditorAccountNumber"
+					,"creditorAccountType"
+					,"creditorId"
+					})
 public class ChnlAccountEnquiryResponsePojo {
 
+	@JsonProperty("TransactionId")
 	private String orignReffId;
 
+	@JsonProperty("Status")
 	private String status;
-	private String reason;
 	
+	@JsonProperty("Reason")
+	private String reason;
+
+	@JsonProperty("AccountNumber")
+	private String creditorAccountNumber;
+
+	@JsonProperty("AccountType")
 	private String creditorAccountType;
+
+	@JsonProperty("CreditorName")
 	private String creditorName;
+	
+	@JsonProperty("CreditorId")
 	private String creditorId;
+	
+	@JsonProperty("CreditorType")
 	private String creditorType;
+	
+	@JsonProperty("ResidentStatus")
 	private String creditorResidentStatus;
+	
+	@JsonProperty("TownName")
 	private String creditorTownName;
 	
 //	private FaultResponse fault;
@@ -54,6 +81,12 @@ public class ChnlAccountEnquiryResponsePojo {
 	}
 	public void setCreditorId(String creditorId) {
 		this.creditorId = creditorId;
+	}
+	public String getCreditorAccountNumber() {
+		return creditorAccountNumber;
+	}
+	public void setCreditorAccountNumber(String creditorAccountNumber) {
+		this.creditorAccountNumber = creditorAccountNumber;
 	}
 	public String getCreditorType() {
 		return creditorType;

@@ -5,30 +5,23 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("ProxyRegistrationResponse")
 public class ChnlProxyRegistrationResponse {
 
-	private String orignReffId;
-	private String bizMsgId;
-	private String responseType;
+	private String intrnRefId;
+	private String registrationId;
 
 	private String status;
 	private String reason;
 	
-	public String getOrignReffId() {
-		return orignReffId;
+	public String getIntrnRefId() {
+		return intrnRefId;
 	}
-	public void setOrignReffId(String orignReffId) {
-		this.orignReffId = orignReffId;
+	public void setIntrnRefId(String intrnRefId) {
+		this.intrnRefId = intrnRefId;
 	}
-	public String getBizMsgId() {
-		return bizMsgId;
+	public String getRegistrationId() {
+		return registrationId;
 	}
-	public void setBizMsgId(String bizMsgId) {
-		this.bizMsgId = bizMsgId;
-	}
-	public String getResponseType() {
-		return responseType;
-	}
-	public void setResponseType(String responseType) {
-		this.responseType = responseType;
+	public void setRegistrationId(String registrationId) {
+		this.registrationId = registrationId;
 	}
 	public String getStatus() {
 		return status;
@@ -42,6 +35,7 @@ public class ChnlProxyRegistrationResponse {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
+	
 
 
 }

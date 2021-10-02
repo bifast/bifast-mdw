@@ -30,7 +30,7 @@ public class CTCorebankRequestProcessor implements Processor {
 		BigDecimal amount = chnlCTRequest.getAmount();
 		cbDebitRequest.setAmount(df.format(amount));
 
-		cbDebitRequest.setDebtorName(chnlCTRequest.getDbtrName());
+//		cbDebitRequest.setDebtorName(chnlCTRequest.getDbtrName());
 		
 		cbDebitRequest.setPaymentInfo(chnlCTRequest.getPaymentInfo());
 		

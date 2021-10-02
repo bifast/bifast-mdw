@@ -99,9 +99,9 @@ public class SaveTableChannelProcessor implements Processor {
 
 			chnlTable.setAmount(channelRequest.getAmount());
 		
-			chnlTable.setCreditorAccountName(channelRequest.getCrdtName());
+//			chnlTable.setCreditorAccountName(channelRequest.getCrdtName());
 			chnlTable.setCreditorAccountNumber(channelRequest.getCrdtAccountNo());
-			chnlTable.setDebtorAccountName(channelRequest.getDbtrName());
+//			chnlTable.setDebtorAccountName(channelRequest.getDbtrName());
 			chnlTable.setDebtorAccountNumber(channelRequest.getDbtrAccountNo());
 			chnlTable.setRequestTime(LocalDateTime.now());
 //			chnlTable.setStatus(msgType);
@@ -164,8 +164,8 @@ public class SaveTableChannelProcessor implements Processor {
 //			chnlTable.setAmount(channelRequest.getAmount());
 //			chnlTable.setCreditorAccountName(channelRequest.getCrdtName());
 //			chnlTable.setCreditorAccountNumber(channelRequest.getCrdtAccountNo());
-			chnlTable.setDebtorAccountName(channelRequest.getAccName());
-			chnlTable.setDebtorAccountNumber(channelRequest.getAccNumber());
+			chnlTable.setDebtorAccountName(channelRequest.getRegisterAccountName());
+			chnlTable.setDebtorAccountNumber(channelRequest.getRegisterAccountNumber());
 //			chnlTable.setRecptBank(channelRequest.getRecptBank());
 			chnlTable.setRequestTime(LocalDateTime.now());
 //			chnlTable.setStatus(msgType);

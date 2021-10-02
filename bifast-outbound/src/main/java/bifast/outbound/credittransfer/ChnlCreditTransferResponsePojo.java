@@ -1,22 +1,44 @@
 package bifast.outbound.credittransfer;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("CreditTransferResponse")
+@JsonPropertyOrder({"orignReffId"
+	,"bizMsgId"
+	,"status"
+	,"reason"
+	,"creditorName"
+	,"creditorAccountType"
+	,"creditorId"
+	})
 public class ChnlCreditTransferResponsePojo {
 
+	@JsonProperty("TransactionId")
 	private String orignReffId;
+
+	@JsonProperty("BizMsgId")
 	private String bizMsgId;
 
+	@JsonProperty("Status")
 	private String status;
+	
+	@JsonProperty("Reason")
 	private String reason;
+	
+	@JsonProperty("AddtInfo")
 	private String addtInfo;
 	
+	@JsonProperty("CreditorName")
 	private String creditorName;
+	
+	@JsonProperty("CreditorId")
 	private String creditorId;
+	@JsonProperty("CreditorType")
 	private String creditorType;
-	private String creditorResidentStatus;
-	private String creditorTownName;
+//	private String creditorResidentStatus;
+//	private String creditorTownName;
 	
 	public String getOrignReffId() {
 		return orignReffId;
@@ -66,18 +88,18 @@ public class ChnlCreditTransferResponsePojo {
 	public void setCreditorType(String creditorType) {
 		this.creditorType = creditorType;
 	}
-	public String getCreditorResidentStatus() {
-		return creditorResidentStatus;
-	}
-	public void setCreditorResidentStatus(String creditorResidentStatus) {
-		this.creditorResidentStatus = creditorResidentStatus;
-	}
-	public String getCreditorTownName() {
-		return creditorTownName;
-	}
-	public void setCreditorTownName(String creditorTownName) {
-		this.creditorTownName = creditorTownName;
-	}
+//	public String getCreditorResidentStatus() {
+//		return creditorResidentStatus;
+//	}
+//	public void setCreditorResidentStatus(String creditorResidentStatus) {
+//		this.creditorResidentStatus = creditorResidentStatus;
+//	}
+//	public String getCreditorTownName() {
+//		return creditorTownName;
+//	}
+//	public void setCreditorTownName(String creditorTownName) {
+//		this.creditorTownName = creditorTownName;
+//	}
 
 	
 }

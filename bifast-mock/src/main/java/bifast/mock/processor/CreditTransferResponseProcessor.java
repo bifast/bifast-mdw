@@ -1,7 +1,5 @@
 package bifast.mock.processor;
 
-import java.util.Random;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +12,6 @@ import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
-import bifast.mock.persist.MockPacs002;
-import bifast.mock.persist.MockPacs002Repository;
 
 @Component
 public class CreditTransferResponseProcessor implements Processor{
@@ -47,7 +43,7 @@ public class CreditTransferResponseProcessor implements Processor{
 		if (norek.startsWith("5")) {
 			seed.setStatus("RJCT");
 			seed.setReason("U001");
-			seed.setAdditionalInfo("Haati hati banyak penipuan");
+			seed.setAdditionalInfo("Additional Info abbc lsdjf 46");
 		}
 		else {
 			seed.setStatus("ACTC");
@@ -71,7 +67,7 @@ public class CreditTransferResponseProcessor implements Processor{
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"pacs.002.001.10", bizMsgId);
-		hdr.setBizSvc("CTRESPONSE");
+		hdr.setBizSvc("CLEAR");
 		
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);

@@ -57,7 +57,7 @@ public class Pacs009MessageService {
 
 		// CdtTrfTxInf / PmtTpInf
 		CategoryPurpose1Choice ctgyPurp = new CategoryPurpose1Choice();
-		ctgyPurp.setPrtry("99");
+		ctgyPurp.setPrtry("01999");
 		PaymentTypeInformation28 pmtTpInf = new PaymentTypeInformation28();
 		pmtTpInf.setCtgyPurp(ctgyPurp);
 		cdtTrfTx.setPmtTpInf(pmtTpInf);

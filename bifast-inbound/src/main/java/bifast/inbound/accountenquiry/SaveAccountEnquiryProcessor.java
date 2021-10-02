@@ -1,6 +1,5 @@
 package bifast.inbound.accountenquiry;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.camel.Exchange;
@@ -26,6 +25,7 @@ public class SaveAccountEnquiryProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
+		@SuppressWarnings("unchecked")
 		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY,List.class);
 		
 		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");

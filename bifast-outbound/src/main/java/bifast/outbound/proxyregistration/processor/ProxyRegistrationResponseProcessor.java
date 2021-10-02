@@ -29,15 +29,12 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 
 			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
 
-			reject.setReferenceId(chnRequest.getOrignReffId());
+			reject.setReferenceId(chnRequest.getIntrnRefId());
 			
 			String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
 			String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
 			reject.setReason(errorStatus);
 			reject.setDescription(errorMesg);
-			
-//			reject.setLocation(rejectResp.getRsn().getErrLctn());
-//			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
 	
 			channelResponseWr.setFaultResponse(reject);
 			exchange.getIn().setBody(channelResponseWr);
@@ -49,11 +46,13 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 			ChnlProxyRegistrationResponse chnResponse = new ChnlProxyRegistrationResponse();
 			ProxyRegistrationResponseV01 biResp = prxyRegnResponse.getDocument().getPrxyRegnRspn();
 
-			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
+			chnResponse.setIntrnRefId(chnRequest.getIntrnRefId());
 			
 			// from CI-HUB response
-			chnResponse.setBizMsgId(prxyRegnResponse.getAppHdr().getBizMsgIdr());
-//			chnResponse.setResponseType(prxyRegnResponse.getAppHdr().getBizSvc());
+			if (biResp.getRegnRspn().getPrxyRegn().size() > 0) 
+				if (!(null == biResp.getRegnRspn().getPrxyRegn().get(0).getRegnId()))
+					chnResponse.setRegistrationId(biResp.getRegnRspn().getPrxyRegn().get(0).getRegnId());
+			
 			
 			chnResponse.setStatus(biResp.getRegnRspn().getPrxRspnSts().toString());
 			chnResponse.setReason(biResp.getRegnRspn().getStsRsnInf().getPrtry());

@@ -57,7 +57,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", bizMsgId);
+									"prxy.002.001.01", bizMsgId);
 		Document doc = new Document();
 		doc.setPrxyRegnRspn(response);
 		BusinessMessage busMesg = new BusinessMessage();

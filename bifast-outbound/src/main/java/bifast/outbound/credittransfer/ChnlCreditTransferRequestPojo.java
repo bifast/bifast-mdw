@@ -2,36 +2,57 @@ package bifast.outbound.credittransfer;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("CreditTransferRequest")
 public class ChnlCreditTransferRequestPojo {
 
+	@JsonProperty("TransactionId")
 	private String orignReffId;
+	@JsonProperty("Channel")
 	private String channel; //    CrdtTrn
+	
+	@JsonProperty("CategoryPurpose")
 	private String categoryPurpose; //  CrdtTrn
-	private String orgnlEndToEndId;
 
-	private BigDecimal amount; // AcctEnq CrdtTrn
-	private String recptBank; //  AcctEnq  CrdtTrn
-	
+	@JsonProperty("DebtorId")
 	private String dbtrId;   // CrdtTrn
-	private String dbtrName;  //optional
+	@JsonProperty("DebtorIdType")
 	private String dbtrIdType;  // CrdtTrn
+	@JsonProperty("DebtorAccountNumber")
 	private String dbtrAccountNo;  // CrdtTrn
+	@JsonProperty("DebtorAccountType")
 	private String dbtrAccountType; // CrdtTrn
+
+	@JsonProperty("Amount")
+	private BigDecimal amount; // AcctEnq CrdtTrn
 	
+	@JsonProperty("RecipientBank")
+	private String recptBank; //  AcctEnq  CrdtTrn
+
+//	private String dbtrName;  //optional
+	
+	@JsonProperty("CreditorId")
 	private String crdtId;  // CrdtTrn
-	private String crdtName; //optional
+	@JsonProperty("CreditorIdType")
 	private String crdtIdType; // CrdtTrn
+	@JsonProperty("CreditorAccountNumber")
 	private String crdtAccountNo;   // AcctEnq CrdtTrn
+	@JsonProperty("CreditorAccountType")
 	private String crdtAccountType;  // CrdtTrn
+//	private String crdtName; //optional
 	
+	@JsonProperty("CreditorProxyType")
 	private String crdtProxyIdType;
+	@JsonProperty("CreditorProxyValue")
 	private String crdtProxyIdValue;
 	
+	@JsonProperty("PaymentInfo")
 	private String paymentInfo;  // CrdtTrn
-	
+
+	private String orgnlEndToEndId;
+
 	public ChnlCreditTransferRequestPojo() {}
 
 	public String getOrignReffId() {
@@ -40,22 +61,6 @@ public class ChnlCreditTransferRequestPojo {
 
 	public void setOrignReffId(String orignReffId) {
 		this.orignReffId = orignReffId;
-	}
-
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
-
-	public String getRecptBank() {
-		return recptBank;
-	}
-
-	public void setRecptBank(String recptBank) {
-		this.recptBank = recptBank;
 	}
 
 	public String getChannel() {
@@ -74,28 +79,12 @@ public class ChnlCreditTransferRequestPojo {
 		this.categoryPurpose = categoryPurpose;
 	}
 
-	public String getOrgnlEndToEndId() {
-		return orgnlEndToEndId;
-	}
-
-	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
-		this.orgnlEndToEndId = orgnlEndToEndId;
-	}
-
 	public String getDbtrId() {
 		return dbtrId;
 	}
 
 	public void setDbtrId(String dbtrId) {
 		this.dbtrId = dbtrId;
-	}
-
-	public String getDbtrName() {
-		return dbtrName;
-	}
-
-	public void setDbtrName(String dbtrName) {
-		this.dbtrName = dbtrName;
 	}
 
 	public String getDbtrIdType() {
@@ -122,20 +111,28 @@ public class ChnlCreditTransferRequestPojo {
 		this.dbtrAccountType = dbtrAccountType;
 	}
 
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
+	public String getRecptBank() {
+		return recptBank;
+	}
+
+	public void setRecptBank(String recptBank) {
+		this.recptBank = recptBank;
+	}
+
 	public String getCrdtId() {
 		return crdtId;
 	}
 
 	public void setCrdtId(String crdtId) {
 		this.crdtId = crdtId;
-	}
-
-	public String getCrdtName() {
-		return crdtName;
-	}
-
-	public void setCrdtName(String crdtName) {
-		this.crdtName = crdtName;
 	}
 
 	public String getCrdtIdType() {
@@ -184,6 +181,14 @@ public class ChnlCreditTransferRequestPojo {
 
 	public void setPaymentInfo(String paymentInfo) {
 		this.paymentInfo = paymentInfo;
+	}
+
+	public String getOrgnlEndToEndId() {
+		return orgnlEndToEndId;
+	}
+
+	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
+		this.orgnlEndToEndId = orgnlEndToEndId;
 	}
 
 	

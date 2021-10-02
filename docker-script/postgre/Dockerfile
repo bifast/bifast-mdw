@@ -5,5 +5,5 @@ ENV POSTGRES_DB=komidb
 COPY setupdb.sql /docker-entrypoint-initdb.d/
 VOLUME /var/lib/postgresql/data
 
-# docker build -t fransmzh/komi-db:1.4 .
-# docker push fransmzh/komi-db:1.4
+# docker build -t fransmzh/komi-db:1.5 .
+# docker push fransmzh/komi-db:1.5

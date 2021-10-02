@@ -46,7 +46,7 @@ public class AccountEnquiryRequestProcessor implements Processor {
 		seedAcctEnquiry.setMsgId(msgId);
 		seedAcctEnquiry.setBizMsgId(hdr.getBizMsgIdr());
 		seedAcctEnquiry.setAmount(chnReq.getAmount());
-		seedAcctEnquiry.setCategoryPurpose(chnReq.getCategoryPurpose());
+		seedAcctEnquiry.setCategoryPurpose(msgType + chnReq.getCategoryPurpose());
 		seedAcctEnquiry.setCrdtAccountNo(chnReq.getCreditorAccountNumber());
 		seedAcctEnquiry.setOrignBank(config.getBankcode());
 		seedAcctEnquiry.setRecptBank(chnReq.getRecptBank());
