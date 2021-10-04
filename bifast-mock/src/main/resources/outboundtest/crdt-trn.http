@@ -16,18 +16,18 @@ Content-Type: application/json
 
 {
   "CreditTransferRequest" : {
-    "TransactionId" : "156652",
+    "TransactionId" : "211110",
     "Channel" : "Internet Banking",
     "CategoryPurpose" : "Investment",
     "DebtorId" : "64145",
     "DebtorIdType" : "01",
-    "DebtorAccountNumber" : "7744404",
+    "DebtorAccountNumber" : "5447304",
     "DebtorAccountType" : "CACC",
-    "Amount" : 438417,
+    "Amount" : 434700,
     "RecipientBank" : "014",
     "CreditorId" : "C224403",
     "CreditorIdType" : "01",
-    "CreditorAccountNumber" : "174551",
+    "CreditorAccountNumber" : "88174551",
     "CreditorAccountType" : "SVGS",
     "CreditorProxyType" : "02", 
     "CreditorProxyValue" : "fariz@gmail.com",
