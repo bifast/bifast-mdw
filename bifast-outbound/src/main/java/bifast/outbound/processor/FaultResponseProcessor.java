@@ -2,6 +2,7 @@ package bifast.outbound.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,7 @@ public class FaultResponseProcessor implements Processor {
 			reject.setLocation(hdrLocation);
 
 		Exception e = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
+
 		if (null == e) {
 			reject.setReason("General error");
 			reject.setDescription("Check ke error log");			

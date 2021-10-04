@@ -2,22 +2,28 @@ package bifast.outbound.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
+import bifast.outbound.corebank.CBDebitInstructionResponsePojo;
 import bifast.outbound.credittransfer.ChnlCreditTransferResponsePojo;
-import bifast.outbound.ficredittransfer.ChnlFICreditTransferResponsePojo;
 import bifast.outbound.proxyregistration.ChnlProxyRegistrationResponse;
 import bifast.outbound.proxyregistration.ChnlProxyResolutionResponse;
 
 public class ChannelResponseWrapper {
 
+	@JsonProperty("DebitResponse")
+	private CBDebitInstructionResponsePojo cbDebitInstructionResponse;
+
 	@JsonProperty("AccountEnquiryResponse")
 	private ChnlAccountEnquiryResponsePojo accountEnquiryResponse;
 	
 	@JsonProperty("CreditTransferResponse")
-	private ChnlCreditTransferResponsePojo creditTransferResponse;
+	private ChnlCreditTransferResponsePojo chnlCreditTransferResponse;
 	
-	@JsonProperty("FICreditTransferResponse")
-	private ChnlFICreditTransferResponsePojo fiCreditTransferResponse;
+	@JsonProperty("CreditTransfer")
+	private BusinessMessage creditTransferResponse;
+	private BusinessMessage settlementResponse;
+	private BusinessMessage paymentStatusResponse;
 	
 //	@JsonProperty("PaymentStatusRequest")
 //	private ChnlPaymentStatusRequestPojo paymentStatusRequest;
@@ -31,6 +37,14 @@ public class ChannelResponseWrapper {
 	@JsonProperty("FailureResponse")
 	private ChnlFailureResponsePojo faultResponse;
 
+	public CBDebitInstructionResponsePojo getCbDebitInstructionResponse() {
+		return cbDebitInstructionResponse;
+	}
+
+	public void setCbDebitInstructionResponse(CBDebitInstructionResponsePojo cbDebitInstructionResponse) {
+		this.cbDebitInstructionResponse = cbDebitInstructionResponse;
+	}
+
 	public ChnlAccountEnquiryResponsePojo getAccountEnquiryResponse() {
 		return accountEnquiryResponse;
 	}
@@ -39,20 +53,36 @@ public class ChannelResponseWrapper {
 		this.accountEnquiryResponse = accountEnquiryResponse;
 	}
 
-	public ChnlCreditTransferResponsePojo getCreditTransferResponse() {
+	public ChnlCreditTransferResponsePojo getChnlCreditTransferResponse() {
+		return chnlCreditTransferResponse;
+	}
+
+	public void setChnlCreditTransferResponse(ChnlCreditTransferResponsePojo chnlCreditTransferResponse) {
+		this.chnlCreditTransferResponse = chnlCreditTransferResponse;
+	}
+
+	public BusinessMessage getCreditTransferResponse() {
 		return creditTransferResponse;
 	}
 
-	public void setCreditTransferResponse(ChnlCreditTransferResponsePojo creditTransferResponse) {
+	public void setCreditTransferResponse(BusinessMessage creditTransferResponse) {
 		this.creditTransferResponse = creditTransferResponse;
 	}
 
-	public ChnlFICreditTransferResponsePojo getFiCreditTransferResponse() {
-		return fiCreditTransferResponse;
+	public BusinessMessage getSettlementResponse() {
+		return settlementResponse;
 	}
 
-	public void setFiCreditTransferResponse(ChnlFICreditTransferResponsePojo fiCreditTransferResponse) {
-		this.fiCreditTransferResponse = fiCreditTransferResponse;
+	public void setSettlementResponse(BusinessMessage settlementResponse) {
+		this.settlementResponse = settlementResponse;
+	}
+
+	public BusinessMessage getPaymentStatusResponse() {
+		return paymentStatusResponse;
+	}
+
+	public void setPaymentStatusResponse(BusinessMessage paymentStatusResponse) {
+		this.paymentStatusResponse = paymentStatusResponse;
 	}
 
 	public ChnlProxyRegistrationResponse getProxyRegistrationResponse() {
@@ -78,7 +108,7 @@ public class ChannelResponseWrapper {
 	public void setFaultResponse(ChnlFailureResponsePojo faultResponse) {
 		this.faultResponse = faultResponse;
 	}
-	
+
 
 
 

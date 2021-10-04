@@ -1,12 +1,36 @@
 package bifast.outbound.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({
+	"transactionType"
+	,"referenceId"
+	,"errorCode"
+	,"reason"
+	,"location"
+	,"description"
+	,"additionalData"
+	})
 public class ChnlFailureResponsePojo {
 	
 	private String transactionType;
+
+	@JsonProperty("ErrorCode")
+	private String errorCode;
+	
+	@JsonProperty("TransactionId")
 	private String referenceId;
+	
+	@JsonProperty("Reason")
 	private String reason;
+	
 	private String location;
+
+	@JsonProperty("Description")
 	private String description;
+
+	@JsonProperty("AddtInfo")
 	private String additionalData;
 	
 	public String getTransactionType() {
@@ -20,6 +44,12 @@ public class ChnlFailureResponsePojo {
 	}
 	public void setReferenceId(String referenceId) {
 		this.referenceId = referenceId;
+	}
+	public String getErrorCode() {
+		return errorCode;
+	}
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
 	}
 	public String getReason() {
 		return reason;

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
+import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor2;
 import bifast.outbound.processor.FlatResponseProcessor;
 
 @Component
@@ -14,7 +15,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	@Autowired
 	private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired
-	private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
+	private AccountEnquiryResponseProcessor2 accountEnqrResponseProcessor;
 	@Autowired
 	private FlatResponseProcessor flatResponseProcessor;
 	

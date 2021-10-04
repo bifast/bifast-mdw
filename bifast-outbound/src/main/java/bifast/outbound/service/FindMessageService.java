@@ -11,7 +11,6 @@ import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.model.FICreditTransfer;
 import bifast.outbound.repository.AccountEnquiryRepository;
 import bifast.outbound.repository.CreditTransferRepository;
-import bifast.outbound.repository.FICreditTransferRepository;
 
 @Service
 public class FindMessageService {
@@ -20,8 +19,8 @@ public class FindMessageService {
 	private AccountEnquiryRepository accountEnquiryRepo;
 	@Autowired
 	private CreditTransferRepository creditTransferRepo;
-	@Autowired
-	private FICreditTransferRepository fiCreditTransferRepo;
+//	@Autowired
+//	private FICreditTransferRepository fiCreditTransferRepo;
 
 	public String findByBizMsgIdr (String bizMsgIdr) {
 		
@@ -29,8 +28,8 @@ public class FindMessageService {
 		
 		if (null == strResult) {
 			strResult = findCreditTransfer(bizMsgIdr);
-			if (null == strResult)
-				strResult = findFICreditTransfer(bizMsgIdr);
+//			if (null == strResult)
+//				strResult = findFICreditTransfer(bizMsgIdr);
 		}
 			
 		return strResult;
@@ -55,14 +54,14 @@ public class FindMessageService {
 			return null;
 	}
 
-	public String findFICreditTransfer (String bizMsgIdr) {
-		
-		Optional<FICreditTransfer> optFICT = fiCreditTransferRepo.findByRequestBizMsgIdr(bizMsgIdr);
-		if (optFICT.isPresent() )
-			return optFICT.get().getFullRequestMessage();
-		else 
-			return null;
-	}
+//	public String findFICreditTransfer (String bizMsgIdr) {
+//		
+//		Optional<FICreditTransfer> optFICT = fiCreditTransferRepo.findByRequestBizMsgIdr(bizMsgIdr);
+//		if (optFICT.isPresent() )
+//			return optFICT.get().getFullRequestMessage();
+//		else 
+//			return null;
+//	}
 
 //	public List<String> findByEndToEndId (String endToEndId) {
 //		List<>

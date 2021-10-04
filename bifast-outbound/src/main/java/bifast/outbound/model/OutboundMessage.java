@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name="OUTBOUND_MESSAGE")
+//@Entity(name="OUTBOUND_MESSAGE")
 public class OutboundMessage {
 
 	@Id

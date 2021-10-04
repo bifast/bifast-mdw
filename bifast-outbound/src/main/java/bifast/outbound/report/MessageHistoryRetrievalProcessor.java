@@ -30,8 +30,8 @@ public class MessageHistoryRetrievalProcessor implements Processor {
 		else if (request.getMsgType().equals("Credit Transfer")) 
 			strMessage = findMessageService.findCreditTransfer (request.getBizMsgIdr());
 		
-		else if (request.getMsgType().equals("FI Credit Transfer")) 
-			strMessage = findMessageService.findFICreditTransfer (request.getBizMsgIdr());
+//		else if (request.getMsgType().equals("FI Credit Transfer")) 
+//			strMessage = findMessageService.findFICreditTransfer (request.getBizMsgIdr());
 
 		exchange.getMessage().setBody(strMessage);
 	}

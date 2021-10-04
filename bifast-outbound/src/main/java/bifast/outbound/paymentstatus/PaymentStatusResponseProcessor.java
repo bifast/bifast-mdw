@@ -27,7 +27,7 @@ public class PaymentStatusResponseProcessor implements Processor {
 			
 			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
 
-			reject.setReferenceId(chnReq.getChannelRefId());
+			reject.setReferenceId(chnReq.getIntrnRefId());
 			
 			String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
 			String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
@@ -45,7 +45,7 @@ public class PaymentStatusResponseProcessor implements Processor {
 			ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
 
 			// from CI-HUB response
-			chnResponse.setOrignReffId(chnReq.getChannelRefId());
+			chnResponse.setOrignReffId(chnReq.getIntrnRefId());
 			chnResponse.setBizMsgId(busMesg.getAppHdr().getBizMsgIdr());
 			
 			chnResponse.setStatus(biResp.getTxSts());
@@ -76,7 +76,7 @@ public class PaymentStatusResponseProcessor implements Processor {
 		
 			}
 
-			channelResponseWr.setCreditTransferResponse(chnResponse);
+			channelResponseWr.setChnlCreditTransferResponse(chnResponse);
 
 			exchange.getIn().setBody(channelResponseWr);
 

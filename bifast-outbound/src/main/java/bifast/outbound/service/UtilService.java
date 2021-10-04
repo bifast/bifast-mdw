@@ -149,6 +149,8 @@ public class UtilService {
 			
 			if (code.equals("010"))
 				msgType = "CreditTransferRequest";
+			if (code.equals("110"))
+				msgType = "CreditTransferRequest";
 
 		}
 			

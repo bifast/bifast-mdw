@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.CorebankTransaction;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.repository.CorebankTransactionRepository;
 
 @Component
@@ -23,7 +24,7 @@ public class SaveCBTableProcessor implements Processor{
 		Object objCbRequest = exchange.getMessage().getHeader("cb_request", Object.class);
 		String requestClassName = objCbRequest.getClass().getSimpleName();
 		
-//		CBInstructionWrapper responseWr = exchange.getMessage().getBody(CBInstructionWrapper.class);		
+//		ChannelResponseWrapper responseWr = exchange.getMessage().getBody(ChannelResponseWrapper.class);		
 		CBDebitInstructionResponsePojo debitResp = exchange.getMessage().getBody(CBDebitInstructionResponsePojo.class);
 //		CBDebitInstructionResponsePojo debitResp = responseWr.getCbDebitInstructionResponse();
 

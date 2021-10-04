@@ -7,6 +7,7 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +18,9 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
 import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
-import bifast.outbound.ficredittransfer.processor.SaveFICreditTransferProcessor;
 import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
+import bifast.outbound.processor.FaultProcessor;
 import bifast.outbound.proxyregistration.processor.StoreProxyRegistrationProcessor;
 import bifast.outbound.service.UtilService;
 
@@ -38,10 +39,12 @@ public class CihubRoute extends RouteBuilder {
 	private StorePaymentStatusProcessor storePaymentStatusProcessor;
 	@Autowired
 	private StoreProxyRegistrationProcessor storeProxyRegistrationProcessor;
-	@Autowired
-	private SaveFICreditTransferProcessor saveFICreditTransferProcessor;
+//	@Autowired
+//	private SaveFICreditTransferProcessor saveFICreditTransferProcessor;
 	@Autowired
 	private UtilService utilService;
+	@Autowired
+	private FaultProcessor faultProcessor;
 
 	@Override
 	public void configure() throws Exception {
@@ -56,17 +59,14 @@ public class CihubRoute extends RouteBuilder {
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
 		from("direct:call-cihub").routeId("komi.call-cihub").messageHistory()
 		
-
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					BusinessMessage bm = exchange.getIn().getBody(BusinessMessage.class);
 					String msgType = utilService.getMsgType(bm.getAppHdr().getMsgDefIdr(), bm.getAppHdr().getBizMsgIdr());
 					exchange.getMessage().setHeader("hdr_trxname", msgType);
 				}
-			})
-			.id("start_route")
-			.log("${header.hdr_trxname}")	
-			
+			}).id("start_route")
+						
 			.setHeader("hdr_cihub_request", simple("${body}"))
 
 			.marshal(businessMessageJDF)
@@ -98,18 +98,13 @@ public class CihubRoute extends RouteBuilder {
 				.unmarshal(businessMessageJDF)
 				.setHeader("hdr_error_status", constant(null))
 	
-			.doCatch(SocketTimeoutException.class)
-				.log(LoggingLevel.ERROR, "[ChReq:${header.hdr_chnlRefId}] Call CI-HUB Timeout")
-				.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
-				.setHeader("hdr_error_mesg", constant("Timeout menunggu response dari CIHUB"))
-		    	.setBody(constant(null))
-	
 	    	.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[ChReq:${header.hdr_chnlRefId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
-				.setHeader("hdr_error_mesg", simple("${exception.message}"))
-		    	.setBody(constant(null))
+		    	.process(faultProcessor)
+//				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
+//				.setHeader("hdr_error_mesg", simple("${exception.message}"))
+//		    	.setBody(constant(null))
 	
 			.endDoTry()
 			.end()
@@ -122,10 +117,10 @@ public class CihubRoute extends RouteBuilder {
 					.process(saveAccountEnquiryProcessor)
 				.when().simple("${header.hdr_trxname} == 'CreditTransferRequest'")
 					.process(storeCreditTransferProcessor)
-				.when().simple("${header.hdr_trxname} == 'FICreditTransferRequest'")
-					.process(saveFICreditTransferProcessor)
-				.when().simple("${header.hdr_trxname} == 'PaymentStatusRequest'")
-					.process(storePaymentStatusProcessor)
+//				.when().simple("${header.hdr_trxname} == 'FICreditTransferRequest'")
+//					.process(saveFICreditTransferProcessor)
+//				.when().simple("${header.hdr_trxname} == 'PaymentStatusRequest'")
+//					.process(storePaymentStatusProcessor)
 				.when().simple("${header.hdr_trxname} == 'ProxyRegistrationRequest'")
 					.process(storeProxyRegistrationProcessor)
 			.end()

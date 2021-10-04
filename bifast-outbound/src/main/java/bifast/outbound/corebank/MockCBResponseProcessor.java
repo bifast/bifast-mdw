@@ -4,6 +4,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.pojo.ChannelResponseWrapper;
+
 @Component
 public class MockCBResponseProcessor implements Processor {
 
@@ -49,7 +51,11 @@ public class MockCBResponseProcessor implements Processor {
 		response.setAddtInfo("Info tambahan disini");
 
 //		cbResponse.setCbDebitInstructionResponse(response);
+		
+//		ChannelResponseWrapper chnlResponseWr = new ChannelResponseWrapper();
+//		chnlResponseWr.setCbDebitInstructionResponse(response);
 		exchange.getIn().setBody(response);
+//		exchange.getIn().setBody(chnlResponseWr);
 	}
 
 }

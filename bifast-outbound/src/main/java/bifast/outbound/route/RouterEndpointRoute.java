@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.pojo.ChannelRequestWrapper;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.FlatMessageWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
@@ -34,7 +34,7 @@ public class RouterEndpointRoute extends RouteBuilder {
 
 
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
-	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(ChannelRequestWrapper.class);
+	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(RequestMessageWrapper.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 	JacksonDataFormat flatResponseJDF = new JacksonDataFormat(FlatMessageWrapper.class);
 

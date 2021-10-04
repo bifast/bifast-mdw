@@ -5,12 +5,12 @@ Content-Type: application/json
 
 {
   "AccountEnquiryRequest" : {
-    "TransactionId" : "556773",
+    "TransactionId" : "55453",
     "Channel" : "Internet Banking",
     "RecipientBank" : "014",
     "Amount" : 137400,
     "CategoryPurpose" : "Purchase",
-    "AccountNumber" : "677589"
+    "AccountNumber" : "177589"
   }
 }
 
@@ -29,3 +29,17 @@ Content-Type: application/json
     "creditorAccountNumber" : "1814449"
   }
 }
+
+###
+# direct ke mock, test timeout
+POST http://localhost:9006/mock/cihub HTTP/1.1
+Content-Type: application/json
+
+{"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"BizMsgIdr":"20211002SIHBIDJ1510O0100000050","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-10-02T13:22:40"},"Document":{"FitoFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20211002SIHBIDJ151000556773","CreDtTm":"2021-10-02T13:22:40","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20211002SIHBIDJ1510O0100000050","TxId":"20211002SIHBIDJ151000556773"},"IntrBkSttlmAmt":{"Value":"137400.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"Cdtr":{},"CdtrAcct":{"Id":{"Othr":{"Id":"77589"}}}}]}}}}
+
+###
+# direct ke mock, not timeout
+POST http://localhost:9006/mock/cihub HTTP/1.1
+Content-Type: application/json
+
+{"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"BizMsgIdr":"20211003SIHBIDJ1510O0100000001","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-10-03T05:33:41"},"Document":{"FitoFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20211003SIHBIDJ151000054773","CreDtTm":"2021-10-03T05:33:41","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20211003SIHBIDJ1510O0100000001","TxId":"20211003SIHBIDJ151000054773"},"IntrBkSttlmAmt":{"Value":"137400.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"Cdtr":{},"CdtrAcct":{"Id":{"Othr":{"Id":"677589"}}}}]}}}}

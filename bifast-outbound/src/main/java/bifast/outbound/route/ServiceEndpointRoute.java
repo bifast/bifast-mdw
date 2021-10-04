@@ -7,7 +7,7 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.pojo.ChannelRequestWrapper;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.FaultResponseProcessor;
@@ -27,7 +27,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	private SaveTableChannelProcessor saveChannelRequestProcessor;
 
 
-	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(ChannelRequestWrapper.class);
+	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(RequestMessageWrapper.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 	@Override
@@ -37,6 +37,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		chnlRequestJDF.setInclude("NON_EMPTY");
 		chnlResponseJDF.setInclude("NON_NULL");
 		chnlResponseJDF.setInclude("NON_EMPTY");
+		chnlResponseJDF.setPrettyPrint(true);
 
         onException(Exception.class).routeId("Generic Exception Handler")
         	.log(LoggingLevel.ERROR, "Fault di EndpointRoute, ${header.hdr_errorlocation}")
@@ -50,7 +51,6 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.marshal(chnlResponseJDF)
 			.removeHeaders("req_*")
 			.removeHeaders("hdr_*")
-//			.removeHeaders("fict_*")
 //			.removeHeaders("ps_*")
 			.removeHeaders("ae_*")
 			.removeHeader("HttpMethod")
@@ -117,34 +117,28 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.choice()
 					
 				.when().simple("${header.hdr_msgType} == 'acctenqr'")
-					.log("[ChRefId:${header.hdr_chnlRefId}] Account Enquiry Request finish.")
+					.log("[ChnlReq:${header.hdr_chnlRefId}] Account Enquiry Request finish.")
 
 				.when().simple("${header.hdr_msgType} == 'crdttrns'")
-					.log("[ChRefId:${header.hdr_chnlRefId}] Credit Transfer Request finish.")
+					.log("[ChnlReq:${header.hdr_chnlRefId}] Credit Transfer Request finish.")
 	
-//				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
-//					.log("[ChRefId:${header.hdr_chnlRefId}][FICT] finish.")
-//	
 //				.when().simple("${header.hdr_msgType} == 'pymtsts'")
 //					.log("[ChRefId:${header.hdr_chnlRefId}][PS] finish.")
 	
 				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][PREG] finish.")
+					.log("[ChnlReq:${header.hdr_chnlRefId}][PREG] finish.")
 	
 				.when().simple("${header.hdr_msgType} == 'prxyrslt'")
-					.log("[ChRefId:${header.hdr_chnlRefId}][PRES] finish.")
+					.log("[ChnlReq:${header.hdr_chnlRefId}][PRES] finish.")
 	
 			.end()
 
 			.process(saveChannelRequestProcessor)
 
-			.removeHeaders("req_*")
 			.removeHeaders("hdr_*")
-//			.removeHeaders("fict_*")
-//			.removeHeaders("ps_*")
-			.removeHeaders("ae_*")
+			.removeHeaders("req_*")
 			.removeHeader("HttpMethod")
-
+			.removeHeader("cookie")
 		;
 		
 

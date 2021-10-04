@@ -22,6 +22,7 @@ public class PackResponseProcessor implements Processor{
 			RequestPojo request = exchange.getMessage().getHeader("enq_request", RequestPojo.class);
 			NotFoundResponsePojo notFoundResponse = new NotFoundResponsePojo(request);
 			
+			exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 404);
 			response.setMessageNotFound(notFoundResponse);
 		}
 		

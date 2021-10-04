@@ -35,6 +35,7 @@ public class ChnlCreditTransferResponsePojo {
 	
 	@JsonProperty("CreditorId")
 	private String creditorId;
+	
 	@JsonProperty("CreditorType")
 	private String creditorType;
 //	private String creditorResidentStatus;

@@ -2,6 +2,7 @@ package bifast.outbound.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -11,9 +12,14 @@ public class Client {
 	@Id
 	private String clientId;
 	
+	@Column(length=100)
 	private String clientName;
 	
+	@Column(length=100)
 	private String secretKey;
+	
+	@Column(length=10)
+	private String channelCode;
 	
 	private LocalDateTime createDt;
 	
@@ -41,6 +47,14 @@ public class Client {
 
 	public void setSecretKey(String secretKey) {
 		this.secretKey = secretKey;
+	}
+
+	public String getChannelCode() {
+		return channelCode;
+	}
+
+	public void setChannelCode(String channelCode) {
+		this.channelCode = channelCode;
 	}
 
 	public LocalDateTime getCreateDt() {

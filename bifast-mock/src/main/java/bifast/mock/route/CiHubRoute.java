@@ -1,5 +1,6 @@
 package bifast.mock.route;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -16,7 +17,6 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.mock.processor.AccountEnquiryResponseProcessor;
 import bifast.mock.processor.CreditResponseStoreProcessor;
 import bifast.mock.processor.CreditTransferResponseProcessor;
-import bifast.mock.processor.FICreditTransferResponseProcessor;
 import bifast.mock.processor.OnRequestProcessor;
 import bifast.mock.processor.PaymentStatusResponseProcessor;
 import bifast.mock.processor.ProxyRegistrationResponseProcessor;
@@ -33,13 +33,7 @@ public class CiHubRoute extends RouteBuilder {
 	@Autowired
 	private CreditTransferResponseProcessor creditTransferResponseProcessor;
 	@Autowired
-	private FICreditTransferResponseProcessor fICreditTransferResponseProcessor;
-	@Autowired
 	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
-	@Autowired
-	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
-	@Autowired
-	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
 	@Autowired
 	private CreditResponseStoreProcessor creditResponseStoreProcessor;
 
@@ -94,111 +88,82 @@ public class CiHubRoute extends RouteBuilder {
 			.log("${header.msgType}")
 
 			.setHeader("delay", constant(300))
+			.setHeader("delay_ae", simple("{{komi.timeout-ae}}"))
+			.setHeader("delay_ct", simple("{{komi.timeout-ct}}"))
 
 			.choice()
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")
+					.log("Akan process AE 1")
 					.process(accountEnquiryResponseProcessor)
-					
-					.choice()
-						.when().simple("${header.hdr_account_no} startsWith '77' ")
-							.setHeader("delay", simple("${random(6000,7000)}"))
-						.otherwise()
-							.setHeader("delay", constant(500))
-					.endChoice()
+
+					.filter().simple("${header.hdr_account_no} startsWith '77' ")
+						.log("start 77")
+						.delay(simple("${header.delay_ae}"))
+
+						.removeHeaders("*")
+						.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
+						.setBody(constant("Timeout"))
+						.stop()
+					.end()
+					.log("selesai process AE")
+				.endChoice()
 
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
+
 					.process(creditTransferResponseProcessor)
+
 					.setHeader("hdr_ctResponseObj",simple("${body}"))
 					.marshal(jsonBusinessMessageDataFormat)
 					.process(creditResponseStoreProcessor)
 					.setBody(simple("${header.hdr_ctResponseObj}"))
 
-					.choice()
-						.when().simple("${header.hdr_account_no} startsWith '8' ")
-							.setHeader("delay", simple("${random(6000,7000)}"))
-					.endChoice()
-
-
-					// .setExchangePattern(ExchangePattern.InOnly)
-//					.to("seda:settlement")
-					// .log("hasil CT4: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
-
-				.when().simple("${header.msgType} == 'FICreditTransferRequest'")
-		
-					.process(fICreditTransferResponseProcessor)
-					.setHeader("hdr_ctResponseObj",simple("${body}"))
-					.marshal(jsonBusinessMessageDataFormat)
-					.log("Hasil fICreditTransferResponseProcessor: ${body}")
-					.process(creditResponseStoreProcessor)
-					.setBody(simple("${header.hdr_ctResponseObj}"))
-					.log("${header.hdr_ctResponseObj.appHdr.bizSvc}")
-
-					.choice()
-						.when().simple("${header.hdr_rcptBank} == 'CITYIDJA' ")
-							.setHeader("delay", simple("${random(2000,3000)}"))
-						.otherwise()
-							.setHeader("delay", constant(500))
-					.endChoice()
-
-					// .setExchangePattern(ExchangePattern.InOnly)
-					// .to("seda:settlement?exchangePattern=InOnly")
+					.filter().simple("${header.hdr_account_no} startsWith '8' ")
+						.delay(simple("${header.delay_ct}"))
+						.removeHeaders("*")
+						.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
+						.setBody(constant("Timeout"))
+						.stop()
+					.end()	
+				.endChoice()
 
 				.when().simple("${header.msgType} == 'PaymentStatusRequest'")
 					.log("Akan proses paymentStatusResponseProcessor")
 					.process(paymentStatusResponseProcessor)
 					
-					.choice()
-						.when().simple("${body} == null")
-							.log("ga nemu payment status")
-							.setHeader("delay", simple("${random(2100,3000)}"))
-					.endChoice()
-
+					.filter().simple("${body} == null")
+						.log("ga nemu payment status")
+						.setHeader("delay", simple("${random(2100,3000)}"))
+					.end()
+				.endChoice()
+				
 				.when().simple("${header.msgType} == 'ReverseCreditTransferRequest'")
 					.log("akan proses creditTransferResponseProcessor")
 					.process(creditTransferResponseProcessor)
+				.endChoice()
 
 				.when().simple("${header.msgType} == 'ProxyRegistrationRequest'")
-					.process(proxyRegistrationResponseProcessor)
+					.to("direct:prxyregn")
+				.endChoice()
 
 				.when().simple("${header.msgType} == 'ProxyResolutionRequest'")
 					.log("ProxyResolutionRequest")
-					.process(proxyResolutionResponseProcessor)
-					.unmarshal(jsonBusinessMessageDataFormat)
+				// 	.process(proxyResolutionResponseProcessor)
+				// 	.unmarshal(jsonBusinessMessageDataFormat)
+				.endChoice()
+				
 				.otherwise()	
 					.log("Other message")
+				.endChoice()
+			
 			.end()
 
-			.log("delay ${header.delay}")
-			.delay(simple("${header.delay}"))
 			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
 
 			// .process(proxyResolutionResponseProcessor)
-			.log("hasil CT6: ${header.hdr_ctResponseObj.appHdr.bizSvc}")
 			.log("Response mock: ${body}")
-			.removeHeader("msgType")
-			.removeHeaders("delay*")
-			.removeHeader("objRequest")
-			.removeHeaders("hdr_*")
+			.removeHeaders("*")
 		;
 		
-
-		
-		from("direct:proxyRegistration").routeId("proxyRegistration")
-
-			.setExchangePattern(ExchangePattern.InOut)
-			.convertBodyTo(String.class)
-			.log("Terima di mock")
-			.log("${body}")
-			.delay(500)
-			.log("end-delay")
-			.unmarshal(jsonBusinessMessageDataFormat)
-			.process(proxyRegistrationResponseProcessor)
-			.marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
-			.log("Response dari mock")
-
-			.removeHeader("msgType")
-			
-		;
 	}
 
 }

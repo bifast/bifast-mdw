@@ -16,7 +16,7 @@ import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
 import bifast.outbound.service.UtilService;
 
 @Component
-public class CreditTransferRequestProcessor implements Processor {
+public class BuildCTRequestProcessor implements Processor {
 
 	@Autowired
 	private Config config;

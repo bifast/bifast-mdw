@@ -1,25 +1,12 @@
 package bifast.outbound.paymentstatus;
 
-public class ChnlPaymentStatusRequestPojo {
+import bifast.outbound.pojo.ChannelRequestBase;
 
-	private String channelRefId;
-	private String channel;
+public class ChnlPaymentStatusRequestPojo extends ChannelRequestBase {
+
 	private String endToEndId;
 	private String msgType;
-	private String recptBank;
 	
-	public String getChannel() {
-		return channel;
-	}
-	public void setChannel(String channel) {
-		this.channel = channel;
-	}
-	public String getChannelRefId() {
-		return channelRefId;
-	}
-	public void setChannelRefId(String channelRefId) {
-		this.channelRefId = channelRefId;
-	}
 	public String getEndToEndId() {
 		return endToEndId;
 	}
@@ -31,12 +18,6 @@ public class ChnlPaymentStatusRequestPojo {
 	}
 	public void setMsgType(String msgType) {
 		this.msgType = msgType;
-	}
-	public String getRecptBank() {
-		return recptBank;
-	}
-	public void setRecptBank(String recptBank) {
-		this.recptBank = recptBank;
 	}
 	
 }

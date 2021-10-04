@@ -9,7 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name="FI_CREDIT_TRANSFER")
+//@Entity(name="FI_CREDIT_TRANSFER")
 public class FICreditTransfer {
 
 	@Id 

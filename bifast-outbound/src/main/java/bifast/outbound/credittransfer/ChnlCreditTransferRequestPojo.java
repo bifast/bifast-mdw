@@ -10,28 +10,27 @@ public class ChnlCreditTransferRequestPojo {
 
 	@JsonProperty("TransactionId")
 	private String orignReffId;
+	
 	@JsonProperty("Channel")
-	private String channel; //    CrdtTrn
+	private String channel; 
 	
 	@JsonProperty("CategoryPurpose")
-	private String categoryPurpose; //  CrdtTrn
+	private String categoryPurpose; 
 
 	@JsonProperty("DebtorId")
-	private String dbtrId;   // CrdtTrn
+	private String dbtrId;   
 	@JsonProperty("DebtorIdType")
-	private String dbtrIdType;  // CrdtTrn
+	private String dbtrIdType; 
+	
 	@JsonProperty("DebtorAccountNumber")
-	private String dbtrAccountNo;  // CrdtTrn
+	private String dbtrAccountNo;  
 	@JsonProperty("DebtorAccountType")
-	private String dbtrAccountType; // CrdtTrn
+	private String dbtrAccountType;
 
 	@JsonProperty("Amount")
 	private BigDecimal amount; // AcctEnq CrdtTrn
-	
 	@JsonProperty("RecipientBank")
-	private String recptBank; //  AcctEnq  CrdtTrn
-
-//	private String dbtrName;  //optional
+	private String recptBank; 
 	
 	@JsonProperty("CreditorId")
 	private String crdtId;  // CrdtTrn
@@ -51,7 +50,7 @@ public class ChnlCreditTransferRequestPojo {
 	@JsonProperty("PaymentInfo")
 	private String paymentInfo;  // CrdtTrn
 
-	private String orgnlEndToEndId;
+//	private String orgnlEndToEndId;
 
 	public ChnlCreditTransferRequestPojo() {}
 
@@ -183,13 +182,13 @@ public class ChnlCreditTransferRequestPojo {
 		this.paymentInfo = paymentInfo;
 	}
 
-	public String getOrgnlEndToEndId() {
-		return orgnlEndToEndId;
-	}
-
-	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
-		this.orgnlEndToEndId = orgnlEndToEndId;
-	}
-
+//	public String getOrgnlEndToEndId() {
+//		return orgnlEndToEndId;
+//	}
+//
+//	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
+//		this.orgnlEndToEndId = orgnlEndToEndId;
+//	}
+//
 	
 }

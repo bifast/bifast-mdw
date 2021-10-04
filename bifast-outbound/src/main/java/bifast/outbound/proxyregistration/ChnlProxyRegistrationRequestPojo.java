@@ -1,11 +1,15 @@
 package bifast.outbound.proxyregistration;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("ProxyRegistrationRequest")
 public class ChnlProxyRegistrationRequestPojo {
 	
+	@JsonProperty("TransactionId")
 	private String intrnRefId;
+
+	@JsonProperty("Channel")
 	private String channel; 
 
 	private String senderAccountNumber;

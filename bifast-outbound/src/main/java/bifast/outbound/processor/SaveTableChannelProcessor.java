@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
-import bifast.outbound.ficredittransfer.ChnlFICreditTransferRequestPojo;
 import bifast.outbound.model.BankCode;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.DomainCode;
@@ -108,27 +107,27 @@ public class SaveTableChannelProcessor implements Processor {
 
 		}
 		
-		else if (msgType.equals("ficrdttrns")) {
-			ChnlFICreditTransferRequestPojo channelRequest = (ChnlFICreditTransferRequestPojo) objChnReq;
-
-			chnlTable.setMsgName("FI Credit Transfer");
-			chnlTable.setTransactionId(chnlRefId);
-
-			DomainCode channelDC = domainCodeRepo.findByGrpAndKey("CHANNEL.TYPE", channelRequest.getChannel()).orElse(new DomainCode());
-			chnlTable.setChannelCode(channelDC.getValue());
-
-			BankCode bankCode = bankCodeRepo.findByBicCode(channelRequest.getRecptBank()).orElse(new BankCode());
-			chnlTable.setRecptBank(bankCode.getBankCode());
-
-			chnlTable.setAmount(channelRequest.getAmount());
-//			chnlTable.setCreditorAccountName(channelRequest.getCrdtName());
-//			chnlTable.setCreditorAccountNumber(channelRequest.getCrdtAccountNo());
-//			chnlTable.setDebtorAccountName(channelRequest.getDbtrName());
-//			chnlTable.setDebtorAccountNumber(channelRequest.getDbtrAccountNo());
-			chnlTable.setRequestTime(LocalDateTime.now());
-//			chnlTable.setStatus(msgType);
-
-		}
+//		else if (msgType.equals("ficrdttrns")) {
+//			ChnlFICreditTransferRequestPojo channelRequest = (ChnlFICreditTransferRequestPojo) objChnReq;
+//
+//			chnlTable.setMsgName("FI Credit Transfer");
+//			chnlTable.setTransactionId(chnlRefId);
+//
+//			DomainCode channelDC = domainCodeRepo.findByGrpAndKey("CHANNEL.TYPE", channelRequest.getChannel()).orElse(new DomainCode());
+//			chnlTable.setChannelCode(channelDC.getValue());
+//
+//			BankCode bankCode = bankCodeRepo.findByBicCode(channelRequest.getRecptBank()).orElse(new BankCode());
+//			chnlTable.setRecptBank(bankCode.getBankCode());
+//
+//			chnlTable.setAmount(channelRequest.getAmount());
+////			chnlTable.setCreditorAccountName(channelRequest.getCrdtName());
+////			chnlTable.setCreditorAccountNumber(channelRequest.getCrdtAccountNo());
+////			chnlTable.setDebtorAccountName(channelRequest.getDbtrName());
+////			chnlTable.setDebtorAccountNumber(channelRequest.getDbtrAccountNo());
+//			chnlTable.setRequestTime(LocalDateTime.now());
+////			chnlTable.setStatus(msgType);
+//
+//		}
 
 		else if (msgType.equals("pymtsts")) {
 			ChnlPaymentStatusRequestPojo channelRequest = (ChnlPaymentStatusRequestPojo) objChnReq;

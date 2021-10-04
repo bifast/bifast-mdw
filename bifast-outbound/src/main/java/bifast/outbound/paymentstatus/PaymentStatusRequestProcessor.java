@@ -3,7 +3,6 @@ package bifast.outbound.paymentstatus;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -15,7 +14,6 @@ import bifast.library.iso20022.service.Pacs028Seed;
 import bifast.outbound.service.UtilService;
 
 @Component
-//@ComponentScan(basePackages = "bifast.library")
 public class PaymentStatusRequestProcessor implements Processor {
 
 	@Autowired

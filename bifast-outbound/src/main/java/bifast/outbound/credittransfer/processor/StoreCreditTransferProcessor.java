@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
-import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
 import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.repository.CreditTransferRepository;
 import bifast.outbound.service.UtilService;
@@ -33,7 +32,7 @@ public class StoreCreditTransferProcessor implements Processor {
 
 		CreditTransfer ct = new CreditTransfer();
 
-		ChnlCreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);				
+//		ChnlCreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);				
 		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
 
 		ct.setIntrRefId(chnlRefId);
@@ -49,14 +48,6 @@ public class StoreCreditTransferProcessor implements Processor {
 		
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 
-//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-//		String strCiHubRequestTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-//		String strCiHubResponseTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-//		LocalDateTime cihubRequestTime = LocalDateTime.parse(strCiHubRequestTime, dtf);
-//		ct.setCihubRequestDT(cihubRequestTime);
-//		LocalDateTime cihubResponseTime = LocalDateTime.parse(strCiHubResponseTime, dtf);
-//		ct.setCihubResponseDT(cihubResponseTime);
-	
 		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
 		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
 		ct.setCihubElapsedTime(routeElapsed);
@@ -92,10 +83,11 @@ public class StoreCreditTransferProcessor implements Processor {
 		if (!(null==encrResponseMesg))
 			ct.setFullResponseMsg(encrResponseMesg);
 
-		if (null==chnlRequest.getOrgnlEndToEndId())
-			ct.setMsgType("Credit Transfer");
-		else
-			ct.setMsgType("Reverse CT");
+		ct.setMsgType("Credit Transfer");
+//		if (null==chnlRequest.getOrgnlEndToEndId())
+//			ct.setMsgType("Credit Transfer");
+//		else
+//			ct.setMsgType("Reverse CT");
 
 		ct.setOriginatingBank(biRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 		ct.setRecipientBank(biRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
@@ -110,7 +102,6 @@ public class StoreCreditTransferProcessor implements Processor {
 		}
 		
 		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
-//		String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
 	
 
 		if (!(null==errorStatus)) {

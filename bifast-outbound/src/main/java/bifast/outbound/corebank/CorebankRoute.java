@@ -84,11 +84,11 @@ public class CorebankRoute extends RouteBuilder{
 	 		.unmarshal(cbInstructionWrapper)
 			.process(mockCBResponse)
 
-			.choice()
-				.when().simple("${body.status} != 'SUCCESS'")
-					.setHeader("hdr_error_status", constant("REJECT-CB"))
-					.setHeader("hdr_error_mesg", simple("${body.addtInfo}"))
-			.end()
+//			.choice()
+//				.when().simple("${body.status} != 'SUCCESS'")
+//					.setHeader("hdr_error_status", constant("REJECT-CB"))
+//					.setHeader("hdr_error_mesg", simple("${body.addtInfo}"))
+//			.end()
 			
 			.to("seda:savecbtable?exchangePattern=InOnly")
 
