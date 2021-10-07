@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import bifast.outbound.model.Channel;
 
 @Repository
-public interface ClientRepository extends JpaRepository<Channel, String> {
+public interface ChannelRepository extends JpaRepository<Channel, String> {
 
 }

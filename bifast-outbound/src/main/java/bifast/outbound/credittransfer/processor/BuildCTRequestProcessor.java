@@ -13,6 +13,7 @@ import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.outbound.config.Config;
 import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.service.UtilService;
 
 @Component
@@ -30,9 +31,10 @@ public class BuildCTRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+//		ChnlCreditTransferRequestPojo chnReq = exchange.getIn().getHeader("ct_channelRequest",ChnlCreditTransferRequestPojo.class);
+		ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
 
-		ChnlCreditTransferRequestPojo chnReq = exchange.getIn().getHeader("ct_channelRequest",ChnlCreditTransferRequestPojo.class);
-		
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
 
 		String msgType = "";
@@ -41,25 +43,19 @@ public class BuildCTRequestProcessor implements Processor {
 		else	
 			msgType = "110";	
 			
-//		if (null==chnReq.getOrgnlEndToEndId()) 
-//			msgType = "010";
-//		else {
-//			msgType = "011";
-//			seedCreditTrn.setEndToEndId(chnReq.getOrgnlEndToEndId());
-//		}
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
-		String bizMsgId = utilService.genOfiBusMsgId(msgType, chnReq.getChannel());
+		String bizMsgId = utilService.genOfiBusMsgId(msgType, rmw.getChannelType());
 		String msgId = utilService.genMessageId(msgType);
-
 
 		seedCreditTrn.setMsgId(msgId);
 		seedCreditTrn.setAmount(chnReq.getAmount());
 		seedCreditTrn.setBizMsgId(bizMsgId);
-		seedCreditTrn.setCategoryPurpose(chnReq+chnReq.getCategoryPurpose());
 		
-		seedCreditTrn.setChannel(chnReq.getChannel());
+		seedCreditTrn.setCategoryPurpose(chnReq.getCategoryPurpose());
+		
+		seedCreditTrn.setChannel(rmw.getChannelType());
 		
 		seedCreditTrn.setCrdtAccountNo(chnReq.getCrdtAccountNo());		
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
@@ -94,10 +90,11 @@ public class BuildCTRequestProcessor implements Processor {
 		busMsg.setAppHdr(hdr);
 
 		Document doc = new Document();
-		if (msgType.equals("010"))
-			doc.setFiToFICstmrCdtTrf(pacs008MessageService.creditTransferRequest(seedCreditTrn));
-		else
+		if (msgType.equals("011"))
 			doc.setFiToFICstmrCdtTrf(pacs008MessageService.reverseCreditTransferRequest(seedCreditTrn));
+
+		else 
+			doc.setFiToFICstmrCdtTrf(pacs008MessageService.creditTransferRequest(seedCreditTrn));
 		
 		busMsg.setDocument(doc);
 

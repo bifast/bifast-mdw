@@ -26,11 +26,11 @@ public class CreditTransferResponseProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		// Random rand = new Random();
-		String bizMsgId = utilService.genRfiBusMsgId("010", "02");
-		String msgId = utilService.genMessageId("010");
-
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
+
+		String bizMsgId = utilService.genRfiBusMsgId("010", "02", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		String msgId = utilService.genMessageId("010", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+
 
 		String norek = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
 		exchange.getMessage().setHeader("hdr_account_no", norek);
@@ -65,9 +65,12 @@ public class CreditTransferResponseProcessor implements Processor{
 		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, msg);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
+		System.out.println("from Bank: " + msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"pacs.002.001.10", bizMsgId);
 		hdr.setBizSvc("CLEAR");
+		hdr.getFr().getFIId().getFinInstnId().getOthr().setId(msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);

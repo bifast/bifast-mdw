@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.model.AccountEnquiry;
+import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.repository.AccountEnquiryRepository;
 import bifast.outbound.service.UtilService;
 
@@ -32,6 +33,9 @@ public class SaveAccountEnquiryProcessor implements Processor {
 
 		BusinessMessage outRequest = exchange.getMessage().getHeader("hdr_cihub_request", BusinessMessage.class);
 		
+		Object objAEResponse = exchange.getMessage().getBody(Object.class);
+		
+		
 		AccountEnquiry ae = new AccountEnquiry();
 
 		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);				
@@ -51,7 +55,6 @@ public class SaveAccountEnquiryProcessor implements Processor {
 
 		FIToFICustomerCreditTransferV08 accountEnqReq = outRequest.getDocument().getFiToFICstmrCdtTrf();
 		
-//		ae.setCreDt(accountEnqReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
 
 		ae.setAccountNo(accountEnqReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 		ae.setAmount(accountEnqReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
@@ -72,14 +75,21 @@ public class SaveAccountEnquiryProcessor implements Processor {
 			ae.setResponseStatus(outResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
 		}
 
-		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
-    	String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
+		
+		if (objAEResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) 
+		{
+			ChnlFailureResponsePojo aeResponse = (ChnlFailureResponsePojo) objAEResponse;
+			ae.setErrorMessage(aeResponse.getReason());
+			ae.setCallStatus(aeResponse.getErrorCode());
+		}			
 
-		if (!(null==errorStatus)) {
-			ae.setCallStatus(errorStatus);
-			if (!(null==errorMesg))
-				ae.setErrorMessage(errorMesg);
-		}
+//		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
+//    	String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
+//
+//		if (!(null==errorStatus)) {
+//			ae.setCallStatus(errorStatus);
+//		}
+
 		else
 			ae.setCallStatus("SUCCESS");
 

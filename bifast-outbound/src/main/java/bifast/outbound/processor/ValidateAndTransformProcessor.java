@@ -32,32 +32,32 @@ public class ValidateAndTransformProcessor implements Processor  {
 		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 		
 	
-		if (msgType.equals("acctenqr")) {
-			validateChannel = true;
-			validateBank = true;
-			validatePurpose = true;
+		if (msgType.equals("AEReq")) {
+//			validateChannel = true;
+//			validateBank = true;
+//			validatePurpose = true;
 		}
 		
 		else if (msgType.equals("crdttrns")) {
-			validateChannel = true;
-			validateBank = true;
-			validatePurpose = true;
+//			validateChannel = true;
+//			validateBank = true;
+//			validatePurpose = true;
 		}
 		else if (msgType.equals("ficrdttrns")) {
-			validateChannel = true;
-			validateBank = true;
+//			validateChannel = true;
+//			validateBank = true;
 		}
 
 		else if (msgType.equals("pymtsts")) {
-			validateChannel = true;
+//			validateChannel = true;
 		}
 		
 		else if (msgType.equals("prxyrgst")) {
-			validateChannel = true;
+//			validateChannel = true;
 		}
 
 		else if (msgType.equals("prxyrslt")) {
-			validateChannel = true;
+//			validateChannel = true;
 		}
 
 		if (validateChannel) {

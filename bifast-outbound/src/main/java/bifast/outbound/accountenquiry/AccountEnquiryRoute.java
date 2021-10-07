@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
-import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor2;
 import bifast.outbound.processor.FlatResponseProcessor;
 

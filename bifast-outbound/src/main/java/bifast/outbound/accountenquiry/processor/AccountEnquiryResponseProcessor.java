@@ -30,7 +30,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			
 			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
 
-			reject.setReferenceId(chnReq.getChannelRefId());
+			reject.setReferenceId(chnReq.getIntrnRefId());
 			
 			String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
 			String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
@@ -51,7 +51,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	
 			ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
 			
-			chnResp.setOrignReffId(chnReq.getChannelRefId());
+			chnResp.setOrignReffId(chnReq.getIntrnRefId());
 			
 			chnResp.setCreditorAccountType(biResp.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
 			chnResp.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
@@ -75,7 +75,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 
 			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
 		
-			reject.setReferenceId(chnReq.getChannelRefId());
+			reject.setReferenceId(chnReq.getIntrnRefId());
 			reject.setTransactionType ("AccountEnquiry");
 			reject.setReason(rejectResp.getRsn().getRjctgPtyRsn());
 			reject.setDescription(rejectResp.getRsn().getRsnDesc());

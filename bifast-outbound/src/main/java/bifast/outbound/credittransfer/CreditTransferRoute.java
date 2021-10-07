@@ -47,16 +47,6 @@ public class CreditTransferRoute extends RouteBuilder {
 		
 		from("direct:ct_aepass").routeId("komi.ct.afterAERoute")
 			.setHeader("ct_channelRequest", simple("${body}"))
-			.process(new Processor() {
-				@Override
-				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = new RequestMessageWrapper();
-					ChnlCreditTransferRequestPojo chnlReq = exchange.getMessage().getBody(ChnlCreditTransferRequestPojo.class);
-					rmw.setChnlCreditTransferRequest(chnlReq);
-					exchange.getMessage().setHeader("hdr_request_list", rmw);
-				}
-				
-			})
 
 			.log(LoggingLevel.DEBUG, "komi.ct.afterAERoute", "[ChnlReq:${header.hdr_chnlRefId}] direct:ct_aepass...")
 
@@ -66,6 +56,8 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			.to("direct:callcb")
 			
+			.log("komitrxid di ct route: ${header.hdr_request_list.komiTrxId}" )
+
 			.log("setelah cb: ${body.status}")
 			.choice()
 				.when().simple("${body.status} == 'SUCCESS'")

@@ -17,12 +17,11 @@ public class PackResponseProcessor implements Processor{
 
 		ResponseWrapperPojo response = new ResponseWrapperPojo();
 		if (null==result) {
-			System.out.println("body null");
 
 			RequestPojo request = exchange.getMessage().getHeader("enq_request", RequestPojo.class);
 			NotFoundResponsePojo notFoundResponse = new NotFoundResponsePojo(request);
 			
-			exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 404);
+//			exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 404);
 			response.setMessageNotFound(notFoundResponse);
 		}
 		

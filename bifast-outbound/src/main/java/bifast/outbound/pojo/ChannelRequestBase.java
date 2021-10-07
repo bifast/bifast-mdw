@@ -1,14 +1,22 @@
 package bifast.outbound.pojo;
 
-import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ChannelRequestBase {
 
+	@JsonProperty("TransactionId")
 	private String intrnRefId;
+	@JsonProperty("Channel")
 	private String channel; 
+	@JsonProperty("CategoryPurpose")
+	private String categoryPurpose;
+
+	@JsonProperty("RecipientBank")
 	private String recptBank; 
-	private BigDecimal amount;
+//	@JsonProperty("Amount")
+//	private BigDecimal amount;
 	
+
 	public String getIntrnRefId() {
 		return intrnRefId;
 	}
@@ -21,18 +29,19 @@ public class ChannelRequestBase {
 	public void setChannel(String channel) {
 		this.channel = channel;
 	}
+	public String getCategoryPurpose() {
+		return categoryPurpose;
+	}
+	public void setCategoryPurpose(String categoryPurpose) {
+		this.categoryPurpose = categoryPurpose;
+	}
 	public String getRecptBank() {
 		return recptBank;
 	}
 	public void setRecptBank(String recptBank) {
 		this.recptBank = recptBank;
-	}
-	public BigDecimal getAmount() {
-		return amount;
-	}
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
 	} 
+
 
 
 }

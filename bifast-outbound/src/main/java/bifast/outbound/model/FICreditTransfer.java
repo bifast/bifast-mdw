@@ -8,12 +8,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 //@Entity(name="FI_CREDIT_TRANSFER")
 public class FICreditTransfer {
 
 	@Id 
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
+	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 	
 	@Column(name="INTR_REF_ID")

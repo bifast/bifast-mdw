@@ -66,14 +66,14 @@ public class CorebankRoute extends RouteBuilder{
 		;
 
 		from("direct:callcb").routeId("komi.cb.corebank")
-			.log("[ChRefId:${header.hdr_chnlRefId}][Corebank] started")
+			.log("[ChReq:${header.hdr_chnlRefId}][CB] started")
 			
 			.setHeader("cb_request", simple("${body}"))
 			
 			.setHeader("hdr_errorlocation", constant("corebank service call"))		
 
 			.marshal(cbInstructionWrapper)
-	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChRefId:${header.hdr_chnlRefId}] Post CB Request: ${body}")
+	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_chnlRefId}][CB] CB Request: ${body}")
 			.setHeader("HttpMethod", constant("POST"))
 //			.enrich("http:{{komi.cb-url}}?"
 //					+ "bridgeEndpoint=true",
@@ -92,7 +92,7 @@ public class CorebankRoute extends RouteBuilder{
 			
 			.to("seda:savecbtable?exchangePattern=InOnly")
 
-			.log("[ChRefId:${header.hdr_chnlRefId}][Corebank] finish")
+			.log("[ChReq:${header.hdr_chnlRefId}][CB] finish")
 
 			.removeHeaders("cb_*")
 		;

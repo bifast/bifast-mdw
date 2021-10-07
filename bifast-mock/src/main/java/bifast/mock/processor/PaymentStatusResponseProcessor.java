@@ -83,8 +83,10 @@ public class PaymentStatusResponseProcessor implements Processor{
 	}
 	
 	BusinessMessage notFoundCTResponse (BusinessMessage psRequest) {
-		String bizMsgId = utilService.genRfiBusMsgId("010", "02");
-		String msgId = utilService.genMessageId("010");
+		String bizMsgId = utilService.genRfiBusMsgId("010", "02", 
+								psRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		String msgId = utilService.genMessageId("010",
+								psRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		BusinessMessage busMesg = new BusinessMessage();
 		
 		Pacs002Seed seed = new Pacs002Seed();

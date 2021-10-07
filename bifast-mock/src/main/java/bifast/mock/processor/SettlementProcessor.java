@@ -44,12 +44,15 @@ public class SettlementProcessor implements Processor {
 		String orgnlMsgId = exchange.getMessage().getHeader("sttl_orgnlmsgid", String.class);
 
 		if (msgName.startsWith("pacs.008")) {
-			bizMsgId = utilService.genRfiBusMsgId("010", "02");
-			msgId = utilService.genMessageId("010");
+			bizMsgId = utilService.genRfiBusMsgId("010", "02", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+			msgId = utilService.genMessageId("010", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+System.out.println(bizMsgId);
 
 		} else {
-			bizMsgId = utilService.genRfiBusMsgId("019", "02");
-			msgId = utilService.genMessageId("019");
+			bizMsgId = utilService.genRfiBusMsgId("019", "02", 
+							in.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+			msgId = utilService.genMessageId("019",
+							in.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		}
 		
 		if (msgName.startsWith("pacs.008")) {

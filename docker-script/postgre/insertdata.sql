@@ -1,446 +1,4 @@
--- public.account_enquiry definition
-
--- Drop table
-
--- DROP TABLE public.account_enquiry;
-
-CREATE TABLE public.account_enquiry (
-	id int8 NOT NULL,
-	account_no varchar(255) NULL,
-	amount numeric(19, 2) NULL,
-	intr_ref_id varchar(20) NULL,
-	orign_bank varchar(255) NULL,
-	recpt_bank varchar(255) NULL,
-	bizmsgid varchar(50) NULL,
-	call_status varchar(255) NULL,
-	cihub_req_time timestamp NULL,
-	error_message varchar(400) NULL,
-	full_request_msg varchar(4000) NULL,
-	full_response_msg varchar(4000) NULL,
-	resp_bizmsgid varchar(50) NULL,
-	response_status varchar(20) NULL,
-	chnl_trx_id int8 NULL,
-	cihub_elapsed_time int8 NULL,
-	CONSTRAINT account_enquiry_pkey PRIMARY KEY (id)
-);
-
-
--- public.account_proxy definition
-
--- Drop table
-
--- DROP TABLE public.account_proxy;
-
-CREATE TABLE public.account_proxy (
-	id varchar(255) NOT NULL,
-	account_name varchar(255) NULL,
-	account_number varchar(255) NULL,
-	account_type varchar(255) NULL,
-	customer_id varchar(255) NULL,
-	customer_type varchar(255) NULL,
-	display_name varchar(255) NULL,
-	proxy_type varchar(255) NULL,
-	proxy_value varchar(255) NULL,
-	resident_status varchar(255) NULL,
-	scnd_id_type varchar(255) NULL,
-	scnd_value varchar(255) NULL,
-	town_name varchar(255) NULL,
-	CONSTRAINT account_proxy_pkey PRIMARY KEY (id)
-);
-
-
--- public.channel_transaction definition
-
--- Drop table
-
--- DROP TABLE public.channel_transaction;
-
-CREATE TABLE public.channel_transaction (
-	id int8 NOT NULL,
-	amount numeric(19, 2) NULL,
-	channel_code varchar(255) NULL,
-	creditor_account_name varchar(255) NULL,
-	creditor_account_number varchar(255) NULL,
-	debtor_account_name varchar(255) NULL,
-	debtor_account_number varchar(255) NULL,
-	error_msg varchar(255) NULL,
-	msg_name varchar(255) NULL,
-	recpt_bank varchar(255) NULL,
-	request_time timestamp NULL,
-	response_time timestamp NULL,
-	status varchar(255) NULL,
-	transaction_id varchar(255) NULL,
-	CONSTRAINT channel_transaction_pkey PRIMARY KEY (id)
-);
-
-
--- public.client definition
-
--- Drop table
-
--- DROP TABLE public.client;
-
-CREATE TABLE public.client (
-	client_id varchar(255) NOT NULL,
-	channel_code varchar(10) NULL,
-	client_name varchar(100) NULL,
-	create_dt timestamp NULL,
-	modif_dt timestamp NULL,
-	secret_key varchar(100) NULL,
-	CONSTRAINT client_pkey PRIMARY KEY (client_id)
-);
-
-
--- public.corebank_transaction definition
-
--- Drop table
-
--- DROP TABLE public.corebank_transaction;
-
-CREATE TABLE public.corebank_transaction (
-	transaction_id int8 NOT NULL,
-	addt_info varchar(255) NULL,
-	channel_ref_id varchar(255) NULL,
-	credit_amount numeric(19, 2) NULL,
-	creditor_bank varchar(255) NULL,
-	cstm_account_name varchar(255) NULL,
-	cstm_account_no varchar(255) NULL,
-	cstm_account_type varchar(255) NULL,
-	debit_amount numeric(19, 2) NULL,
-	debtor_bank varchar(255) NULL,
-	status varchar(255) NULL,
-	transaction_type varchar(255) NULL,
-	trns_dt timestamp NULL,
-	chnl_trx_id int8 NULL,
-	CONSTRAINT corebank_transaction_pkey PRIMARY KEY (transaction_id)
-);
-
-
--- public.credit_transfer definition
-
--- Drop table
-
--- DROP TABLE public.credit_transfer;
-
-CREATE TABLE public.credit_transfer (
-	id int8 NOT NULL,
-	settlconf_bizmsgid varchar(255) NULL,
-	amount numeric(19, 2) NULL,
-	call_status varchar(20) NULL,
-	cihub_req_time timestamp NULL,
-	cihub_resp_time timestamp NULL,
-	crdttrn_req_bizmsgid varchar(255) NULL,
-	crdttrn_resp_bizmsgid varchar(255) NULL,
-	cre_dt timestamp NULL,
-	creditor_acct_no varchar(255) NULL,
-	creditor_acct_type varchar(255) NULL,
-	creditor_id varchar(255) NULL,
-	creditor_type varchar(255) NULL,
-	debtor_acct_no varchar(255) NULL,
-	debtor_acct_type varchar(255) NULL,
-	debtor_id varchar(255) NULL,
-	debtor_type varchar(255) NULL,
-	full_request_msg varchar(4000) NULL,
-	full_response_msg varchar(4000) NULL,
-	intr_ref_id varchar(255) NULL,
-	msg_type varchar(255) NULL,
-	orign_bank varchar(255) NULL,
-	recpt_bank varchar(255) NULL,
-	resp_status varchar(20) NULL,
-	reversal varchar(255) NULL,
-	chnl_trx_id int8 NULL,
-	cihub_elapsed_time int8 NULL,
-	CONSTRAINT credit_transfer_pkey PRIMARY KEY (id)
-);
-
-
--- public.domain_code definition
-
--- Drop table
-
--- DROP TABLE public.domain_code;
-
-CREATE TABLE public.domain_code (
-	id int8 NOT NULL,
-	grp varchar(255) NULL,
-	"key" varchar(255) NULL,
-	value varchar(255) NULL,
-	CONSTRAINT domain_code_pkey PRIMARY KEY (id)
-);
-
-
--- public.fault_class definition
-
--- Drop table
-
--- DROP TABLE public.fault_class;
-
-CREATE TABLE public.fault_class (
-	id int8 NOT NULL,
-	exception_class varchar(255) NULL,
-	reason varchar(255) NULL,
-	CONSTRAINT fault_class_pkey PRIMARY KEY (id)
-);
-
-
--- public.inbound_counter definition
-
--- Drop table
-
--- DROP TABLE public.inbound_counter;
-
-CREATE TABLE public.inbound_counter (
-	tanggal int4 NOT NULL,
-	last_number int4 NULL,
-	CONSTRAINT inbound_counter_pkey PRIMARY KEY (tanggal)
-);
-
-
--- public.inbound_message definition
-
--- Drop table
-
--- DROP TABLE public.inbound_message;
-
-CREATE TABLE public.inbound_message (
-	id int8 NOT NULL,
-	bizmsgid varchar(50) NULL,
-	cihub_request_time timestamp NULL,
-	cihub_response_time timestamp NULL,
-	copydupl varchar(20) NULL,
-	errormsg varchar(500) NULL,
-	orgn_bank varchar(20) NULL,
-	full_request_msg varchar(4000) NULL,
-	full_response_msg varchar(4000) NULL,
-	msg_name varchar(50) NULL,
-	resp_bizmsgidr varchar(50) NULL,
-	resp_reject_msg varchar(255) NULL,
-	resp_status varchar(255) NULL,
-	CONSTRAINT inbound_message_pkey PRIMARY KEY (id)
-);
-
-
--- public.m_bic definition
-
--- Drop table
-
--- DROP TABLE public.m_bic;
-
-CREATE TABLE public.m_bic (
-	bank_code varchar(255) NOT NULL,
-	bank_name varchar(255) NULL,
-	bic_code varchar(255) NULL,
-	change_who varchar(255) NULL,
-	created_date timestamp NULL,
-	last_update_date timestamp NULL,
-	CONSTRAINT m_bic_pkey PRIMARY KEY (bank_code)
-);
-
-
--- public.message_counter definition
-
--- Drop table
-
--- DROP TABLE public.message_counter;
-
-CREATE TABLE public.message_counter (
-	tanggal int8 NOT NULL,
-	last_number int8 NULL,
-	CONSTRAINT message_counter_pkey PRIMARY KEY (tanggal)
-);
-
-
--- public.notification_pool definition
-
--- Drop table
-
--- DROP TABLE public.notification_pool;
-
-CREATE TABLE public.notification_pool (
-	id int8 NOT NULL,
-	ack_dt timestamp NULL,
-	ack_status varchar(255) NULL,
-	cre_dt timestamp NULL,
-	customer_account varchar(255) NULL,
-	customer_id varchar(255) NULL,
-	customer_name varchar(255) NULL,
-	destination varchar(255) NULL,
-	distribution_channel varchar(255) NULL,
-	email_addr varchar(255) NULL,
-	event_ctgr varchar(255) NULL,
-	event_grp varchar(255) NULL,
-	message_desc varchar(255) NULL,
-	notif_level varchar(255) NULL,
-	phone_no varchar(255) NULL,
-	ref_id varchar(255) NULL,
-	urgency varchar(255) NULL,
-	CONSTRAINT notification_pool_pkey PRIMARY KEY (id)
-);
-
-
--- public.outbound_parameter definition
-
--- Drop table
-
--- DROP TABLE public.outbound_parameter;
-
-CREATE TABLE public.outbound_parameter (
-	code varchar(255) NOT NULL,
-	notes varchar(255) NULL,
-	value varchar(255) NULL,
-	CONSTRAINT outbound_parameter_pkey PRIMARY KEY (code)
-);
-
-
--- public."parameter" definition
-
--- Drop table
-
--- DROP TABLE public."parameter";
-
-CREATE TABLE public."parameter" (
-	id int4 NOT NULL,
-	code varchar(255) NULL,
-	"module" varchar(255) NULL,
-	notes varchar(255) NULL,
-	value varchar(255) NULL,
-	CONSTRAINT parameter_pkey PRIMARY KEY (id)
-);
-
-
--- public.payment_status definition
-
--- Drop table
-
--- DROP TABLE public.payment_status;
-
-CREATE TABLE public.payment_status (
-	id int8 NOT NULL,
-	bizmsgid varchar(50) NULL,
-	error_msg varchar(255) NULL,
-	intern_ref_id varchar(255) NULL,
-	orgn_endtoendid varchar(50) NULL,
-	request_dt timestamp NULL,
-	request_full_message varchar(5000) NULL,
-	response_dt timestamp NULL,
-	response_full_message varchar(5000) NULL,
-	retry_count int4 NOT NULL,
-	saf varchar(255) NULL,
-	status varchar(255) NULL,
-	chnl_trx_id int8 NULL,
-	cihub_elapsed_time int8 NULL,
-	CONSTRAINT payment_status_pkey PRIMARY KEY (id)
-);
-
-
--- public.proxy_message definition
-
--- Drop table
-
--- DROP TABLE public.proxy_message;
-
-CREATE TABLE public.proxy_message (
-	id int8 NOT NULL,
-	account_name varchar(100) NULL,
-	account_number varchar(255) NULL,
-	account_type varchar(255) NULL,
-	call_status varchar(50) NULL,
-	customer_id varchar(255) NULL,
-	customer_type varchar(255) NULL,
-	display_name varchar(100) NULL,
-	error_message varchar(400) NULL,
-	full_request_mesg varchar(4000) NULL,
-	full_response_mesg varchar(4000) NULL,
-	intrn_ref_id varchar(255) NULL,
-	operation_type varchar(255) NULL,
-	proxy_type varchar(255) NULL,
-	proxy_value varchar(255) NULL,
-	request_dt timestamp NULL,
-	resident_status varchar(255) NULL,
-	resp_status varchar(50) NULL,
-	response_dt timestamp NULL,
-	scnd_id_type varchar(255) NULL,
-	scnd_value varchar(255) NULL,
-	town_name varchar(255) NULL,
-	chnl_trx_id int8 NULL,
-	cihub_elapsed_time int8 NULL,
-	CONSTRAINT proxy_message_pkey PRIMARY KEY (id)
-);
-
-
--- public.settlement definition
-
--- Drop table
-
--- DROP TABLE public.settlement;
-
-CREATE TABLE public.settlement (
-	id int8 NOT NULL,
-	crdt_account_no varchar(100) NULL,
-	crdt_bank_account_no varchar(100) NULL,
-	dbtr_account_no varchar(100) NULL,
-	dbtr_bank_account_no varchar(100) NULL,
-	orgnl_crdt_trn_bizmsgid varchar(50) NULL,
-	orign_bank varchar(20) NULL,
-	recpt_bank varchar(20) NULL,
-	settl_conf_bizmsgid varchar(50) NULL,
-	crdt_account_type varchar(255) NULL,
-	crdt_id varchar(255) NULL,
-	crdt_id_type varchar(255) NULL,
-	dbtr_account_type varchar(255) NULL,
-	dbtr_id varchar(255) NULL,
-	dbtr_id_type varchar(255) NULL,
-	full_message varchar(5000) NULL,
-	receive_date timestamp NULL,
-	CONSTRAINT settlement_pkey PRIMARY KEY (id)
-);
-
-
--- public.users definition
-
--- Drop table
-
--- DROP TABLE public.users;
-
-CREATE TABLE public.users (
-	id int8 NOT NULL,
-	"password" varchar(255) NULL,
-	"role" varchar(255) NULL,
-	username varchar(255) NULL,
-	CONSTRAINT users_pkey PRIMARY KEY (id)
-);
-
 INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
-	 (4339,'7755732444',4556700.56,NULL,'MNDRIDJA','SIHBIDJ1','20210926MNDRIDJA510ORB000003','SUCCESS','2021-09-26 19:53:41.226',NULL,'eJy1lEtvgkAQx+98CrLnahYUXzcePrap2uCml6YHBVRSAbOsia3xu3d5iYurpiYSIPCfmeU3Mzsc
-JFkGxi4exysg9+QDe2WCvt2OXFIKTBpwr4ng+y4vpWKIwpiG6MLEjFO6JpcyM2TeYDyxbGS96oCz
-HyXRc/F0fCkAcfR0wBkaGQxQeQzQ8H9ZlVFWV6BCVYFdtVUkrSlwahswORrgFMMCLG9ZxGznTlyH
-sMMupQ47pZtJPIuelq3Bbk3VMOz2IGRnRptzACtydoEXUr65Po0GyIxpQEyXYrKslHJIqvuhoMsr
-I8gmP8pkSlIcnLE2alDBSsHKOU8W0yXex6mzwptmlG4CFC4FXUxNY5qBmW/2EIgbVK4HsqTxPl/w
-k0/zPaDC7dIPXRyx2/UaXHY0D2Wful+4c2wueRRSYnyneeoBFZB9zDc7L12/qWmtNoR1rVVFMJ2f
-1ANZ9vUvmWuyMrLNZ/UNzPfAWtBsT1SCEl1fibhuTd+N+bv3i+BnsDKRfD7u09DEP4f/oYmqmSI7
-joj5YdZ2W9PaDbXZbP6Dtpwc+Us615L7UTr+AVtfPQs=
-','eJyNkU1vwjAMhv+Lz4DStKVLb/0YI0gMVLLTxGHqB6u0plUaJDa0/z4npWibhjQf3Lix/TivzxAf
-+3V/gPAMUdctC2VOi8HXdTF8JZe9ltxGG/1qb00EO76Mebpy4BNtAqL9Z936Mc2wLrrUxfUHzsAN
-HCihDmF0Prb2HZIx5hNjdwwmgJlpWQ3J3UveE0JnhDgzh+BlospUX7pMCZvSuXBY6LuhRwFBaZsf
-m1LqYTzdLvi20TvdZ5399aBGBew4f08zjMKuNNHc5okTl1UkC0RA+IwiqIN8u5eFaNH9AIyKIGCT
-xRbhIsEWYJcbqRczmeJkIZCtEoGheVSP+leWi0fzqq3S6h1znlAzlH5/7Z+VlblPCq2iPNfjnn5t
-LQh8P3Cp53lgt91975lESWLXuTfuCzS/q6o=
-','20210926SIHBIDJ1510R9950000089','RJCT',NULL,1504),
-	 (4340,'77556444',4222200.00,NULL,'MNDRIDJA','SIHBIDJ1','20210926MNDRIDJA510ORB000004','SUCCESS','2021-09-26 20:11:26.762',NULL,'eJy1lElvgkAUx+98CjLnagYKbjcWl2mqNjjppelBWZRUwMCY2Bq/e4dNHBw1mjhRAm8Zfv/35rEX
-RBHo22ScLIHYE/f0kRq0zWbkxJWBmgbMY2rwfYc1ZcYQhQkJ0ZmLOqdkFZ+bqSOPBuOJaSHzTQOM
-/yDw7su7w0sJiKOnA87QSKeA0mOAuv9Hq4zyugIZyhLsyq1StCrBqaXDdCngmEMTTNcrczZzO2lC
-2KF/qQk7VZgRuyY5btuA3YasYtjtQUh/OW3BAczI3gZuSNjm+iQaICMhQWw4BMderZTDuH4eSrqi
-Mhw1xarEVKQ4OGF9bUAJSyUrEzxZTD28S7JgiXXNCFkHKPQ4XcxcY5KDGe/WEPAbVO0HctF4V2z4
-xcr8CAj3uPRDB0f0crkG5x0tUumrbhfuFJsRj0IS6z+ZTi0gHLLP+XrrZvsrMl0QNmulTTXbv1kE
-Mq3LbzJW8VLPD5/Z1zHbA3NB8jNRS0rt2pLHdW36rszfrU8EO4O1iWT1OE9D438c7kPjVTNDtm0e
-88Os7baqthRFuYO1mhvxWzi1pdeDcPgHq0k8jw==
-','eJyNkUtPwzAMx7+Lz9uUhD7U3vpgLJPGpi47oR1QH6MSTas0kwYT3x0nbREgJuGDGze2f87fV4jP
-/aY/QXiFqOtWhTKn5eDruhi+ksteS26jrX6xtyaCPV/FPF1T+ECbgWj/Wbd5TDOsi8a6uH7HGbiB
-AyOMkoB5U2uXkiwIXGIsYDADzEzLakjunvOeELYghC4owctElakeu8xJMGeeYCSkNGQ+ICht83NT
-Sj2Mp9sl3zV6r/uss78e1KSAHefvacZR7iaaaG7zxIXLKpIFIiB8QhHUSb7ey0K06H4AJkUQsM1i
-i3CQYAuwy43U0UymuFgIZOtEYGge1aP+leXi0bxqp7R6w5wDaobSH7/6Z2Vl7pNCqyjP9bSnX1vz
-fdf1HMcBu+vue8ckShK7zKNxn8Z7qy0=
-','20210926SIHBIDJ1510R9950000092','RJCT',NULL,335),
 	 (4342,'1814449',1545500.00,'41468','SIHBIDJ1','BMRIIDJA','20210926SIHBIDJ1510O0100000018','SUCCESS','2021-09-26 21:32:25.446',NULL,'eJyVUl1PwjAU/S99BtLWjQBv68pHjYjBxhfjA2zjI7KOdJcEJfx3b1swaiRik3X39t7Tc3pyD0Ts
 6nG9JL0DSbbbUW5dNAj7ep2Hv1GmBqN8NoGVr7qMPKqRUPKWkSOuBtHVlTgxnirEJSecWL+jBuXI
 Caec0S5vn6+OGZ1QRv1iHdIg2CmLRWjezrK6RWkHP9airpraQsLpmibtNnlbc9a74T0eE2SSVbYr
@@ -539,8 +97,7 @@ T82O2Gfi1PUyVWa1aMeiSNtZBrLRMsDdWr/irdkR1185gffgkAtYj4jqn3GbYDmHOHaNmxcfwCEw
 AKzpFWRiAQaGQJ4/nME4m44ZMWAIQxxXuLA1shpoQY7IsDS6QqXVCXyeIQ6qv/3KH2W5uXdTjfpD
 fTLTymjz1bGQd6BCZTEx/TJOTpLorp8/umu6xWccXUV9i+o6rkuw5Zt6X8KZF+sY6fnybV/fEjCB
 hBpZmPNRhH1OrfGETy3zCqImlbqVi07iKJErHaKuyxY+sE/BIdKc
-','20210924CENAIDJA510R0200001817','ACTC',4192,555);
-INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
+','20210924CENAIDJA510R0200001817','ACTC',4192,555),
 	 (4198,'2111132',8904000.00,'21862','SIHBIDJ1','CENAIDJA','20210924SIHBIDJ1510O0100000077','SUCCESS','2021-09-24 09:14:38',NULL,'eJyVUstuwjAQ/BefAdkmLYFbEvNwVaACq5eqB0jCQyUOchaJFvHvXdtEaqui0pXi7Hp3POORTyQ+
 VONqTXonEu33o8zYbODX7Tbzfy11BVq6agob17UVmctRLMUDI2eMBlHljbikP4kQF11w8fYDNUhL
 TjjljHZ5UB99x+iUMuqi0yENgpMiX/nh/SKtWpSG+LEWDbGbmFzA5Zgm7TZ5oDjrsaDXDgkyiTI9
@@ -568,7 +125,8 @@ ASecckZtPmhLDxkNKadgbGg/kg6BSC/NmuAyiusepRx+1mMUXt0q9fS1TJfaXT6QnDnccrhNAMkr
 AJb0CmIZRZgCde4Eg4GPGjbyiDBEuNKFq5FVwwgyRIaj0RVUujpBzCvkQffX3/XDNDPvbqJRf6BP
 ZlsYbULpQj3Mi22kiBmXiRFxrNtx/hquodPnfQyV5S2oK1yX4MRX5T4HnxfpCNlN1Pu+vMU3iYQy
 kIE1n2XQ5aB8ZFlsBM6wTpRu1GKQ/FBIlfZR1mUNH9gX9qHSQQ==
-','20210924CENAIDJA510R0200001597','ACTC',4202,562),
+','20210924CENAIDJA510R0200001597','ACTC',4202,562);
+INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (4208,'9234323',1800200.00,'21002','SIHBIDJ1','CENAIDJA','20210924SIHBIDJ1510O0100000083','SUCCESS','2021-09-24 09:32:48',NULL,'eJyVUstuwjAQ/BefAdlOKgVuSczDVYEKLC5VD5CEh0oc5CwSLeLfu7aJ1FZFpZbirHd3dsYjn0ly
 rMf1hvTOJD4cRrmx0cDvu13u/1rqGrR0pylsXdWeyFyOEikeGbngahFV3YlL+5MYcfEVl+w+UIO0
 5IRTzmiXh83oB0anlFG3ooC0CHaKYu2bD8us7mAeP9ahEVZTUwi4jmnTbpuHirNewHthRJBJVNmx
@@ -632,21 +190,6 @@ FvQMwi0GpkCdK8GWC3OcEbFgCEOEVBKuVlYNI8gQGY5W17Iy1QFiniAPuv/yXT9MM/suE4P6l+Zg
 t7nVJrQp9I3IX6NqH5kNsSOzcSKOTTvSXwMeDIfu7QgjVXmJK4WUBIe+Krc5+PzIREhwot+35SUF
 m0goAyVY8kEtu6DfGQ4d1zrDOtGmEYxBaq+RLe2jstMLfGBfxYDTxw==
 ','20210925CENAIDJA510R0200000066','ACTC',4274,543),
-	 (4312,'7723004444',4566634.56,NULL,'MNDRIDJA','SIHBIDJ1','20210925FASTIDJA510ORB000001','SUCCESS','2021-09-26 09:34:19.695',NULL,'eJy1lFlvgkAQx9/5FGSfq1lQ8Hjj8NimaoObvjR9UA4lFTCwJrbG797lEhdXTU3cKIH/zCy/mdnh
-IIgi0HfJJFkBsS8e6CMVtO127MSVQKUh85gKvu+wUiaGKExIiC5M1Dgj6/hSpobcG0ympoXMVw0w
-9qPAuy/vji8lII6eDjhHY50CSo8B6v4vrTLK6wpkKEuwJytDbY7TpBUJziwdpksCpxgaYLpeGbNd
-2EkTwi79S03YrdyM2DXJadsG7DVkBcNeH0L6y2kLDmBG9i5wQ8I21yfREBkJCWLDITj2aqUcxfXz
-UNIVleFkUyz5RFmR4uCMtdWAEpZKVsZ5upx5eJ9kzhJrmhOyCVDocbqYmSYkBzPerBHgN6jaD+RJ
-432x4Seb5ntAuMdlEDo4opfrNbjsaBFKX3W/cOfYTPIoJLH+neWpBYRD9rHY7Nxs/7aiqmqr3VTU
-OoJh/2QeyLSuv8lYxys9P3zmQMdsD8wlyc9ELSjVtRWP69b03Zi/exPIzmBtItl8nKeh8b9e/0Pj
-VTNDtm0e88OsnY7cgrBN1z9oq8kRv4RzLb0eheMfB3E87w==
-','eJyNkU1vwjAMhv+LzwW5aYG1t36MESQGKtlp4jD1gyGNtEqDtA3x3+ekLULTkOaDGze2nzf2GeJT
-u2r3EJ4happFocxp3vnDoei+kstWS26jtX63tyaCLV/EPF26cCFzQNT/rFs9pxnVRX1dfPgmDdzA
-gSFzMWDTofXExSwIJmjswQMHKDMtqy65ectbRDZGdMcu0mWiylT3XUYYjNhUYBB6fshIowNpnZ+O
-pdSdPF3P+eaot7rNGvvrSQ0TsHL+VtNL8QeaON7niU8uq0gWhIDwlYag9vLjURaiJncLmMyjrTAT
-IcA6iy3CJYItoC53UntjYFAWAtkyERSaR7U0/8py6WhetVFafVHOiym5XHbX/llZmfuk0CrKcz3s
-6dfWZjPmIfpkYLfd3PZMoiSx69wZ9wMX4KuF
-','20210926SIHBIDJ1510R9950000083','RJCT',NULL,1731),
 	 (4315,'677589',137400.00,'47169','SIHBIDJ1','CENAIDJA','20210926SIHBIDJ1510O0100000002','SUCCESS','2021-09-26 10:11:20.856',NULL,'eJyVUstuwjAQ/BefAdkpJIRbEvNwVaACq5eqB0jCQyUOchaJFvHvXdtEolVRqaU4u94dz3i0JxIf
 qnG1Jr0Tifb7UaZNNHD7dpu5vxKqAiVsNoWNrZqMzMUoFvyRkTOuBpHlnbikP4kQF11w8fYTNQhD
 TjzqMRp6fn11h9EpZdQtjzQIdvJ85Zr3i7RqUdrFj7VoF6uJzjlcrmnSsOn5ktEeYz2PEmTiZXoo
@@ -674,8 +217,7 @@ k6rjp6p5sCpVpNqw1k8PTd8CzedvOmiM3bMeTZS38cQhkLkjU4Ag9ht0odnIrS9TUcHyA6BvCQC8
 0A6EUgMwdArUuRGMZEyTIxtx0DDEcYULV5TVwghyjQxH1LVqVHOEmFfIg+6vv+uHWY5+N1Va/0od
 cVuitigud2nWxHd+sy8kwYlhmJMkqp/or/my6dRgOlDU16iu47pEjzyqtyW8ebGKNT1ffmzrawKY
 SCjK0hWfxGoI6i2LGyZ2JWxTqTq5OkjspeZKDa3rvIYP7AvvlNMM
-','20210926CENAIDJA510R0200000420','ACTC',4316,554);
-INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
+','20210926CENAIDJA510R0200000420','ACTC',4316,554),
 	 (4322,'18831',4000557.00,'150051','SIHBIDJ1','CENAIDJA','20210926SIHBIDJ1510O0100000006','SUCCESS','2021-09-26 10:21:24.412',NULL,'eJyVUstuwjAQ/BefAdkpoYFbEvNwVaACq5eqB0hCiEoc5CwSLeLfu7aJ1FZFpZbirL07O+PRnkh0
 qKd1TgYnEu73k1SbaOT2okjdXwlVgxL2NIetzZoTWYpJJPgDI2dcLSKrG3HxcBYiLrzgouIDNQhD
 TjzqMdr3ek1rn9E5ZdStHmkRrOTZxhXvV0ndoTTAj3VogNlYZxwubdq03/Z6ktGBxwZelyATr5JD
@@ -717,7 +259,8 @@ miIRqtWnyoW/K9ReyaAyV8u6K4HR87cco2UyHHZsvLjPxz98kboiBgrkvEAV6qPI5yLmJUw/CLqS
 AMEWtySYUOAwIZDnDhhQtk0pQZrM0CCXcQZHbUtCC1LDDFvta1er+gSYZwiE6h++8wdJqt9ZrIz/
 nTrpZaO9LbM8FMeHdSObIkS6YRrlRpHqGvqrvRNKxjYxSF7dsjKXMWRavq/yAu68UIVG3ly85dWt
 AB2IsLZlUq75rk+xRXVqXflAxkK1dg2IvwujFVvG1+UAH4wvDi/S8Q==
-','20210926CENAIDJA510R0200001733','ACTC',4331,576),
+','20210926CENAIDJA510R0200001733','ACTC',4331,576);
+INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (4338,'921751',438417.00,'15551','SIHBIDJ1','CENAIDJA','20210926SIHBIDJ1510O0100000017','SUCCESS','2021-09-26 16:25:49.158',NULL,'eJyVUstuwjAQ/BefAdkpAcItiQO4KlCB1UvVAyThoRIHOYtEi/j3rm0i0aqo1FKctXdnZzzaE4kO
 1bhak/6JhPv9KNMmGrh9u83cXwlVgRL2NIWNzZoTmYtRJPgjI2dcDSLLO3FxMgkRF15w0fYTNQhD
 TjzqMRp4nbq1z+iUMmoX65IGwUqer1zxfpFWLUp7+LEW7WE21jmHS5smDZpeR7JO3/P77YAgEy/T
@@ -801,8 +344,7 @@ JwENGE2C5HJ1xOiYMuoXIy2CnaJc+ubdPG86lMb4sQ6NsZqZUsD5mjZN2kGiWNilcZfdEWQSdb6v
 Sg1eH9R9mTVQmawAZZb2cGAuJjhFvwvCFVLGPvlUdYWxRR4X46U6NFi32qcA20pqx+TyEViK7GEy
 INYIr0MdXMvzkTxV4N3r6ULVGK4p+m4RXvCXciSTGgx/dTLSyjkym2/3pZUahVFEKbpqX5i/4ZEU
 E4vJ1mbFrfOixxUWxQKsWSefpSv4x8C4596A+TosHuMZHTrP4dL4A8ZiFoZh4kbsxYYPYjPWoA==
-',NULL,NULL,NULL,1,199);
-INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
+',NULL,NULL,NULL,1,199),
 	 (4,'677589',137400.00,'47169','SIHBIDJ1','CENAIDJA','20210929SIHBIDJ1510O0100000002','ERROR-CIHUB','2021-09-29 14:08:35.918','Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','eJyVUstuwjAQ/BefAdnhkYRbEvNwVaACq5eqB0jCQyUOchaJFvHvXdtEaquiUktxdr07nvFozyQ+
 VpNqQ/pnEh0O40ybaOj23S5zfyVUBUrYbAZbWzUZWYhxLPgDIxdcDSLLO3HJYBohLrri4t0HahCG
 nHjUYzT0wvrqLqMzyqhbHmkQ7OT52jUflmnVojTAj7VogNVE5xyu1zRp2PRCyTp9GvTbXYJMvEyP
@@ -837,7 +379,8 @@ Q54q3dSni0m4yPVS11FJpoeqbQHV83c5VMvAtVs2md/mkx+hynyVIAXzXrEL1UbtxyqRBW4/CNqW
 IMEzNCQAhoNCMM8NsEEB5w4zZETDfCEFPo2sGkeQETNeja5FpasjYl4wDru/+s4fpZnxi0ST/oU+
 mmNutPlKF+puti3UkZlxGYwfx7od56/hcofbtu0SVJbXpMIXgtHEl+U+R1uw1muqbqze9uU1vwlk
 wFEG5XyUiy6Kt4fgOH00RnWidKOWQPJdUanQJ1nnFX64vgBJ2tKL
-','20210929CENAIDJA510R0200001097','ACTC',7,599),
+','20210929CENAIDJA510R0200001097','ACTC',7,599);
+INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (17,'871551',438417.00,'14145','SIHBIDJ1','CENAIDJA','20210930SIHBIDJ1510O0100000001','SUCCESS','2021-09-30 10:53:09.364',NULL,'eJyVUstuwjAQ/BefAdkkEYFbEgdwVaACq5eqB0jCQyUOchaJFvHvXdtEaquiUktx1t6dnfFozyQ+
 1pN6QwZnEh0O41ybaOj23S53fyVUDUrY0wy2NmtOZCHGseAPjFxwtYis7sQl6TRCXHTFxbsP1CAM
 OenSLqN9jzatA0ZnlFG3GGkRrOTF2hUfllndoTTEj3VoiNlEFxyubdq03/aoZHQQeAPaJ8jEq+xY
@@ -914,8 +457,7 @@ X+VCt/p0PWdRpddaxY113cmuBVbP33KsFjp0OzZeXefjH0wUvsiAAnkv0AW5FbuZyHgNyw+CriVA
 sMItCXiBw4ZAnitgY47rTpAhszTID3gAV1OWghEUlhmOpq5IankAzBOEQfc33/njvDDvQaZt/ZE+
 mG1pamMiS6Sub573Wal0KRNkhmaQfprqbqi/RuyORs54YpG8uWQO/CBAduzrZleBL0x0YiXOxNuu
 uRRhAhEmUItN+cCjPsUT7GLqmlnHKhO6LdmC+LuwevGtre20gQ/sC1mi1II=
-','20211002CENAIDJA510R0200001194','ACTC',442,965);
-INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
+','20211002CENAIDJA510R0200001194','ACTC',442,965),
 	 (445,'677589',137400.00,'5669','SIHBIDJ1','CENAIDJA','20211002SIHBIDJ1510O0100000003','SUCCESS','2021-10-02 08:58:46.482',NULL,'eJyVUstuwjAQ/BefAdmBhMAtiXm4KlCB1UvVAyThoRIHOYtEi/j3rm0itVVRqaU4u94dz3i0ZxIf
 q0m1If0ziQ6HcaZNNHT7bpe5vxKqAiVsNoOtrZqMLMQ4FvyBkQuuBpHlnbhkMI0QF11x8e4DNQhD
 TjzqMUapV1/tMzqjeGBXmzQIdvJ87ZoPy7RqURrix1o0xGqicw7Xa5qMNqknadj3w34nIMjEy/RY
@@ -957,7 +499,8 @@ CNXoU8U0WOVqrWRYmquHqi2B0fO3HKNlYPVaNp7f5uOHQKSuiJGCOK9YhWon9hMR8wKnHwRtSZBg
 CQ0JgIUcJgTz3ABr1MCytRp+MDTE9biHR21LYgtSw4xb7WtVqeqImGeMw+pvvvOHSarfvVgZ/yt1
 1MtCe5vXss6ju5c6zqTKqojonmmgu92qtqe/OjywbWs4MkheXhN7rucR0/V1uc/xzo9UZBROxPu+
 vNagAwlQtGJSzvmqw6DXHw36bISXoYyFahwbEP8QRi70jLXzBj8cX2Fb1CU=
-','20211002CENAIDJA510R0200001827','ACTC',448,973),
+','20211002CENAIDJA510R0200001827','ACTC',448,973);
+INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (540,'77589',137400.00,'54773','SIHBIDJ1','CENAIDJA','20211003SIHBIDJ1510O0100000010','ERROR-CIHUB','2021-10-03 07:32:47.253','HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','eJyVUstuwjAQ/BefAa0JKJRbEvNwVaCiVi9VD5CEh0oc5CwSLeLfu7aJ1FZFpZbi7Hp3POPRnlh8
 qCbVmvVPLNrvx5mx0dDv223m/1rqCrV02Qw3rmoz9iTHsRT3nJ1pNZgqb8Qlg2lEuOiCi7cfpEFa
 ctaGNucAQX11l8MM6MAuDqzBqFPkK9+8X6RVC6BHH29Bj6qJyQVermlyaEKgIOwH7X4nZMQkyvRQ
@@ -1027,8 +570,7 @@ yJkHHucAXt3a5zAFujCLc9ZgVCmylSveL5KqBRDQx1sQUDYuM4GXNk0OTfAUdHue1/MDRkyiSA55
 ptHpw2Ig4wrzMk5RlStzOSxrE6yi3wUB+P59p9Ou+VR+hbHBJsvpSh0ryhvtc8RdLrVlsvEYrR2P
 syEzRjgd6mhLXk7sKUfnXl+nqqDtmqLvFlGDv5QTmdRYRm9WRphbR54Xu0NmpLY7dwBkqnlg8k43
 UswMJN6U68gYL/qRoqRYovHq7KJwjf+YF/vaGzBfZ8VhHKNFJwnWhT9g9Eo/6NoBezXbJztc1e4=
-',NULL,NULL,NULL,460,14);
-INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
+',NULL,NULL,NULL,460,14),
 	 (463,'677589',137400.00,'556773','SIHBIDJ1','CENAIDJA','20211002SIHBIDJ1510O0100000012','SUCCESS','2021-10-02 09:26:06.533',NULL,'eJyVUstuwjAQ/BefAa1Dw+uWxDxcFajA6qXqAZLwUImDkkWiRfx71zaRaFVUainO2ruzMx7tiYWH
 clyuWe/Egv1+lBQmGrh9u03cX0tdopb2NMWNzZoTm8tRKMUjZ2daNabyO3FRfxIQLrjgwu0naZCG
 nHngcQ7gVa19DlOgC7O4x2qMKkW6csX7RVw2ADr08QZ0KBsVqcBLmzqHOngKuj2v1YMWIyaRx4cs
@@ -1056,7 +598,8 @@ nLRpmzFK/aZ1yOiU4oWxoEs8gpW8WLni/SKrW5R28GMt2sFsqgsOlzZ3jN5RX7KwF9z3fCTpEV5l
 h7JQ4PhBNRBpDaVOc5B6ZS6HuhHBMvqdEFoYRJHfzJPllYkemSynK3msMW+iOcCuFMpOsv4YrByP
 syExQjge8mhLXk7kqQSnXl/lssLjGqPvEmGDv5jjMKFAJ2+WRlxaRZ4Xu0NhqPpRQCmKah6YveON
 4DMDSTd6nRjheT+RmORLMFqdnRev4R/7Yl97A+brrjiMm2jRWQZN4Q9YFIWdrt2vV3N8Am5E1bo=
-',NULL,NULL,NULL,602,2031),
+',NULL,NULL,NULL,602,2031);
+INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (520,'677589',137400.00,'556773','SIHBIDJ1','CENAIDJA','20211002SIHBIDJ1510O0100000050','SUCCESS','2021-10-02 13:22:40.304',NULL,'eJyVUstuwjAQ/BefAa0TUii3PHi4KlCB1UvVAyThoRIHOYtEi/j3rm0itVVRqaU4a+/Ozni0JxYd
 qnG1Zr0TC/f7UaZNNHD7dpu5vxKqQiXsaYobmzUnNhejSCQPnJ1pNZgsb8TF/UlIuPCCi7YfpEEY
 cuaBxzmAV7cOOEyBLswKgDUYVSb5yhXvF2nVAujSx1vQpWys8wQvbZocmuBJ7vc8r9cGRkxJmR6K
@@ -1122,8 +665,7 @@ nLWg5fsAQd2648MM6MJal3mMKnm+dsWHZVo1AXr0+U3oUTbROcdrm4YPDQgkdPsA/RaR9Bgv02OR
 K3T8sByKpMJCJxlKvTaXI12LYBn9TIis0w7DoJ4nixsTPTZdzdbyVFHeRAvEfSGUnWT9CVo5HuYj
 ZoRwPOTJljyf2WOBTr2BymRJxy1GXyWiBr8xp2FCoY5fLY2osIo8LffH3FANwjYAiWoemL7RjeBz
 A0m2ehMb4fkglpTkKzRaXZwXbfAf+2Jf+wfM511xGDfRotMU68JvsDDs9O7sfr2Y4wMvz9WW
-',NULL,NULL,NULL,531,6251);
-INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
+',NULL,NULL,NULL,531,6251),
 	 (534,'77589',137400.00,'54773','SIHBIDJ1','CENAIDJA','20211003SIHBIDJ1510O0100000007','ERROR-CIHUB','2021-10-03 07:19:59.695','HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','eJyVUstuwjAQ/BefAdmEyMAtiXm4KlCB1UvVAyThoRIHOYtEi/j3rm0itVVRqaU4u94dz3i0ZxIf
 q0m1If0ziQ6HcWZsNPT7bpf5v5a6Ai1dNoOtq9qMLOQ4luKBkQuuBlHlnbhkMI0QF11x8e4DNUhL
 Ttq0zRilQX11yOiM4oFbnDQIdop87ZsPy7RqUdrFj7VoF6uJyQVcr2ky2qSBorzPev2wR5BJlOmx
@@ -1144,7 +686,8 @@ J13aZYxSr2ntMzqneGGWT0mLYCXPNq54v0rqDqV9/FiH9jEb64zDpU2b0Tb1JPMHfm/gBQSZeJUc
 ykyB0wfVSMQ1lDpOQeqNuRzrxgSr6HdBRkovCLyGT5Y3GFtktp5v5LHGPMPTEmBXCmWZbDwFa8fT
 YkyMEU6HPNqS1xN5LsG5N1SprHC7pei7RdjgL+VIJhTo6N3KCEvryMtqd8iMVC/oUYqmmgcmH3gj
 +MJA4q3OI2M8H0YSk3wNxquzi8Ic/jEv9rV3YK5nxWEco0UnCTSFP2BB4Pcf7Hy9me0LZWzVtA==
-',NULL,NULL,NULL,604,2233),
+',NULL,NULL,NULL,604,2233);
+INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (542,'77589',137400.00,'54773','SIHBIDJ1','CENAIDJA','20211003SIHBIDJ1510O0100000011','ERROR-CIHUB','2021-10-03 07:33:42.44','HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','eJyVUstuwjAQ/Jc9A7IJKJRbEvNwVaCiVi9VD5CEh0oc5CwSLeLfu7aJ1FZFpZbirHd3POPRniA+
 VJNqDf0TRPv9ODM2Gvp9u838X0tdoZbuNMONq9oTPMlxLMU9hzOtBqjyRlwymEaEiy64ePtBGqQl
 hzZrc85YUF/d5WzGKGEX59AA6hT5yjfvF2nVYqxHH2+xHlUTkwu8XNPkrMkCxcJ+EPQ7bSAmUaaH
@@ -1193,8 +736,7 @@ SYd2GKPUb1r3GJ1SvDDGAuIRrOTFyhXvF1ndpjTEj7VpiNlEFxwubVqMtqgvGevTsN9Bkh7hVXYo
 CwWOH1QDkdRQ6iQHqVfmcqgbESyj3wmh9bpB4DfzZHljokcmy+lKHmvMm2gOsCuFspOsPwYrx9Ns
 SIwQjoc82pLXE3kuwamXqlxWeNxi9F0ibPAXcxwmFOj43dKISqvIy2J3KAxVP+hSiqKaB2YfeCP4
 zECSjV7HRniexhKTfAlGq7PzojX8Y1/sa+/AXO+Kw7iJFp1l0BT+gAVBL3yw+/Vmji9EndWi
-',NULL,NULL,NULL,553,6279);
-INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
+',NULL,NULL,NULL,553,6279),
 	 (556,'77589',137400.00,'54773','SIHBIDJ1','CENAIDJA','20211003SIHBIDJ1510O0100000018','ERROR-CIHUB','2021-10-03 11:11:01.518','HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','eJyVUttuwjAM/Zc8F5RQUBlvvXDJNGCCaC/THqAtF42mKDUSG+LfZydUYtPQWNQmduxjnxz5xKJD
 Na7WrHdi4X4/ygxZA7dvt5k7tdQVaGm9KWxslDw2l6NIJo+CnXF5TJV34uL+JERceMFF20/kIKk5
 a/GWEJz7demO4FOOF7REl3kMM5N85ZL3i7Rqct7FXzQ5RWOTJ3Ap0xC8wX0lRA8/jiQ9lpTpocg1
@@ -1215,7 +757,8 @@ yJkHHucAfn11h8MU6MAsz2MNRp0iW7nm/SKpWgBd+ngLulSNdSbwck2TQxN8xXmvDT24Y8QkyuSQ
 ZwU6fVgOZFxhruMUlV6Zw6GuTbCKfhdEq9MOAr/mU/kVxgabLKcrdayozimbI+5yWVgmG4/R2vE4
 GzJjhNOhjrbl5cSecnTu9YtUlbRdU/TdIrrgL+VEJgvU0ZuVEebWkefF7pAZqX7QBiBTzQOTdzqR
 YmYg8UavI2O86EeKimKJxquzi8I1/mNe7GtvwHydFYdxjBadJFg3/oAFQad7b+fr1WyfM73VmA==
-',NULL,NULL,NULL,561,239),
+',NULL,NULL,NULL,561,239);
+INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (565,'77589',137400.00,'54773','SIHBIDJ1','CENAIDJA','20211003SIHBIDJ1510O0100000024','ERROR-CIHUB','2021-10-03 11:45:08.387','HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','eJyVUstuwjAQ/BefAdkkUSi3JA7gqkAFVi9VD5CEh0oc5CwSLeLfu7aJRKuiUktxdr07nvFoTyQ+
 1ON6TfonEu33o1ybaOD27TZ3fyVUDUrYbAobWzUZmYtRLPgjI2dcLSKrO3FJOokQF11w8fYTNQhD
 Trq0yxilXnN1wOiU4oFZXZ+0CHbyYuWa94us7lDaw491aA+riS44XK5pM9qmnmSs7wd9rCITr7JD
@@ -1264,8 +807,7 @@ OWvzthCcB/XVXcFnHBO0AsEaDDtlvvLN+0VatTjv4SdavIfVxOYSLtc0BW/yQItOvx30sYpMskwP
 RW7A64NyqJIKCptkoO2KkiNbm+AU/S4IV7cThkHNp4srjA02Xc5W+lhhnbQ/AewKZRyTiyfg7HiY
 jxgZ4XXoo2t5ObHHArx7A5PpErdrir5bhBf8pRzJlAEbvzkZUeEceV7sDjlJDcIO52gqPTB9x4yS
 c4IkG7uOyXg5iDUW5RLIq7OPojX8Y17ca2/AfJ0Vj/GMDp2mUDf+gIVht3fn5uuVtk9JIdWk
-',NULL,NULL,NULL,577,242);
-INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
+',NULL,NULL,NULL,577,242),
 	 (580,'77589',137400.00,'54773','SIHBIDJ1','CENAIDJA','20211003SIHBIDJ1510O0100000032','TIMEOUT-CIHUB','2021-10-03 15:04:36.052','Timeout menunggu response dari CIHUB','eJyVUstuwjAQ/BefAdmENJRbEvNwVaACq5eqB8gLVOIgZ5FoEf/etU2ktioqtRRn17vjGY/2RKJD
 Pa0LMjiRcL+fpNpEI7dvt6n7K6FqUMJmc9jYqsnIUkwiwR8YOeNqEVndiIuHsxBx4QUXbT9QgzDk
 pEu7jFHqNVf7jM4pHpjldUmLYCfPcte8XyV1h9I+fqxD+1iNdcbhck2b0Tb1JPMHtDfw7ggy8So5
@@ -1286,7 +828,8 @@ pEu7jFHqNVf7jM4pHpjl3ZEWwU6e5a55v0rqDqV9/FiH9rEa64zD5Zo2o23qSeYPmDdALDLxKjmU
 mQKnD6qRiGsodZyC1Lk5HOvGBKvod0G4/F4QeA2fLK8wtshsPc/lscY6w2wJsCuFskw2noK143Ex
 JsYIp0MebcvLiTyV4NwbqlRWuF1T9N0ivOAv5UgmFOjozcoIS+vI82p3yIxUL+hRiqaaBybveCL4
 wkDijS4iYzwfRhKLfA3Gq7OLwgL+MS/2tTdgvs6KwzhGi04SaBp/wILA79/b+Xo12yddStWw
-',NULL,NULL,NULL,585,2240),
+',NULL,NULL,NULL,585,2240);
+INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (588,'77589',137400.00,'54773','SIHBIDJ1','CENAIDJA','20211003SIHBIDJ1510O0100000037','ERROR-CIHUB','2021-10-03 15:15:21.497','Read timed out','eJyVUk1vwjAM/S85F5RQqjJubVMg04AJol2mHaAtHxpNUWokNsR/n5NQiU1DY1Gb2LGf/fLkE4kP
 9bhek/6JRPv9KNfGGrh9u83dqYSqQQnrTWFjo8YjczGKBX9k5IzLI7K6E5ekkwhx0QUXbz+RgzDN
 SYd2GKPUb0oHjE4pXpjlh8QjmMmLlUveL7K6TWkPf9amPYwmuuBwKdNitEV9yYI+fh0k6RFeZYey
@@ -1335,8 +878,7 @@ yFkb2pwDeHVrn8MU6MIs32cNRpUiW7ni/SKpWgBd+ngLupSNy0zgpU2TQxM8xe960O5BhxGTKJJD
 nml0+rAYyLjCvIxTVOXKXA7L2gSr6HdBRkonCLyaT+VXGBtsspyu1LGiPKfTHHGXS22ZbDxGa8fj
 bMiMEU6HOtqSlxN7ytG519epKmi7pui7RdTgL+VEJjWW0ZuVEebWkefF7pAZqV7QASBTzQOTd7qR
 YmYg8aZcR8Z40Y8UJcUSjVdnF4Vr/Me82NfegPk6Kw7jGC06SbAu/AELAr97b+fr1WyfS1vVpg==
-',NULL,NULL,NULL,614,2226);
-INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
+',NULL,NULL,NULL,614,2226),
 	 (617,'77589',137400.00,'54773','SIHBIDJ1','CENAIDJA','20211003SIHBIDJ1510O0100000056','TIMEOUT-CIHUB','2021-10-03 16:02:46.215',NULL,'eJyVUstuwjAQ/BefAdkEEsotiXm4KlCB1UvVAyQBohIHOYtEi/j3rm0i0aqo1FKctXdnZzzaE4kO
 1aTakP6JhPv9ONUmGro9z1P3V0JVoIQ9zWBrs+ZEFmIcCf7IyBlXg8jyTlw8mIaICy+4KP9EDcKQ
 kzZtM0apV7fuMjqjeGFW1ycNgpU8W7vi/TKpWpT28GMt2sNsrDMOlzZNRpvUk8zv03a/4xNk4mVy
@@ -1357,7 +899,8 @@ OfGoxxilfn11wOiUYsKsDiMNgp08X7nm/SKtWpR28WMt2sVqonMOl2uajDapL1mn53k9FhBk4mV6
 KHIFTh+UA5FUUOgkA6lXJjnUtQlW0e+CcAXtMPRrPlncYGyQyXK6kscK60b7HGBXCGWZbDwGa8fT
 bEiMEU6HPNqW1xN5LsC511eZLHG7pei7RXjBX8qRTCjQ8buVERXWkZfF7pAbqX7YphRNNQ9MPzAj
 +MxAko1ex8Z43o8lFvkSjFdnF0Vr+Me82NfegbmeFYdxjBadplA3/oCFYdB9sPP1ZrYvT6TVqA==
-',NULL,NULL,NULL,623,208),
+',NULL,NULL,NULL,623,208);
+INSERT INTO public.account_enquiry (id,account_no,amount,intr_ref_id,orign_bank,recpt_bank,bizmsgid,call_status,cihub_req_time,error_message,full_request_msg,full_response_msg,resp_bizmsgid,response_status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (628,'77589',137400.00,'54773','SIHBIDJ1','CENAIDJA','20211003SIHBIDJ1510O0100000064','TIMEOUT-CIHUB','2021-10-03 16:26:01.696',NULL,'eJyVUk1vwjAM/S85F5RQoIxb2xTINGCCaJdpB2jLh0ZTlBqJDfHf5yRUYtPQmKWmduxnvzz5RKJD
 Na7WpH8i4X4/yrTxBu7cbjP3V0JVoISNprCxWRORuRhFgj8yckbziCzvxMXJJERceMFF20/kIMxw
 0qItxij169YdRqcUL4x128QjWMnzlSveL9KqSWkPP9akPczGOudwadNgtEF9ybr9VrdPkaRHeJke
@@ -1406,170 +949,174 @@ PpSpVJ0+Va08v1ShaoMaj+6bvgSo53c5qMWcsp5NlH/ziaMnM0cmQEHsF6hCs5fFUiaiguEbQV8S
 INjSjoRO5sCBLhDnDzCYZY2xMuKINMThgsNWp9VCCzJkhqXOy29UcwLMM/hB9Xdf8YM00/c8UZi/
 r0562ujcwkObF9UdvBQVlTnRHdMwJ45V39Ef/WXTqTWbI1LUt7Tc4Zxgz8O6KOHMjVSE+pbyrahv
 FWhHQnWVMeSj8IfwDNjYhNcAh0GbSNXliyDxLlEsNTGxyw4+sE+199NH
-','20211003CENAIDJA510R0200001253','ACTC',637,463);INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (4215,1000200.00,'Internet Banking','FARIS AI','8289331','Fandi Ahmad','7100004','Timeout menunggu response dari CIHUB','Credit Transfer','014','2021-09-24 21:43:57.07041','2021-09-24 21:43:59.218936','TIMEOUT-CIHUB','15502'),
-	 (4172,54500.00,'Internet Banking',NULL,'1814449',NULL,NULL,NULL,'Account Enquiry','008','2021-09-24 20:11:08.394747','2021-09-24 20:11:09.388125','SUCCESS','4511168'),
-	 (4217,1000200.00,'Internet Banking','FARIS AI','8289331','Fandi Ahmad','7110004',NULL,'Credit Transfer','014','2021-09-24 21:47:26.780557','2021-09-24 21:47:29.593947','SUCCESS','15530'),
-	 (4337,438417.00,'Internet Banking','FARHAN AI','921751','Andrea Suo','7744404','Account Enquiry reject.','Credit Transfer','014','2021-09-26 16:25:49.114656','2021-09-26 16:25:50.132874','REJECT-CIHUB','15551'),
-	 (4174,8650000.00,'Internet Banking','P AI','11844292','Fandi Wijaya','782444',NULL,'Credit Transfer','014','2021-09-24 20:12:55.068922','2021-09-24 20:12:56.296226','SUCCESS','21211'),
-	 (4229,4222000.00,'Internet Banking','FARIS AI','8211131','Bambang Suo','7155504',NULL,'Credit Transfer','014','2021-09-24 22:05:37.514305','2021-09-24 22:05:40.95248','SUCCESS','12550'),
-	 (4274,1390000.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-09-25 19:36:12.697836','2021-09-25 19:36:13.280701','SUCCESS','41449'),
-	 (4179,781000.00,'Over the Counter',NULL,NULL,NULL,NULL,'rekening tidak aktif','FI Credit Transfer','008','2021-09-24 20:16:32.176756','2021-09-24 20:16:32.187235','REJECT-CB','962001'),
-	 (4276,422260.00,'Internet Banking','FARHAN AI','825331','Bambang Suo','7155604',NULL,'Credit Transfer','014','2021-09-25 19:39:26.250063','2021-09-25 19:39:31.01464','SUCCESS','11004'),
-	 (4181,89994500.00,'Internet Banking','P AI','110044292','Fandi Wijaya','785544',NULL,'Credit Transfer','014','2021-09-24 20:27:12.676883','2021-09-24 20:27:14.435353','SUCCESS','211411');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (4341,1545500.00,'Internet Banking',NULL,'1814449',NULL,NULL,NULL,'Account Enquiry','008','2021-09-26 21:32:25.290132','2021-09-26 21:32:26.629601','SUCCESS','41468'),
-	 (4282,467760.00,'Internet Banking','FARHAN AI','182531','Bambang Suo','7785604',NULL,'Credit Transfer','014','2021-09-25 19:43:19.562176','2021-09-25 19:43:20.705859','SUCCESS','15804'),
-	 (4186,8904000.00,'Internet Banking','FARIS AI','8000292','Fandi Wijaya','7850004','Timeout waiting CIHUB response','Credit Transfer','014','2021-09-24 20:34:10.874679','2021-09-24 20:34:15.684737','TIMEOUT-CIHUB','210071'),
-	 (4287,711660.00,'Over the Counter',NULL,NULL,NULL,NULL,NULL,'FI Credit Transfer','008','2021-09-25 19:44:04.420082','2021-09-25 19:44:05.056608','SUCCESS','6011'),
-	 (4257,781000.00,'Over the Counter',NULL,NULL,NULL,NULL,NULL,'FI Credit Transfer','008','2021-09-25 06:45:34.736657','2021-09-25 06:45:35.38268','SUCCESS','6241'),
-	 (4192,8904000.00,'Internet Banking','FARIS AI','2000292','Fandi Wijaya','7850004',NULL,'Credit Transfer','014','2021-09-24 21:05:53.365443','2021-09-24 21:05:54.52164','SUCCESS','21861'),
-	 (4261,781000.00,'Over the Counter',NULL,NULL,NULL,NULL,NULL,'FI Credit Transfer','008','2021-09-25 06:50:53.660159','2021-09-25 06:50:54.94655','SUCCESS','6000'),
-	 (4197,8904000.00,'Internet Banking','FARIS AI','2111132','Fandi Wijaya','7154004',NULL,'Credit Transfer','014','2021-09-24 21:14:38.837862','2021-09-24 21:14:40.623406','SUCCESS','21862'),
-	 (4202,800000.00,'Internet Banking','FARIS AI','2100323','Fandi Wijaya','7154004',NULL,'Credit Transfer','014','2021-09-24 21:28:28.581211','2021-09-24 21:28:30.827266','SUCCESS','21002'),
-	 (4270,1990000.00,'Internet Banking',NULL,'7712589',NULL,NULL,'Timeout menunggu response dari CIHUB','Account Enquiry','014','2021-09-25 19:34:30.664236','2021-09-25 19:34:33.04725','TIMEOUT-CIHUB','46149');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (4168,1990000.00,'Internet Banking',NULL,'7712589',NULL,NULL,'Timeout menunggu response dari CIHUB','Account Enquiry','014','2021-09-24 20:03:35.1136','2021-09-24 20:03:37.204071','TIMEOUT-CIHUB','46149'),
-	 (4207,1800200.00,'Internet Banking','FARIS AI','9234323','Fandi Ahmad','7100004','Account Enquiry reject.','Credit Transfer','014','2021-09-24 21:32:48.951207','2021-09-24 21:32:49.50314','REJECT-CIHUB','21002'),
-	 (4170,54500.00,'Internet Banking',NULL,'1819199',NULL,NULL,NULL,'Account Enquiry','008','2021-09-24 20:08:40.30641','2021-09-24 20:08:41.145749','SUCCESS','452168'),
-	 (4314,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-09-26 10:11:20.807327','2021-09-26 10:11:21.832654','SUCCESS','47169'),
-	 (4316,492220.00,'Internet Banking','FARHAN AI','18831','Bambang Suo','7785604',NULL,'Credit Transfer','014','2021-09-26 10:12:41.41432','2021-09-26 10:12:42.721917','SUCCESS','15521'),
-	 (4321,4000557.00,'Internet Banking','FARHAN AI','18831','Bambang Suo','7785604',NULL,'Credit Transfer','014','2021-09-26 10:21:24.315449','2021-09-26 10:21:26.011274','SUCCESS','150051'),
-	 (4326,4355557.00,'Internet Banking','FARHAN AI','14551','Bambang Suo','7744404',NULL,'Credit Transfer','014','2021-09-26 16:19:30.78414','2021-09-26 16:19:33.392218','SUCCESS','155221'),
-	 (4331,4355557.00,'Internet Banking','FARHAN AI','821751','Bambang Suo','7744404',NULL,'Credit Transfer','014','2021-09-26 16:21:37.471574','2021-09-26 16:21:40.686754','SUCCESS','155221'),
-	 (407,438417.00,'Internet Banking','FARHAN AI','874551','Andrea Suo','7744404','komi-mock: Temporary failure in name resolution','Credit Transfer','014','2021-10-01 15:51:38.352834','2021-10-01 15:51:38.423668','ERROR-CIHUB','147845'),
-	 (1,1545500.00,'Internet Banking',NULL,'1814449',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','008','2021-09-29 14:08:16.100441','2021-09-29 14:08:16.360669','ERROR-CIHUB','40118');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (37,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 22:03:49.710404','2021-09-30 22:03:50.799211','SUCCESS','55140'),
-	 (3,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-09-29 14:08:35.903716','2021-09-29 14:08:35.9298','ERROR-CIHUB','47169'),
-	 (5,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-09-29 14:09:11.377577','2021-09-29 14:09:13.161799','SUCCESS','47169'),
-	 (45,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 23:36:36.124373','2021-09-30 23:36:37.065951','SUCCESS','5540'),
-	 (7,1545500.00,'Internet Banking',NULL,'1814449',NULL,NULL,NULL,'Account Enquiry','008','2021-09-29 14:09:46.568211','2021-09-29 14:09:47.259131','SUCCESS','40118'),
-	 (16,438417.00,'Internet Banking','FARHAN AI','871551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-09-30 10:53:09.293951','2021-09-30 10:53:14.619186','SUCCESS','14145'),
-	 (22,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 20:54:19.518163',NULL,NULL,'55140'),
-	 (23,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 20:57:16.25369',NULL,NULL,'55140'),
-	 (24,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 21:17:35.890569',NULL,NULL,'55140'),
-	 (39,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 22:04:05.45655','2021-09-30 22:04:05.812993','SUCCESS','5540');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (26,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 21:29:06.544674','2021-09-30 21:29:07.402369','SUCCESS','55140'),
-	 (29,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 21:56:18.366121',NULL,NULL,'55140'),
-	 (31,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 21:58:52.952993',NULL,NULL,'55140'),
-	 (33,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 22:01:15.811017',NULL,NULL,'55140'),
-	 (35,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 22:02:27.723387',NULL,NULL,'55140'),
-	 (42,NULL,'Internet Banking',NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 23:28:36.233486','2021-09-30 23:28:37.111833','SUCCESS','5540'),
-	 (179,438417.00,'Internet Banking','FARHAN AI','874551','Andrea Suo','7744404','komi-mock: Temporary failure in name resolution','Credit Transfer','014','2021-10-01 15:16:46.543945','2021-10-01 15:16:47.097534','ERROR-CIHUB','147845'),
-	 (409,438417.00,'Internet Banking','FARHAN AI','874551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-01 22:54:35.621627','2021-10-01 22:54:39.432398','SUCCESS','147845'),
-	 (440,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 08:54:12.19465','2021-10-02 08:54:13.636637','SUCCESS','419'),
-	 (442,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 08:57:16.460295','2021-10-02 08:57:17.488635','SUCCESS','5669');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (444,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 08:58:46.420848','2021-10-02 08:58:47.451139','SUCCESS','5669'),
-	 (446,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 08:59:32.386796','2021-10-02 08:59:33.467969','SUCCESS','5669'),
-	 (448,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:01:31.923015','2021-10-02 09:01:33.035205','SUCCESS','56573'),
-	 (537,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:29:03.166913','2021-10-03 07:29:09.680011','ERROR-CIHUB','54773'),
-	 (450,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:06:57.200397','2021-10-02 09:06:58.261774','SUCCESS','5573'),
-	 (497,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 11:28:19.882226','2021-10-02 11:28:21.037962','SUCCESS','122642'),
-	 (452,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:08:03.655694','2021-10-02 09:08:04.773126','SUCCESS','5573'),
-	 (454,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:16:58.173942','2021-10-02 09:16:59.181883','SUCCESS','556773'),
-	 (529,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 05:55:51.311652','2021-10-03 05:55:57.660512','ERROR-CIHUB','54773'),
-	 (456,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-02 09:17:56.677025','2021-10-02 09:17:56.788541','ERROR-CIHUB','556773');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (501,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 11:36:07.438412','2021-10-02 11:36:09.188005','SUCCESS','126642'),
-	 (458,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,'localhost:9006 failed to respond','Account Enquiry','014','2021-10-02 09:22:50.068152','2021-10-02 09:22:50.099107','ERROR-CIHUB','556773'),
-	 (505,438417.00,'Internet Banking',NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 12:31:24.709415',NULL,NULL,'12652'),
-	 (460,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,'localhost:9006 failed to respond','Account Enquiry','014','2021-10-02 09:22:58.353548','2021-10-02 09:22:58.397447','ERROR-CIHUB','556773'),
-	 (507,438417.00,'Internet Banking',NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 12:37:43.65864',NULL,NULL,'12652'),
-	 (462,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:26:06.458024','2021-10-02 09:26:08.088483','SUCCESS','556773'),
-	 (464,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 09:39:04.578328',NULL,NULL,'14545'),
-	 (509,438417.00,'Internet Banking',NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 12:41:04.318335',NULL,NULL,'12652'),
-	 (465,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 09:41:23.184114','2021-10-02 09:41:24.150425','SUCCESS','14545'),
-	 (468,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:01:01.704958','2021-10-02 10:01:03.209592','SUCCESS','14422');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (471,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:04:30.405728','2021-10-02 10:04:31.198426','SUCCESS','1242'),
-	 (511,438417.00,'Internet Banking',NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 12:44:21.496273','2021-10-02 12:44:22.650367','SUCCESS','12652'),
-	 (474,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:07:44.601044','2021-10-02 10:07:45.509434','SUCCESS','1242'),
-	 (477,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:10:24.439513','2021-10-02 10:10:25.383277','SUCCESS','1242'),
-	 (514,438417.00,'Internet Banking',NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 05:54:53.944319','2021-10-02 05:54:56.022891','SUCCESS','156652'),
-	 (480,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:13:12.606991','2021-10-02 10:13:13.593278','SUCCESS','1242'),
-	 (483,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404','Timeout waiting CIHUB response','Credit Transfer','014','2021-10-02 10:27:27.433768','2021-10-02 10:27:28.043673','TIMEOUT-CIHUB','1242'),
-	 (517,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,'komi-mock: Temporary failure in name resolution','Account Enquiry','014','2021-10-02 13:21:50.01629','2021-10-02 13:21:50.81204','ERROR-CIHUB','556773'),
-	 (487,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404','Timeout waiting CIHUB response','Credit Transfer','014','2021-10-02 10:27:32.588504','2021-10-02 10:27:32.743143','TIMEOUT-CIHUB','1242'),
-	 (491,438417.00,'Internet Banking','FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:47:02.748922','2021-10-02 10:47:04.215187','SUCCESS','1242');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (519,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 13:22:40.289482','2021-10-02 13:22:42.292951','SUCCESS','556773'),
-	 (521,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,'Unrecognized token ''bifast'': was expecting (JSON String, Number, Array, Object or token ''null'', ''true'' or ''false'')
- at [Source: (ByteArrayInputStream); line: 1, column: 8]','Account Enquiry','014','2021-10-03 05:33:41.108231','2021-10-03 05:33:42.263178','ERROR-CIHUB','54773'),
-	 (531,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 06:00:21.814887','2021-10-03 06:00:28.178537','ERROR-CIHUB','54773'),
-	 (523,137400.00,'Internet Banking',NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 05:45:58.416194','2021-10-03 05:45:58.684096','SUCCESS','54773'),
-	 (525,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 05:46:31.889021','2021-10-03 05:46:37.928784','ERROR-CIHUB','54773'),
-	 (545,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:43:28.642186','2021-10-03 07:43:35.118809','TIMEOUT-CIHUB','54773'),
-	 (527,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 05:50:08.651997','2021-10-03 05:50:14.976101','ERROR-CIHUB','54773'),
-	 (533,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:19:59.598181','2021-10-03 07:20:06.073361','ERROR-CIHUB','54773'),
-	 (539,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:32:47.205583','2021-10-03 07:32:53.606545','ERROR-CIHUB','54773'),
-	 (535,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:26:08.302797','2021-10-03 07:26:14.641542','ERROR-CIHUB','54773');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (543,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:35:54.07225','2021-10-03 07:36:00.504361','ERROR-CIHUB','54773'),
-	 (541,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:33:42.386292','2021-10-03 07:33:48.748565','ERROR-CIHUB','54773'),
-	 (547,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 08:13:37.854758','2021-10-03 08:13:44.240467','TIMEOUT-CIHUB','54773'),
-	 (549,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 08:15:10.545392','2021-10-03 08:15:16.872512','TIMEOUT-CIHUB','54773'),
-	 (551,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 08:15:55.038971','2021-10-03 08:16:01.419799','TIMEOUT-CIHUB','54773'),
-	 (553,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:08:21.193098','2021-10-03 11:08:27.549026','ERROR-CIHUB','54773'),
-	 (587,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:15:21.454337','2021-10-03 15:15:23.85232','ERROR-CIHUB','54773'),
-	 (555,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:11:01.4723','2021-10-03 11:11:07.813223','ERROR-CIHUB','54773'),
-	 (557,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 11:31:01.10061',NULL,NULL,'54773'),
-	 (589,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:17:46.350359',NULL,NULL,'54773');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (558,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:31:46.827838','2021-10-03 11:31:53.287374','ERROR-CIHUB','54773'),
-	 (560,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 11:36:15.934564',NULL,NULL,'54773'),
-	 (590,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:19:19.340405',NULL,NULL,'54773'),
-	 (561,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 11:40:06.94006','2021-10-03 11:40:07.247951','ERROR-CIHUB','54773'),
-	 (563,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 11:43:00.225889',NULL,NULL,'54773'),
-	 (564,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:45:08.367359','2021-10-03 11:45:15.551058','ERROR-CIHUB','54773'),
-	 (627,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:26:01.582058','2021-10-03 16:26:03.990317','TIMEOUT-CIHUB','54773'),
-	 (566,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:54:09.883248','2021-10-03 11:54:16.371822','ERROR-CIHUB','54773'),
-	 (591,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 15:21:03.289559','2021-10-03 15:21:03.647077','ERROR-CIHUB','54773'),
-	 (568,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 11:54:28.399435','2021-10-03 11:54:28.454106','ERROR-CIHUB','54773');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (593,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:21:42.393883',NULL,NULL,'54773'),
-	 (570,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 12:12:51.489745','2021-10-03 12:12:51.850759','ERROR-CIHUB','54773'),
-	 (594,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:24:28.657349',NULL,NULL,'54773'),
-	 (572,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 12:59:56.186005','2021-10-03 12:59:56.570762','ERROR-CIHUB','54773'),
-	 (574,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 14:04:57.589961',NULL,NULL,'54773'),
-	 (595,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:25:53.752766',NULL,NULL,'54773'),
-	 (575,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 14:21:53.030106','2021-10-03 14:21:53.307517','ERROR-CIHUB','54773'),
-	 (596,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:27:13.704864',NULL,NULL,'54773'),
-	 (577,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 14:23:08.789835','2021-10-03 14:23:09.103562','ERROR-CIHUB','54773'),
-	 (579,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:04:36.008724',NULL,NULL,'54773');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (581,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:06:28.666291',NULL,NULL,'54773'),
-	 (582,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:11:02.581954',NULL,NULL,'54773'),
-	 (597,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:39:02.444399',NULL,NULL,'54773'),
-	 (583,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:12:02.823999','2021-10-03 15:12:05.272179','ERROR-CIHUB','54773'),
-	 (598,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:42:39.924305',NULL,NULL,'54773'),
-	 (585,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:13:36.044226','2021-10-03 15:13:38.383813','ERROR-CIHUB','54773'),
-	 (610,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:00:11.633639','2021-10-03 16:00:13.969583','TIMEOUT-CIHUB','54773'),
-	 (599,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:43:25.514987',NULL,NULL,'54773'),
-	 (600,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:44:24.810106','2021-10-03 15:44:27.144677','ERROR-CIHUB','54773'),
-	 (623,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:22:15.45636','2021-10-03 16:22:15.787662','ERROR-CIHUB','54773');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (602,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:46:31.317291','2021-10-03 15:46:33.442656','ERROR-CIHUB','54773'),
-	 (612,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:00:46.434543','2021-10-03 16:00:48.746839','TIMEOUT-CIHUB','54773'),
-	 (604,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:54:36.976008','2021-10-03 15:54:39.274239','TIMEOUT-CIHUB','54773'),
-	 (606,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:56:56.085906','2021-10-03 15:56:58.430005','TIMEOUT-CIHUB','54773'),
-	 (625,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:22:42.565609',NULL,NULL,'54773'),
-	 (608,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:58:43.680878','2021-10-03 15:58:46.053801','TIMEOUT-CIHUB','54773'),
-	 (614,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:02:04.262209','2021-10-03 16:02:06.57245','TIMEOUT-CIHUB','54773'),
-	 (626,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:23:38.700496',NULL,NULL,'54773'),
-	 (616,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:02:46.172652','2021-10-03 16:02:48.480816','TIMEOUT-CIHUB','54773'),
-	 (618,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:04:02.954593','2021-10-03 16:04:05.299276','TIMEOUT-CIHUB','54773');
-INSERT INTO public.channel_transaction (id,amount,channel_code,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id) VALUES
-	 (620,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:05:03.914808',NULL,NULL,'54773'),
-	 (621,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:11:09.72565',NULL,NULL,'54773'),
-	 (622,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:18:41.620486',NULL,NULL,'54773'),
-	 (629,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:27:01.709332','2021-10-03 16:27:03.998657','TIMEOUT-CIHUB','54773'),
-	 (631,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:27:08.643361','2021-10-03 16:27:10.743592','TIMEOUT-CIHUB','54563'),
-	 (633,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:27:17.844283','2021-10-03 16:27:17.868116','ERROR-CIHUB','5453'),
-	 (635,137400.00,'Internet Banking',NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:28:04.576125','2021-10-03 16:28:11.656498','TIMEOUT-CIHUB','55453'),
-	 (637,137400.00,'Internet Banking',NULL,'177589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:29:58.260384','2021-10-03 16:29:58.789095','SUCCESS','55453');INSERT INTO public.corebank_transaction (transaction_id,addt_info,channel_ref_id,credit_amount,creditor_bank,cstm_account_name,cstm_account_no,cstm_account_type,debit_amount,debtor_bank,status,transaction_type,trns_dt,chnl_trx_id) VALUES
+','20211003CENAIDJA510R0200001253','ACTC',637,463);INSERT INTO public.channel (channel_id,channel_name,channel_type,create_dt,daily_limit_amount,modif_dt,secret_key,transaction_limit_amount) VALUES
+	 ('IB1','Internet Banking','01',NULL,NULL,NULL,NULL,NULL),
+	 ('MB1','Mobile Banking','02',NULL,NULL,NULL,NULL,NULL),
+	 ('TELLER','Over The Top','03',NULL,NULL,NULL,NULL,NULL),
+	 ('CS','Customer Service','03',NULL,NULL,NULL,NULL,NULL);INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (4179,781000.00,NULL,NULL,NULL,NULL,'rekening tidak aktif','FI Credit Transfer','008','2021-09-24 20:16:32.176756','2021-09-24 20:16:32.187235','REJECT-CB','962001','TELLER','4179'),
+	 (4287,711660.00,NULL,NULL,NULL,NULL,NULL,'FI Credit Transfer','008','2021-09-25 19:44:04.420082','2021-09-25 19:44:05.056608','SUCCESS','6011','TELLER','4287'),
+	 (4257,781000.00,NULL,NULL,NULL,NULL,NULL,'FI Credit Transfer','008','2021-09-25 06:45:34.736657','2021-09-25 06:45:35.38268','SUCCESS','6241','TELLER','4257'),
+	 (4261,781000.00,NULL,NULL,NULL,NULL,NULL,'FI Credit Transfer','008','2021-09-25 06:50:53.660159','2021-09-25 06:50:54.94655','SUCCESS','6000','TELLER','4261'),
+	 (4202,800000.00,'FARIS AI','2100323','Fandi Wijaya','7154004',NULL,'Credit Transfer','014','2021-09-24 21:28:28.581211','2021-09-24 21:28:30.827266','SUCCESS','21002','IB1','4202'),
+	 (4270,1990000.00,NULL,'7712589',NULL,NULL,'Timeout menunggu response dari CIHUB','Account Enquiry','014','2021-09-25 19:34:30.664236','2021-09-25 19:34:33.04725','TIMEOUT-CIHUB','46149','IB1','4270'),
+	 (4168,1990000.00,NULL,'7712589',NULL,NULL,'Timeout menunggu response dari CIHUB','Account Enquiry','014','2021-09-24 20:03:35.1136','2021-09-24 20:03:37.204071','TIMEOUT-CIHUB','46149','IB1','4168'),
+	 (4207,1800200.00,'FARIS AI','9234323','Fandi Ahmad','7100004','Account Enquiry reject.','Credit Transfer','014','2021-09-24 21:32:48.951207','2021-09-24 21:32:49.50314','REJECT-CIHUB','21002','IB1','4207'),
+	 (4170,54500.00,NULL,'1819199',NULL,NULL,NULL,'Account Enquiry','008','2021-09-24 20:08:40.30641','2021-09-24 20:08:41.145749','SUCCESS','452168','IB1','4170'),
+	 (4314,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-09-26 10:11:20.807327','2021-09-26 10:11:21.832654','SUCCESS','47169','IB1','4314');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (4316,492220.00,'FARHAN AI','18831','Bambang Suo','7785604',NULL,'Credit Transfer','014','2021-09-26 10:12:41.41432','2021-09-26 10:12:42.721917','SUCCESS','15521','IB1','4316'),
+	 (4321,4000557.00,'FARHAN AI','18831','Bambang Suo','7785604',NULL,'Credit Transfer','014','2021-09-26 10:21:24.315449','2021-09-26 10:21:26.011274','SUCCESS','150051','IB1','4321'),
+	 (4326,4355557.00,'FARHAN AI','14551','Bambang Suo','7744404',NULL,'Credit Transfer','014','2021-09-26 16:19:30.78414','2021-09-26 16:19:33.392218','SUCCESS','155221','IB1','4326'),
+	 (4331,4355557.00,'FARHAN AI','821751','Bambang Suo','7744404',NULL,'Credit Transfer','014','2021-09-26 16:21:37.471574','2021-09-26 16:21:40.686754','SUCCESS','155221','IB1','4331'),
+	 (407,438417.00,'FARHAN AI','874551','Andrea Suo','7744404','komi-mock: Temporary failure in name resolution','Credit Transfer','014','2021-10-01 15:51:38.352834','2021-10-01 15:51:38.423668','ERROR-CIHUB','147845','IB1','407'),
+	 (1,1545500.00,NULL,'1814449',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','008','2021-09-29 14:08:16.100441','2021-09-29 14:08:16.360669','ERROR-CIHUB','40118','IB1','1'),
+	 (37,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 22:03:49.710404','2021-09-30 22:03:50.799211','SUCCESS','55140','IB1','37'),
+	 (3,137400.00,NULL,'677589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-09-29 14:08:35.903716','2021-09-29 14:08:35.9298','ERROR-CIHUB','47169','IB1','3'),
+	 (5,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-09-29 14:09:11.377577','2021-09-29 14:09:13.161799','SUCCESS','47169','IB1','5'),
+	 (45,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 23:36:36.124373','2021-09-30 23:36:37.065951','SUCCESS','5540','IB1','45');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (7,1545500.00,NULL,'1814449',NULL,NULL,NULL,'Account Enquiry','008','2021-09-29 14:09:46.568211','2021-09-29 14:09:47.259131','SUCCESS','40118','IB1','7'),
+	 (16,438417.00,'FARHAN AI','871551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-09-30 10:53:09.293951','2021-09-30 10:53:14.619186','SUCCESS','14145','IB1','16'),
+	 (22,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 20:54:19.518163',NULL,NULL,'55140','IB1','22'),
+	 (23,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 20:57:16.25369',NULL,NULL,'55140','IB1','23'),
+	 (24,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 21:17:35.890569',NULL,NULL,'55140','IB1','24'),
+	 (39,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 22:04:05.45655','2021-09-30 22:04:05.812993','SUCCESS','5540','IB1','39'),
+	 (26,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 21:29:06.544674','2021-09-30 21:29:07.402369','SUCCESS','55140','IB1','26'),
+	 (29,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 21:56:18.366121',NULL,NULL,'55140','IB1','29'),
+	 (31,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 21:58:52.952993',NULL,NULL,'55140','IB1','31'),
+	 (33,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 22:01:15.811017',NULL,NULL,'55140','IB1','33');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (35,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 22:02:27.723387',NULL,NULL,'55140','IB1','35'),
+	 (42,NULL,NULL,NULL,'Fras Manse','14556',NULL,'Proxy Registration',NULL,'2021-09-30 23:28:36.233486','2021-09-30 23:28:37.111833','SUCCESS','5540','IB1','42'),
+	 (179,438417.00,'FARHAN AI','874551','Andrea Suo','7744404','komi-mock: Temporary failure in name resolution','Credit Transfer','014','2021-10-01 15:16:46.543945','2021-10-01 15:16:47.097534','ERROR-CIHUB','147845','IB1','179'),
+	 (409,438417.00,'FARHAN AI','874551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-01 22:54:35.621627','2021-10-01 22:54:39.432398','SUCCESS','147845','IB1','409'),
+	 (440,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 08:54:12.19465','2021-10-02 08:54:13.636637','SUCCESS','419','IB1','440'),
+	 (442,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 08:57:16.460295','2021-10-02 08:57:17.488635','SUCCESS','5669','IB1','442'),
+	 (444,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 08:58:46.420848','2021-10-02 08:58:47.451139','SUCCESS','5669','IB1','444'),
+	 (446,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 08:59:32.386796','2021-10-02 08:59:33.467969','SUCCESS','5669','IB1','446'),
+	 (448,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:01:31.923015','2021-10-02 09:01:33.035205','SUCCESS','56573','IB1','448'),
+	 (537,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:29:03.166913','2021-10-03 07:29:09.680011','ERROR-CIHUB','54773','IB1','537');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (450,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:06:57.200397','2021-10-02 09:06:58.261774','SUCCESS','5573','IB1','450'),
+	 (497,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 11:28:19.882226','2021-10-02 11:28:21.037962','SUCCESS','122642','IB1','497'),
+	 (452,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:08:03.655694','2021-10-02 09:08:04.773126','SUCCESS','5573','IB1','452'),
+	 (454,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:16:58.173942','2021-10-02 09:16:59.181883','SUCCESS','556773','IB1','454'),
+	 (529,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 05:55:51.311652','2021-10-03 05:55:57.660512','ERROR-CIHUB','54773','IB1','529'),
+	 (456,137400.00,NULL,'677589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-02 09:17:56.677025','2021-10-02 09:17:56.788541','ERROR-CIHUB','556773','IB1','456'),
+	 (501,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 11:36:07.438412','2021-10-02 11:36:09.188005','SUCCESS','126642','IB1','501'),
+	 (458,137400.00,NULL,'677589',NULL,NULL,'localhost:9006 failed to respond','Account Enquiry','014','2021-10-02 09:22:50.068152','2021-10-02 09:22:50.099107','ERROR-CIHUB','556773','IB1','458'),
+	 (505,438417.00,NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 12:31:24.709415',NULL,NULL,'12652','IB1','505'),
+	 (460,137400.00,NULL,'677589',NULL,NULL,'localhost:9006 failed to respond','Account Enquiry','014','2021-10-02 09:22:58.353548','2021-10-02 09:22:58.397447','ERROR-CIHUB','556773','IB1','460');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (507,438417.00,NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 12:37:43.65864',NULL,NULL,'12652','IB1','507'),
+	 (462,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 09:26:06.458024','2021-10-02 09:26:08.088483','SUCCESS','556773','IB1','462'),
+	 (464,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 09:39:04.578328',NULL,NULL,'14545','IB1','464'),
+	 (509,438417.00,NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 12:41:04.318335',NULL,NULL,'12652','IB1','509'),
+	 (465,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 09:41:23.184114','2021-10-02 09:41:24.150425','SUCCESS','14545','IB1','465'),
+	 (468,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:01:01.704958','2021-10-02 10:01:03.209592','SUCCESS','14422','IB1','468'),
+	 (471,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:04:30.405728','2021-10-02 10:04:31.198426','SUCCESS','1242','IB1','471'),
+	 (511,438417.00,NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 12:44:21.496273','2021-10-02 12:44:22.650367','SUCCESS','12652','IB1','511'),
+	 (474,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:07:44.601044','2021-10-02 10:07:45.509434','SUCCESS','1242','IB1','474'),
+	 (477,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:10:24.439513','2021-10-02 10:10:25.383277','SUCCESS','1242','IB1','477');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (514,438417.00,NULL,'174551',NULL,'7744404',NULL,'Credit Transfer','014','2021-10-02 05:54:53.944319','2021-10-02 05:54:56.022891','SUCCESS','156652','IB1','514'),
+	 (480,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:13:12.606991','2021-10-02 10:13:13.593278','SUCCESS','1242','IB1','480'),
+	 (483,438417.00,'FARHAN AI','174551','Andrea Suo','7744404','Timeout waiting CIHUB response','Credit Transfer','014','2021-10-02 10:27:27.433768','2021-10-02 10:27:28.043673','TIMEOUT-CIHUB','1242','IB1','483'),
+	 (517,137400.00,NULL,'677589',NULL,NULL,'komi-mock: Temporary failure in name resolution','Account Enquiry','014','2021-10-02 13:21:50.01629','2021-10-02 13:21:50.81204','ERROR-CIHUB','556773','IB1','517'),
+	 (487,438417.00,'FARHAN AI','174551','Andrea Suo','7744404','Timeout waiting CIHUB response','Credit Transfer','014','2021-10-02 10:27:32.588504','2021-10-02 10:27:32.743143','TIMEOUT-CIHUB','1242','IB1','487'),
+	 (491,438417.00,'FARHAN AI','174551','Andrea Suo','7744404',NULL,'Credit Transfer','014','2021-10-02 10:47:02.748922','2021-10-02 10:47:04.215187','SUCCESS','1242','IB1','491'),
+	 (519,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-02 13:22:40.289482','2021-10-02 13:22:42.292951','SUCCESS','556773','IB1','519'),
+	 (521,137400.00,NULL,'677589',NULL,NULL,'Unrecognized token ''bifast'': was expecting (JSON String, Number, Array, Object or token ''null'', ''true'' or ''false'')
+ at [Source: (ByteArrayInputStream); line: 1, column: 8]','Account Enquiry','014','2021-10-03 05:33:41.108231','2021-10-03 05:33:42.263178','ERROR-CIHUB','54773','IB1','521'),
+	 (531,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 06:00:21.814887','2021-10-03 06:00:28.178537','ERROR-CIHUB','54773','IB1','531'),
+	 (523,137400.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 05:45:58.416194','2021-10-03 05:45:58.684096','SUCCESS','54773','IB1','523');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (525,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 05:46:31.889021','2021-10-03 05:46:37.928784','ERROR-CIHUB','54773','IB1','525'),
+	 (545,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:43:28.642186','2021-10-03 07:43:35.118809','TIMEOUT-CIHUB','54773','IB1','545'),
+	 (527,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 05:50:08.651997','2021-10-03 05:50:14.976101','ERROR-CIHUB','54773','IB1','527'),
+	 (533,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:19:59.598181','2021-10-03 07:20:06.073361','ERROR-CIHUB','54773','IB1','533'),
+	 (539,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:32:47.205583','2021-10-03 07:32:53.606545','ERROR-CIHUB','54773','IB1','539'),
+	 (535,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:26:08.302797','2021-10-03 07:26:14.641542','ERROR-CIHUB','54773','IB1','535'),
+	 (543,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:35:54.07225','2021-10-03 07:36:00.504361','ERROR-CIHUB','54773','IB1','543'),
+	 (541,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 07:33:42.386292','2021-10-03 07:33:48.748565','ERROR-CIHUB','54773','IB1','541'),
+	 (547,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 08:13:37.854758','2021-10-03 08:13:44.240467','TIMEOUT-CIHUB','54773','IB1','547'),
+	 (549,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 08:15:10.545392','2021-10-03 08:15:16.872512','TIMEOUT-CIHUB','54773','IB1','549');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (551,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 08:15:55.038971','2021-10-03 08:16:01.419799','TIMEOUT-CIHUB','54773','IB1','551'),
+	 (553,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:08:21.193098','2021-10-03 11:08:27.549026','ERROR-CIHUB','54773','IB1','553'),
+	 (587,137400.00,NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:15:21.454337','2021-10-03 15:15:23.85232','ERROR-CIHUB','54773','IB1','587'),
+	 (555,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:11:01.4723','2021-10-03 11:11:07.813223','ERROR-CIHUB','54773','IB1','555'),
+	 (557,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 11:31:01.10061',NULL,NULL,'54773','IB1','557'),
+	 (589,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:17:46.350359',NULL,NULL,'54773','IB1','589'),
+	 (558,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:31:46.827838','2021-10-03 11:31:53.287374','ERROR-CIHUB','54773','IB1','558'),
+	 (560,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 11:36:15.934564',NULL,NULL,'54773','IB1','560'),
+	 (590,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:19:19.340405',NULL,NULL,'54773','IB1','590'),
+	 (561,137400.00,NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 11:40:06.94006','2021-10-03 11:40:07.247951','ERROR-CIHUB','54773','IB1','561');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (563,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 11:43:00.225889',NULL,NULL,'54773','IB1','563'),
+	 (564,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:45:08.367359','2021-10-03 11:45:15.551058','ERROR-CIHUB','54773','IB1','564'),
+	 (627,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:26:01.582058','2021-10-03 16:26:03.990317','TIMEOUT-CIHUB','54773','IB1','627'),
+	 (4215,1000200.00,'FARIS AI','8289331','Fandi Ahmad','7100004','Timeout menunggu response dari CIHUB','Credit Transfer','014','2021-09-24 21:43:57.07041','2021-09-24 21:43:59.218936','TIMEOUT-CIHUB','15502','IB1','4215'),
+	 (4172,54500.00,NULL,'1814449',NULL,NULL,NULL,'Account Enquiry','008','2021-09-24 20:11:08.394747','2021-09-24 20:11:09.388125','SUCCESS','4511168','IB1','4172'),
+	 (4217,1000200.00,'FARIS AI','8289331','Fandi Ahmad','7110004',NULL,'Credit Transfer','014','2021-09-24 21:47:26.780557','2021-09-24 21:47:29.593947','SUCCESS','15530','IB1','4217'),
+	 (4337,438417.00,'FARHAN AI','921751','Andrea Suo','7744404','Account Enquiry reject.','Credit Transfer','014','2021-09-26 16:25:49.114656','2021-09-26 16:25:50.132874','REJECT-CIHUB','15551','IB1','4337'),
+	 (566,137400.00,NULL,'77589',NULL,NULL,'HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 504','Account Enquiry','014','2021-10-03 11:54:09.883248','2021-10-03 11:54:16.371822','ERROR-CIHUB','54773','IB1','566'),
+	 (591,137400.00,NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 15:21:03.289559','2021-10-03 15:21:03.647077','ERROR-CIHUB','54773','IB1','591'),
+	 (568,137400.00,NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 11:54:28.399435','2021-10-03 11:54:28.454106','ERROR-CIHUB','54773','IB1','568');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (593,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:21:42.393883',NULL,NULL,'54773','IB1','593'),
+	 (570,137400.00,NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 12:12:51.489745','2021-10-03 12:12:51.850759','ERROR-CIHUB','54773','IB1','570'),
+	 (594,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:24:28.657349',NULL,NULL,'54773','IB1','594'),
+	 (572,137400.00,NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 12:59:56.186005','2021-10-03 12:59:56.570762','ERROR-CIHUB','54773','IB1','572'),
+	 (574,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 14:04:57.589961',NULL,NULL,'54773','IB1','574'),
+	 (595,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:25:53.752766',NULL,NULL,'54773','IB1','595'),
+	 (575,137400.00,NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 14:21:53.030106','2021-10-03 14:21:53.307517','ERROR-CIHUB','54773','IB1','575'),
+	 (596,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:27:13.704864',NULL,NULL,'54773','IB1','596'),
+	 (577,137400.00,NULL,'77589',NULL,NULL,'Connect to localhost:9006 [localhost/127.0.0.1] failed: Connection refused','Account Enquiry','014','2021-10-03 14:23:08.789835','2021-10-03 14:23:09.103562','ERROR-CIHUB','54773','IB1','577'),
+	 (579,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:04:36.008724',NULL,NULL,'54773','IB1','579');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (581,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:06:28.666291',NULL,NULL,'54773','IB1','581'),
+	 (582,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:11:02.581954',NULL,NULL,'54773','IB1','582'),
+	 (597,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:39:02.444399',NULL,NULL,'54773','IB1','597'),
+	 (583,137400.00,NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:12:02.823999','2021-10-03 15:12:05.272179','ERROR-CIHUB','54773','IB1','583'),
+	 (598,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:42:39.924305',NULL,NULL,'54773','IB1','598'),
+	 (585,137400.00,NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:13:36.044226','2021-10-03 15:13:38.383813','ERROR-CIHUB','54773','IB1','585'),
+	 (610,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:00:11.633639','2021-10-03 16:00:13.969583','TIMEOUT-CIHUB','54773','IB1','610'),
+	 (599,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:43:25.514987',NULL,NULL,'54773','IB1','599'),
+	 (600,137400.00,NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:44:24.810106','2021-10-03 15:44:27.144677','ERROR-CIHUB','54773','IB1','600'),
+	 (623,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:22:15.45636','2021-10-03 16:22:15.787662','ERROR-CIHUB','54773','IB1','623');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (602,137400.00,NULL,'77589',NULL,NULL,'Read timed out','Account Enquiry','014','2021-10-03 15:46:31.317291','2021-10-03 15:46:33.442656','ERROR-CIHUB','54773','IB1','602'),
+	 (612,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:00:46.434543','2021-10-03 16:00:48.746839','TIMEOUT-CIHUB','54773','IB1','612'),
+	 (604,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:54:36.976008','2021-10-03 15:54:39.274239','TIMEOUT-CIHUB','54773','IB1','604'),
+	 (606,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:56:56.085906','2021-10-03 15:56:58.430005','TIMEOUT-CIHUB','54773','IB1','606'),
+	 (625,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:22:42.565609',NULL,NULL,'54773','IB1','625'),
+	 (608,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 15:58:43.680878','2021-10-03 15:58:46.053801','TIMEOUT-CIHUB','54773','IB1','608'),
+	 (614,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:02:04.262209','2021-10-03 16:02:06.57245','TIMEOUT-CIHUB','54773','IB1','614'),
+	 (626,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:23:38.700496',NULL,NULL,'54773','IB1','626'),
+	 (616,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:02:46.172652','2021-10-03 16:02:48.480816','TIMEOUT-CIHUB','54773','IB1','616'),
+	 (618,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:04:02.954593','2021-10-03 16:04:05.299276','TIMEOUT-CIHUB','54773','IB1','618');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (620,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:05:03.914808',NULL,NULL,'54773','IB1','620'),
+	 (621,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:11:09.72565',NULL,NULL,'54773','IB1','621'),
+	 (622,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:18:41.620486',NULL,NULL,'54773','IB1','622'),
+	 (629,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:27:01.709332','2021-10-03 16:27:03.998657','TIMEOUT-CIHUB','54773','IB1','629'),
+	 (631,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:27:08.643361','2021-10-03 16:27:10.743592','TIMEOUT-CIHUB','54563','IB1','631'),
+	 (633,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:27:17.844283','2021-10-03 16:27:17.868116','ERROR-CIHUB','5453','IB1','633'),
+	 (635,137400.00,NULL,'77589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:28:04.576125','2021-10-03 16:28:11.656498','TIMEOUT-CIHUB','55453','IB1','635'),
+	 (637,137400.00,NULL,'177589',NULL,NULL,NULL,'Account Enquiry','014','2021-10-03 16:29:58.260384','2021-10-03 16:29:58.789095','SUCCESS','55453','IB1','637'),
+	 (4174,8650000.00,'P AI','11844292','Fandi Wijaya','782444',NULL,'Credit Transfer','014','2021-09-24 20:12:55.068922','2021-09-24 20:12:56.296226','SUCCESS','21211','IB1','4174'),
+	 (4229,4222000.00,'FARIS AI','8211131','Bambang Suo','7155504',NULL,'Credit Transfer','014','2021-09-24 22:05:37.514305','2021-09-24 22:05:40.95248','SUCCESS','12550','IB1','4229');
+INSERT INTO public.channel_transaction (id,amount,creditor_account_name,creditor_account_number,debtor_account_name,debtor_account_number,error_msg,msg_name,recpt_bank,request_time,response_time,status,transaction_id,channel_id,komi_trns_id) VALUES
+	 (4274,1390000.00,NULL,'677589',NULL,NULL,NULL,'Account Enquiry','014','2021-09-25 19:36:12.697836','2021-09-25 19:36:13.280701','SUCCESS','41449','IB1','4274'),
+	 (4276,422260.00,'FARHAN AI','825331','Bambang Suo','7155604',NULL,'Credit Transfer','014','2021-09-25 19:39:26.250063','2021-09-25 19:39:31.01464','SUCCESS','11004','IB1','4276'),
+	 (4181,89994500.00,'P AI','110044292','Fandi Wijaya','785544',NULL,'Credit Transfer','014','2021-09-24 20:27:12.676883','2021-09-24 20:27:14.435353','SUCCESS','211411','IB1','4181'),
+	 (4341,1545500.00,NULL,'1814449',NULL,NULL,NULL,'Account Enquiry','008','2021-09-26 21:32:25.290132','2021-09-26 21:32:26.629601','SUCCESS','41468','IB1','4341'),
+	 (4282,467760.00,'FARHAN AI','182531','Bambang Suo','7785604',NULL,'Credit Transfer','014','2021-09-25 19:43:19.562176','2021-09-25 19:43:20.705859','SUCCESS','15804','IB1','4282'),
+	 (4186,8904000.00,'FARIS AI','8000292','Fandi Wijaya','7850004','Timeout waiting CIHUB response','Credit Transfer','014','2021-09-24 20:34:10.874679','2021-09-24 20:34:15.684737','TIMEOUT-CIHUB','210071','IB1','4186'),
+	 (4192,8904000.00,'FARIS AI','2000292','Fandi Wijaya','7850004',NULL,'Credit Transfer','014','2021-09-24 21:05:53.365443','2021-09-24 21:05:54.52164','SUCCESS','21861','IB1','4192'),
+	 (4197,8904000.00,'FARIS AI','2111132','Fandi Wijaya','7154004',NULL,'Credit Transfer','014','2021-09-24 21:14:38.837862','2021-09-24 21:14:40.623406','SUCCESS','21862','IB1','4197');INSERT INTO public.corebank_transaction (transaction_id,addt_info,channel_ref_id,credit_amount,creditor_bank,cstm_account_name,cstm_account_no,cstm_account_type,debit_amount,debtor_bank,status,transaction_type,trns_dt,chnl_trx_id) VALUES
 	 (4160,'Info tambahan disini','21211',NULL,NULL,'Fandi Wijaya','782444','CACC',8650000.00,NULL,'SUCCESS','Debit','2021-09-24 08:41:44.056383',4158),
 	 (4176,'Info tambahan disini','21211',NULL,NULL,'Fandi Wijaya','782444','CACC',8650000.00,NULL,'SUCCESS','Debit','2021-09-24 20:12:55.663967',4174),
 	 (4180,'rekening tidak aktif','962001',NULL,NULL,NULL,NULL,NULL,781000.00,NULL,'FAILED','FI Transfer','2021-09-24 20:16:32.18385',4179),
@@ -2134,7 +1681,14 @@ INSERT INTO public.message_counter (tanggal,last_number) VALUES
 	 (20210930,29),
 	 (20211002,50),
 	 (20211001,5),
-	 (20211003,69);INSERT INTO public.payment_status (id,bizmsgid,error_msg,intern_ref_id,orgn_endtoendid,request_dt,request_full_message,response_dt,response_full_message,retry_count,saf,status,chnl_trx_id,cihub_elapsed_time) VALUES
+	 (20211003,69),
+	 (20211007,11);INSERT INTO public."parameter" (id,code,"module",notes,value) VALUES
+	 (10,'LIMIT.DAILY.AMOUNT','OUTBOUND','Batas nilai transaksi perhari',NULL),
+	 (20,'LIMIT.DAILY.FREQ','OUTBOUND','Batas berapa kali transaksi perhari',NULL),
+	 (30,'LIMIT.TRNS.AMOUNT','OUTBOUND','Batas nilai per transaksi',NULL),
+	 (40,'RETRY.TIMEOUT','OUTBOUND','Berapa kali timeout sebelum dilaporkan ke admin',NULL),
+	 (50,'TIMEOUT.AE','OUTBOUND','Berapa lama sebelum timeout untuk Account Enquiry (milidetik)','6000'),
+	 (60,'TIMEOUT.CT','OUTBOUND','Berapa lama sebelum timeout untuk Credit Transfer (milidetik)','10000');INSERT INTO public.payment_status (id,bizmsgid,error_msg,intern_ref_id,orgn_endtoendid,request_dt,request_full_message,response_dt,response_full_message,retry_count,saf,status,chnl_trx_id,cihub_elapsed_time) VALUES
 	 (4191,'20210924SIHBIDJ1000O9900000072','Timeout menunggu response dari CIHUB','210071','20210924SIHBIDJ1010O0100000070','2021-09-24 08:34:13','eJyNUMtuwjAQ/Jc9Q7R+FLBvCYHiSjQIckM9VCRAJOKksZFQEf+OnceNA3tYe727M+O5Q3Q1a3MC
 eYewrldZ42/LLhdF1p1aaWO1aqvEntuur2CnVpGKvwg8XIwgrd7cmy++Q7cX9ntR8e80KE8OFClB
 QfkAjYiJENjGlMII3GScH7vh+vdgAqSzAJEEyF133uSx7WHGKMaUpxQl45IwcExxdbiWubadPlst
@@ -2295,6 +1849,4 @@ PccBUvazcJ/GQhq/MhsGs1QuZDnP9dZLUbdE+7ttr/Jm1Wo8va83LdZiR6yBSFwRkRD0vs5m979C
 s0IWJ8J8UBLNcVl548d5nKhz/1sWbhjKeujXX0CP3Iuk7utMntRronr2uRUruXoabzJxghp0j4KO
 F/kuJQ8+JWljA3HY5QpVk3OKABlVoMt+5bMm/Ul2u2vT1ryMhDRlagj/EdoFtlU9DeN/LW/qGz5m
 tW3nGa71PIqmZtFF6w+1HATq
-','2021-10-02 05:54:57.249671');INSERT INTO public.users (id,"password","role",username) VALUES
-	 (2,'$2a$10$5e3dB36HeRcozRgp8xQfw.tfD3Qsut8xu/NT9g/DSpVKg9Kzuitrq	','ADMIN','admin'),
-	 (1,'$2a$10$5e3dB36HeRcozRgp8xQfw.tfD3Qsut8xu/NT9g/DSpVKg9Kzuitrq','USER','user');
+','2021-10-02 05:54:57.249671');

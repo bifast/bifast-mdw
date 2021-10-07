@@ -104,7 +104,7 @@ public class RouterEndpointRoute extends RouteBuilder {
 			.process(saveChannelRequestProcessor)
 
 			.choice()
-				.when().simple("${header.hdr_msgType} == 'acctenqr'")
+				.when().simple("${header.hdr_msgType} == 'AEReq'")
 					.log("[ChRefId:${header.hdr_chnlRefId}][AE] start.")
 					.to("direct:acctenqrflt")
 					
@@ -135,7 +135,7 @@ public class RouterEndpointRoute extends RouteBuilder {
 			
 			.choice()
 					
-				.when().simple("${header.hdr_msgType} == 'acctenqr'")
+				.when().simple("${header.hdr_msgType} == 'AEReq'")
 					.log("[ChRefId:${header.hdr_chnlRefId}][AE] finish.")
 
 				.when().simple("${header.hdr_msgType} == 'crdttrns'")

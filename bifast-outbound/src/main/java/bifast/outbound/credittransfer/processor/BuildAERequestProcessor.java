@@ -20,7 +20,7 @@ public class BuildAERequestProcessor implements Processor {
 		chnlAEReq.setAmount(chnlCTReq.getAmount());
 		chnlAEReq.setCategoryPurpose(chnlCTReq.getCategoryPurpose());
 		chnlAEReq.setChannel(chnlCTReq.getChannel());
-		chnlAEReq.setChannelRefId(chnlCTReq.getOrignReffId());
+		chnlAEReq.setIntrnRefId(chnlCTReq.getOrignReffId());
 		chnlAEReq.setCreditorAccountNumber(chnlCTReq.getCrdtAccountNo());
 		chnlAEReq.setRecptBank(chnlCTReq.getRecptBank());
 		

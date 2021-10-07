@@ -7,12 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 @Entity(name="SETTLEMENT")
 public class Settlement {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
+	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 	
 	@Column(length=20)

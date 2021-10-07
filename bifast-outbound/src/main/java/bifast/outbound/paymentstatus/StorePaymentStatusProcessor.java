@@ -1,5 +1,6 @@
 package bifast.outbound.paymentstatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.camel.Exchange;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.model.PaymentStatus;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.PaymentStatusRepository;
 import bifast.outbound.service.UtilService;
 
@@ -27,7 +29,9 @@ public class StorePaymentStatusProcessor implements Processor{
 		@SuppressWarnings("unchecked")
 		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
 
-		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		
+		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
 
 		PaymentStatus ps = new PaymentStatus();
 		
@@ -41,6 +45,8 @@ public class StorePaymentStatusProcessor implements Processor{
 		BusinessMessage psRequest = exchange.getMessage().getHeader("hdr_cihub_request", BusinessMessage.class);
 
 		ps.setInternRefId(chnlRefId);
+		ps.setKomiTrnsId(rmw.getKomiTrxId());
+	
 		ps.setBizMsgIdr(psRequest.getAppHdr().getBizMsgIdr());
 		ps.setOrgnlEndToEndId(psRequest.getDocument().getFiToFIPmtStsReq().getTxInf().get(0).getOrgnlEndToEndId());
 
@@ -53,7 +59,7 @@ public class StorePaymentStatusProcessor implements Processor{
 
 
 		ps.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-//		ps.setResponseDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
+		ps.setLastUpdateDt(LocalDateTime.now());
 		ps.setCihubElapsedTime(routeElapsed);
 
 		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);

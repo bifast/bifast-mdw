@@ -40,7 +40,7 @@ public class AccountEnquiryResponseProcessor2 implements Processor {
 
 				PaymentTransaction110 biResp = bm.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 
-				chnResp.setOrignReffId(chnReq.getChannelRefId());
+				chnResp.setOrignReffId(chnReq.getIntrnRefId());
 				
 				chnResp.setCreditorAccountType(biResp.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
 				chnResp.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
@@ -62,7 +62,7 @@ public class AccountEnquiryResponseProcessor2 implements Processor {
 				
 				MessageRejectV01 rejectResp = bm.getDocument().getMessageReject();
 
-				fault.setReferenceId(chnReq.getChannelRefId());
+				fault.setReferenceId(chnReq.getIntrnRefId());
 				fault.setTransactionType ("AccountEnquiry");
 				fault.setReason(rejectResp.getRsn().getRjctgPtyRsn());
 				fault.setDescription(rejectResp.getRsn().getRsnDesc());

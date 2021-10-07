@@ -129,7 +129,8 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'PaymentStatusRequest'")
 					.log("Akan proses paymentStatusResponseProcessor")
 					.process(paymentStatusResponseProcessor)
-					
+					.log("PS delay dulu")
+					.delay(1000)
 					.filter().simple("${body} == null")
 						.log("ga nemu payment status")
 						.setHeader("delay", simple("${random(2100,3000)}"))

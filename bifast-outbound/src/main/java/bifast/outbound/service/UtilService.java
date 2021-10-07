@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.camel.MessageHistory;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,23 +27,6 @@ public class UtilService {
 	private MessageCounterRepository messageCounterRepo;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-
-//	public Integer getCounter () {
-//        Integer intNow = Integer.valueOf(LocalDateTime.now().format(formatter));
-//        
-//		Optional<InboundCounter> optCnt = inboundCounterRepo.findById(intNow); 
-//		if (optCnt.isPresent()) {
-//			InboundCounter msgCnt = optCnt.get();
-//			msgCnt.setLastNumber(msgCnt.getLastNumber()+1);
-//			inboundCounterRepo.save(msgCnt);
-//			return (msgCnt.getLastNumber());
-//		}
-//		else {
-//			InboundCounter msgCnt = new InboundCounter(intNow, 50000001);
-//			inboundCounterRepo.save(msgCnt);
-//			return (50000001);
-//		}
-//	}
 
 	public Integer getOutboundCounter () {
         Integer intNow = Integer.valueOf(LocalDateTime.now().format(formatter));
@@ -69,15 +53,24 @@ public class UtilService {
 		return msgId;
 	}
 	
+	public String genKomiTrnsId () {
+		int doy = LocalDate.now().getDayOfYear();
+		DecimalFormat doyDf = new DecimalFormat("000");
+		String strDoy = doyDf.format(doy);
+		DecimalFormat df = new DecimalFormat("00000");
+		String strCounter = strDoy + df.format(getOutboundCounter());
+		return strCounter;
+	}
 
 	public String genOfiBusMsgId (String trxType, String channel ) {
 		String strToday = LocalDateTime.now().format(formatter);
-		DecimalFormat df = new DecimalFormat("00000000");
-		String strCounter = df.format(getOutboundCounter());
-		String msgId = strToday + config.getBankcode() + trxType + "O" + channel + strCounter;
+//		DecimalFormat df = new DecimalFormat("00000000");
+//		String strCounter = df.format(getOutboundCounter());
+		String msgId = strToday + config.getBankcode() + trxType + "O" + channel + genKomiTrnsId();
 		return msgId;
 	}
 
+	
 	public String genMsgId (String trxType, String intrnRefId) {
 		String strToday = LocalDateTime.now().format(formatter);
 		String leading = "00000000".concat(intrnRefId);
@@ -110,7 +103,9 @@ public class UtilService {
 	public long getRouteElapsed (List<MessageHistory> messageList, String routeId) {
 		long start = 0;
 		long end = 0;
+
 		for (MessageHistory msg : messageList) {
+
 			if ( (msg.getRouteId().equals(routeId)) && 
 				 (msg.getNode().getId().equals("start_route")) ) {
 				start = msg.getTime();
@@ -120,6 +115,7 @@ public class UtilService {
 				end = msg.getTime();
 				}
 		}
+
 		return (end-start);
 	}
 
@@ -132,48 +128,48 @@ public class UtilService {
 		if (bizDefIdr.startsWith("pacs.002")) {
 		
 			if (code.equals("010"))
-				msgType = "CreditTransferResponse";
+				msgType = "CTResp";
 			
 			if (code.equals("019"))
-				msgType = "FICreditTransferResponse";
+				msgType = "FICCTResp";
 
 			if (code.equals("510"))
-				msgType = "AccountEnquiryResponse";
+				msgType = "AEResp";
 			
 		}
 		
 		else if (bizDefIdr.startsWith("pacs.008")) {
 
 			if (code.equals("510"))
-				msgType = "AccountEnquiryRequest";
+				msgType = "AEReq";
 			
 			if (code.equals("010"))
-				msgType = "CreditTransferRequest";
+				msgType = "CTReq";
 			if (code.equals("110"))
-				msgType = "CreditTransferRequest";
+				msgType = "CTReq";
 
 		}
 			
-		else if (bizDefIdr.startsWith("pacs.009"))   // FI request
-			msgType = "FICreditTransferRequest";
+		else if (bizDefIdr.startsWith("pacs.009"))   
+			msgType = "FICTReq";
 
 		else if (bizDefIdr.startsWith("pacs.028"))   
-			msgType = "PaymentStatusRequest";
+			msgType = "PSReq";
 
 		else if (bizDefIdr.startsWith("prxy.001"))   
-			msgType = "ProxyRegistrationRequest";
+			msgType = "PxRegReq";
 		
 		else if (bizDefIdr.startsWith("prxy.002"))   
-			msgType = "ProxyRegistrationResponse";
+			msgType = "PxRegResp";
 
 		else if (bizDefIdr.startsWith("prxy.003"))   
-			msgType = "ProxyResolutionRequest";
+			msgType = "PxResReq";
 		
 		else if (bizDefIdr.startsWith("prxy.004"))   
-			msgType = "ProxyResolutionResponse";
+			msgType = "PxResResp";
 
 		else if (bizDefIdr.startsWith("admi.002"))   
-			msgType = "MessageRejectResponse";
+			msgType = "RjctResp";
 
 		return msgType;
 	}

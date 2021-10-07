@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.FaultClass;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.FaultClassRepository;
 
 @Component
@@ -25,7 +26,6 @@ public class FaultProcessor implements Processor {
 		exchange.getMessage().setHeader("hdr_error_status", "ERROR-CIHUB");
 		
 		String exceptionClassName = objException.getClass().getSimpleName();
-		System.out.println("Exception caught: " + exceptionClassName);
 		
 		try {
 			Method getStatusCode = objException.getClass().getMethod("getStatusCode");
@@ -81,7 +81,7 @@ public class FaultProcessor implements Processor {
 			exchange.getMessage().setHeader("hdr_error_status", "ERROR-CIHUB");
 			
 		exchange.getMessage().setBody(fault, ChnlFailureResponsePojo.class);
-
+		
 	}
 
 }

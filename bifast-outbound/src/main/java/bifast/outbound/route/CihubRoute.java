@@ -19,6 +19,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
 import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultProcessor;
 import bifast.outbound.proxyregistration.processor.StoreProxyRegistrationProcessor;
@@ -67,11 +68,12 @@ public class CihubRoute extends RouteBuilder {
 				}
 			}).id("start_route")
 						
+			.log("${header.hdr_trxname}")
 			.setHeader("hdr_cihub_request", simple("${body}"))
 
 			.marshal(businessMessageJDF)
 
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChReq:${header.hdr_chnlRefId}] Post ${header.hdr_trxname} request: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][${header.hdr_trxname}] request: ${body}")
 	
 			.setHeader("tmp_body", simple("${body}"))
 			.marshal().zipDeflater()
@@ -87,7 +89,7 @@ public class CihubRoute extends RouteBuilder {
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)				
-				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChReq:${header.hdr_chnlRefId}] CI-HUB response: ${body}")
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][][${header.hdr_trxname}] response: ${body}")
 	
 				.setHeader("tmp_body", simple("${body}"))
 				.marshal().zipDeflater()
@@ -99,7 +101,7 @@ public class CihubRoute extends RouteBuilder {
 				.setHeader("hdr_error_status", constant(null))
 	
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[ChReq:${header.hdr_chnlRefId}] Call CI-HUB Error.")
+				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_chnlRefId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(faultProcessor)
 //				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
@@ -111,17 +113,17 @@ public class CihubRoute extends RouteBuilder {
 	
 			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.setHeader("hdr_cihub_response", simple("${body}"))
-			
+	
+				
 			.choice().id("end_route")
-				.when().simple("${header.hdr_trxname} == 'AccountEnquiryRequest'")
+				.when().simple("${header.hdr_trxname} == 'AEReq'")
+					.log("akan save ke ae")
 					.process(saveAccountEnquiryProcessor)
-				.when().simple("${header.hdr_trxname} == 'CreditTransferRequest'")
+				.when().simple("${header.hdr_trxname} == 'CTReq'")
 					.process(storeCreditTransferProcessor)
-//				.when().simple("${header.hdr_trxname} == 'FICreditTransferRequest'")
-//					.process(saveFICreditTransferProcessor)
-//				.when().simple("${header.hdr_trxname} == 'PaymentStatusRequest'")
-//					.process(storePaymentStatusProcessor)
-				.when().simple("${header.hdr_trxname} == 'ProxyRegistrationRequest'")
+				.when().simple("${header.hdr_trxname} == 'PSReq'")
+					.process(storePaymentStatusProcessor)
+				.when().simple("${header.hdr_trxname} == 'PxRegReq'")
 					.process(storeProxyRegistrationProcessor)
 			.end()
 

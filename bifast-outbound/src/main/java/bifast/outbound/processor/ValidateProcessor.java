@@ -32,7 +32,7 @@ public class ValidateProcessor implements Processor  {
 		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 		
 	
-		if (msgType.equals("acctenqr")) {
+		if (msgType.equals("AEReq")) {
 			validateChannel = true;
 			validateBank = true;
 			validatePurpose = true;

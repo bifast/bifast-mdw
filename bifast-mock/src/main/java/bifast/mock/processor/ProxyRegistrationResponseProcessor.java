@@ -29,8 +29,8 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		String bizMsgId = utilService.genRfiBusMsgId("710", "01");
-		String msgId = utilService.genMessageId("710");
+		String bizMsgId = utilService.genRfiBusMsgId("710", "01", "INDOIDJA");
+		String msgId = utilService.genMessageId("710", "INDOIDJA");
 
 		Random rand = new Random();
 		Proxy002Seed seed = new Proxy002Seed();

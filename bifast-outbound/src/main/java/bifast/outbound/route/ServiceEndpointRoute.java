@@ -7,6 +7,9 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
@@ -28,10 +31,16 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 
 	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(RequestMessageWrapper.class);
+	JacksonDataFormat jdfChnlRequestNoWr = new JacksonDataFormat(RequestMessageWrapper.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 	@Override
 	public void configure() throws Exception {
+
+		jdfChnlRequestNoWr.setInclude("NON_NULL");
+		jdfChnlRequestNoWr.setInclude("NON_EMPTY");
+		jdfChnlRequestNoWr.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+//		jdfChnlRequestNoWr.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 
 		chnlRequestJDF.setInclude("NON_NULL");
 		chnlRequestJDF.setInclude("NON_EMPTY");
@@ -70,37 +79,31 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		
 		from("direct:service").routeId("komi.endpointRoute")
 			.convertBodyTo(String.class)
-
-			.setHeader("hdr_errorlocation", constant("EndpointRoute"))
-					
+		
 			.setHeader("req_channelRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
+			
+//			.log("${body}")
 			.unmarshal(chnlRequestJDF)
-
 
 			.setHeader("hdr_errorlocation", constant("EndpointRoute/checkChannelRequest"))
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
+			
 			.setHeader("hdr_channelRequest", simple("${body}"))
 			
 			.process(validateInputProcessor)
 			
 			.process(saveChannelRequestProcessor)
 
+			.log("di serviceendpoint komitrxid: ${header.hdr_request_list.komiTrxId}" )
+
 			.choice()
-				.when().simple("${header.hdr_msgType} == 'acctenqr'")
+				.when().simple("${header.hdr_msgType} == 'AEReq'")
 					.log("[ChnlReq:${header.hdr_chnlRefId}] Account Enquiry Request start.")
 					.to("direct:acctenqr")
 					
-				.when().simple("${header.hdr_msgType} == 'crdttrns'")
+				.when().simple("${header.hdr_msgType} == 'CTReq'")
 					.log("[ChnlReq:${header.hdr_chnlRefId}] Credit Transfer Request start.")
 					.to("direct:ct_aepass")
-
-//				.when().simple("${header.hdr_msgType} == 'ficrdttrns'")
-//					.log("[ChnlReq:${header.hdr_chnlRefId}][FICT] start.")
-//					.to("direct:fictreq")
-
-//				.when().simple("${header.hdr_msgType} == 'pymtsts'")
-//					.log("[ChnlReq:${header.hdr_chnlRefId}][PS] start.")
-//					.to("direct:ps4chnl")
 
 				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
 					.log("[ChnlReq:${header.hdr_chnlRefId}][PREG] start.")
@@ -116,10 +119,10 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			
 			.choice()
 					
-				.when().simple("${header.hdr_msgType} == 'acctenqr'")
+				.when().simple("${header.hdr_msgType} == 'AEReq'")
 					.log("[ChnlReq:${header.hdr_chnlRefId}] Account Enquiry Request finish.")
 
-				.when().simple("${header.hdr_msgType} == 'crdttrns'")
+				.when().simple("${header.hdr_msgType} == 'CTReq'")
 					.log("[ChnlReq:${header.hdr_chnlRefId}] Credit Transfer Request finish.")
 	
 //				.when().simple("${header.hdr_msgType} == 'pymtsts'")

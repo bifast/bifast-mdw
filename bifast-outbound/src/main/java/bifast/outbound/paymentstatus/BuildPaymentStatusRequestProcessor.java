@@ -18,7 +18,6 @@ public class BuildPaymentStatusRequestProcessor implements Processor {
 		
 		request.setEndToEndId(reqData.getAppHdr().getBizMsgIdr());
 		request.setRecptBank(reqData.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-		
 		exchange.getIn().setBody(request);
 	}
 

@@ -68,12 +68,16 @@ public class Pacs008MessageService {
 		
 		// CdtTrfTxInf / PmtId
 		
-		PaymentIdentification7 PmtId = new PaymentIdentification7();
-		PmtId.setEndToEndId(seed.getBizMsgId());
-		PmtId.setTxId(grpHdr.getMsgId());
+		cdtTrfTxInf.setPmtId(new PaymentIdentification7());
+		cdtTrfTxInf.getPmtId().setEndToEndId(seed.getBizMsgId());
+		cdtTrfTxInf.getPmtId().setTxId(grpHdr.getMsgId());
+
+		// CdtTrfTxInf / ++PmtTpInf / +++CtgyPurp / ++++Prtry
 		
-		cdtTrfTxInf.setPmtId(PmtId);
-	
+		cdtTrfTxInf.setPmtTpInf(new PaymentTypeInformation28());
+		cdtTrfTxInf.getPmtTpInf().setCtgyPurp(new CategoryPurpose1Choice());
+		cdtTrfTxInf.getPmtTpInf().getCtgyPurp().setPrtry(seed.getTrnType() + seed.getCategoryPurpose());
+
 		// CdtTrfTxInf / IntrBkSttlmAmt
 
 		ActiveCurrencyAndAmount ccyAmount = new ActiveCurrencyAndAmount();
@@ -156,12 +160,11 @@ public class Pacs008MessageService {
 		CreditTransferTransaction39 cdtTrfTxInf = new CreditTransferTransaction39();
 		
 		// CdtTrfTxInf / PmtId
+		cdtTrfTxInf.setPmtId(new PaymentIdentification7());
 		
-		PaymentIdentification7 PmtId = new PaymentIdentification7();
-		PmtId.setEndToEndId(seed.getBizMsgId());
-		PmtId.setTxId(seed.getMsgId());
+		cdtTrfTxInf.getPmtId().setEndToEndId(seed.getBizMsgId());
+		cdtTrfTxInf.getPmtId().setTxId(seed.getMsgId());
 		
-		cdtTrfTxInf.setPmtId(PmtId);
 		
 		// CdtTrfTxInf / PmtTpInf
 
@@ -286,17 +289,13 @@ public class Pacs008MessageService {
 		CashAccountType2Choice cdtrAcctTp = new CashAccountType2Choice();
 		cdtrAcctTp.setPrtry(seed.getCrdtAccountType());
 		cdtrAcct.setTp(cdtrAcctTp);
-		
-		if (!(null == seed.getCrdtProxyIdType())) {
-			ProxyAccountType1Choice prxyTp = new ProxyAccountType1Choice();
-			
-			prxyTp.setPrtry(seed.getCrdtProxyIdType());
-			ProxyAccountIdentification1 prxyAcct = new ProxyAccountIdentification1();
-			
-			prxyAcct.setTp(prxyTp);
-			prxyAcct.setId(seed.getCrdtProxyIdValue());
 
-			cdtrAcct.setPrxy(prxyAcct);
+		if (!(null == seed.getCrdtProxyIdValue())) {
+
+			cdtrAcct.setPrxy(new ProxyAccountIdentification1());
+			cdtrAcct.getPrxy().setId(seed.getCrdtProxyIdValue());
+			cdtrAcct.getPrxy().setTp(new ProxyAccountType1Choice());
+			cdtrAcct.getPrxy().getTp().setPrtry(seed.getCrdtProxyIdType());
 		}
 		
 		cdtTrfTxInf.setCdtrAcct(cdtrAcct);

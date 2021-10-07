@@ -3,6 +3,7 @@ package bifast.outbound.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,20 +16,34 @@ public class ChannelTransaction {
 	@Id
 //	@GeneratedValue(strategy=GenerationType.AUTO)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
-	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
+	@SequenceGenerator(name="seq1_generator", sequenceName = "table1_seq_generator", allocationSize=1)
 	private Long id;
+	@Column(length=16)
 	private String transactionId;
-	private String channelCode;
+
+	@Column(length=16)
+	private String komiTrnsId;
+	
+	@Column(length=50)
+	private String channelId;
+	@Column(length=100)
 	private String msgName;
+	
 	private BigDecimal amount;
+
+	@Column(length=35)
 	private String debtorAccountNumber;
 	private String debtorAccountName;
+	@Column(length=8)
 	private String recptBank;
+	@Column(length=35)
 	private String creditorAccountNumber;
 	private String creditorAccountName;
 	private LocalDateTime requestTime;
 	private LocalDateTime responseTime;
+	@Column(length=12)
 	private String status;
+	@Column(length=250)
 	private String errorMsg;
 	
 	public Long getId() {
@@ -43,17 +58,23 @@ public class ChannelTransaction {
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
 	}
-	public String getChannelCode() {
-		return channelCode;
+	public String getChannelId() {
+		return channelId;
 	}
-	public void setChannelCode(String channelCode) {
-		this.channelCode = channelCode;
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
 	}
 	public String getMsgName() {
 		return msgName;
 	}
 	public void setMsgName(String msgName) {
 		this.msgName = msgName;
+	}
+	public String getKomiTrnsId() {
+		return komiTrnsId;
+	}
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
 	}
 	public BigDecimal getAmount() {
 		return amount;

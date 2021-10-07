@@ -60,7 +60,7 @@ public class HistoryRoute extends RouteBuilder {
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					RequestPojo req = new RequestPojo();
-					System.out.println(exchange.getMessage().getHeader("bizmsgidr", String.class));
+
 					req.setBizMsgIdr(exchange.getMessage().getHeader("bizmsgidr", String.class));
 					exchange.getIn().setBody(req);
 				}
