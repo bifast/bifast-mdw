@@ -1,5 +1,8 @@
 package bifast.outbound.credittransfer;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -8,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.corebank.CBDebitInstructionResponsePojo;
+import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
 import bifast.outbound.credittransfer.processor.CTCorebankRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
-import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
 import bifast.outbound.processor.FlatResponseProcessor;
 
 @Component
@@ -28,21 +33,24 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired
 	private FlatResponseProcessor flatResponseProcessor;
 
+	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
+
 	@Override
 	public void configure() throws Exception {
 
-		from("direct:flatctreq").routeId("komi.flatct.start")
-			.setHeader("ct_channelRequest", simple("${body}"))
-			.process(crdtTransferProcessor)
-
-			.setHeader("ct_birequest", simple("${body}"))	
-			.to("direct:call-cihub")
-			.setHeader("ct_biresponse", simple("${body}"))
-
-			.process(flatResponseProcessor)
-			.removeHeaders("ct*")
-
-		;
+//		from("direct:flatctreq").routeId("komi.flatct.start")
+//			.setHeader("ct_channelRequest", simple("${body}"))
+//			.process(crdtTransferProcessor)
+//
+//			.setHeader("ct_birequest", simple("${body}"))	
+//			.to("direct:call-cihub")
+//			.setHeader("ct_biresponse", simple("${body}"))
+//
+//			.process(flatResponseProcessor)
+//			.removeHeaders("ct*")
+//
+//		;
 		
 		
 		from("direct:ct_aepass").routeId("komi.ct.afterAERoute")
@@ -70,18 +78,22 @@ public class CreditTransferRoute extends RouteBuilder {
 					.setHeader("hdr_error_status", constant("REJECT-CB"))
 					
 					.process(new Processor() {
-						@Override
 						public void process(Exchange exchange) throws Exception {
-							CBDebitInstructionResponsePojo cbResp = exchange.getMessage().getBody(CBDebitInstructionResponsePojo.class);
+//							CBDebitInstructionResponsePojo cbResp = exchange.getMessage().getBody(CBDebitInstructionResponsePojo.class);
 							ChnlCreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);
 							
 							ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
-							chnResponse.setOrignReffId(chnRequest.getOrignReffId());
-							chnResponse.setStatus("RJCTCB");
-							chnResponse.setAddtInfo(cbResp.getAddtInfo());
+							chnResponse.setOrignReffId(chnRequest.getIntrnRefId());
 							
 							ChannelResponseWrapper respWr = new ChannelResponseWrapper();
+							
+							respWr.setDate(LocalDateTime.now().format(dateformatter));
+							respWr.setTime(LocalDateTime.now().format(timeformatter));
+
+							respWr.setResponseCode("REJECT-CB");
+							respWr.setResponseMessage("REJECT-CB");
 							respWr.setChnlCreditTransferResponse(chnResponse);
+							
 							exchange.getMessage().setBody(respWr);
 						}
 					})

@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
-import bifast.outbound.pojo.FlatAdmi002Pojo;
-import bifast.outbound.pojo.FlatMessageWrapper;
-import bifast.outbound.pojo.FlatPacs002Pojo;
-import bifast.outbound.pojo.FlatPrxy004Pojo;
-import bifast.outbound.pojo.FlatPrxy006Pojo;
+import bifast.outbound.pojo.flat.FlatAdmi002Pojo;
+import bifast.outbound.pojo.flat.FlatMessageWrapper;
+import bifast.outbound.pojo.flat.FlatPacs002Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy006Pojo;
 import bifast.outbound.service.FlattenIsoMessageService;
 import bifast.outbound.service.UtilService;
 

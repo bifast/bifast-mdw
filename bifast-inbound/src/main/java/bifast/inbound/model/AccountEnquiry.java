@@ -18,7 +18,8 @@ public class AccountEnquiry {
 	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 	
-	private Long chnlTrxId;
+//	private Long chnlTrxId;
+	private String komiTrnsId;
 	
 	@Column(length=20)
 	private String intrRefId;
@@ -71,12 +72,12 @@ public class AccountEnquiry {
 		this.id = id;
 	}
 
-	public Long getChnlTrxId() {
-		return chnlTrxId;
+	public String getKomiTrnsId() {
+		return komiTrnsId;
 	}
 
-	public void setChnlTrxId(Long chnlTrxId) {
-		this.chnlTrxId = chnlTrxId;
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
 	}
 
 	public String getIntrRefId() {
@@ -150,6 +151,14 @@ public class AccountEnquiry {
 	public void setCihubRequestDT(LocalDateTime cihubRequestDT) {
 		this.cihubRequestDT = cihubRequestDT;
 	}
+
+//	public LocalDateTime getCihubResponseDT() {
+//		return cihubResponseDT;
+//	}
+//
+//	public void setCihubResponseDT(LocalDateTime cihubResponseDT) {
+//		this.cihubResponseDT = cihubResponseDT;
+//	}
 
 	public Long getCihubElapsedTime() {
 		return cihubElapsedTime;

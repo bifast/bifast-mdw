@@ -11,7 +11,7 @@ public class AccountEnquiryRoute extends RouteBuilder {
 	@Autowired
 	private AECorebankReponseProcessor aeCorebankReponseProcessor;
 	@Autowired
-	private AECorebankRequestProcessor aeCorebankRequestProcessor;
+	private BuildAccountEnquiryRequestMessageProcessor buildAccountEnquiryRequestProcessor;
 
 	@Override
 	public void configure() throws Exception {
@@ -26,10 +26,10 @@ public class AccountEnquiryRoute extends RouteBuilder {
 				
 			.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] ${body}")
 			// prepare untuk request ke corebank
-			.process(aeCorebankRequestProcessor)
+			.process(buildAccountEnquiryRequestProcessor)
 			.setHeader("ae_cbrequest", simple("${body}"))
 				
-			// process corebank response
+			//TODO call corebank Account Enquiry
 			.process(aeCorebankReponseProcessor)
 			
 			.removeHeaders("ae_*")

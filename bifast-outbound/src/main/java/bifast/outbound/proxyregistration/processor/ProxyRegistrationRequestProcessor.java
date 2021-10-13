@@ -13,7 +13,8 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Proxy001MessageService;
 import bifast.library.iso20022.service.Proxy001Seed;
 import bifast.outbound.config.Config;
-import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.service.UtilService;
 
 @Component
@@ -32,7 +33,8 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChnlProxyRegistrationRequestPojo chnReq = exchange.getIn().getBody(ChnlProxyRegistrationRequestPojo.class);
+		RequestMessageWrapper rmw = exchange.getIn().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		ChnlProxyRegistrationRequestPojo chnReq = rmw.getChnlProxyRegistrationRequest();
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		
@@ -45,20 +47,28 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		Proxy001Seed seedProxyRegis = new Proxy001Seed();
 		
 		seedProxyRegis.setMsgId(msgId);
-//		seedProxyRegis.setBizMsgId(hdr.getBizMsgIdr());
 		seedProxyRegis.setRegistrationType(chnReq.getRegistrationType());
 		seedProxyRegis.setProxyType(chnReq.getProxyType());
 		seedProxyRegis.setProxyValue(chnReq.getProxyValue());
-		seedProxyRegis.setRegisterDisplayName(chnReq.getRegisterDisplayName());
-		seedProxyRegis.setRegisterAccountType(chnReq.getRegisterAccountType());
-		seedProxyRegis.setRegisterAccountName(chnReq.getRegisterAccountName());
-		seedProxyRegis.setRegisterAccountNumber(chnReq.getRegisterAccountNumber());
-		seedProxyRegis.setRegisterSecondIdType(chnReq.getRegisterSecondIdType());
-		seedProxyRegis.setRegisterSecondIdValue(chnReq.getRegisterSecondIdValue());
-		seedProxyRegis.setCustomerType(chnReq.getCustomerType());
-		seedProxyRegis.setCustomerId(chnReq.getCustomerId());
-		seedProxyRegis.setResidentialStatus(chnReq.getResidentialStatus());
-		seedProxyRegis.setTownName(chnReq.getTownName());
+		
+		if (null != chnReq.getRegistrationId())
+			seedProxyRegis.setRegistrationId(chnReq.getRegistrationId());
+		
+		seedProxyRegis.setRegisterDisplayName(chnReq.getDisplayName());
+		seedProxyRegis.setRegisterAccountType(chnReq.getAccountType());
+		seedProxyRegis.setRegisterAccountName(chnReq.getAccountName());
+		seedProxyRegis.setRegisterAccountNumber(chnReq.getAccountNumber());
+		seedProxyRegis.setRegisterSecondIdType(chnReq.getSecondIdType());
+		seedProxyRegis.setRegisterSecondIdValue(chnReq.getSecondIdValue());
+		
+		if (null != chnReq.getCustomerType())
+			seedProxyRegis.setCustomerType(chnReq.getCustomerType());
+		if (null != chnReq.getCustomerId())
+			seedProxyRegis.setCustomerId(chnReq.getCustomerId());
+		if (null != chnReq.getResidentialStatus())
+			seedProxyRegis.setResidentialStatus(chnReq.getResidentialStatus());
+		if (null != chnReq.getTownName())
+			seedProxyRegis.setTownName(chnReq.getTownName());
 		
 		Document doc = new Document();
 		doc.setPrxyRegn(proxy001MessageService.proxyRegistrationRequest(seedProxyRegis));
@@ -67,6 +77,8 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		busMsg.setAppHdr(hdr);
 		busMsg.setDocument(doc);
 	
+		rmw.setProxyRegistrationRequest(busMsg);
+		exchange.getMessage().setHeader("hdr_request_list", rmw);
 		exchange.getIn().setBody(busMsg);
 		
 	}

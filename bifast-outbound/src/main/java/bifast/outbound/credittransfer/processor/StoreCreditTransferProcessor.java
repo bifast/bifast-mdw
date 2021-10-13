@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.model.CreditTransfer;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.CreditTransferRepository;
 import bifast.outbound.service.UtilService;
 
@@ -32,19 +33,12 @@ public class StoreCreditTransferProcessor implements Processor {
 
 		CreditTransfer ct = new CreditTransfer();
 
-//		ChnlCreditTransferRequestPojo chnlRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);				
-		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);
-
-		ct.setIntrRefId(chnlRefId);
-
-		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
-		if (!(null == chnlTrxId))
-			ct.setChnlTrxId(chnlTrxId);
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		ct.setKomiTrnsId(rmw.getKomiTrxId());
 
 		BusinessMessage biRequest = exchange.getMessage().getHeader("hdr_cihub_request", BusinessMessage.class);
 		
 		FIToFICustomerCreditTransferV08 creditTransferReq = biRequest.getDocument().getFiToFICstmrCdtTrf();
-
 		
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 

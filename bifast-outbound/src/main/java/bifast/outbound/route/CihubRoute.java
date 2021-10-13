@@ -1,13 +1,10 @@
 package bifast.outbound.route;
 
-import java.net.SocketTimeoutException;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
-import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +12,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
+import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
 import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
-import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.FaultProcessor;
+import bifast.outbound.processor.ExceptionToFaultMapProcessor;
 import bifast.outbound.proxyregistration.processor.StoreProxyRegistrationProcessor;
 import bifast.outbound.service.UtilService;
 
@@ -40,12 +38,10 @@ public class CihubRoute extends RouteBuilder {
 	private StorePaymentStatusProcessor storePaymentStatusProcessor;
 	@Autowired
 	private StoreProxyRegistrationProcessor storeProxyRegistrationProcessor;
-//	@Autowired
-//	private SaveFICreditTransferProcessor saveFICreditTransferProcessor;
 	@Autowired
 	private UtilService utilService;
 	@Autowired
-	private FaultProcessor faultProcessor;
+	private ExceptionToFaultMapProcessor exceptionToFaultMap;
 
 	@Override
 	public void configure() throws Exception {
@@ -98,17 +94,39 @@ public class CihubRoute extends RouteBuilder {
 				.setBody(simple("${header.tmp_body}"))
 	
 				.unmarshal(businessMessageJDF)
+				
+				.filter().simple("${body.appHdr.msgDefIdr} == 'admi.002.001.01'")
+					.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_chnlRefId}] Call CI-HUB Rejected.")
+			    	.log(LoggingLevel.ERROR, "${body.document.messageReject.rsn.errLctn}")
+			    	.log(LoggingLevel.ERROR, "${body.document.messageReject.rsn.rsnDesc}")
+			    	.log(LoggingLevel.ERROR, "${body.document.messageReject.rsn.addtlData}")
+					.process(new Processor() {
+						public void process(Exchange exchange) throws Exception {
+							BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
+							MessageRejectV01 reject = bm.getDocument().getMessageReject();
+							ChnlFailureResponsePojo fault = new ChnlFailureResponsePojo();
+							fault.setErrorCode("ERROR-CIHUB");
+							fault.setLocation(reject.getRsn().getErrLctn());
+							fault.setReason(reject.getRsn().getRsnDesc());
+							exchange.getMessage().setBody(fault);
+						}
+					})
+					.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
+
+				.end()
+				
 				.setHeader("hdr_error_status", constant(null))
-	
+			
+			.endDoTry()
 	    	.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_chnlRefId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-		    	.process(faultProcessor)
+		    	.process(exceptionToFaultMap)
 //				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
 //				.setHeader("hdr_error_mesg", simple("${exception.message}"))
 //		    	.setBody(constant(null))
 	
-			.endDoTry()
+//			.endDoTry()
 			.end()
 	
 			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))

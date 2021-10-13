@@ -1,81 +1,88 @@
 package bifast.outbound.proxyregistration.processor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
-import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
-import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
-import bifast.outbound.proxyregistration.ChnlProxyRegistrationResponse;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.pojo.chnlresponse.ChnlProxyRegistrationResponsePojo;
+import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class ProxyRegistrationResponseProcessor implements Processor {
+	
+    DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
+
+    @Autowired
+    private StatusReasonRepository statusReasonRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		BusinessMessage prxyRegnResponse = exchange.getIn().getBody(BusinessMessage.class);
-
-		ChnlProxyRegistrationRequestPojo chnRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlProxyRegistrationRequestPojo.class);
-
 		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
+		channelResponseWr.setResponseCode("U000");
+		channelResponseWr.setResponseMessage("Success");
+		channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
+		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
+		channelResponseWr.setContent(new ArrayList<>());
 
+		Object objBody = exchange.getMessage().getBody(Object.class);
+		String bodyClass = objBody.getClass().getSimpleName();
 
-		if (null == prxyRegnResponse) {
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class);
+		ChnlProxyRegistrationRequestPojo chnRequest = rmw.getChnlProxyRegistrationRequest();
 
-			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
+		ChnlProxyRegistrationResponsePojo chnResponse = new ChnlProxyRegistrationResponsePojo();
+		chnResponse.setNoRef(chnRequest.getIntrnRefId());
 
-			reject.setReferenceId(chnRequest.getIntrnRefId());
-			
-			String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
-			String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
-			reject.setReason(errorStatus);
-			reject.setDescription(errorMesg);
-	
-			channelResponseWr.setFaultResponse(reject);
-			exchange.getIn().setBody(channelResponseWr);
+		if (bodyClass.equals("ChnlFailureResponsePojo")) {
 
+			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
+
+			channelResponseWr.setResponseCode(fault.getErrorCode());
+			if (fault.getErrorCode().equals("ERROR-KM"))
+				channelResponseWr.setResponseMessage("KOMI Internal Error");
+			else if (fault.getErrorCode().equals("ERROR-CIHUB"))
+				channelResponseWr.setResponseMessage("CIHUB Internal Error");
+			else
+				channelResponseWr.setResponseMessage("KOMI Error");		
 		}
 		
-		else if (null == prxyRegnResponse.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
+		else {
+			BusinessMessage bm = (BusinessMessage)objBody;
+			ProxyRegistrationResponseV01 biResp = bm.getDocument().getPrxyRegnRspn();
 
-			ChnlProxyRegistrationResponse chnResponse = new ChnlProxyRegistrationResponse();
-			ProxyRegistrationResponseV01 biResp = prxyRegnResponse.getDocument().getPrxyRegnRspn();
+			channelResponseWr.setResponseCode(biResp.getRegnRspn().getStsRsnInf().getPrtry());
+			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getResponseCode());
+			if (optStatusReason.isPresent()) {
+				String desc = optStatusReason.get().getDescription();
+				channelResponseWr.setResponseMessage(desc);
+			}	
 
-			chnResponse.setIntrnRefId(chnRequest.getIntrnRefId());
-			
-			// from CI-HUB response
+			chnResponse.setRegistrationType(chnRequest.getRegistrationType());
+
 			if (biResp.getRegnRspn().getPrxyRegn().size() > 0) 
 				if (!(null == biResp.getRegnRspn().getPrxyRegn().get(0).getRegnId()))
 					chnResponse.setRegistrationId(biResp.getRegnRspn().getPrxyRegn().get(0).getRegnId());
 			
-			
-			chnResponse.setStatus(biResp.getRegnRspn().getPrxRspnSts().toString());
-			chnResponse.setReason(biResp.getRegnRspn().getStsRsnInf().getPrtry());
-
-			channelResponseWr.setProxyRegistrationResponse(chnResponse);
-			exchange.getIn().setBody(channelResponseWr);
-
 		}
 		
-		else {   // ternyata berupa message reject
-			MessageRejectV01 rejectResp = prxyRegnResponse.getDocument().getMessageReject();
+		channelResponseWr.getContent().add(chnResponse);
 
-			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
+		exchange.getMessage().setBody(channelResponseWr);
 
-			reject.setReferenceId(rejectResp.getRltdRef().getRef());
-			reject.setReason(rejectResp.getRsn().getRjctgPtyRsn());
-			reject.setDescription(rejectResp.getRsn().getRsnDesc());
-			reject.setLocation(rejectResp.getRsn().getErrLctn());
-			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
-	
-			channelResponseWr.setFaultResponse(reject);
-			exchange.getIn().setBody(channelResponseWr);
-
-		}
 	}
 }

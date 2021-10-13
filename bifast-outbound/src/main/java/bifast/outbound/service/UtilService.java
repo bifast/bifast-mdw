@@ -2,6 +2,7 @@ package bifast.outbound.service;
 
 import java.text.DecimalFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.camel.MessageHistory;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,9 +56,14 @@ public class UtilService {
 	public String genKomiTrnsId () {
 		int doy = LocalDate.now().getDayOfYear();
 		DecimalFormat doyDf = new DecimalFormat("000");
-		String strDoy = doyDf.format(doy);
 		DecimalFormat df = new DecimalFormat("00000");
-		String strCounter = strDoy + df.format(getOutboundCounter());
+		
+		Integer counter = getOutboundCounter();
+		if (counter > 99999) {
+			counter = counter - 100000;
+			doy = 400 + doy;
+		}
+		String strCounter = doyDf.format(doy) + df.format(getOutboundCounter());
 		return strCounter;
 	}
 
@@ -126,33 +131,21 @@ public class UtilService {
 		String code = bizMsgIdr.substring(16,19);
 		
 		if (bizDefIdr.startsWith("pacs.002")) {
-		
 			if (code.equals("010"))
 				msgType = "CTResp";
-			
-			if (code.equals("019"))
-				msgType = "FICCTResp";
-
 			if (code.equals("510"))
 				msgType = "AEResp";
-			
 		}
 		
 		else if (bizDefIdr.startsWith("pacs.008")) {
-
 			if (code.equals("510"))
 				msgType = "AEReq";
-			
 			if (code.equals("010"))
 				msgType = "CTReq";
 			if (code.equals("110"))
 				msgType = "CTReq";
-
 		}
 			
-		else if (bizDefIdr.startsWith("pacs.009"))   
-			msgType = "FICTReq";
-
 		else if (bizDefIdr.startsWith("pacs.028"))   
 			msgType = "PSReq";
 

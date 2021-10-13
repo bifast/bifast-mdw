@@ -65,6 +65,8 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		busMesg.setDocument(doc);
 
 		exchange.getMessage().setBody(busMesg);
+
+		System.out.println("selesai bikin response");
 	}
 
 

@@ -9,6 +9,7 @@ public class CBDebitInstructionRequestPojo {
 	private String accountNumber;
 	private String accountType;
 	private String amount;
+	private String fee;
 	private String debtorName;
 	private String paymentInfo;
 	private String requestTime;

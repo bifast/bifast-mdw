@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
-import bifast.outbound.credittransfer.ChnlCreditTransferResponsePojo;
-import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
 
 @Component
 public class PaymentStatusResponseProcessor implements Processor {
@@ -48,33 +48,13 @@ public class PaymentStatusResponseProcessor implements Processor {
 			chnResponse.setOrignReffId(chnReq.getIntrnRefId());
 			chnResponse.setBizMsgId(busMesg.getAppHdr().getBizMsgIdr());
 			
-			chnResponse.setStatus(biResp.getTxSts());
-			chnResponse.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
 			
 			
-			if (biResp.getStsRsnInf().get(0).getAddtlInf().size() > 0) {
-				chnResponse.setAddtInfo(biResp.getStsRsnInf().get(0).getAddtlInf().get(0));
-			}
 			
 			if (!(null == biResp.getOrgnlTxRef().getCdtr().getPty()))
 				if (!(null == biResp.getOrgnlTxRef().getCdtr().getPty().getNm()))
 					chnResponse.setCreditorName(biResp.getOrgnlTxRef().getCdtr().getPty().getNm());
 	
-			if (biResp.getSplmtryData().size() >0 ) {
-				
-				if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId()))
-					chnResponse.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
-	
-				if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp()))
-					chnResponse.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
-		
-//				if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts()))
-//					chnResponse.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
-		
-//				if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm()))
-//					chnResponse.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
-		
-			}
 
 			channelResponseWr.setChnlCreditTransferResponse(chnResponse);
 

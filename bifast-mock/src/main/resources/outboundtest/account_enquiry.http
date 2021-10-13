@@ -1,36 +1,3 @@
-# Account Enquiry Request from channel on generic endpoint
-# Account Number 77xxxx TIMEOUT
-POST http://localhost:9002/komi-outbound/service HTTP/1.1
-Content-Type: application/json
-ClientId: IB1
-
-{
-  "AccountEnquiryRequest" : {
-    "TransactionId" : "1551",
-    "RecipientBank" : "CITYIDJA",
-    "Amount" : 555000,
-    "CategoryPurpose" : "01",
-    "AccountNumber" : "77589"
-  }
-}
-
-###
-
-POST http://localhost:9002/komi-outbound/routing HTTP/1.1
-Content-Type: application/json
-
-{
-  "AccountEnquiryRequest" : {
-    "channelRefId" : "40018",
-    "channel" : "01",
-    "recptBank" : "BMRIIDJA",
-    "amount" : 1545500,
-    "categoryPurpose" : "01",
-    "creditorAccountNumber" : "1814449"
-  }
-}
-
-###
 # direct ke mock, test timeout
 POST http://localhost:9006/mock/cihub HTTP/1.1
 Content-Type: application/json
@@ -43,3 +10,10 @@ POST http://localhost:9006/mock/cihub HTTP/1.1
 Content-Type: application/json
 
 {"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"BizMsgIdr":"20211003SIHBIDJ1510O0100000001","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-10-03T05:33:41"},"Document":{"FitoFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20211003SIHBIDJ151000054773","CreDtTm":"2021-10-03T05:33:41","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20211003SIHBIDJ1510O0100000001","TxId":"20211003SIHBIDJ151000054773"},"IntrBkSttlmAmt":{"Value":"137400.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"Cdtr":{},"CdtrAcct":{"Id":{"Othr":{"Id":"677589"}}}}]}}}}
+
+###
+# direct ke mock, reject response untuk norek 99xx
+POST http://localhost:9006/mock/cihub HTTP/1.1
+Content-Type: application/json
+
+{"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"BizMsgIdr":"20211003SIHBIDJ1510O0100000001","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-10-03T05:33:41"},"Document":{"FitoFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20211003SIHBIDJ151000054773","CreDtTm":"2021-10-03T05:33:41","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20211003SIHBIDJ1510O0100000001","TxId":"20211003SIHBIDJ151000054773"},"IntrBkSttlmAmt":{"Value":"137400.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"Cdtr":{},"CdtrAcct":{"Id":{"Othr":{"Id":"997589"}}}}]}}}}

@@ -8,8 +8,11 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.corebank.pojo.CBDebitInstructionRequestPojo;
+import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
 import bifast.outbound.model.CorebankTransaction;
-import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.repository.CorebankTransactionRepository;
 
 @Component
@@ -22,11 +25,11 @@ public class SaveCBTableProcessor implements Processor{
 	public void process(Exchange exchange) throws Exception {
 
 		Object objCbRequest = exchange.getMessage().getHeader("cb_request", Object.class);
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		
 		String requestClassName = objCbRequest.getClass().getSimpleName();
 		
-//		ChannelResponseWrapper responseWr = exchange.getMessage().getBody(ChannelResponseWrapper.class);		
 		CBDebitInstructionResponsePojo debitResp = exchange.getMessage().getBody(CBDebitInstructionResponsePojo.class);
-//		CBDebitInstructionResponsePojo debitResp = responseWr.getCbDebitInstructionResponse();
 
 		CorebankTransaction cb = new CorebankTransaction();
 
@@ -34,15 +37,13 @@ public class SaveCBTableProcessor implements Processor{
 		cb.setStatus(debitResp.getStatus());
 		cb.setTrnsDt(LocalDateTime.now());
 		
-		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
-		if (!(null == chnlTrxId))
-			cb.setChnlTrxId(chnlTrxId);
+		cb.setKomiTrnsId(rmw.getKomiTrxId());
 
 		if (requestClassName.equals("CBDebitInstructionRequestPojo")) {
 			CBDebitInstructionRequestPojo debitReq = (CBDebitInstructionRequestPojo) objCbRequest;
 
 			cb.setDebitAmount(new BigDecimal(debitReq.getAmount()));
-			cb.setChannelRefId(debitReq.getTransactionId());
+			cb.setChannelId(rmw.getChannelId());
 			cb.setCstmAccountName(debitReq.getDebtorName());
 			cb.setCstmAccountNo(debitReq.getAccountNumber());
 			cb.setCstmAccountType(debitReq.getAccountType());
@@ -51,13 +52,7 @@ public class SaveCBTableProcessor implements Processor{
 		}
 		
 		else {
-			CBFITransferRequestPojo fiReq = (CBFITransferRequestPojo) objCbRequest;
-			
-			cb.setDebitAmount(new BigDecimal(fiReq.getAmount()));
-			cb.setChannelRefId(fiReq.getTransactionId());
-			cb.setCreditorBank(fiReq.getCreditorBank());
-			cb.setDebtorBank(fiReq.getDebtorBank());
-			cb.setTransactionType("FI Transfer");
+
 		}
 
 		cbTransactionRepo.save(cb);

@@ -33,17 +33,13 @@ public class ProxyRoute extends RouteBuilder {
 		jsonBusinessMessageDataFormat.setInclude("NON_EMPTY");
 
         from("direct:prxyregn").routeId("proxyregistration")
-            .convertBodyTo(String.class)
+            // .convertBodyTo(String.class)
             .log("Terima di mock")
             .log("${body}")
-            .delay(500)
-            .log("end-delay")
-            .unmarshal(jsonBusinessMessageDataFormat)
+            // .delay(500)
+            // .unmarshal(jsonBusinessMessageDataFormat)
+            .log("unmarshal ${body}")
             .process(proxyRegistrationResponseProcessor)
-            .marshal(jsonBusinessMessageDataFormat)  // remark bila rejection
-            .log("Response dari mock")
-
-            .removeHeader("msgType")
 
         ;
     }

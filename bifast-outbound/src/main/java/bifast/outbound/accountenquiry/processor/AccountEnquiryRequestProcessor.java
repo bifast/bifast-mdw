@@ -1,5 +1,8 @@
 package bifast.outbound.accountenquiry.processor;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +14,9 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.config.Config;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.service.UtilService;
 
 @Component
@@ -49,7 +52,9 @@ public class AccountEnquiryRequestProcessor implements Processor {
 		
 		seedAcctEnquiry.setMsgId(msgId);
 		seedAcctEnquiry.setBizMsgId(hdr.getBizMsgIdr());
-		seedAcctEnquiry.setAmount(chnReq.getAmount());
+		
+		seedAcctEnquiry.setAmount(new BigDecimal(chnReq.getAmount()));
+		
 		seedAcctEnquiry.setCategoryPurpose(chnReq.getCategoryPurpose());
 		seedAcctEnquiry.setCrdtAccountNo(chnReq.getCreditorAccountNumber());
 		seedAcctEnquiry.setOrignBank(config.getBankcode());

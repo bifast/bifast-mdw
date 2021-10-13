@@ -2,6 +2,9 @@ package bifast.outbound.pojo;
 
 import java.math.BigDecimal;
 
+import bifast.outbound.pojo.flat.FlatPacs002Pojo;
+import bifast.outbound.pojo.flat.FlatPacs008Pojo;
+
 public class EventPojo {
 
 	

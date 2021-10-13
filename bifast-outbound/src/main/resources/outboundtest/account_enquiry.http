@@ -1,14 +1,32 @@
 # Account Enquiry Request from channel on generic endpoint
-POST http://localhost:9002/services/komi/outbound HTTP/1.1
+# Account Number 77xxxx TIMEOUT
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+ClientId: IB1
+
+{
+  "AccountEnquiryRequest" : {
+    "TransactionId" : "890816",
+    "RecipientBank" : "CITYIDJA",
+    "Amount" : 555000,
+    "CategoryPurpose" : "01",
+    "AccountNumber" : "35589"
+  }
+}
+
+###
+
+POST http://localhost:9002/komi-outbound/routing HTTP/1.1
 Content-Type: application/json
 
 {
   "AccountEnquiryRequest" : {
-    "channelRefId" : "5658",
-    "channel" : "Internet Banking",
-    "recptBank" : "014",
-    "amount" : 54678,
-    "categoryPurpose" : "Purchase",
-    "creditorAccountNumber" : "82277531"
+    "channelRefId" : "40018",
+    "channel" : "01",
+    "recptBank" : "BMRIIDJA",
+    "amount" : 1545500,
+    "categoryPurpose" : "01",
+    "creditorAccountNumber" : "1814449"
   }
 }

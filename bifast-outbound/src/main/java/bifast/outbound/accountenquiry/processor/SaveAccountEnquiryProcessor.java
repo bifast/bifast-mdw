@@ -12,6 +12,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.model.AccountEnquiry;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.AccountEnquiryRepository;
 import bifast.outbound.service.UtilService;
 
@@ -35,16 +36,14 @@ public class SaveAccountEnquiryProcessor implements Processor {
 		
 		Object objAEResponse = exchange.getMessage().getBody(Object.class);
 		
-		
 		AccountEnquiry ae = new AccountEnquiry();
 
 		String chnlRefId = exchange.getMessage().getHeader("hdr_chnlRefId", String.class);				
 
 		ae.setIntrRefId(chnlRefId);
 
-		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
-		if (!(null == chnlTrxId))
-			ae.setChnlTrxId(chnlTrxId);
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		ae.setKomiTrnsId(rmw.getKomiTrxId());
 		
 		ae.setBizMsgIdr(outRequest.getAppHdr().getBizMsgIdr());
 

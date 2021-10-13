@@ -21,6 +21,7 @@ import bifast.mock.processor.OnRequestProcessor;
 import bifast.mock.processor.PaymentStatusResponseProcessor;
 import bifast.mock.processor.ProxyRegistrationResponseProcessor;
 import bifast.mock.processor.ProxyResolutionResponseProcessor;
+import bifast.mock.processor.RejectMessageProcessor;
 import bifast.mock.processor.SettlementProcessor;
 
 @Component
@@ -35,7 +36,11 @@ public class CiHubRoute extends RouteBuilder {
 	@Autowired
 	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
 	@Autowired
+	private ProxyResolutionResponseProcessor proxyResolutionProc;
+	@Autowired
 	private CreditResponseStoreProcessor creditResponseStoreProcessor;
+	@Autowired
+	private RejectMessageProcessor rejectMessageProcessor;
 
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
@@ -92,9 +97,15 @@ public class CiHubRoute extends RouteBuilder {
 			.setHeader("delay_ct", simple("{{komi.timeout-ct}}"))
 
 			.choice()
+
 				.when().simple("${header.msgType} == 'AccountEnquiryRequest'")
 					.log("Akan process AE 1")
 					.process(accountEnquiryResponseProcessor)
+
+					.filter().simple("${header.hdr_account_no} startsWith '99' ")
+						.process(rejectMessageProcessor)
+						.unmarshal(jsonBusinessMessageDataFormat)
+					.end()
 
 					.filter().simple("${header.hdr_account_no} startsWith '77' ")
 						.log("start 77")
@@ -148,10 +159,11 @@ public class CiHubRoute extends RouteBuilder {
 
 				.when().simple("${header.msgType} == 'ProxyResolutionRequest'")
 					.log("ProxyResolutionRequest")
-				// 	.process(proxyResolutionResponseProcessor)
-				// 	.unmarshal(jsonBusinessMessageDataFormat)
+					.process(proxyResolutionProc)
+					.unmarshal(jsonBusinessMessageDataFormat)
 				.endChoice()
-				
+
+
 				.otherwise()	
 					.log("Other message")
 				.endChoice()

@@ -11,6 +11,7 @@ import javax.persistence.Id;
 public class Channel {
 
 	@Id
+	@Column(length=15)
 	private String channelId;
 	
 	@Column(length=100)
@@ -22,11 +23,12 @@ public class Channel {
 	@Column(length=10)
 	private String channelType;
 	
+	private String merchantCode;
+	
 	private BigDecimal dailyLimitAmount;
 	private BigDecimal transactionLimitAmount;
 	
 	private LocalDateTime createDt;
-	
 	private LocalDateTime modifDt;
 
 	public String getChannelId() {
@@ -59,6 +61,14 @@ public class Channel {
 
 	public void setChannelType(String channelType) {
 		this.channelType = channelType;
+	}
+
+	public String getMerchantCode() {
+		return merchantCode;
+	}
+
+	public void setMerchantCode(String merchantCode) {
+		this.merchantCode = merchantCode;
 	}
 
 	public BigDecimal getDailyLimitAmount() {

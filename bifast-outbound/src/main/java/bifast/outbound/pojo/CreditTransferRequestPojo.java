@@ -1,5 +1,7 @@
 package bifast.outbound.pojo;
 
+import bifast.outbound.pojo.chnlrequest.ChannelRequestBase;
+
 public class CreditTransferRequestPojo extends ChannelRequestBase {
 
 	private String categoryPurpose; 

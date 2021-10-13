@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.pojo.FlatMessageWrapper;
+import bifast.outbound.pojo.flat.FlatMessageWrapper;
 import bifast.outbound.report.pojo.RequestPojo;
 
 @Component

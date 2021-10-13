@@ -14,18 +14,19 @@ import javax.persistence.SequenceGenerator;
 public class ChannelTransaction {
 
 	@Id
-//	@GeneratedValue(strategy=GenerationType.AUTO)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
-	@SequenceGenerator(name="seq1_generator", sequenceName = "table1_seq_generator", allocationSize=1)
+	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
-	@Column(length=16)
-	private String transactionId;
 
-	@Column(length=16)
+	@Column(length=8)
 	private String komiTrnsId;
-	
-	@Column(length=50)
+
+	@Column(length=20)
+	private String channelRefId;
+
+	@Column(length=15)
 	private String channelId;
+	
 	@Column(length=100)
 	private String msgName;
 	
@@ -33,110 +34,125 @@ public class ChannelTransaction {
 
 	@Column(length=35)
 	private String debtorAccountNumber;
-	private String debtorAccountName;
+	
 	@Column(length=8)
 	private String recptBank;
+	
 	@Column(length=35)
 	private String creditorAccountNumber;
-	private String creditorAccountName;
+	
 	private LocalDateTime requestTime;
-	private LocalDateTime responseTime;
+	private Long elapsedTime;
+
 	@Column(length=12)
 	private String status;
+
 	@Column(length=250)
 	private String errorMsg;
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getTransactionId() {
-		return transactionId;
-	}
-	public void setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-	}
-	public String getChannelId() {
-		return channelId;
-	}
-	public void setChannelId(String channelId) {
-		this.channelId = channelId;
-	}
-	public String getMsgName() {
-		return msgName;
-	}
-	public void setMsgName(String msgName) {
-		this.msgName = msgName;
-	}
+
 	public String getKomiTrnsId() {
 		return komiTrnsId;
 	}
+
 	public void setKomiTrnsId(String komiTrnsId) {
 		this.komiTrnsId = komiTrnsId;
 	}
+
+	public String getChannelRefId() {
+		return channelRefId;
+	}
+
+	public void setChannelRefId(String channelRefId) {
+		this.channelRefId = channelRefId;
+	}
+
+	public String getChannelId() {
+		return channelId;
+	}
+
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
+	}
+
+	public String getMsgName() {
+		return msgName;
+	}
+
+	public void setMsgName(String msgName) {
+		this.msgName = msgName;
+	}
+
 	public BigDecimal getAmount() {
 		return amount;
 	}
+
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
+
 	public String getDebtorAccountNumber() {
 		return debtorAccountNumber;
 	}
+
 	public void setDebtorAccountNumber(String debtorAccountNumber) {
 		this.debtorAccountNumber = debtorAccountNumber;
 	}
-	public String getDebtorAccountName() {
-		return debtorAccountName;
-	}
-	public void setDebtorAccountName(String debtorAccountName) {
-		this.debtorAccountName = debtorAccountName;
-	}
+
 	public String getRecptBank() {
 		return recptBank;
 	}
+
 	public void setRecptBank(String recptBank) {
 		this.recptBank = recptBank;
 	}
+
 	public String getCreditorAccountNumber() {
 		return creditorAccountNumber;
 	}
+
 	public void setCreditorAccountNumber(String creditorAccountNumber) {
 		this.creditorAccountNumber = creditorAccountNumber;
 	}
-	public String getCreditorAccountName() {
-		return creditorAccountName;
-	}
-	public void setCreditorAccountName(String creditorAccountName) {
-		this.creditorAccountName = creditorAccountName;
-	}
+
 	public LocalDateTime getRequestTime() {
 		return requestTime;
 	}
+
 	public void setRequestTime(LocalDateTime requestTime) {
 		this.requestTime = requestTime;
 	}
-	public LocalDateTime getResponseTime() {
-		return responseTime;
+
+	public Long getElapsedTime() {
+		return elapsedTime;
 	}
-	public void setResponseTime(LocalDateTime responseTime) {
-		this.responseTime = responseTime;
+
+	public void setElapsedTime(Long elapsedTime) {
+		this.elapsedTime = elapsedTime;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	public String getErrorMsg() {
 		return errorMsg;
 	}
+
 	public void setErrorMsg(String errorMsg) {
 		this.errorMsg = errorMsg;
 	}
 	
-	
-	
+		
 }

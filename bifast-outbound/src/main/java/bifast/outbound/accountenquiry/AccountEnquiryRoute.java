@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
-import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor2;
+import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
 import bifast.outbound.processor.FlatResponseProcessor;
 
 @Component
@@ -14,7 +14,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	@Autowired
 	private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired
-	private AccountEnquiryResponseProcessor2 accountEnqrResponseProcessor;
+	private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
 	@Autowired
 	private FlatResponseProcessor flatResponseProcessor;
 	
@@ -38,20 +38,20 @@ public class AccountEnquiryRoute extends RouteBuilder{
 		;
 
 
-		from("direct:acctenqrflt").routeId("komi.acctenqflt")
-		
-			.setHeader("ae_channel_request", simple("${body}"))
-			.process(buildAccountEnquiryRequestProcessor)
-			.setHeader("ae_objreq_bi", simple("${body}"))
-	
-			.to("direct:call-cihub")
-			
-			.setHeader("ae_objresp_bi", simple("${body}"))
-	
-			.process(flatResponseProcessor)
-			
-			.removeHeaders("ae*")
-	;
+//		from("direct:acctenqrflt").routeId("komi.acctenqflt")
+//		
+//			.setHeader("ae_channel_request", simple("${body}"))
+//			.process(buildAccountEnquiryRequestProcessor)
+//			.setHeader("ae_objreq_bi", simple("${body}"))
+//	
+//			.to("direct:call-cihub")
+//			
+//			.setHeader("ae_objresp_bi", simple("${body}"))
+//	
+//			.process(flatResponseProcessor)
+//			
+//			.removeHeaders("ae*")
+//	;
 
 	}
 

@@ -4,8 +4,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 
 @Component
 public class CBTransactionFailureProcessor implements Processor {

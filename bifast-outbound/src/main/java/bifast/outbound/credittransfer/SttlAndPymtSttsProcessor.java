@@ -75,10 +75,7 @@ public class SttlAndPymtSttsProcessor extends RouteBuilder {
 						.setBody(constant(null))
 					.endChoice()
 				.end()
-
-				.log("${body}")					
-				.log("call settlement finish")
-				
+			
 			.endDoTry()
     		.doCatch(Exception.class)
     			.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_chnlRefId}] Settlement Enquiry error")

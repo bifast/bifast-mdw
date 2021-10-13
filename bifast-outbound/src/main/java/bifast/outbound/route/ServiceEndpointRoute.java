@@ -1,21 +1,29 @@
 package bifast.outbound.route;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
+import bifast.outbound.model.Channel;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.ResponseMessageCollection;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.FaultResponseProcessor;
-import bifast.outbound.processor.SaveTableChannelProcessor;
+import bifast.outbound.processor.InitRequestMessageWrapperProcessor;
+import bifast.outbound.processor.SaveChannelTransactionProcessor;
 import bifast.outbound.processor.ValidateAndTransformProcessor;
+import bifast.outbound.repository.ChannelRepository;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class ServiceEndpointRoute extends RouteBuilder {
@@ -27,8 +35,12 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	@Autowired
 	private ValidateAndTransformProcessor validateInputProcessor;
 	@Autowired
-	private SaveTableChannelProcessor saveChannelRequestProcessor;
+	private InitRequestMessageWrapperProcessor initRmwProcessor;
+	@Autowired
+	private SaveChannelTransactionProcessor saveChannelTransactionProcessor;
 
+    DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
 
 	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(RequestMessageWrapper.class);
 	JacksonDataFormat jdfChnlRequestNoWr = new JacksonDataFormat(RequestMessageWrapper.class);
@@ -86,64 +98,59 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.unmarshal(chnlRequestJDF)
 
 			.setHeader("hdr_errorlocation", constant("EndpointRoute/checkChannelRequest"))
+			
+			.process(initRmwProcessor)
+						
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
 			
 			.setHeader("hdr_channelRequest", simple("${body}"))
 			
 			.process(validateInputProcessor)
 			
-			.process(saveChannelRequestProcessor)
+			.process(saveChannelTransactionProcessor)
 
-			.log("di serviceendpoint komitrxid: ${header.hdr_request_list.komiTrxId}" )
-
+			// siapkan header penampung data2 hasil process.
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					ResponseMessageCollection rmc = new ResponseMessageCollection();
+					exchange.getMessage().setHeader("hdr_response_list", rmc);
+				}
+			})
+			
+			.log("[ChnlReq:${header.hdr_chnlRefId}] ${header.hdr_msgType} start.")
 			.choice()
-				.when().simple("${header.hdr_msgType} == 'AEReq'")
-					.log("[ChnlReq:${header.hdr_chnlRefId}] Account Enquiry Request start.")
+				.when().simple("${header.hdr_request_list.msgName} == 'AEReq'")
 					.to("direct:acctenqr")
 					
-				.when().simple("${header.hdr_msgType} == 'CTReq'")
-					.log("[ChnlReq:${header.hdr_chnlRefId}] Credit Transfer Request start.")
+				.when().simple("${header.hdr_request_list.msgName} == 'CTReq'")
 					.to("direct:ct_aepass")
 
 				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
-					.log("[ChnlReq:${header.hdr_chnlRefId}][PREG] start.")
 					.to("direct:prxyrgst")
 
 				.when().simple("${header.hdr_msgType} == 'prxyrslt'")
-					.log("[ChnlReq:${header.hdr_chnlRefId}][PRES] start.")
 					.to("direct:proxyresolution")
 
 			.end()
 
-			.marshal(chnlResponseJDF)
+			.to("seda:savetablechannel")
 			
-			.choice()
-					
-				.when().simple("${header.hdr_msgType} == 'AEReq'")
-					.log("[ChnlReq:${header.hdr_chnlRefId}] Account Enquiry Request finish.")
+			.log("[ChnlReq:${header.hdr_chnlRefId}] ${header.hdr_msgType} finish.")
 
-				.when().simple("${header.hdr_msgType} == 'CTReq'")
-					.log("[ChnlReq:${header.hdr_chnlRefId}] Credit Transfer Request finish.")
-	
-//				.when().simple("${header.hdr_msgType} == 'pymtsts'")
-//					.log("[ChRefId:${header.hdr_chnlRefId}][PS] finish.")
-	
-				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
-					.log("[ChnlReq:${header.hdr_chnlRefId}][PREG] finish.")
-	
-				.when().simple("${header.hdr_msgType} == 'prxyrslt'")
-					.log("[ChnlReq:${header.hdr_chnlRefId}][PRES] finish.")
-	
-			.end()
+			.marshal(chnlResponseJDF)
 
-			.process(saveChannelRequestProcessor)
-
+			.removeHeader("clientid")
 			.removeHeaders("hdr_*")
 			.removeHeaders("req_*")
 			.removeHeader("HttpMethod")
 			.removeHeader("cookie")
 		;
 		
+		from("seda:savetablechannel")
+			.log("akan save table channel_transaction")
+			.process(saveChannelTransactionProcessor)
+		;		
+
 
 	}
 

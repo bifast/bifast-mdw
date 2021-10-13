@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.corebank.pojo.CBDebitInstructionRequestPojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.FaultResponseProcessor;
 
@@ -27,7 +28,6 @@ public class CorebankRoute extends RouteBuilder{
 	private SaveCBTableProcessor saveCBTableProcessor;
 
 	JacksonDataFormat chnlDebitRequestJDF = new JacksonDataFormat(CBDebitInstructionRequestPojo.class);
-	JacksonDataFormat chnlFIRequestJDF = new JacksonDataFormat(CBFITransferRequestPojo.class);
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 	JacksonDataFormat cbInstructionWrapper = new JacksonDataFormat(CBInstructionWrapper.class);
 
@@ -39,18 +39,12 @@ public class CorebankRoute extends RouteBuilder{
 		chnlDebitRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		chnlDebitRequestJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 		
-		chnlFIRequestJDF.setInclude("NON_NULL");
-		chnlFIRequestJDF.setInclude("NON_EMPTY");
-		chnlFIRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		chnlFIRequestJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-
 		chnlResponseJDF.setInclude("NON_NULL");
 		chnlResponseJDF.setInclude("NON_EMPTY");
 		
 		cbInstructionWrapper.setInclude("NON_NULL");
 		cbInstructionWrapper.setInclude("NON_EMPTY");
 		cbInstructionWrapper.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		chnlFIRequestJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		onException(Exception.class) 
 			.log("ERROR route callingCB")

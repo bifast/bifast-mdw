@@ -27,17 +27,19 @@ public class Settlement {
 	@Column(name="ORGNL_CRDT_TRN_BIZMSGID", length=50)
 	private String orgnlCrdtTrnReqBizMsgId;
 
-	@Column(length=100)
+	@Column(length=35)
 	private String crdtAccountNo;
-	@Column(length=100)
+	@Column(length=35)
 	private String dbtrAccountNo;
 	
-	@Column(length=100)
+	@Column(length=35)
 	private String crdtBankAccountNo;
-	@Column(length=100)
+	@Column(length=35)
 	private String dbtrBankAccountNo;
 	
 	private LocalDateTime receiveDate;
+	
+	private Long corebankResponseId;
 	
 	@Column(length=5000)
 	private String fullMessage;
@@ -101,6 +103,12 @@ public class Settlement {
 	}
 	public void setReceiveDate(LocalDateTime receiveDate) {
 		this.receiveDate = receiveDate;
+	}
+	public Long getCorebankResponseId() {
+		return corebankResponseId;
+	}
+	public void setCorebankResponseId(Long corebankResponseId) {
+		this.corebankResponseId = corebankResponseId;
 	}
 	public String getFullMessage() {
 		return fullMessage;

@@ -13,12 +13,12 @@ import bifast.library.iso20022.pacs002.OriginalGroupHeader17;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
-import bifast.outbound.pojo.FlatAdmi002Pojo;
-import bifast.outbound.pojo.FlatPacs002Pojo;
-import bifast.outbound.pojo.FlatPacs008Pojo;
-import bifast.outbound.pojo.FlatPacs009Pojo;
-import bifast.outbound.pojo.FlatPrxy004Pojo;
-import bifast.outbound.pojo.FlatPrxy006Pojo;
+import bifast.outbound.pojo.flat.FlatAdmi002Pojo;
+import bifast.outbound.pojo.flat.FlatPacs002Pojo;
+import bifast.outbound.pojo.flat.FlatPacs008Pojo;
+import bifast.outbound.pojo.flat.FlatPacs009Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy006Pojo;
 
 @Service
 public class FlattenIsoMessageService {

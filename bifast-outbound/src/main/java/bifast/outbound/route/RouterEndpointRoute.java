@@ -13,11 +13,10 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.ChannelResponseWrapper;
-import bifast.outbound.pojo.FlatMessageWrapper;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.pojo.flat.FlatMessageWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.FaultResponseProcessor;
-import bifast.outbound.processor.SaveTableChannelProcessor;
 import bifast.outbound.processor.ValidateProcessor;
 
 @Component
@@ -29,8 +28,8 @@ public class RouterEndpointRoute extends RouteBuilder {
 	private FaultResponseProcessor faultProcessor;
 	@Autowired
 	private ValidateProcessor validateInputProcessor;
-	@Autowired
-	private SaveTableChannelProcessor saveChannelRequestProcessor;
+//	@Autowired
+//	private SaveTableChannelProcessor saveChannelRequestProcessor;
 
 
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
@@ -101,7 +100,7 @@ public class RouterEndpointRoute extends RouteBuilder {
 			
 			.process(validateInputProcessor)
 			
-			.process(saveChannelRequestProcessor)
+//			.process(saveChannelRequestProcessor)
 
 			.choice()
 				.when().simple("${header.hdr_msgType} == 'AEReq'")
@@ -155,7 +154,7 @@ public class RouterEndpointRoute extends RouteBuilder {
 	
 			.end()
 
-			.process(saveChannelRequestProcessor)
+//			.process(saveChannelRequestProcessor)
 
 			.removeHeaders("req_*")
 			.removeHeaders("hdr_*")

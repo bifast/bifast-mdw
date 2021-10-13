@@ -1,90 +1,103 @@
 package bifast.outbound.accountenquiry.processor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
-import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.pojo.chnlresponse.ChnlAccountEnquiryResponsePojo;
+import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class AccountEnquiryResponseProcessor implements Processor {
 
+    DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
+
+    @Autowired
+    private StatusReasonRepository statusReasonRepo;
+    
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-//		BusinessMessage busMesg = exchange.getMessage().getHeader("ae_objresp_bi", BusinessMessage.class);
-		
-		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("ae_channel_request",ChnlAccountEnquiryRequestPojo.class);
-		
 		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
+		channelResponseWr.setResponseCode("U000");
+		channelResponseWr.setResponseMessage("Success/ Transaction Accepted");
+		channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
+		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
+		channelResponseWr.setContent(new ArrayList<>());
+
+		Object objBody = exchange.getMessage().getBody(Object.class);
+		String bodyClass = objBody.getClass().getSimpleName();
 		
-		BusinessMessage busMesg = exchange.getIn().getBody(BusinessMessage.class);
+//		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("ae_channel_request",ChnlAccountEnquiryRequestPojo.class);
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class);
+		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
+		
+		ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
+		chnResp.setOrignReffId(chnReq.getIntrnRefId());
 
-		if (null == busMesg) {
+		if (bodyClass.equals("ChnlFailureResponsePojo")) {
+			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
+		
+			channelResponseWr.setResponseCode(fault.getErrorCode());
+			if (fault.getErrorCode().equals("ERROR-KM"))
+				channelResponseWr.setResponseMessage("KOMI Internal Error");
+			else if (fault.getErrorCode().equals("ERROR-CIHUB"))
+				channelResponseWr.setResponseMessage("CIHUB Internal Error");
+			else
+				channelResponseWr.setResponseMessage("KOMI Error");
 			
-			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
-
-			reject.setReferenceId(chnReq.getIntrnRefId());
-			
-			String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
-			String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
-			reject.setReason(errorStatus);
-			reject.setDescription(errorMesg);
-			
-//			reject.setLocation(rejectResp.getRsn().getErrLctn());
-//			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
-	
-			channelResponseWr.setFaultResponse(reject);
-			exchange.getIn().setBody(channelResponseWr);
-
 		}
-		
-		else if (null == busMesg.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
+
+		else {
 			
-			PaymentTransaction110 biResp = busMesg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
-	
-			ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
+			BusinessMessage bm = (BusinessMessage)objBody;
+						
+			PaymentTransaction110 biResp = bm.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 			
-			chnResp.setOrignReffId(chnReq.getIntrnRefId());
+			channelResponseWr.setResponseCode(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
 			
+			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getResponseCode());
+			if (optStatusReason.isPresent()) {
+				String desc = optStatusReason.get().getDescription();
+				channelResponseWr.setResponseMessage(desc);
+			}	
+			
+			chnResp.setCreditorAccountNumber(chnReq.getCreditorAccountNumber());					
 			chnResp.setCreditorAccountType(biResp.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
-			chnResp.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
 			
-			chnResp.setCreditorName(biResp.getOrgnlTxRef().getCdtr().getPty().getNm());
-			chnResp.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
-			chnResp.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
-			chnResp.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
+			if (null != biResp.getOrgnlTxRef().getCdtr())
+				chnResp.setCreditorName(biResp.getOrgnlTxRef().getCdtr().getPty().getNm());
 			
-			chnResp.setCreditorAccountNumber(chnReq.getCreditorAccountNumber());
-			chnResp.setStatus(biResp.getTxSts());
-			chnResp.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
-					
-			channelResponseWr.setAccountEnquiryResponse(chnResp);
-
+			if (biResp.getSplmtryData().size()>0) {
+				if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr()) {
+					if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId())
+						chnResp.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
+					if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp())
+						chnResp.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
+					if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts())
+						chnResp.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
+					if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm())
+						chnResp.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
+				}
+			}			
 		}
-		
-		else {   // ternyata berupa message reject
-			
-			MessageRejectV01 rejectResp = busMesg.getDocument().getMessageReject();
 
-			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
-		
-			reject.setReferenceId(chnReq.getIntrnRefId());
-			reject.setTransactionType ("AccountEnquiry");
-			reject.setReason(rejectResp.getRsn().getRjctgPtyRsn());
-			reject.setDescription(rejectResp.getRsn().getRsnDesc());
-			reject.setLocation("[CI-HUB] " + rejectResp.getRsn().getErrLctn());
-			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
+		channelResponseWr.getContent().add(chnResp);
 
-			channelResponseWr.setFaultResponse(reject);
-		}
-		
 		exchange.getMessage().setBody(channelResponseWr);
 	}
 

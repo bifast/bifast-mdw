@@ -1,10 +1,14 @@
 package bifast.inbound.credittransfer;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.config.Config;
 import bifast.inbound.corebank.pojo.CBCreditInstructionResponsePojo;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -20,11 +24,15 @@ import bifast.library.iso20022.service.Pacs002Seed;
 public class CreditTransferProcessor implements Processor {
 
 	@Autowired
+	private Config config;
+	@Autowired
 	private AppHeaderService appHdrService;
 	@Autowired
 	private Pacs002MessageService pacs002Service;
 	@Autowired
 	private UtilService utilService;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -40,8 +48,14 @@ public class CreditTransferProcessor implements Processor {
 			isCopyDupl = true;
 		}
 
-		String bizMsgId = utilService.genRfiBusMsgId("010", "99");
-		String msgId = utilService.genMessageId("010");
+		String strToday = LocalDate.now().format(formatter);
+
+		String inboundResponseId = utilService.genKomiTrnsId();
+		
+		String bizMsgId = strToday + config.getBankcode() + "510R99" + inboundResponseId;
+
+		String msgId = strToday + config.getBankcode() + "510" + inboundResponseId;
+
 
 		Pacs002Seed resp = new Pacs002Seed();
 		resp.setMsgId(msgId);

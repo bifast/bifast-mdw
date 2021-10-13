@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
 import bifast.outbound.model.ProxyMessage;
-import bifast.outbound.proxyregistration.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.repository.ProxyMessageRepository;
 import bifast.outbound.service.UtilService;
 
@@ -45,24 +46,16 @@ public class StoreProxyResolutionProcessor implements Processor{
 		proxyMessage.setFullRequestMesg(encrRequestMesg);
 		proxyMessage.setFullResponseMesg(encrResponseMesg);
 
-		ChnlProxyResolutionRequestPojo channelRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlProxyResolutionRequestPojo.class);
-
-		proxyMessage.setIntrnRefId(channelRequest.getOrignReffId());
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		
-		proxyMessage.setOperationType(channelRequest.getLookupType());
+		ChnlProxyResolutionRequestPojo channelRequest = rmw.getChnlProxyResolutionRequest();
+
+		proxyMessage.setIntrnRefId(channelRequest.getIntrnRefId());
+		
+		proxyMessage.setOperationType("PXRS");
 		proxyMessage.setProxyType(channelRequest.getProxyType());
 		proxyMessage.setProxyValue(channelRequest.getProxyValue());
 		
-//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-//
-//		String strPrxyReqTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-//		String strPrxyRespTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-	
-//		LocalDateTime prxyRequestTime = LocalDateTime.parse(strPrxyReqTime, dtf);
-//		LocalDateTime prxyResponseTime = LocalDateTime.parse(strPrxyRespTime, dtf);
-//
-//		proxyMessage.setRequestDt(prxyRequestTime);
-//		proxyMessage.setResponseDt(prxyResponseTime);
 		proxyMessage.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
 		proxyMessage.setResponseDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
 		proxyMessage.setCihubElapsedTime(routeElapsed);
@@ -89,7 +82,6 @@ public class StoreProxyResolutionProcessor implements Processor{
 			proxyMessage.setRespStatus(resolutionResponse.getLkUpRspn().getRegnRspn().getPrxRspnSts().value());
 		}
 		
-
 		
 		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
 		String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);

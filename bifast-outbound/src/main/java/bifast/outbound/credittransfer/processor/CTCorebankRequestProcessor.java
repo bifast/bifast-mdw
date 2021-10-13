@@ -9,8 +9,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.corebank.CBDebitInstructionRequestPojo;
-import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
+import bifast.outbound.corebank.pojo.CBDebitInstructionRequestPojo;
+import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 
 @Component
 public class CTCorebankRequestProcessor implements Processor {
@@ -37,7 +37,7 @@ public class CTCorebankRequestProcessor implements Processor {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		cbDebitRequest.setRequestTime(LocalDateTime.now().format(dtf));
 
-		cbDebitRequest.setTransactionId(chnlCTRequest.getOrignReffId());
+		cbDebitRequest.setTransactionId(chnlCTRequest.getIntrnRefId());
 		
 		exchange.getMessage().setBody(cbDebitRequest);
 

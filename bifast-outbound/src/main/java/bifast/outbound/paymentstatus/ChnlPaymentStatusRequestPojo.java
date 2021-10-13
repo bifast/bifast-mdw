@@ -1,6 +1,6 @@
 package bifast.outbound.paymentstatus;
 
-import bifast.outbound.pojo.ChannelRequestBase;
+import bifast.outbound.pojo.chnlrequest.ChannelRequestBase;
 
 public class ChnlPaymentStatusRequestPojo extends ChannelRequestBase {
 

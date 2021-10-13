@@ -14,38 +14,12 @@ import bifast.outbound.service.UtilService;
 
 @Component
 public class CheckChannelRequestTypeProcessor implements Processor {
-	@Autowired
-	private ChannelRepository channelRepo;
-	@Autowired
-	private UtilService utilService;
-	
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class );
 		RequestMessageWrapper req = exchange.getIn().getBody(RequestMessageWrapper.class);
 
-		String clientId = exchange.getMessage().getHeader("clientId", String.class);
-		String channelType = channelRepo.findById(clientId).orElse(new Channel()).getChannelType();
-		String komiTrnsId = utilService.genKomiTrnsId();
-		
-		RequestMessageWrapper rmw = new RequestMessageWrapper();
-
-		rmw.setChannelId(clientId);
-		rmw.setChannelType(channelType);
-		rmw.setKomiTrxId(komiTrnsId);
-		rmw.setRequestTime(LocalDateTime.now());
-		
-//		List<DomainCode> listDM = domainCodeRepo.findByGrp("REQUEST.METHOD.CODE");
-//		for (DomainCode dm : listDM) {
-//			try {
-//				Method mtd = req.getClass().getMethod(dm.getKey());
-////				Object body = (Object) mtd.invoke(req);
-//				rmw.setMsgName(dm.getValue());
-//				exchange.getMessage().setBody(mtd.invoke(req));
-//			} catch (NoSuchMethodException e) {}
-//		}
-		
-		
 		if (!(null == req.getChnlAccountEnquiryRequest())) {
 			rmw.setChnlAccountEnquiryRequest(req.getChnlAccountEnquiryRequest());
 			rmw.setMsgName("AEReq");
@@ -61,30 +35,34 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 			rmw.setMsgName("CTReq");
 			exchange.getMessage().setHeader("hdr_msgType", "CTReq");
 			exchange.getMessage().setBody(req.getChnlCreditTransferRequest());
-			exchange.getMessage().setHeader("hdr_chnlRefId", req.getChnlCreditTransferRequest().getOrignReffId());
-			rmw.setRequestId(req.getChnlCreditTransferRequest().getOrignReffId());
+			exchange.getMessage().setHeader("hdr_chnlRefId", req.getChnlCreditTransferRequest().getIntrnRefId());
+			rmw.setRequestId(req.getChnlCreditTransferRequest().getIntrnRefId());
 		}
 		
 	
-		else if (!(null == req.getChnlPaymentStatusRequest())) {
-			exchange.getMessage().setHeader("hdr_msgType", "pymtsts");
-			exchange.getMessage().setBody(req.getChnlPaymentStatusRequest());
-			exchange.getMessage().setHeader("hdr_chnlRefId", req.getChnlPaymentStatusRequest().getIntrnRefId());
-			rmw.setRequestId(req.getChnlPaymentStatusRequest().getIntrnRefId());
-		}
+//		else if (!(null == req.getChnlPaymentStatusRequest())) {
+//			exchange.getMessage().setHeader("hdr_msgType", "pymtsts");
+//			exchange.getMessage().setBody(req.getChnlPaymentStatusRequest());
+//			exchange.getMessage().setHeader("hdr_chnlRefId", req.getChnlPaymentStatusRequest().getIntrnRefId());
+//			rmw.setRequestId(req.getChnlPaymentStatusRequest().getIntrnRefId());
+//		}
 		
-		else if (!(null == req.getProxyRegistrationReq())) {
+		else if (!(null == req.getChnlProxyRegistrationRequest())) {
+			rmw.setChnlProxyRegistrationRequest(req.getChnlProxyRegistrationRequest());
+			rmw.setMsgName("PrxRegistrationReq");
+			rmw.setRequestId(req.getChnlProxyRegistrationRequest().getIntrnRefId());
 			exchange.getMessage().setHeader("hdr_msgType", "prxyrgst");
-			exchange.getMessage().setBody(req.getProxyRegistrationReq());
-			exchange.getMessage().setHeader("hdr_chnlRefId", req.getProxyRegistrationReq().getIntrnRefId());
-			rmw.setRequestId(req.getProxyRegistrationReq().getIntrnRefId());
+			exchange.getMessage().setBody(req.getChnlProxyRegistrationRequest());
+			exchange.getMessage().setHeader("hdr_chnlRefId", req.getChnlProxyRegistrationRequest().getIntrnRefId());
 		}
 		
-		else if (!(null == req.getProxyResolutionReq())) {
+		else if (!(null == req.getChnlProxyResolutionRequest())) {
+			rmw.setChnlProxyResolutionRequest(req.getChnlProxyResolutionRequest());
+			rmw.setMsgName("ProxyResolutionReq");
+			rmw.setRequestId(req.getChnlProxyResolutionRequest().getIntrnRefId());
 			exchange.getMessage().setHeader("hdr_msgType", "prxyrslt");
-			exchange.getMessage().setBody(req.getProxyResolutionReq());
-			exchange.getMessage().setHeader("hdr_chnlRefId", req.getProxyResolutionReq().getOrignReffId());
-			exchange.getMessage().setHeader("hdr_chnlRefId", req.getProxyResolutionReq().getOrignReffId());
+			exchange.getMessage().setBody(req.getChnlProxyResolutionRequest());
+			exchange.getMessage().setHeader("hdr_chnlRefId", req.getChnlProxyResolutionRequest().getIntrnRefId());
 		}
 
 		exchange.getMessage().setHeader("hdr_request_list", rmw);

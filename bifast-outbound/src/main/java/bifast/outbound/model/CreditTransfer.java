@@ -18,10 +18,11 @@ public class CreditTransfer {
 	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 	
-	@Column(name="INTR_REF_ID")
-	private String intrRefId;
+//	@Column(name="INTR_REF_ID")
+//	private String intrRefId;
 	
-	private Long chnlTrxId;
+//	private Long chnlTrxId;
+	private String komiTrnsId;
 	
 	private String msgType;
 	
@@ -86,17 +87,11 @@ public class CreditTransfer {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getIntrRefId() {
-		return intrRefId;
+	public String getKomiTrnsId() {
+		return komiTrnsId;
 	}
-	public void setIntrRefId(String intrRefId) {
-		this.intrRefId = intrRefId;
-	}
-	public Long getChnlTrxId() {
-		return chnlTrxId;
-	}
-	public void setChnlTrxId(Long chnlTrxId) {
-		this.chnlTrxId = chnlTrxId;
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
 	}
 	public String getMsgType() {
 		return msgType;

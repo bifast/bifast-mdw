@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.FaultClass;
-import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.repository.FaultClassRepository;
 
 @Component
