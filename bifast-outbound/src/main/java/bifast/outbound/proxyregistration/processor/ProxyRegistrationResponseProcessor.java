@@ -46,7 +46,7 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		ChnlProxyRegistrationRequestPojo chnRequest = rmw.getChnlProxyRegistrationRequest();
 
 		ChnlProxyRegistrationResponsePojo chnResponse = new ChnlProxyRegistrationResponsePojo();
-		chnResponse.setNoRef(chnRequest.getIntrnRefId());
+		chnResponse.setNoRef(chnRequest.getChannelRefId());
 
 		if (bodyClass.equals("ChnlFailureResponsePojo")) {
 

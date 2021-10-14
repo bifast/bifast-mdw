@@ -57,7 +57,7 @@ public class StoreProxyRegistrationProcessor implements Processor{
 
 		ChnlProxyRegistrationRequestPojo channelRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlProxyRegistrationRequestPojo.class);
 
-		proxyMessage.setIntrnRefId(channelRequest.getIntrnRefId());
+		proxyMessage.setIntrnRefId(channelRequest.getChannelRefId());
 		
 		proxyMessage.setOperationType(channelRequest.getRegistrationType());
 		proxyMessage.setProxyType(channelRequest.getProxyType());

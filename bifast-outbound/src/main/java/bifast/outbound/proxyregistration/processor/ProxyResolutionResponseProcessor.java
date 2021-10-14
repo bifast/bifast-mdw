@@ -40,7 +40,7 @@ public class ProxyResolutionResponseProcessor implements Processor {
 		String bodyClass = objBody.getClass().getSimpleName();
 		
 		ChnlProxyResolutionResponsePojo chnResponse = new ChnlProxyResolutionResponsePojo();
-		chnResponse.setNoRef(chnRequest.getIntrnRefId());
+		chnResponse.setNoRef(chnRequest.getChannelRefId());
 		
 		if (bodyClass.equals("ChnlFailureResponsePojo")) {
 
@@ -62,7 +62,7 @@ public class ProxyResolutionResponseProcessor implements Processor {
 
 			ProxyLookUpResponseV01 biResp = bm.getDocument().getPrxyLookUpRspn();
 
-			chnResponse.setNoRef(chnRequest.getIntrnRefId());
+			chnResponse.setNoRef(chnRequest.getChannelRefId());
 			// from CI-HUB response
 			
 			chnResponse.setProxyType(biResp.getLkUpRspn().getRegnRspn().getPrxy().getTp());

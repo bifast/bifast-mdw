@@ -16,18 +16,18 @@ clientId: IB1
 
 {
   "CreditTransferRequest" : {
-    "NoRef" : "2021021265",   
+    "NoRef" : "252225",   
     "CategoryPurpose" : "01",
     "DebtorId" : "642245",
     "DebtorIdType" : "01",
     "DebtorAccountNumber" : "53314",
     "DebtorAccountType" : "CACC",
     "Amount" : 453272,
-    "FeeTransfer" : 6500.00,
+    "FeeTransfer" : 65333.00,
     "RecipientBank" : "BMNDIDJA",
     "CreditorId" : "C224403",
     "CreditorType" : "01",
-    "CreditorAccountNumber" : "889274851",
+    "CreditorAccountNumber" : "19274851",
     "CreditorAccountType" : "SVGS",
     "CreditorProxyType" : "02", 
     "CreditorProxyId" : "fariz@gmail.com",

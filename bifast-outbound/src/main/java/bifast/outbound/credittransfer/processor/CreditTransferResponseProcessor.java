@@ -26,16 +26,17 @@ public class CreditTransferResponseProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		
 		ChannelResponseWrapper chnlResponseWr = new ChannelResponseWrapper();
-		chnlResponseWr.setContent(new ArrayList<>());
-
+		chnlResponseWr.setResponseCode("U000");
+		chnlResponseWr.setResponseMessage("Success/ Transaction Accepted");
 		chnlResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 		chnlResponseWr.setTime(LocalDateTime.now().format(timeformatter));
+		chnlResponseWr.setContent(new ArrayList<>());
 		
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ChnlCreditTransferRequestPojo chnRequest = rmw.getChnlCreditTransferRequest();
 
 		ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
-		chnResponse.setOrignReffId(chnRequest.getIntrnRefId());
+		chnResponse.setOrignReffId(chnRequest.getChannelRefId());
 		chnResponse.setAccountNumber(chnRequest.getCrdtAccountNo());
 
 		Object objResponse = exchange.getMessage().getBody(Object.class);

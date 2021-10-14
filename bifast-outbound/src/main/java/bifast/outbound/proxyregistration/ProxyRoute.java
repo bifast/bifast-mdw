@@ -58,7 +58,7 @@ public class ProxyRoute extends RouteBuilder {
 						RequestMessageWrapper rmw = exchange.getIn().getHeader("hdr_request_list", RequestMessageWrapper.class);
 						ChnlProxyRegistrationRequestPojo regnsReq = rmw.getChnlProxyRegistrationRequest();
 						ChnlProxyResolutionRequestPojo rsltReq = new ChnlProxyResolutionRequestPojo();
-						rsltReq.setIntrnRefId(regnsReq.getIntrnRefId());
+						rsltReq.setChannelRefId(null);
 						rsltReq.setSenderAccountNumber(regnsReq.getAccountNumber());
 						rsltReq.setProxyType(regnsReq.getProxyType());
 						rsltReq.setProxyValue(regnsReq.getProxyValue());

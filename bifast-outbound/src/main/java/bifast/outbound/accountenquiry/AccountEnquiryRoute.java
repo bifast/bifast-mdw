@@ -15,8 +15,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired
 	private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
-	@Autowired
-	private FlatResponseProcessor flatResponseProcessor;
 	
 	@Override
 	public void configure() throws Exception {
@@ -36,22 +34,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			
 			.removeHeaders("ae*")
 		;
-
-
-//		from("direct:acctenqrflt").routeId("komi.acctenqflt")
-//		
-//			.setHeader("ae_channel_request", simple("${body}"))
-//			.process(buildAccountEnquiryRequestProcessor)
-//			.setHeader("ae_objreq_bi", simple("${body}"))
-//	
-//			.to("direct:call-cihub")
-//			
-//			.setHeader("ae_objresp_bi", simple("${body}"))
-//	
-//			.process(flatResponseProcessor)
-//			
-//			.removeHeaders("ae*")
-//	;
 
 	}
 

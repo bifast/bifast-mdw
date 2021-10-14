@@ -1,4 +1,4 @@
-package bifast.outbound.credittransfer;
+package bifast.outbound.paymentstatus;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -19,7 +19,7 @@ import bifast.outbound.report.pojo.RequestPojo;
 import bifast.outbound.report.pojo.ResponsePojo;
 
 @Component
-public class SttlAndPymtSttsProcessor extends RouteBuilder {
+public class SttlAndPymtSttsRoute extends RouteBuilder {
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired

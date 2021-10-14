@@ -21,7 +21,7 @@ import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.FaultResponseProcessor;
 import bifast.outbound.processor.InitRequestMessageWrapperProcessor;
 import bifast.outbound.processor.SaveChannelTransactionProcessor;
-import bifast.outbound.processor.ValidateAndTransformProcessor;
+import bifast.outbound.processor.ValidateProcessor;
 import bifast.outbound.repository.ChannelRepository;
 import bifast.outbound.service.UtilService;
 
@@ -33,7 +33,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	@Autowired
 	private FaultResponseProcessor faultProcessor;
 	@Autowired
-	private ValidateAndTransformProcessor validateInputProcessor;
+	private ValidateProcessor validateInputProcessor;
 	@Autowired
 	private InitRequestMessageWrapperProcessor initRmwProcessor;
 	@Autowired
@@ -117,7 +117,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				}
 			})
 			
-			.log("[ChnlReq:${header.hdr_chnlRefId}] ${header.hdr_msgType} start.")
+			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} start.")
 			.choice()
 				.when().simple("${header.hdr_request_list.msgName} == 'AEReq'")
 					.to("direct:acctenqr")
@@ -125,10 +125,13 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				.when().simple("${header.hdr_request_list.msgName} == 'CTReq'")
 					.to("direct:ct_aepass")
 
-				.when().simple("${header.hdr_msgType} == 'prxyrgst'")
+				.when().simple("${header.hdr_request_list.msgName} == 'PSReq'")
+					.to("direct:ps4chnl")
+
+				.when().simple("${header.hdr_request_list.msgName} == 'PrxRegnReq'")
 					.to("direct:prxyrgst")
 
-				.when().simple("${header.hdr_msgType} == 'prxyrslt'")
+				.when().simple("${header.hdr_request_list.msgName} == 'PrxReslReq'")
 					.to("direct:proxyresolution")
 
 			.end()

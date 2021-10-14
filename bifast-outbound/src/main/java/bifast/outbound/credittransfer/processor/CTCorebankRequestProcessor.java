@@ -37,7 +37,7 @@ public class CTCorebankRequestProcessor implements Processor {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		cbDebitRequest.setRequestTime(LocalDateTime.now().format(dtf));
 
-		cbDebitRequest.setTransactionId(chnlCTRequest.getIntrnRefId());
+		cbDebitRequest.setTransactionId(chnlCTRequest.getChannelRefId());
 		
 		exchange.getMessage().setBody(cbDebitRequest);
 

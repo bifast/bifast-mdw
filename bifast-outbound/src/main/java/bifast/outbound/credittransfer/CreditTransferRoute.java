@@ -83,7 +83,7 @@ public class CreditTransferRoute extends RouteBuilder {
 							ChnlCreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);
 							
 							ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
-							chnResponse.setOrignReffId(chnRequest.getIntrnRefId());
+							chnResponse.setOrignReffId(chnRequest.getChannelRefId());
 							
 							ChannelResponseWrapper respWr = new ChannelResponseWrapper();
 							

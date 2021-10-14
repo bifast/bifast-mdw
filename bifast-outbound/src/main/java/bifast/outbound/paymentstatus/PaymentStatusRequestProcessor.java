@@ -11,6 +11,7 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs028MessageService;
 import bifast.library.iso20022.service.Pacs028Seed;
+import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.service.UtilService;
 
 @Component
@@ -36,7 +37,7 @@ public class PaymentStatusRequestProcessor implements Processor {
 
 		Pacs028Seed seed = new Pacs028Seed();	
 		seed.setMsgId(msgId);
-		seed.setOrgnlEndToEnd(psReq.getEndToEndId());
+		seed.setOrgnlEndToEnd(psReq.getOrgnlEndToEndId());
 	
 		Document doc = new Document();
 		doc.setFIToFIPmtStsReq(pacs028MessageService.paymentStatusRequest(seed));

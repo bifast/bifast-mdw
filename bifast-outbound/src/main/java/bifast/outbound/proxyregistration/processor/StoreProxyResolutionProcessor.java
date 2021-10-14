@@ -50,7 +50,7 @@ public class StoreProxyResolutionProcessor implements Processor{
 		
 		ChnlProxyResolutionRequestPojo channelRequest = rmw.getChnlProxyResolutionRequest();
 
-		proxyMessage.setIntrnRefId(channelRequest.getIntrnRefId());
+		proxyMessage.setIntrnRefId(channelRequest.getChannelRefId());
 		
 		proxyMessage.setOperationType("PXRS");
 		proxyMessage.setProxyType(channelRequest.getProxyType());

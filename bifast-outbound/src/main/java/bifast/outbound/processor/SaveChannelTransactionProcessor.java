@@ -51,8 +51,8 @@ public class SaveChannelTransactionProcessor implements Processor{
 			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 
 			chnlTrns.setAmount(new BigDecimal(aeReq.getAmount()));
-			chnlTrns.setChannelRefId(aeReq.getIntrnRefId());
-			chnlTrns.setRecptBank(aeReq.getRecptBank());
+			chnlTrns.setChannelRefId(aeReq.getChannelRefId());
+			chnlTrns.setRecptBank(aeReq.getChannelRefId());
 			chnlTrns.setStatus("SUCCESS");
 			channelTransactionRepo.save(chnlTrns);
 			
@@ -67,13 +67,31 @@ public class SaveChannelTransactionProcessor implements Processor{
 
 			ChnlCreditTransferRequestPojo ctReq = rmw.getChnlCreditTransferRequest();
 			chnlTrns.setAmount(ctReq.getAmount());
-			chnlTrns.setChannelRefId(ctReq.getIntrnRefId());
+			chnlTrns.setChannelRefId(ctReq.getChannelRefId());
 			chnlTrns.setRecptBank(ctReq.getRecptBank());
 
 			chnlTrns.setStatus("SUCCESS");
 			channelTransactionRepo.save(chnlTrns);
 
 		}
+		
+		else if (rmw.getMsgName().equals("PSReq")) {
+			ChannelTransaction chnlTrns = optChannel.get();
+
+			Instant finish = Instant.now();
+			long timeElapsed = Duration.between(rmw.getStart(), finish).toMillis();
+			chnlTrns.setElapsedTime(timeElapsed);
+
+			ChnlCreditTransferRequestPojo ctReq = rmw.getChnlCreditTransferRequest();
+//			chnlTrns.setAmount(ctReq.getAmount());
+			chnlTrns.setChannelRefId(ctReq.getChannelRefId());
+//			chnlTrns.setRecptBank(ctReq.getRecptBank());
+
+			chnlTrns.setStatus("SUCCESS");
+			channelTransactionRepo.save(chnlTrns);
+
+		}
+
 	
 	}
 

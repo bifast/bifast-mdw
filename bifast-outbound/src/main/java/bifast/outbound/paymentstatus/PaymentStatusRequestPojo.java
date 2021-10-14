@@ -1,8 +1,6 @@
 package bifast.outbound.paymentstatus;
 
-import bifast.outbound.pojo.chnlrequest.ChannelRequestBase;
-
-public class ChnlPaymentStatusRequestPojo extends ChannelRequestBase {
+public class PaymentStatusRequestPojo {
 
 	private String endToEndId;
 	private String msgType;
@@ -19,5 +17,6 @@ public class ChnlPaymentStatusRequestPojo extends ChannelRequestBase {
 	public void setMsgType(String msgType) {
 		this.msgType = msgType;
 	}
+
 	
 }

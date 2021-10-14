@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ChannelRequestBase {
 
 	@JsonProperty("NoRef")
-	private String intrnRefId;
+	private String channelRefId;
 	@JsonProperty("Channel")
 	private String channel; 
 	@JsonProperty("CategoryPurpose")
@@ -14,11 +14,11 @@ public class ChannelRequestBase {
 	@JsonProperty("RecipientBank")
 	private String recptBank; 
 
-	public String getIntrnRefId() {
-		return intrnRefId;
+	public String getChannelRefId() {
+		return channelRefId;
 	}
-	public void setIntrnRefId(String intrnRefId) {
-		this.intrnRefId = intrnRefId;
+	public void setChannelRefId(String channelRefId) {
+		this.channelRefId = channelRefId;
 	}
 	public String getChannel() {
 		return channel;

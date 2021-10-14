@@ -39,17 +39,14 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 		channelResponseWr.setContent(new ArrayList<>());
 
-		Object objBody = exchange.getMessage().getBody(Object.class);
-		String bodyClass = objBody.getClass().getSimpleName();
-		
-//		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("ae_channel_request",ChnlAccountEnquiryRequestPojo.class);
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class);
 		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
 		
 		ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
-		chnResp.setOrignReffId(chnReq.getIntrnRefId());
+		chnResp.setOrignReffId(chnReq.getChannelRefId());
 
-		if (bodyClass.equals("ChnlFailureResponsePojo")) {
+		Object objBody = exchange.getMessage().getBody(Object.class);
+		if (objBody.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
 		
 			channelResponseWr.setResponseCode(fault.getErrorCode());

@@ -7,11 +7,11 @@ ClientId: IB1
 
 {
   "AccountEnquiryRequest" : {
-    "TransactionId" : "890816",
+    "NoRef" : "865663",
     "RecipientBank" : "CITYIDJA",
-    "Amount" : 555000,
+    "Amount" : 5622200,
     "CategoryPurpose" : "01",
-    "AccountNumber" : "35589"
+    "AccountNumber" : "3555589"
   }
 }
 

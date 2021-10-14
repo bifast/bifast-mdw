@@ -9,6 +9,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.corebank.pojo.CBDebitInstructionRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
+import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
 
@@ -33,6 +34,9 @@ public class RequestMessageWrapper {
 	
 	@JsonProperty("CreditTransferRequest")
 	private ChnlCreditTransferRequestPojo chnlCreditTransferRequest;
+
+	@JsonProperty("PaymentStatusRequest")
+	private ChnlPaymentStatusRequestPojo chnlPaymentStatusRequest;
 
 	@JsonProperty("ProxyRegistrationRequest")
 	private ChnlProxyRegistrationRequestPojo chnlProxyRegistrationRequest;
@@ -110,6 +114,12 @@ public class RequestMessageWrapper {
 	}
 	public void setChnlCreditTransferRequest(ChnlCreditTransferRequestPojo chnlCreditTransferRequest) {
 		this.chnlCreditTransferRequest = chnlCreditTransferRequest;
+	}
+	public ChnlPaymentStatusRequestPojo getChnlPaymentStatusRequest() {
+		return chnlPaymentStatusRequest;
+	}
+	public void setChnlPaymentStatusRequest(ChnlPaymentStatusRequestPojo chnlPaymentStatusRequest) {
+		this.chnlPaymentStatusRequest = chnlPaymentStatusRequest;
 	}
 	public ChnlProxyRegistrationRequestPojo getChnlProxyRegistrationRequest() {
 		return chnlProxyRegistrationRequest;
