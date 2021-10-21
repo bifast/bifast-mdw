@@ -10,7 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-@Entity
+@Entity(name="KC_ACCOUNT_ENQUIRY")
 public class AccountEnquiry {
 	
 	@Id

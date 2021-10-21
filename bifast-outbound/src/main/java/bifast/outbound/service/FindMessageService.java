@@ -1,14 +1,12 @@
 package bifast.outbound.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.outbound.model.AccountEnquiry;
 import bifast.outbound.model.CreditTransfer;
-import bifast.outbound.model.FICreditTransfer;
 import bifast.outbound.repository.AccountEnquiryRepository;
 import bifast.outbound.repository.CreditTransferRepository;
 

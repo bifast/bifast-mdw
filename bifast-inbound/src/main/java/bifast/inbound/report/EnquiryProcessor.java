@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.model.CreditTransfer;
-import bifast.inbound.model.InboundMessage;
 import bifast.inbound.model.Settlement;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.repository.SettlementRepository;

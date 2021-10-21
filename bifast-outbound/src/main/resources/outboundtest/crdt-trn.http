@@ -12,25 +12,30 @@
 
 POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
-clientId: IB1
+clientId: TELLER
 
 {
   "CreditTransferRequest" : {
-    "NoRef" : "252225",   
+    "NoRef" : "27111",   
+    "TerminalId" : "B0554",
     "CategoryPurpose" : "01",
-    "DebtorId" : "642245",
-    "DebtorIdType" : "01",
-    "DebtorAccountNumber" : "53314",
+    "DebtorName" : "ANTON",
+    "DebtorId" : "60155",
+    "DebtorType" : "01",
+    "DebtorAccountNumber" : "511224",
     "DebtorAccountType" : "CACC",
-    "Amount" : 453272,
-    "FeeTransfer" : 65333.00,
+    "DebtorResidentialStatus": "01",
+    "DebtorTownName": "0300",
+    "Amount" : 44100542,
+    "FeeTransfer" : 4000.00,
     "RecipientBank" : "BMNDIDJA",
-    "CreditorId" : "C224403",
+    "CreditorName" : "AYAH BUNDA",
+    "CreditorId" : "C12103",
     "CreditorType" : "01",
-    "CreditorAccountNumber" : "19274851",
+    "CreditorAccountNumber" : "8711091",
     "CreditorAccountType" : "SVGS",
-    "CreditorProxyType" : "02", 
-    "CreditorProxyId" : "fariz@gmail.com",
+    "CreditorResidentialStatus": "01",
+    "CreditorTownName": "0300",
     "PaymentInformation" : "untuk bayaran"
   }
 }

@@ -1,21 +1,52 @@
 package bifast.outbound.pojo.chnlresponse;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({
+	"noRef"
+	,"proxyType"
+	,"proxyValue"
+	,"registrationId"
+	,"displayName"
+	,"registerBank"
+	,"displayName"
+	,"accountNumber"
+	,"accountType"
+	,"accountName"
+	,"customerType"
+	,"customerId"
+	,"residentialStatus"
+	,"townName"
+	})
 public class ChnlProxyResolutionResponsePojo  {
 
+	@JsonProperty("NoRef")
 	private String noRef;
-
+	@JsonProperty("ProxyType")
 	private String proxyType;
+	@JsonProperty("ProxyValue")
 	private String proxyValue;
+	@JsonProperty("RegistrationId")
 	private String registrationId;
+	@JsonProperty("DisplayName")
 	private String displayName;
+	@JsonProperty("RegisterBank")
 	private String registerBank;
 	
+	@JsonProperty("AccountNumber")
 	private String accountNumber;
+	@JsonProperty("AccountType")
 	private String accountType;
+	@JsonProperty("AccountName")
 	private String accountName;
+	@JsonProperty("CustomerType")
 	private String customerType;
+	@JsonProperty("CustomerId")
 	private String customerId;
+	@JsonProperty("ResidentStatus")
 	private String residentStatus;
+	@JsonProperty("TownName")
 	private String townName;
 	
 	public String getNoRef() {

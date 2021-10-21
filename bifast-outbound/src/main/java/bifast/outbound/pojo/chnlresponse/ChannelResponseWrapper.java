@@ -3,18 +3,36 @@ package bifast.outbound.pojo.chnlresponse;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.proxyregistration.ChnlProxyResolutionResponse;
 
+@JsonPropertyOrder({
+	"responseCode"
+	,"reasonCode"
+	,"reasonMessage"
+	,"date"
+	,"time"
+	,"content"
+	})
 public class ChannelResponseWrapper {
 
+	@JsonProperty("ReasonCode")
+	private String reasonCode;
+	@JsonProperty("ReasonMessage")
+	private String reasonMessage;
+	
+	@JsonProperty("ResponseCode")
 	private String responseCode;
 	private String responseMessage;
+	@JsonProperty("Date")
 	private String date;
+	@JsonProperty("Time")
 	private String time;
+	@JsonProperty("Content")
 	private List<Object> content;
 
 	@JsonProperty("DebitResponse")
@@ -37,6 +55,22 @@ public class ChannelResponseWrapper {
 
 	@JsonProperty("FailureResponse")
 	private ChnlFailureResponsePojo faultResponse;
+
+	public String getReasonCode() {
+		return reasonCode;
+	}
+
+	public void setReasonCode(String reasonCode) {
+		this.reasonCode = reasonCode;
+	}
+
+	public String getReasonMessage() {
+		return reasonMessage;
+	}
+
+	public void setReasonMessage(String reasonMessage) {
+		this.reasonMessage = reasonMessage;
+	}
 
 	public String getResponseCode() {
 		return responseCode;

@@ -8,6 +8,11 @@ import bifast.outbound.pojo.chnlresponse.ChnlProxyResolutionResponsePojo;
 
 public class ResponseMessageCollection {
 
+//	private String callStatus;
+//	private String responseCode;
+	private String lastError;
+	
+	private ChnlFailureResponsePojo fault;
 	private ChnlAccountEnquiryResponsePojo chnlAccountEnquiryResponse;
 	private ChnlCreditTransferResponsePojo chnlCreditTransferResponse;
 	private ChnlProxyRegistrationResponsePojo chnlProxyRegistrationResponse;
@@ -17,7 +22,18 @@ public class ResponseMessageCollection {
 	private BusinessMessage creditTransferResponse;
 	private BusinessMessage proxyRegistrationResponse;
 	private BusinessMessage proxyResolutionResponse;
-	
+	public String getLastError() {
+		return lastError;
+	}
+	public void setLastError(String lastError) {
+		this.lastError = lastError;
+	}
+	public ChnlFailureResponsePojo getFault() {
+		return fault;
+	}
+	public void setFault(ChnlFailureResponsePojo fault) {
+		this.fault = fault;
+	}
 	public ChnlAccountEnquiryResponsePojo getChnlAccountEnquiryResponse() {
 		return chnlAccountEnquiryResponse;
 	}
@@ -67,6 +83,7 @@ public class ResponseMessageCollection {
 		this.proxyResolutionResponse = proxyResolutionResponse;
 	}
 	
+
 	
 
 }

@@ -18,12 +18,8 @@ public class FlatMessageWrapper {
 	@JsonProperty("CreditTransferResponse")
 	private FlatPacs002Pojo creditTransferResponse;
 
-//	@JsonProperty("FICreditTransferRequest")
-//	private FlatPacs009Pojo fiCreditTransferRequest;
-
-	@JsonProperty("FICreditTransferResponse")
-	private FlatPacs002Pojo fiCreditTransferResponse;
-
+	private FlatPrxy004Pojo proxyResolutionResponse;
+	
 	@JsonProperty("FailureResponse")
 	private ChnlFailureResponsePojo faultResponse;
 
@@ -59,12 +55,12 @@ public class FlatMessageWrapper {
 		this.creditTransferResponse = creditTransferResponse;
 	}
 
-	public FlatPacs002Pojo getFiCreditTransferResponse() {
-		return fiCreditTransferResponse;
+	public FlatPrxy004Pojo getProxyResolutionResponse() {
+		return proxyResolutionResponse;
 	}
 
-	public void setFiCreditTransferResponse(FlatPacs002Pojo fiCreditTransferResponse) {
-		this.fiCreditTransferResponse = fiCreditTransferResponse;
+	public void setProxyResolutionResponse(FlatPrxy004Pojo proxyResolutionResponse) {
+		this.proxyResolutionResponse = proxyResolutionResponse;
 	}
 
 	public ChnlFailureResponsePojo getFaultResponse() {

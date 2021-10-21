@@ -1,39 +1,37 @@
 package bifast.outbound.pojo.chnlrequest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 
-public class ChnlPaymentStatusRequestPojo extends ChannelRequestBase{
+@JsonRootName("PaymentStatusRequest")
+public class ChnlPaymentStatusRequestPojo {
 
-	@JsonProperty("OriginalNoRef")
+	private String channelRefId;
 	private String orgnlRefId;
-	private String orgnlchannelId;
-	private String orgnlEndToEndId;
-	private String creditorAccountNumber;
-	
+
+	public ChnlPaymentStatusRequestPojo ( 
+		@JsonProperty(value="NoRef", required=true) String channelRefId,
+		@JsonProperty(value="OriginalNoRef", required=true) String orgnlRefId)
+	{
+		this.channelRefId = channelRefId;
+		this.orgnlRefId = orgnlRefId;	
+	}
+
+	public String getChannelRefId() {
+		return channelRefId;
+	}
+
+	public void setChannelRefId(String channelRefId) {
+		this.channelRefId = channelRefId;
+	}
+
 	public String getOrgnlRefId() {
 		return orgnlRefId;
 	}
+
 	public void setOrgnlRefId(String orgnlRefId) {
 		this.orgnlRefId = orgnlRefId;
 	}
-	public String getOrgnlchannelId() {
-		return orgnlchannelId;
-	}
-	public void setOrgnlchannelId(String orgnlchannelId) {
-		this.orgnlchannelId = orgnlchannelId;
-	}
-	public String getOrgnlEndToEndId() {
-		return orgnlEndToEndId;
-	}
-	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
-		this.orgnlEndToEndId = orgnlEndToEndId;
-	}
-	public String getCreditorAccountNumber() {
-		return creditorAccountNumber;
-	}
-	public void setCreditorAccountNumber(String creditorAccountNumber) {
-		this.creditorAccountNumber = creditorAccountNumber;
-	}
-
+	
 	
 }

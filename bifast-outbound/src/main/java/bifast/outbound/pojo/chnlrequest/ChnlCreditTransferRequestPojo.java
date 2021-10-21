@@ -1,72 +1,104 @@
 package bifast.outbound.pojo.chnlrequest;
 
-import java.math.BigDecimal;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("CreditTransferRequest")
-public class ChnlCreditTransferRequestPojo extends ChannelRequestBase {
+public class ChnlCreditTransferRequestPojo {
 	
-	@JsonProperty("CategoryPurpose")
+	private String channelRefId;
+	private String terminalId; 
 	private String categoryPurpose; 
-
-	@JsonProperty("DebtorId")
+	private String dbtrName; 
+	private String dbtrType; 
 	private String dbtrId;   
-	@JsonProperty("DebtorIdType")
-	private String dbtrIdType; 
-	
-	@JsonProperty("DebtorAccountNumber")
 	private String dbtrAccountNo;  
-	@JsonProperty("DebtorAccountType")
 	private String dbtrAccountType;
-
-	@JsonProperty("Amount")
-	private BigDecimal amount; // AcctEnq CrdtTrn
-	
-	@JsonProperty("FeeTransfer")
-	private BigDecimal feeTransfer; // AcctEnq CrdtTrn
-
-	@JsonProperty("RecipientBank")
+	private String dbtrResidentialStatus;
+	private String dbtrTownName;
+	private String amount; 
+	private String feeTransfer; 
 	private String recptBank; 
-	
-	@JsonProperty("CreditorId")
-	private String crdtId;  // CrdtTrn
-	@JsonProperty("CreditorType")
-	private String crdtIdType; // CrdtTrn
-	@JsonProperty("CreditorAccountNumber")
-	private String crdtAccountNo;   // AcctEnq CrdtTrn
-	@JsonProperty("CreditorAccountType")
-	private String crdtAccountType;  // CrdtTrn
-//	private String crdtName; //optional
-	
-	@JsonProperty("CreditorProxyType")
-	private String crdtProxyIdType;
-	@JsonProperty("CreditorProxyId")
+	private String crdtName; 
+	private String crdtType; 
+	private String crdtId;  
+	private String crdtAccountNo;   
+	private String crdtAccountType;  
+	private String crdtResidentialStatus;
+	private String crdtTownName;
 	private String crdtProxyIdValue;
+	private String crdtProxyIdType;
+	private String paymentInfo;
 	
-	@JsonProperty("PaymentInformation")
-	private String paymentInfo;  // CrdtTrn
+	@JsonCreator
+	public ChnlCreditTransferRequestPojo (
+			@JsonProperty(value="NoRef", required=true) String channelRefId,
+			@JsonProperty(value="TerminalId", required=true) String terminalId, 
+			@JsonProperty(value="CategoryPurpose", required=true) String categoryPurpose, 
+			@JsonProperty(value="DebtorName", required=true) String dbtrName, 
+			@JsonProperty(value="DebtorType", required=true) String dbtrType, 
+			@JsonProperty(value="DebtorId", required=true) String dbtrId,   
+			@JsonProperty(value="DebtorAccountNumber", required=true) String dbtrAccountNo,  
+			@JsonProperty(value="DebtorAccountType", required=true) String dbtrAccountType,
+			@JsonProperty(value="DebtorResidentialStatus", required=true) String dbtrResidentialStatus,
+			@JsonProperty(value="DebtorTownName", required=true) String dbtrTownName,
+			@JsonProperty(value="Amount", required=true) String amount, 
+			@JsonProperty(value="FeeTransfer") String feeTransfer, 
+			@JsonProperty(value="RecipientBank", required=true) String recptBank, 
+			@JsonProperty(value="CreditorName", required=true) String crdtName, 
+			@JsonProperty(value="CreditorType", required=true) String crdtType, 
+			@JsonProperty(value="CreditorId", required=true) String crdtId,  
+			@JsonProperty(value="CreditorAccountNumber", required=true) String crdtAccountNo,   
+			@JsonProperty(value="CreditorAccountType", required=true) String crdtAccountType,  
+			@JsonProperty(value="CreditorResidentialStatus", required=true) String crdtResidentialStatus,
+			@JsonProperty(value="CreditorTownName", required=true) String crdtTownName,
+			@JsonProperty(value="CreditorProxyId") String crdtProxyIdValue,
+			@JsonProperty(value="CreditorProxyType") String crdtProxyIdType,
+			@JsonProperty(value="PaymentInformation") String paymentInfo
+			) 
+	{
+		this.channelRefId = channelRefId;
+		this.terminalId = terminalId;
+		this.categoryPurpose = categoryPurpose;
+		this.dbtrName = dbtrName;
+		this.dbtrType = dbtrType;
+		this.dbtrId = dbtrId;
+		this.dbtrAccountNo = dbtrAccountNo;
+		this.dbtrAccountType = dbtrAccountType;
+		this.dbtrResidentialStatus = dbtrResidentialStatus;
+		this.dbtrTownName = dbtrTownName;
+		this.amount = amount;
+		this.feeTransfer = feeTransfer;
+		this.recptBank = recptBank;
+		this.crdtName = crdtName;
+		this.crdtType = crdtType;
+		this.crdtId = crdtId;
+		this.crdtAccountNo = crdtAccountNo;
+		this.crdtAccountType =  crdtAccountType;
+		this.crdtResidentialStatus = crdtResidentialStatus;
+		this.crdtTownName = crdtTownName;
+		this.crdtProxyIdValue = crdtProxyIdValue;
+		this.crdtProxyIdType = crdtProxyIdType;
+		this.paymentInfo = paymentInfo;
+	}
+	
 
-//	private String orgnlEndToEndId;
+	public String getChannelRefId() {
+		return channelRefId;
+	}
 
-	public ChnlCreditTransferRequestPojo() {}
+	public void setChannelRefId(String channelRefId) {
+		this.channelRefId = channelRefId;
+	}
 
-//	public String getOrignReffId() {
-//		return orignReffId;
-//	}
-//
-//	public void setOrignReffId(String orignReffId) {
-//		this.orignReffId = orignReffId;
-//	}
-//
-//	public String getChannel() {
-//		return channel;
-//	}
-//
-//	public void setChannel(String channel) {
-//		this.channel = channel;
-//	}
+	public String getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
+	}
 
 	public String getCategoryPurpose() {
 		return categoryPurpose;
@@ -76,20 +108,28 @@ public class ChnlCreditTransferRequestPojo extends ChannelRequestBase {
 		this.categoryPurpose = categoryPurpose;
 	}
 
+	public String getDbtrName() {
+		return dbtrName;
+	}
+
+	public void setDbtrName(String dbtrName) {
+		this.dbtrName = dbtrName;
+	}
+
+	public String getDbtrType() {
+		return dbtrType;
+	}
+
+	public void setDbtrType(String dbtrType) {
+		this.dbtrType = dbtrType;
+	}
+
 	public String getDbtrId() {
 		return dbtrId;
 	}
 
 	public void setDbtrId(String dbtrId) {
 		this.dbtrId = dbtrId;
-	}
-
-	public String getDbtrIdType() {
-		return dbtrIdType;
-	}
-
-	public void setDbtrIdType(String dbtrIdType) {
-		this.dbtrIdType = dbtrIdType;
 	}
 
 	public String getDbtrAccountNo() {
@@ -108,19 +148,35 @@ public class ChnlCreditTransferRequestPojo extends ChannelRequestBase {
 		this.dbtrAccountType = dbtrAccountType;
 	}
 
-	public BigDecimal getAmount() {
+	public String getDbtrResidentialStatus() {
+		return dbtrResidentialStatus;
+	}
+
+	public void setDbtrResidentialStatus(String dbtrResidentialStatus) {
+		this.dbtrResidentialStatus = dbtrResidentialStatus;
+	}
+
+	public String getDbtrTownName() {
+		return dbtrTownName;
+	}
+
+	public void setDbtrTownName(String dbtrTownName) {
+		this.dbtrTownName = dbtrTownName;
+	}
+
+	public String getAmount() {
 		return amount;
 	}
 
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(String amount) {
 		this.amount = amount;
 	}
 
-	public BigDecimal getFeeTransfer() {
+	public String getFeeTransfer() {
 		return feeTransfer;
 	}
 
-	public void setFeeTransfer(BigDecimal feeTransfer) {
+	public void setFeeTransfer(String feeTransfer) {
 		this.feeTransfer = feeTransfer;
 	}
 
@@ -132,20 +188,28 @@ public class ChnlCreditTransferRequestPojo extends ChannelRequestBase {
 		this.recptBank = recptBank;
 	}
 
+	public String getCrdtName() {
+		return crdtName;
+	}
+
+	public void setCrdtName(String crdtName) {
+		this.crdtName = crdtName;
+	}
+
+	public String getCrdtType() {
+		return crdtType;
+	}
+
+	public void setCrdtType(String crdtType) {
+		this.crdtType = crdtType;
+	}
+
 	public String getCrdtId() {
 		return crdtId;
 	}
 
 	public void setCrdtId(String crdtId) {
 		this.crdtId = crdtId;
-	}
-
-	public String getCrdtIdType() {
-		return crdtIdType;
-	}
-
-	public void setCrdtIdType(String crdtIdType) {
-		this.crdtIdType = crdtIdType;
 	}
 
 	public String getCrdtAccountNo() {
@@ -164,12 +228,20 @@ public class ChnlCreditTransferRequestPojo extends ChannelRequestBase {
 		this.crdtAccountType = crdtAccountType;
 	}
 
-	public String getCrdtProxyIdType() {
-		return crdtProxyIdType;
+	public String getCrdtResidentialStatus() {
+		return crdtResidentialStatus;
 	}
 
-	public void setCrdtProxyIdType(String crdtProxyIdType) {
-		this.crdtProxyIdType = crdtProxyIdType;
+	public void setCrdtResidentialStatus(String crdtResidentialStatus) {
+		this.crdtResidentialStatus = crdtResidentialStatus;
+	}
+
+	public String getCrdtTownName() {
+		return crdtTownName;
+	}
+
+	public void setCrdtTownName(String crdtTownName) {
+		this.crdtTownName = crdtTownName;
 	}
 
 	public String getCrdtProxyIdValue() {
@@ -180,21 +252,22 @@ public class ChnlCreditTransferRequestPojo extends ChannelRequestBase {
 		this.crdtProxyIdValue = crdtProxyIdValue;
 	}
 
+	public String getCrdtProxyIdType() {
+		return crdtProxyIdType;
+	}
+
+	public void setCrdtProxyIdType(String crdtProxyIdType) {
+		this.crdtProxyIdType = crdtProxyIdType;
+	}
+
 	public String getPaymentInfo() {
 		return paymentInfo;
 	}
 
 	public void setPaymentInfo(String paymentInfo) {
 		this.paymentInfo = paymentInfo;
-	}
+	}  
 
-//	public String getOrgnlEndToEndId() {
-//		return orgnlEndToEndId;
-//	}
-//
-//	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
-//		this.orgnlEndToEndId = orgnlEndToEndId;
-//	}
-//
+
 	
 }

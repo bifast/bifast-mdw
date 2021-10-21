@@ -2,7 +2,7 @@ package bifast.outbound.pojo.flat;
 
 import java.time.LocalDateTime;
 
-public class FlatPrxy006Pojo {
+public class FlatPrxy006Pojo extends FlatMessageBase{
 	
 	private String msgId;
 	private LocalDateTime creDtTm;

@@ -1,7 +1,6 @@
 package bifast.mock.processor;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -17,6 +16,7 @@ import bifast.library.iso20022.pacs002.AccountIdentification4Choice;
 import bifast.library.iso20022.pacs002.BISupplementaryData1;
 import bifast.library.iso20022.pacs002.BISupplementaryDataEnvelope1;
 import bifast.library.iso20022.pacs002.CashAccount38;
+import bifast.library.iso20022.pacs002.CashAccountType2Choice;
 import bifast.library.iso20022.pacs002.GenericAccountIdentification1;
 import bifast.mock.persist.MockPacs002;
 import bifast.mock.persist.MockPacs002Repository;
@@ -46,7 +46,6 @@ public class SettlementProcessor implements Processor {
 		if (msgName.startsWith("pacs.008")) {
 			bizMsgId = utilService.genRfiBusMsgId("010", "02", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 			msgId = utilService.genMessageId("010", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
-System.out.println(bizMsgId);
 
 		} else {
 			bizMsgId = utilService.genRfiBusMsgId("019", "02", 
@@ -58,26 +57,27 @@ System.out.println(bizMsgId);
 		if (msgName.startsWith("pacs.008")) {
 
 			String cdtrAcct = frTable.get("cdtr_acct");
-			String dbtrAcct = frTable.get("dbtr_acct"); 
 		
-			GenericAccountIdentification1 oth1 = new GenericAccountIdentification1();
-			oth1.setId(cdtrAcct);
-			
-			AccountIdentification4Choice id1 = new AccountIdentification4Choice();
-			id1.setOthr(oth1);
-
 			CashAccount38 cdtrAcctT = new CashAccount38();
-			cdtrAcctT.setId(id1);
+			cdtrAcctT.setId(new AccountIdentification4Choice());
+			cdtrAcctT.getId().setOthr(new GenericAccountIdentification1());
+			cdtrAcctT.getId().getOthr().setId(cdtrAcct);
 
-			GenericAccountIdentification1 oth2 = new GenericAccountIdentification1();
-			oth2.setId(dbtrAcct);
-			AccountIdentification4Choice id2 = new AccountIdentification4Choice();
-			id2.setOthr(oth2);
-
-			CashAccount38 dbtrAcctT = new CashAccount38();
-			dbtrAcctT.setId(id2);
+			cdtrAcctT.setTp(new CashAccountType2Choice());
+			cdtrAcctT.getTp().setPrtry("CACC");
 
 			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setCdtrAcct(cdtrAcctT);
+
+			String dbtrAcct = frTable.get("dbtr_acct"); 
+
+			CashAccount38 dbtrAcctT = new CashAccount38();
+			dbtrAcctT.setId(new AccountIdentification4Choice());
+			dbtrAcctT.getId().setOthr(new GenericAccountIdentification1());
+			dbtrAcctT.getId().getOthr().setId(dbtrAcct);
+			
+			dbtrAcctT.setTp(new CashAccountType2Choice());
+			dbtrAcctT.getTp().setPrtry("CACC");
+			
 			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setDbtrAcct(dbtrAcctT);
 
 		}

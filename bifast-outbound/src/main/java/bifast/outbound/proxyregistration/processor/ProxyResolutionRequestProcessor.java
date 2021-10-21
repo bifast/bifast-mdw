@@ -38,7 +38,7 @@ public class ProxyResolutionRequestProcessor implements Processor {
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
 		String trxType = "610";
-		String bizMsgId = utilService.genOfiBusMsgId(trxType, chnReq.getChannel());
+		String bizMsgId = utilService.genOfiBusMsgId(trxType, rmw.getChannelType());
 		String msgId = utilService.genMessageId(trxType);
 		
 		hdr = appHeaderService.getAppHdr(config.getBicode(), "prxy.003.001.01", bizMsgId);

@@ -105,24 +105,24 @@ public class UtilService {
 		return ldt;
 	}
 
-	public long getRouteElapsed (List<MessageHistory> messageList, String routeId) {
-		long start = 0;
-		long end = 0;
-
-		for (MessageHistory msg : messageList) {
-
-			if ( (msg.getRouteId().equals(routeId)) && 
-				 (msg.getNode().getId().equals("start_route")) ) {
-				start = msg.getTime();
-			}
-			if ( (msg.getRouteId().equals(routeId)) && 
-					 (msg.getNode().getId().equals("end_route")) ) {
-				end = msg.getTime();
-				}
-		}
-
-		return (end-start);
-	}
+//	public long getRouteElapsed (List<MessageHistory> messageList, String routeId) {
+//		long start = 0;
+//		long end = 0;
+//
+//		for (MessageHistory msg : messageList) {
+//
+//			if ( (msg.getRouteId().equals(routeId)) && 
+//				 (msg.getNode().getId().equals("start_route")) ) {
+//				start = msg.getTime();
+//			}
+//			if ( (msg.getRouteId().equals(routeId)) && 
+//					 (msg.getNode().getId().equals("end_route")) ) {
+//				end = msg.getTime();
+//				}
+//		}
+//
+//		return (end-start);
+//	}
 
 
 	public String getMsgType (String bizDefIdr, String bizMsgIdr) {
@@ -159,7 +159,7 @@ public class UtilService {
 			msgType = "PxResReq";
 		
 		else if (bizDefIdr.startsWith("prxy.004"))   
-			msgType = "PxResResp";
+			msgType = "PxRsltResp";
 
 		else if (bizDefIdr.startsWith("admi.002"))   
 			msgType = "RjctResp";

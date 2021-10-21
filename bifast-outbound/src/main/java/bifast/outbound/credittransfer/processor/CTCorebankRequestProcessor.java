@@ -27,7 +27,7 @@ public class CTCorebankRequestProcessor implements Processor {
 		cbDebitRequest.setAccountType(chnlCTRequest.getDbtrAccountType());
 		
 		DecimalFormat df = new DecimalFormat("#############.00");
-		BigDecimal amount = chnlCTRequest.getAmount();
+		BigDecimal amount = new BigDecimal(chnlCTRequest.getAmount());
 		cbDebitRequest.setAmount(df.format(amount));
 
 //		cbDebitRequest.setDebtorName(chnlCTRequest.getDbtrName());

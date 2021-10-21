@@ -1,4 +1,4 @@
-package bifast.outbound.paymentstatus;
+package bifast.outbound.paymentstatus.processor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,12 +26,12 @@ public class StorePaymentStatusProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		@SuppressWarnings("unchecked")
-		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
+//		@SuppressWarnings("unchecked")
+//		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		
-		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
+//		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
 
 		PaymentStatus ps = new PaymentStatus();
 		
@@ -58,9 +58,9 @@ public class StorePaymentStatusProcessor implements Processor{
 			ps.setResponseFullMessage(encrResponseMesg);
 
 
-		ps.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-		ps.setLastUpdateDt(LocalDateTime.now());
-		ps.setCihubElapsedTime(routeElapsed);
+//		ps.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+//		ps.setLastUpdateDt(LocalDateTime.now());
+//		ps.setCihubElapsedTime(routeElapsed);
 
 		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
     	String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);

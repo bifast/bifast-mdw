@@ -3,19 +3,24 @@
 
 POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
-ClientId: IB1
+ClientId: CMS
 
 {
   "AccountEnquiryRequest" : {
-    "NoRef" : "865663",
+    "NoRef" : "17100",
+    "SenderAccountNumber": "4045530",
     "RecipientBank" : "CITYIDJA",
-    "Amount" : 5622200,
+    "Amount" : "525400",
     "CategoryPurpose" : "01",
-    "AccountNumber" : "3555589"
-  }
+    "ProxyType" : "012",
+    "ProxyId" : "20033002"
+ }
 }
 
 ###
+    "RecipientAccountNumber" : "464589"
+    "ProxyType" : "012",
+    "ProxyId" : "20033002"
 
 POST http://localhost:9002/komi-outbound/routing HTTP/1.1
 Content-Type: application/json

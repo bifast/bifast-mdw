@@ -27,19 +27,9 @@ public class StoreProxyResolutionProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-//		BusinessMessage proxyRequest = exchange.getMessage().getHeader("prx_birequest", BusinessMessage.class);
-//		ProxyLookUpV01 regRequest = proxyRequest.getDocument().getPrxyLookUp();
-		
-		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY,List.class);
-
-		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
 
 		ProxyMessage proxyMessage = new ProxyMessage();
 		
-		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
-		if (!(null == chnlTrxId))
-			proxyMessage.setChnlTrxId(chnlTrxId);
-
 		String encrRequestMesg = exchange.getMessage().getHeader("hdr_encr_request", String.class);
 		String encrResponseMesg = exchange.getMessage().getHeader("hdr_encr_response", String.class);
 		
@@ -50,15 +40,14 @@ public class StoreProxyResolutionProcessor implements Processor{
 		
 		ChnlProxyResolutionRequestPojo channelRequest = rmw.getChnlProxyResolutionRequest();
 
-		proxyMessage.setIntrnRefId(channelRequest.getChannelRefId());
-		
+	
 		proxyMessage.setOperationType("PXRS");
 		proxyMessage.setProxyType(channelRequest.getProxyType());
 		proxyMessage.setProxyValue(channelRequest.getProxyValue());
 		
-		proxyMessage.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-		proxyMessage.setResponseDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
-		proxyMessage.setCihubElapsedTime(routeElapsed);
+//		proxyMessage.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+//		proxyMessage.setResponseDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
+//		proxyMessage.setCihubElapsedTime(routeElapsed);
 
 		
 //		proxyMessage.setScndIdType(regRequest.getRegn().getPrxyRegn().getScndId().getTp());

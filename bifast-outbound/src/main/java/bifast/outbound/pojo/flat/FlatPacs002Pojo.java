@@ -9,8 +9,8 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	private String OrgnlCreDtTm;
 	private String OrgnlEndToEndId;
 	private String OrgnlTxId;
-	private String txSts;
-	private String rsnInf;
+	private String transactionStatus;
+	private String reasonCode;
 	private String rsnInfAddtlInf;
 	private String intrBkSttlmDt;
 	
@@ -34,7 +34,6 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	private String dbtrAgtAcctId;
 	private String cdtrAgtFinInstnId;
 	private String cdtrAgtAcctId;
-	
 	public String getMsgId() {
 		return msgId;
 	}
@@ -77,17 +76,17 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	public void setOrgnlTxId(String orgnlTxId) {
 		OrgnlTxId = orgnlTxId;
 	}
-	public String getTxSts() {
-		return txSts;
+	public String getTransactionStatus() {
+		return transactionStatus;
 	}
-	public void setTxSts(String txSts) {
-		this.txSts = txSts;
+	public void setTransactionStatus(String transactionStatus) {
+		this.transactionStatus = transactionStatus;
 	}
-	public String getRsnInf() {
-		return rsnInf;
+	public String getReasonCode() {
+		return reasonCode;
 	}
-	public void setRsnInf(String rsnInf) {
-		this.rsnInf = rsnInf;
+	public void setReasonCode(String reasonCode) {
+		this.reasonCode = reasonCode;
 	}
 	public String getRsnInfAddtlInf() {
 		return rsnInfAddtlInf;
@@ -210,6 +209,7 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 		this.cdtrAgtAcctId = cdtrAgtAcctId;
 	}
 	
+
 	
 
 }

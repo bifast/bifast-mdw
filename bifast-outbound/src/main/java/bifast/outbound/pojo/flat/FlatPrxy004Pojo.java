@@ -2,40 +2,29 @@ package bifast.outbound.pojo.flat;
 
 import java.time.LocalDateTime;
 
-public class FlatPrxy004Pojo {
+public class FlatPrxy004Pojo extends FlatMessageBase{
 	
 	private String msgId;
 	private LocalDateTime creDtTm;
 	private String OrgnlMsgId;
 	private String OrgnlMsgNmId;
 	private LocalDateTime OrgnlCreDtTm;
-	private String OrgnlEndToEndId;
-	private String OrgnlTxId;
-	private String TxSts;
-	private String RsnInf;
-	private String RsnInfAddtlInf;
-	private String IntrBkSttlmDt;
 	
-	private String DbtrNm;
-	private String DbtrAcctId;
-	private String DbtrAcctTp;
-	private String DbtrTp;
-	private String DbtrId;
-	private String DbtrRsdntSts;
-	private String DbtrTwnNm;
-
-	private String CdtrNm;
-	private String CdtrAcctId;
-	private String CdtrAcctTp;
-	private String CdtrTp;
-	private String CdtrId;
-	private String CdtrRsdntSts;
-	private String CdtrTwnNm;
-
-	private String DbtrAgtFinInstnId;
-	private String DbtrAgtAcctId;
-	private String CdtrAgtFinInstnId;
-	private String CdtrAgtAcctId;
+	private String orgnlId;
+	private String proxyType;
+	private String proxyValue;
+	private String responseCode;
+	private String reasonCode;
+	private String registrationId;
+	private String displayName;
+	private String registerBank;
+	private String accountNumber;
+	private String accountType;
+	private String accountName;
+	private String customerType;
+	private String customerId;
+	private String residentialStatus;
+	private String townName;
 	
 	public String getMsgId() {
 		return msgId;
@@ -67,154 +56,98 @@ public class FlatPrxy004Pojo {
 	public void setOrgnlCreDtTm(LocalDateTime orgnlCreDtTm) {
 		OrgnlCreDtTm = orgnlCreDtTm;
 	}
-	public String getOrgnlEndToEndId() {
-		return OrgnlEndToEndId;
+	public String getOrgnlId() {
+		return orgnlId;
 	}
-	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
-		OrgnlEndToEndId = orgnlEndToEndId;
+	public void setOrgnlId(String orgnlId) {
+		this.orgnlId = orgnlId;
 	}
-	public String getOrgnlTxId() {
-		return OrgnlTxId;
+	public String getProxyType() {
+		return proxyType;
 	}
-	public void setOrgnlTxId(String orgnlTxId) {
-		OrgnlTxId = orgnlTxId;
+	public void setProxyType(String proxyType) {
+		this.proxyType = proxyType;
 	}
-	public String getTxSts() {
-		return TxSts;
+	public String getProxyValue() {
+		return proxyValue;
 	}
-	public void setTxSts(String txSts) {
-		TxSts = txSts;
+	public void setProxyValue(String proxyValue) {
+		this.proxyValue = proxyValue;
 	}
-	public String getRsnInf() {
-		return RsnInf;
+	public String getResponseCode() {
+		return responseCode;
 	}
-	public void setRsnInf(String rsnInf) {
-		RsnInf = rsnInf;
+	public void setResponseCode(String responseCode) {
+		this.responseCode = responseCode;
 	}
-	public String getRsnInfAddtlInf() {
-		return RsnInfAddtlInf;
+	public String getReasonCode() {
+		return reasonCode;
 	}
-	public void setRsnInfAddtlInf(String rsnInfAddtlInf) {
-		RsnInfAddtlInf = rsnInfAddtlInf;
+	public void setReasonCode(String reasonCode) {
+		this.reasonCode = reasonCode;
 	}
-	public String getIntrBkSttlmDt() {
-		return IntrBkSttlmDt;
+	public String getRegistrationId() {
+		return registrationId;
 	}
-	public void setIntrBkSttlmDt(String intrBkSttlmDt) {
-		IntrBkSttlmDt = intrBkSttlmDt;
+	public void setRegistrationId(String registrationId) {
+		this.registrationId = registrationId;
 	}
-	public String getDbtrNm() {
-		return DbtrNm;
+	public String getDisplayName() {
+		return displayName;
 	}
-	public void setDbtrNm(String dbtrNm) {
-		DbtrNm = dbtrNm;
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
-	public String getDbtrAcctId() {
-		return DbtrAcctId;
+	public String getRegisterBank() {
+		return registerBank;
 	}
-	public void setDbtrAcctId(String dbtrAcctId) {
-		DbtrAcctId = dbtrAcctId;
+	public void setRegisterBank(String registerBank) {
+		this.registerBank = registerBank;
 	}
-	public String getDbtrAcctTp() {
-		return DbtrAcctTp;
+	public String getAccountNumber() {
+		return accountNumber;
 	}
-	public void setDbtrAcctTp(String dbtrAcctTp) {
-		DbtrAcctTp = dbtrAcctTp;
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
 	}
-	public String getDbtrTp() {
-		return DbtrTp;
+	public String getAccountType() {
+		return accountType;
 	}
-	public void setDbtrTp(String dbtrTp) {
-		DbtrTp = dbtrTp;
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
 	}
-	public String getDbtrId() {
-		return DbtrId;
+	public String getAccountName() {
+		return accountName;
 	}
-	public void setDbtrId(String dbtrId) {
-		DbtrId = dbtrId;
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
 	}
-	public String getDbtrRsdntSts() {
-		return DbtrRsdntSts;
+	public String getCustomerType() {
+		return customerType;
 	}
-	public void setDbtrRsdntSts(String dbtrRsdntSts) {
-		DbtrRsdntSts = dbtrRsdntSts;
+	public void setCustomerType(String customerType) {
+		this.customerType = customerType;
 	}
-	public String getDbtrTwnNm() {
-		return DbtrTwnNm;
+	public String getCustomerId() {
+		return customerId;
 	}
-	public void setDbtrTwnNm(String dbtrTwnNm) {
-		DbtrTwnNm = dbtrTwnNm;
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
 	}
-	public String getCdtrNm() {
-		return CdtrNm;
+	public String getResidentialStatus() {
+		return residentialStatus;
 	}
-	public void setCdtrNm(String cdtrNm) {
-		CdtrNm = cdtrNm;
+	public void setResidentialStatus(String residentialStatus) {
+		this.residentialStatus = residentialStatus;
 	}
-	public String getCdtrAcctId() {
-		return CdtrAcctId;
+	public String getTownName() {
+		return townName;
 	}
-	public void setCdtrAcctId(String cdtrAcctId) {
-		CdtrAcctId = cdtrAcctId;
-	}
-	public String getCdtrAcctTp() {
-		return CdtrAcctTp;
-	}
-	public void setCdtrAcctTp(String cdtrAcctTp) {
-		CdtrAcctTp = cdtrAcctTp;
-	}
-	public String getCdtrTp() {
-		return CdtrTp;
-	}
-	public void setCdtrTp(String cdtrTp) {
-		CdtrTp = cdtrTp;
-	}
-	public String getCdtrId() {
-		return CdtrId;
-	}
-	public void setCdtrId(String cdtrId) {
-		CdtrId = cdtrId;
-	}
-	public String getCdtrRsdntSts() {
-		return CdtrRsdntSts;
-	}
-	public void setCdtrRsdntSts(String cdtrRsdntSts) {
-		CdtrRsdntSts = cdtrRsdntSts;
-	}
-	public String getCdtrTwnNm() {
-		return CdtrTwnNm;
-	}
-	public void setCdtrTwnNm(String cdtrTwnNm) {
-		CdtrTwnNm = cdtrTwnNm;
-	}
-	public String getDbtrAgtFinInstnId() {
-		return DbtrAgtFinInstnId;
-	}
-	public void setDbtrAgtFinInstnId(String dbtrAgtFinInstnId) {
-		DbtrAgtFinInstnId = dbtrAgtFinInstnId;
-	}
-	public String getDbtrAgtAcctId() {
-		return DbtrAgtAcctId;
-	}
-	public void setDbtrAgtAcctId(String dbtrAgtAcctId) {
-		DbtrAgtAcctId = dbtrAgtAcctId;
-	}
-	public String getCdtrAgtFinInstnId() {
-		return CdtrAgtFinInstnId;
-	}
-	public void setCdtrAgtFinInstnId(String cdtrAgtFinInstnId) {
-		CdtrAgtFinInstnId = cdtrAgtFinInstnId;
-	}
-	public String getCdtrAgtAcctId() {
-		return CdtrAgtAcctId;
-	}
-	public void setCdtrAgtAcctId(String cdtrAgtAcctId) {
-		CdtrAgtAcctId = cdtrAgtAcctId;
+	public void setTownName(String townName) {
+		this.townName = townName;
 	}
 	
 
-
-	
 	
 
 }

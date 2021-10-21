@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name="DOMAIN_CODE")
+@Entity(name="KC_DOMAIN_CODE")
 public class DomainCode {
 
 	@Id

@@ -1,5 +1,7 @@
 package bifast.outbound.credittransfer.processor;
 
+import java.math.BigDecimal;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,6 @@ public class BuildCTRequestProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-//		ChnlCreditTransferRequestPojo chnReq = exchange.getIn().getHeader("ct_channelRequest",ChnlCreditTransferRequestPojo.class);
 		ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
 
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
@@ -47,10 +48,11 @@ public class BuildCTRequestProcessor implements Processor {
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
 		String bizMsgId = utilService.genOfiBusMsgId(msgType, rmw.getChannelType());
+		
 		String msgId = utilService.genMessageId(msgType);
 
 		seedCreditTrn.setMsgId(msgId);
-		seedCreditTrn.setAmount(chnReq.getAmount());
+		seedCreditTrn.setAmount(new BigDecimal(chnReq.getAmount()));
 		seedCreditTrn.setBizMsgId(bizMsgId);
 		
 		seedCreditTrn.setCategoryPurpose(chnReq.getCategoryPurpose());
@@ -60,14 +62,14 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setCrdtAccountNo(chnReq.getCrdtAccountNo());		
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
 		seedCreditTrn.setCrdtId(chnReq.getCrdtId());
-//		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
-		seedCreditTrn.setCrdtIdType(chnReq.getCrdtIdType());
+		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
+		seedCreditTrn.setCrdtIdType(chnReq.getCrdtType());
 		
 		seedCreditTrn.setDbtrAccountNo(chnReq.getDbtrAccountNo());
 		seedCreditTrn.setDbtrAccountType(chnReq.getDbtrAccountType());
-//		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
+		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
 		seedCreditTrn.setDbtrId(chnReq.getDbtrId());
-		seedCreditTrn.setDbtrIdType(chnReq.getDbtrIdType());
+		seedCreditTrn.setDbtrIdType(chnReq.getDbtrType());
 		seedCreditTrn.setOrignBank(config.getBankcode());
 		seedCreditTrn.setPaymentInfo(chnReq.getPaymentInfo());
 		seedCreditTrn.setRecptBank(chnReq.getRecptBank());
@@ -98,7 +100,15 @@ public class BuildCTRequestProcessor implements Processor {
 		
 		busMsg.setDocument(doc);
 
+		rmw.setCreditTransferRequest(busMsg);
+		exchange.getMessage().setHeader("hdr_request_list", rmw);
+
 		exchange.getIn().setBody(busMsg);
+		
+//		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+//		BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
+		
+		
 
 	}
 

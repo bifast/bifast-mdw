@@ -7,7 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-@Entity(name="SETTLEMENT")
+@Entity(name="KC_SETTLEMENT")
 public class Settlement {
 
 	@Id
@@ -24,6 +24,8 @@ public class Settlement {
 	private String settlConfBizMsgId;
 	@Column(name="ORGNL_CRDT_TRN_BIZMSGID", length=50)
 	private String orgnlCrdtTrnReqBizMsgId;
+	
+	private String fullMessage;
 	
 	public Long getId() {
 		return id;
@@ -54,6 +56,12 @@ public class Settlement {
 	}
 	public void setOrgnlCrdtTrnReqBizMsgId(String orgnlCrdtTrnReqBizMsgId) {
 		this.orgnlCrdtTrnReqBizMsgId = orgnlCrdtTrnReqBizMsgId;
+	}
+	public String getFullMessage() {
+		return fullMessage;
+	}
+	public void setFullMessage(String fullMessage) {
+		this.fullMessage = fullMessage;
 	}
 	
 	

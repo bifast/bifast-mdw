@@ -1,4 +1,4 @@
-package bifast.outbound.paymentstatus;
+package bifast.outbound.paymentstatus.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -12,6 +12,7 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs028MessageService;
 import bifast.library.iso20022.service.Pacs028Seed;
 import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
+import bifast.outbound.pojo.chnlrequest.PaymentStatusRequestSAFPojo;
 import bifast.outbound.service.UtilService;
 
 @Component
@@ -27,7 +28,7 @@ public class PaymentStatusRequestProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		ChnlPaymentStatusRequestPojo psReq = exchange.getMessage().getBody(ChnlPaymentStatusRequestPojo.class);
+		PaymentStatusRequestSAFPojo psReq = exchange.getMessage().getBody(PaymentStatusRequestSAFPojo.class);
 			
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		String bizMsgId = utilService.genOfiBusMsgId("000", "99");

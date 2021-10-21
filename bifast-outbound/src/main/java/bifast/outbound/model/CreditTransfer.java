@@ -10,7 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-@Entity(name="CREDIT_TRANSFER")
+@Entity(name="KC_CREDIT_TRANSFER")
 public class CreditTransfer {
 
 	@Id 
@@ -18,10 +18,6 @@ public class CreditTransfer {
 	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 	
-//	@Column(name="INTR_REF_ID")
-//	private String intrRefId;
-	
-//	private Long chnlTrxId;
 	private String komiTrnsId;
 	
 	private String msgType;
@@ -49,22 +45,17 @@ public class CreditTransfer {
 	
 	private BigDecimal amount;	
 	
-	private LocalDateTime creDt;
-
-	@Column(name="CRDTTRN_REQ_BIZMSGID")
+	@Column(name="REQ_BIZMSGID")
 	private String crdtTrnRequestBizMsgIdr;
 
-	@Column(name="CRDTTRN_RESP_BIZMSGID")
+	@Column(name="RESP_BIZMSGID")
 	private String crdtTrnResponseBizMsgIdr;
 
-	@Column(name="SETTLCONF_BIZMSGID")
+	@Column(name="STTL_BIZMSGID")
 	private String SettlementBizMsgId;
 	
 	@Column(name="CIHUB_REQ_TIME")
 	private LocalDateTime cihubRequestDT;
-	
-	@Column(name="CIHUB_RESP_TIME")
-	private LocalDateTime cihubResponseDT;	
 	
 	private Long cihubElapsedTime;
 	
@@ -73,13 +64,22 @@ public class CreditTransfer {
 
 	@Column(name="FULL_RESPONSE_MSG", length=4000)
 	private String fullResponseMsg;
-
+	
+	@Column(length=400)
+	private String errorMessage;
+	
+	private Integer ps_counter;
+		
 	private String reversal;
 
 	@Column(length=20)
 	private String callStatus;
+	
 	@Column(name="RESP_STATUS", length=20)
 	private String responseStatus;
+	
+	private LocalDateTime createDt;
+	private LocalDateTime lastUpdateDt;
 	
 	public Long getId() {
 		return id;
@@ -165,12 +165,6 @@ public class CreditTransfer {
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
-	public LocalDateTime getCreDt() {
-		return creDt;
-	}
-	public void setCreDt(LocalDateTime creDt) {
-		this.creDt = creDt;
-	}
 	public String getCrdtTrnRequestBizMsgIdr() {
 		return crdtTrnRequestBizMsgIdr;
 	}
@@ -195,12 +189,6 @@ public class CreditTransfer {
 	public void setCihubRequestDT(LocalDateTime cihubRequestDT) {
 		this.cihubRequestDT = cihubRequestDT;
 	}
-	public LocalDateTime getCihubResponseDT() {
-		return cihubResponseDT;
-	}
-	public void setCihubResponseDT(LocalDateTime cihubResponseDT) {
-		this.cihubResponseDT = cihubResponseDT;
-	}
 	public Long getCihubElapsedTime() {
 		return cihubElapsedTime;
 	}
@@ -218,6 +206,12 @@ public class CreditTransfer {
 	}
 	public void setFullResponseMsg(String fullResponseMsg) {
 		this.fullResponseMsg = fullResponseMsg;
+	}
+	public Integer getPs_counter() {
+		return ps_counter;
+	}
+	public void setPs_counter(Integer ps_counter) {
+		this.ps_counter = ps_counter;
 	}
 	public String getReversal() {
 		return reversal;
@@ -237,6 +231,24 @@ public class CreditTransfer {
 	public void setResponseStatus(String responseStatus) {
 		this.responseStatus = responseStatus;
 	}
-	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+	public LocalDateTime getCreateDt() {
+		return createDt;
+	}
+	public void setCreateDt(LocalDateTime createDt) {
+		this.createDt = createDt;
+	}
+	public LocalDateTime getLastUpdateDt() {
+		return lastUpdateDt;
+	}
+	public void setLastUpdateDt(LocalDateTime lastUpdateDt) {
+		this.lastUpdateDt = lastUpdateDt;
+	}
 
+	
 }

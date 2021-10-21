@@ -6,6 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.springframework.stereotype.Service;
 
+import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.GroupHeader91;
@@ -13,10 +14,13 @@ import bifast.library.iso20022.pacs002.OriginalGroupHeader17;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
+import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
+import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
 import bifast.outbound.pojo.flat.FlatAdmi002Pojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.pojo.flat.FlatPacs008Pojo;
 import bifast.outbound.pojo.flat.FlatPacs009Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy002Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy006Pojo;
 
@@ -76,10 +80,10 @@ public class FlattenIsoMessageService {
 		if (!(null == txInfAndSts.getOrgnlEndToEndId()))
 			flatMsg.setOrgnlEndToEndId(txInfAndSts.getOrgnlEndToEndId());
 
-		flatMsg.setTxSts(txInfAndSts.getTxSts());
+		flatMsg.setTransactionStatus(txInfAndSts.getTxSts());
 		
 		if (txInfAndSts.getStsRsnInf().size()>0) {
-			flatMsg.setRsnInf(txInfAndSts.getStsRsnInf().get(0).getRsn().getPrtry());
+			flatMsg.setReasonCode(txInfAndSts.getStsRsnInf().get(0).getRsn().getPrtry());
 
 			if (txInfAndSts.getStsRsnInf().get(0).getAddtlInf().size()>0)
 				flatMsg.setRsnInfAddtlInf(txInfAndSts.getStsRsnInf().get(0).getAddtlInf().get(0));
@@ -167,16 +171,90 @@ public class FlattenIsoMessageService {
 		
 		FlatAdmi002Pojo flatMsg = new FlatAdmi002Pojo();
 
+		MessageRejectV01 reject = busMsg.getDocument().getMessageReject();
 		
+		flatMsg.setAddtData(reject.getRsn().getAddtlData());
+//		flatMsg.setDateTime(null);
+		flatMsg.setErrorLocation(reject.getRsn().getErrLctn());
+		flatMsg.setReason(reject.getRsn().getRjctgPtyRsn());
+		flatMsg.setReasonDesc(reject.getRsn().getRsnDesc());
+		flatMsg.setRefId(reject.getRltdRef().getRef());
 		
 		return flatMsg;
 	}
 
+	public FlatPrxy002Pojo flatteningPrxy002 (BusinessMessage busMsg) {
+		FlatPrxy002Pojo flatMsg = new FlatPrxy002Pojo();
+		ProxyRegistrationResponseV01 data = busMsg.getDocument().getPrxyRegnRspn();
+		
+		flatMsg.setMsgId(data.getGrpHdr().getMsgId());
+		flatMsg.setCreDtTm(strTgl(data.getGrpHdr().getCreDtTm()));		
+		flatMsg.setResponseCode(data.getRegnRspn().getPrxRspnSts().value());
+		flatMsg.setStatusReason(data.getRegnRspn().getStsRsnInf().getPrtry());
+		
+		flatMsg.setOrgnlMsgId(data.getOrgnlGrpInf().getOrgnlMsgId());
+		flatMsg.setOrgnlMsgName(data.getOrgnlGrpInf().getOrgnlMsgNmId());
+		flatMsg.setOrgnlRegistrationType(data.getRegnRspn().getOrgnlRegnTp().value());
+
+		flatMsg.setRegistrationId(data.getRegnRspn().getPrxyRegn().get(0).getRegnId());
+		flatMsg.setRegisterBank(data.getRegnRspn().getPrxyRegn().get(0).getAgt().getFinInstnId().getOthr().getId());
+
+		if (data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().size() > 0) {
+
+			if (null != data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getCstmr().getId())
+				flatMsg.setCustomerId(data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getCstmr().getId());
+			
+			if (null != data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getCstmr().getTp())
+				flatMsg.setCustomerType(data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getCstmr().getTp());
+	
+			if (null != data.getOrgnlGrpInf().getOrgnlCreDtTm())
+				flatMsg.setOrgnlCreDtTm(strTgl(data.getOrgnlGrpInf().getOrgnlCreDtTm()));
+	
+			if (null != data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts())
+				flatMsg.setResidentialStatus(data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts());
+			
+			if (null != data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm())
+				flatMsg.setTownName(data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
+		
+		}
+		
+		return flatMsg;
+	}
+	
 	public FlatPrxy004Pojo flatteningPrxy004 (BusinessMessage busMsg) {
 		
 		FlatPrxy004Pojo flatMsg = new FlatPrxy004Pojo();
-
+		ProxyLookUpResponseV01 prxResp = busMsg.getDocument().getPrxyLookUpRspn();
 		
+		flatMsg.setAccountNumber(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getId().getOthr().getId());
+		flatMsg.setResponseCode(prxResp.getLkUpRspn().getRegnRspn().getPrxRspnSts().value());
+		flatMsg.setReasonCode(prxResp.getLkUpRspn().getRegnRspn().getStsRsnInf().getPrtry());
+		flatMsg.setRegisterBank(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAgt().getFinInstnId().getOthr().getId());
+		
+		flatMsg.setProxyType(prxResp.getLkUpRspn().getRegnRspn().getPrxy().getTp());
+		flatMsg.setProxyValue(prxResp.getLkUpRspn().getRegnRspn().getPrxy().getVal());
+		flatMsg.setRegistrationId(prxResp.getLkUpRspn().getRegnRspn().getRegn().getRegnId());
+		flatMsg.setDisplayName(prxResp.getLkUpRspn().getRegnRspn().getRegn().getDsplNm());
+		flatMsg.setAccountType(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getTp().getPrtry());
+		
+		if (null != prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getNm())
+			flatMsg.setAccountName(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getNm());
+
+		if (prxResp.getSplmtryData().size() > 0 ) {
+
+			if (null != prxResp.getSplmtryData().get(0).getEnvlp().getCstmr().getTp())
+				flatMsg.setCustomerType(prxResp.getSplmtryData().get(0).getEnvlp().getCstmr().getTp());
+		
+			if (null != prxResp.getSplmtryData().get(0).getEnvlp().getCstmr().getId())
+				flatMsg.setCustomerId(prxResp.getSplmtryData().get(0).getEnvlp().getCstmr().getId());
+			
+			if (null != prxResp.getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts())
+				flatMsg.setResidentialStatus(prxResp.getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts());
+	
+			if (null != prxResp.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm())
+				flatMsg.setTownName(prxResp.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
+			
+		}
 		
 		return flatMsg;
 	}

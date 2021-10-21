@@ -16,7 +16,6 @@ import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.pojo.flat.FlatMessageWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
-import bifast.outbound.processor.FaultResponseProcessor;
 import bifast.outbound.processor.ValidateProcessor;
 
 @Component
@@ -24,8 +23,6 @@ public class RouterEndpointRoute extends RouteBuilder {
 
 	@Autowired
 	private CheckChannelRequestTypeProcessor checkChannelRequest;
-	@Autowired
-	private FaultResponseProcessor faultProcessor;
 	@Autowired
 	private ValidateProcessor validateInputProcessor;
 //	@Autowired
@@ -53,26 +50,6 @@ public class RouterEndpointRoute extends RouteBuilder {
 
 		flatResponseJDF.setInclude("NON_NULL");
 		flatResponseJDF.setInclude("NON_EMPTY");
-//		flatResponseJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-
-        onException(Exception.class).routeId("Generic Exception Handler")
-        	.log(LoggingLevel.ERROR, "Fault di EndpointRoute, ${header.hdr_errorlocation}")
-	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
-			.process(faultProcessor)
-			.log("chl_tab_id : ${header.hdr_chnlRefId}")
-			.to("sql:update channel_transaction set status = 'ERROR-KM'"
-					+ ", error_msg= :#${body.faultResponse.reason} " 
-					+ "  where id= :#${header.hdr_chnlTable_id}  ")
-			.marshal(chnlResponseJDF)
-			.removeHeaders("req_*")
-			.removeHeaders("hdr_*")
-			.removeHeaders("fict_*")
-			.removeHeaders("ps_*")
-			.removeHeaders("ae_*")
-			.removeHeader("HttpMethod")
-	    	.handled(true)
-    	;
 
 		restConfiguration().component("servlet");
 		

@@ -42,7 +42,7 @@ public class CreditTransferResponseProcessor implements Processor{
         // int posbl4 = rand.nextInt(4);
 		if (norek.startsWith("5")) {
 			seed.setStatus("RJCT");
-			seed.setReason("U001");
+			seed.setReason("U110");
 			seed.setAdditionalInfo("Additional Info abbc lsdjf 46");
 		}
 		else {

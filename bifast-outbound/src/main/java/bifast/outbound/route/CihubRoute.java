@@ -1,5 +1,7 @@
 package bifast.outbound.route;
 
+import java.time.Instant;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -12,16 +14,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import bifast.library.iso20022.admi002.MessageRejectV01;
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
-import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
-import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.ExceptionToFaultMapProcessor;
-import bifast.outbound.proxyregistration.processor.StoreProxyRegistrationProcessor;
-import bifast.outbound.service.UtilService;
+import bifast.outbound.processor.FlatResponseProcessor;
 
 @Component
 public class CihubRoute extends RouteBuilder {
@@ -31,17 +28,9 @@ public class CihubRoute extends RouteBuilder {
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
-	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
-	@Autowired
-	private StoreCreditTransferProcessor storeCreditTransferProcessor;
-	@Autowired
-	private StorePaymentStatusProcessor storePaymentStatusProcessor;
-	@Autowired
-	private StoreProxyRegistrationProcessor storeProxyRegistrationProcessor;
-	@Autowired
-	private UtilService utilService;
-	@Autowired
 	private ExceptionToFaultMapProcessor exceptionToFaultMap;
+	@Autowired
+	private FlatResponseProcessor flatResponseProcessor;
 
 	@Override
 	public void configure() throws Exception {
@@ -54,29 +43,32 @@ public class CihubRoute extends RouteBuilder {
 		
 
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
-		from("direct:call-cihub").routeId("komi.call-cihub").messageHistory()
+		from("direct:call-cihub").routeId("komi.call-cihub")
+//		.messageHistory()
 		
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					BusinessMessage bm = exchange.getIn().getBody(BusinessMessage.class);
-					String msgType = utilService.getMsgType(bm.getAppHdr().getMsgDefIdr(), bm.getAppHdr().getBizMsgIdr());
-					exchange.getMessage().setHeader("hdr_trxname", msgType);
-				}
-			}).id("start_route")
-						
-			.log("${header.hdr_trxname}")
-			.setHeader("hdr_cihub_request", simple("${body}"))
-
-			.marshal(businessMessageJDF)
-
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][${header.hdr_trxname}] request: ${body}")
+			.setHeader("hdr_cihub_request", simple("${body}")).id("start_route")
 	
+			.marshal(businessMessageJDF)
+	
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][${header.hdr_trxname}] request: ${body}")
+
+			// zip dulu body ke cihubroute_encr_request
 			.setHeader("tmp_body", simple("${body}"))
 			.marshal().zipDeflater()
 			.marshal().base64()
-
 			.setHeader("cihubroute_encr_request", simple("${body}"))
 			.setBody(simple("${header.tmp_body}"))
+			
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					String encrMsg = exchange.getMessage().getHeader("cihubroute_encr_request", String.class);
+					rmw.setCihubEncriptedRequest(encrMsg);
+					rmw.setCihubStart(Instant.now());
+					exchange.getMessage().setHeader("hdr_request_list", rmw);
+				}
+			})
+			
 			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
@@ -91,60 +83,37 @@ public class CihubRoute extends RouteBuilder {
 				.marshal().zipDeflater()
 				.marshal().base64()
 				.setHeader("cihubroute_encr_response", simple("${body}"))
+				
+				.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						String body = exchange.getMessage().getBody(String.class);
+						RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+						rmw.setCihubEncriptedResponse(body);
+						exchange.getMessage().setHeader("hdr_request_list", rmw);
+					}
+					
+				})
 				.setBody(simple("${header.tmp_body}"))
 	
 				.unmarshal(businessMessageJDF)
 				
-				.filter().simple("${body.appHdr.msgDefIdr} == 'admi.002.001.01'")
-					.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_chnlRefId}] Call CI-HUB Rejected.")
-			    	.log(LoggingLevel.ERROR, "${body.document.messageReject.rsn.errLctn}")
-			    	.log(LoggingLevel.ERROR, "${body.document.messageReject.rsn.rsnDesc}")
-			    	.log(LoggingLevel.ERROR, "${body.document.messageReject.rsn.addtlData}")
-					.process(new Processor() {
-						public void process(Exchange exchange) throws Exception {
-							BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
-							MessageRejectV01 reject = bm.getDocument().getMessageReject();
-							ChnlFailureResponsePojo fault = new ChnlFailureResponsePojo();
-							fault.setErrorCode("ERROR-CIHUB");
-							fault.setLocation(reject.getRsn().getErrLctn());
-							fault.setReason(reject.getRsn().getRsnDesc());
-							exchange.getMessage().setBody(fault);
-						}
-					})
-					.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
-
-				.end()
-				
 				.setHeader("hdr_error_status", constant(null))
+				
+				.process(flatResponseProcessor)
 			
 			.endDoTry()
 	    	.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_chnlRefId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultMap)
-//				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
-//				.setHeader("hdr_error_mesg", simple("${exception.message}"))
-//		    	.setBody(constant(null))
 	
 //			.endDoTry()
 			.end()
 	
 			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			.setHeader("hdr_cihub_response", simple("${body}"))
-	
 				
-			.choice().id("end_route")
-				.when().simple("${header.hdr_trxname} == 'AEReq'")
-					.log("akan save ke ae")
-					.process(saveAccountEnquiryProcessor)
-				.when().simple("${header.hdr_trxname} == 'CTReq'")
-					.process(storeCreditTransferProcessor)
-				.when().simple("${header.hdr_trxname} == 'PSReq'")
-					.process(storePaymentStatusProcessor)
-				.when().simple("${header.hdr_trxname} == 'PxRegReq'")
-					.process(storeProxyRegistrationProcessor)
-			.end()
-
+			
 			.removeHeaders("tmp_*")
 			.removeHeaders("cihubroute_*")
 		;

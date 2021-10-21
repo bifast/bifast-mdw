@@ -6,11 +6,11 @@ public class ChannelRequestBase {
 
 	@JsonProperty("NoRef")
 	private String channelRefId;
-	@JsonProperty("Channel")
-	private String channel; 
+//	@JsonProperty("Channel")
+//	private String channel; 
 	@JsonProperty("CategoryPurpose")
 	private String categoryPurpose;
-
+	
 	@JsonProperty("RecipientBank")
 	private String recptBank; 
 
@@ -20,12 +20,7 @@ public class ChannelRequestBase {
 	public void setChannelRefId(String channelRefId) {
 		this.channelRefId = channelRefId;
 	}
-	public String getChannel() {
-		return channel;
-	}
-	public void setChannel(String channel) {
-		this.channel = channel;
-	}
+
 	public String getCategoryPurpose() {
 		return categoryPurpose;
 	}

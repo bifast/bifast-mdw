@@ -6,85 +6,126 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("AccountEnquiryResponse")
 @JsonPropertyOrder({"orignReffId"
-					,"status"
-					,"reason"
 					,"creditorAccountNumber"
 					,"creditorAccountType"
+					,"proxyId"
+					,"prixyType"
+					,"creditorName"
 					,"creditorId"
+					,"creditorType"
+					,"residentialStatus"
+					,"townName"
 					})
 public class ChnlAccountEnquiryResponsePojo {
 
-	@JsonProperty("noRef")
+	@JsonProperty("NoRef")
 	private String orignReffId;
 
-	@JsonProperty("accountNumber")
+	@JsonProperty("AccountNumber")
 	private String creditorAccountNumber;
+	
+	@JsonProperty("ProxyId")
+	private String proxyId; 
+	@JsonProperty("ProxyType")
+	private String proxyType; 
 
-	@JsonProperty("accountType")
+	@JsonProperty("AccountType")
 	private String creditorAccountType;
 
+	@JsonProperty("CreditorName")
 	private String creditorName;
 	
+	@JsonProperty("CreditorId")
 	private String creditorId;
 	
+	@JsonProperty("CreditorType")
 	private String creditorType;
 	
-	@JsonProperty("residentStatus")
+	@JsonProperty("ResidentStatus")
 	private String creditorResidentStatus;
 	
-	@JsonProperty("townName")
+	@JsonProperty("TownName")
 	private String creditorTownName;
-	
-//	private FaultResponse fault;
-	
+
 	public String getOrignReffId() {
 		return orignReffId;
 	}
+
 	public void setOrignReffId(String orignReffId) {
 		this.orignReffId = orignReffId;
 	}
-	public String getCreditorAccountType() {
-		return creditorAccountType;
-	}
-	public void setCreditorAccountType(String creditorAccountType) {
-		this.creditorAccountType = creditorAccountType;
-	}
-	public String getCreditorName() {
-		return creditorName;
-	}
-	public void setCreditorName(String creditorName) {
-		this.creditorName = creditorName;
-	}
-	public String getCreditorId() {
-		return creditorId;
-	}
-	public void setCreditorId(String creditorId) {
-		this.creditorId = creditorId;
-	}
+
 	public String getCreditorAccountNumber() {
 		return creditorAccountNumber;
 	}
+
 	public void setCreditorAccountNumber(String creditorAccountNumber) {
 		this.creditorAccountNumber = creditorAccountNumber;
 	}
+
+	public String getProxyId() {
+		return proxyId;
+	}
+
+	public void setProxyId(String proxyId) {
+		this.proxyId = proxyId;
+	}
+
+	public String getProxyType() {
+		return proxyType;
+	}
+
+	public void setProxyType(String proxyType) {
+		this.proxyType = proxyType;
+	}
+
+	public String getCreditorAccountType() {
+		return creditorAccountType;
+	}
+
+	public void setCreditorAccountType(String creditorAccountType) {
+		this.creditorAccountType = creditorAccountType;
+	}
+
+	public String getCreditorName() {
+		return creditorName;
+	}
+
+	public void setCreditorName(String creditorName) {
+		this.creditorName = creditorName;
+	}
+
+	public String getCreditorId() {
+		return creditorId;
+	}
+
+	public void setCreditorId(String creditorId) {
+		this.creditorId = creditorId;
+	}
+
 	public String getCreditorType() {
 		return creditorType;
 	}
+
 	public void setCreditorType(String creditorType) {
 		this.creditorType = creditorType;
 	}
+
 	public String getCreditorResidentStatus() {
 		return creditorResidentStatus;
 	}
+
 	public void setCreditorResidentStatus(String creditorResidentStatus) {
 		this.creditorResidentStatus = creditorResidentStatus;
 	}
+
 	public String getCreditorTownName() {
 		return creditorTownName;
 	}
+
 	public void setCreditorTownName(String creditorTownName) {
 		this.creditorTownName = creditorTownName;
 	}
-
+	
 	
 }

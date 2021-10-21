@@ -26,10 +26,7 @@ public class CBTransactionFailureProcessor implements Processor {
 		if (!(null == cbResponse.getAddtInfo()))
 			cbFailure.setDescription(cbResponse.getAddtInfo());
 		
-		cbFailure.setLocation("Corebank service call");
-		
-		if (msgType.equals("crdttrns"))
-			cbFailure.setReason("Debit transaction failed");
+//		cbFailure.setLocation("Corebank service call");
 		
 		
 		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
