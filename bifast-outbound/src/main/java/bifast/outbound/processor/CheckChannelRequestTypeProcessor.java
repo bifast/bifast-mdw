@@ -35,7 +35,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		}
 		
 	
-		else if (!(null == req.getChnlPaymentStatusRequest())) {
+		else if (null != req.getChnlPaymentStatusRequest()) {
 			rmw.setChnlPaymentStatusRequest(req.getChnlPaymentStatusRequest());
 			rmw.setMsgName("PSReq");
 			rmw.setRequestId(req.getChnlPaymentStatusRequest().getChannelRefId());
@@ -45,18 +45,14 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 			rmw.setChnlProxyRegistrationRequest(req.getChnlProxyRegistrationRequest());
 			rmw.setMsgName("PrxRegnReq");
 			rmw.setRequestId(req.getChnlProxyRegistrationRequest().getChannelRefId());
-			exchange.getMessage().setHeader("hdr_msgType", "prxyrgst");
 			exchange.getMessage().setBody(req.getChnlProxyRegistrationRequest());
-			exchange.getMessage().setHeader("hdr_chnlRefId", req.getChnlProxyRegistrationRequest().getChannelRefId());
 		}
 		
 		else if (!(null == req.getChnlProxyResolutionRequest())) {
 			rmw.setChnlProxyResolutionRequest(req.getChnlProxyResolutionRequest());
-			rmw.setMsgName("PrxReslReq");
+			rmw.setMsgName("ProxyResolution");
 			rmw.setRequestId(req.getChnlProxyResolutionRequest().getChannelRefId());
-			exchange.getMessage().setHeader("hdr_msgType", "prxyrslt");
 			exchange.getMessage().setBody(req.getChnlProxyResolutionRequest());
-			exchange.getMessage().setHeader("hdr_chnlRefId", req.getChnlProxyResolutionRequest().getChannelRefId());
 		}
 
 		exchange.getMessage().setHeader("hdr_request_list", rmw);

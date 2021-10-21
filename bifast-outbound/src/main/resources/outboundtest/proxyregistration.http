@@ -1,23 +1,22 @@
 # Proxy Register  from channel
-POST http://localhost:9002/services/komi/outbound HTTP/1.1
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
+clientId: CMS
 
 {
     "ProxyRegistrationRequest": {
-        "orignReffId": "24563",
-        "channel" : "Internet Banking",
-        "proxyTp" : "02",
-        "proxyVal" : "frans.mazhar@gmail.com",
-        "displayName" : "Oom aja",
-        "accNumber" : "14556",
-        "accType" : "SVGS",
-        "accName" : "Fras Manse",
-        "scndIdTp" : "01",
-        "scndIdVal" : "44443333",
-        "cstmrTp" : "01",
-        "cstmrId" : "220000022",
-        "residentialStatus" : "01",
-        "townName" : "0300"
+        "NoRef": "211002",
+        "RegistrationType": "AMND",
+        "ProxyType" : "02",
+        "ProxyValue" : "frans.mazhar@gmail.com",
+        "DisplayName" : "assshahaja",
+        "AccountName" : "Fras Manse",
+        "SecondaryIdType" : "01",
+        "SecondaryIdValue" : "44443333",
+        "CustomerType" : "01",
+        "CustomerId" : "2200111022",
+        "ResidentialStatus" : "01",
+        "TownName" : "0300"
     }
 }
 

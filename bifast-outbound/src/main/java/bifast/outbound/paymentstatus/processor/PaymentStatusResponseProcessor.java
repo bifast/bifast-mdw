@@ -1,4 +1,4 @@
-package bifast.outbound.paymentstatus;
+package bifast.outbound.paymentstatus.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +13,7 @@ import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
+import bifast.outbound.pojo.chnlrequest.PaymentStatusRequestSAFPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
 
@@ -32,7 +33,7 @@ public class PaymentStatusResponseProcessor implements Processor {
 		channelResponseWr.setContent(new ArrayList<>());
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class);
-		ChnlPaymentStatusRequestPojo chnReq = rmw.getChnlPaymentStatusRequest();
+		PaymentStatusRequestSAFPojo chnReq = rmw.getPaymentStatusRequestSAF();
 		
 		ChnlCreditTransferResponsePojo chnResp = new ChnlCreditTransferResponsePojo();
 		
@@ -62,7 +63,7 @@ public class PaymentStatusResponseProcessor implements Processor {
 
 			// from CI-HUB response
 			chnResponse.setOrignReffId(chnReq.getChannelRefId());
-			chnResponse.setBizMsgId(busMesg.getAppHdr().getBizMsgIdr());
+//			chnResponse.setBizMsgId(busMesg.getAppHdr().getBizMsgIdr());
 			
 			if (!(null == biResp.getOrgnlTxRef().getCdtr().getPty()))
 				if (!(null == biResp.getOrgnlTxRef().getCdtr().getPty().getNm()))

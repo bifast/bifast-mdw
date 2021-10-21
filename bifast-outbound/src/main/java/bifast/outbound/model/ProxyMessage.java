@@ -9,32 +9,47 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-@Entity(name="PROXY_MESSAGE")
+@Entity(name="KC_PROXY_MGMT")
 public class ProxyMessage {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
 	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
-	private String intrnRefId;
+	@Column(length=20)
+	private String komiTrnsId;
+	@Column(length=20)
+	private String chnlNoRef;
 	
-	private Long chnlTrxId;
-
+	@Column(length=20)
 	private String operationType;
+	@Column(length=20)
 	private String proxyType;
+	@Column(length=140)
 	private String proxyValue;
+	
 	@Column(length=100)
 	private String displayName;
+	@Column(length=100)
 	private String accountNumber;
+	@Column(length=10)
 	private String accountType;
 	
 	@Column(length=100)
 	private String accountName;
+	
+	@Column(length=10)
 	private String scndIdType;
+	@Column(length=100)
 	private String scndValue;
+	
+	@Column(length=10)
 	private String customerType;
+	@Column(length=10)
 	private String customerId;
+	@Column(length=10)
 	private String residentStatus;
+	@Column(length=10)
 	private String townName;
 	
 	@Column(length=4000)
@@ -43,7 +58,6 @@ public class ProxyMessage {
 	private String fullResponseMesg;
 	
 	private LocalDateTime requestDt;
-	private LocalDateTime responseDt;
 	private Long cihubElapsedTime;
 
 	@Column(length=50)
@@ -59,17 +73,17 @@ public class ProxyMessage {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getIntrnRefId() {
-		return intrnRefId;
+	public String getKomiTrnsId() {
+		return komiTrnsId;
 	}
-	public void setIntrnRefId(String intrnRefId) {
-		this.intrnRefId = intrnRefId;
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
 	}
-	public Long getChnlTrxId() {
-		return chnlTrxId;
+	public String getChnlNoRef() {
+		return chnlNoRef;
 	}
-	public void setChnlTrxId(Long chnlTrxId) {
-		this.chnlTrxId = chnlTrxId;
+	public void setChnlNoRef(String chnlNoRef) {
+		this.chnlNoRef = chnlNoRef;
 	}
 	public String getOperationType() {
 		return operationType;
@@ -167,12 +181,6 @@ public class ProxyMessage {
 	public void setRequestDt(LocalDateTime requestDt) {
 		this.requestDt = requestDt;
 	}
-	public LocalDateTime getResponseDt() {
-		return responseDt;
-	}
-	public void setResponseDt(LocalDateTime responseDt) {
-		this.responseDt = responseDt;
-	}
 	public Long getCihubElapsedTime() {
 		return cihubElapsedTime;
 	}
@@ -198,6 +206,6 @@ public class ProxyMessage {
 		this.errorMessage = errorMessage;
 	}
 	
-
+	
 	
 }

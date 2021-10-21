@@ -4,76 +4,75 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({
-	"transactionType"
-	,"referenceId"
+	"referenceId"
 	,"errorCode"
-	,"reason"
 	,"location"
 	,"description"
 	,"additionalData"
 	})
 public class ChnlFailureResponsePojo {
 	
-	private String transactionType;
-
+	private String faultCategory;   // TIMEOUT-CICONN, TIMEOUT-CB, ERROR-KOMI, ERROR-CICONN, ERROR-CB
+	
 	@JsonProperty("ErrorCode")
 	private String errorCode;
+	
+	private String responseCode;
 	
 	@JsonProperty("TransactionId")
 	private String referenceId;
 	
-	@JsonProperty("Reason")
-	private String reason;
-	
-	private String location;
 
 	@JsonProperty("Description")
 	private String description;
 
-	@JsonProperty("AddtInfo")
-	private String additionalData;
-	
-	public String getTransactionType() {
-		return transactionType;
+
+	public String getFaultCategory() {
+		return faultCategory;
 	}
-	public void setTransactionType(String transactionType) {
-		this.transactionType = transactionType;
+
+
+	public void setFaultCategory(String faultCategory) {
+		this.faultCategory = faultCategory;
 	}
-	public String getReferenceId() {
-		return referenceId;
-	}
-	public void setReferenceId(String referenceId) {
-		this.referenceId = referenceId;
-	}
+
+
 	public String getErrorCode() {
 		return errorCode;
 	}
+
+
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
-	public String getReason() {
-		return reason;
+
+
+	public String getResponseCode() {
+		return responseCode;
 	}
-	public void setReason(String reason) {
-		this.reason = reason;
+
+
+	public void setResponseCode(String responseCode) {
+		this.responseCode = responseCode;
 	}
-	public String getLocation() {
-		return location;
+
+
+	public String getReferenceId() {
+		return referenceId;
 	}
-	public void setLocation(String location) {
-		this.location = location;
+
+
+	public void setReferenceId(String referenceId) {
+		this.referenceId = referenceId;
 	}
+
 	public String getDescription() {
 		return description;
 	}
+
+
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	public String getAdditionalData() {
-		return additionalData;
-	}
-	public void setAdditionalData(String additionalData) {
-		this.additionalData = additionalData;
 	}
 
 	

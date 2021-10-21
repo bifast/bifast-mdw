@@ -1,7 +1,6 @@
 package bifast.outbound.accountenquiry.processor;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -34,15 +33,13 @@ public class AccountEnquiryRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-//		ChnlAccountEnquiryRequestPojo chnReq = exchange.getIn().getBody(ChnlAccountEnquiryRequestPojo.class);
+		ChnlAccountEnquiryRequestPojo chnReq = exchange.getIn().getBody(ChnlAccountEnquiryRequestPojo.class);
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
+//		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
 		
 		String msgType = "510";
-//		String bizMsgId = utilService.genOfiBusMsgId(msgType, chnReq.getChannel());
 		String bizMsgId = utilService.genOfiBusMsgId(msgType, rmw.getChannelType());
-//		String msgId = utilService.genMessageId(msgType);
-		String msgId = utilService.genMsgId(msgType, rmw.getRequestId());
+		String msgId = utilService.genMsgId(msgType, rmw.getKomiTrxId());
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
@@ -69,6 +66,7 @@ public class AccountEnquiryRequestProcessor implements Processor {
 		busMsg.setAppHdr(hdr);
 		busMsg.setDocument(doc);
 	
+		rmw.setAccountEnquiryRequest(busMsg);
 		exchange.getIn().setBody(busMsg);
 	}
 

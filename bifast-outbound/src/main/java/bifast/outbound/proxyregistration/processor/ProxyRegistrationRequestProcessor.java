@@ -39,7 +39,7 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		
 		String trxType = "710";
-		String bizMsgId = utilService.genOfiBusMsgId(trxType, chnReq.getChannel());
+		String bizMsgId = utilService.genOfiBusMsgId(trxType, rmw.getChannelType());
 		String msgId = utilService.genMessageId(trxType);
 		
 		hdr = appHeaderService.getAppHdr(config.getBicode(), "prxy.001.001.01", bizMsgId);

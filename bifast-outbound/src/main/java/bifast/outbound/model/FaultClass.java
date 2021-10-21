@@ -3,7 +3,7 @@ package bifast.outbound.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity(name="FAULT_CLASS")
+@Entity(name="KC_FAULT_CLASS")
 public class FaultClass {
 
 	@Id

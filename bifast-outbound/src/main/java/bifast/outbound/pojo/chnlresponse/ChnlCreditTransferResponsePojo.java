@@ -5,21 +5,19 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("CreditTransferResponse")
-@JsonPropertyOrder({"orignReffId"
-	,"bizMsgId"
+@JsonPropertyOrder({
+	"orignReffId"
+	,"accountNumber"
 	,"creditorName"
-	,"creditorAccountType"
-	,"creditorId"
 	})
 public class ChnlCreditTransferResponsePojo {
 
-	@JsonProperty("noRef")
+	@JsonProperty("NoRef")
 	private String orignReffId;
 
-	@JsonProperty("bizMsgId")
-	private String bizMsgId;
-
+	@JsonProperty("AccountNumber")
 	private String accountNumber;
+	@JsonProperty("CreditorName")
 	private String creditorName;
 	
 	public String getOrignReffId() {
@@ -28,12 +26,7 @@ public class ChnlCreditTransferResponsePojo {
 	public void setOrignReffId(String orignReffId) {
 		this.orignReffId = orignReffId;
 	}
-	public String getBizMsgId() {
-		return bizMsgId;
-	}
-	public void setBizMsgId(String bizMsgId) {
-		this.bizMsgId = bizMsgId;
-	}
+
 	public String getAccountNumber() {
 		return accountNumber;
 	}

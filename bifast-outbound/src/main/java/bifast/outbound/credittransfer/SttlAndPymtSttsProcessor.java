@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.paymentstatus.PaymentStatusRequestProcessor;
+import bifast.outbound.paymentstatus.processor.PaymentStatusRequestProcessor;
 import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.report.pojo.RequestPojo;
@@ -92,10 +92,10 @@ public class SttlAndPymtSttsProcessor extends RouteBuilder {
 					@Override
 					public void process(Exchange exchange) throws Exception {
 						BusinessMessage ctReq = exchange.getMessage().getBody(BusinessMessage.class);
-						ChnlPaymentStatusRequestPojo request = new ChnlPaymentStatusRequestPojo();
-						request.setOrgnlEndToEndId(ctReq.getAppHdr().getBizMsgIdr());
-						request.setRecptBank(ctReq.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-						exchange.getIn().setBody(request);
+//						ChnlPaymentStatusRequestPojo request = new ChnlPaymentStatusRequestPojo();
+//						request.setsetOrgnlEndToEndId(ctReq.getAppHdr().getBizMsgIdr());
+//						request.setRecptBank(ctReq.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+//						exchange.getIn().setBody(request);
 					}
 					
 				})

@@ -1,3 +1,41 @@
+-- public.corebank_sequence definition
+
+-- DROP SEQUENCE public.corebank_sequence;
+
+CREATE SEQUENCE public.corebank_sequence
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 999999
+	START 1
+	CACHE 1
+	CYCLE;
+
+
+-- public.hibernate_sequence definition
+
+-- DROP SEQUENCE public.hibernate_sequence;
+
+CREATE SEQUENCE public.hibernate_sequence
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 9223372036854775807
+	START 1
+	CACHE 1
+	NO CYCLE;
+
+
+-- public.table_seq_generator definition
+
+-- DROP SEQUENCE public.table_seq_generator;
+
+CREATE SEQUENCE public.table_seq_generator
+	INCREMENT BY 1
+	MINVALUE 5000
+	MAXVALUE 9223372036854775807
+	START 5000
+	CACHE 1
+	NO CYCLE;
+
 -- public.account_enquiry definition
 
 -- Drop table
@@ -6,21 +44,22 @@
 
 CREATE TABLE public.account_enquiry (
 	id int8 NOT NULL,
-	account_no varchar(255) NULL,
+	account_no varchar(50) NULL,
 	amount numeric(19, 2) NULL,
-	intr_ref_id varchar(20) NULL,
-	orign_bank varchar(255) NULL,
-	recpt_bank varchar(255) NULL,
 	bizmsgid varchar(50) NULL,
 	call_status varchar(255) NULL,
+	cihub_elapsed_time int8 NULL,
 	cihub_req_time timestamp NULL,
 	error_message varchar(400) NULL,
 	full_request_msg varchar(4000) NULL,
 	full_response_msg varchar(4000) NULL,
+	intr_ref_id varchar(20) NULL,
+	komi_trns_id varchar(255) NULL,
+	orign_bank varchar(20) NULL,
+	recpt_bank varchar(20) NULL,
 	resp_bizmsgid varchar(50) NULL,
 	response_status varchar(20) NULL,
 	chnl_trx_id int8 NULL,
-	cihub_elapsed_time int8 NULL,
 	CONSTRAINT account_enquiry_pkey PRIMARY KEY (id)
 );
 
@@ -40,6 +79,7 @@ CREATE TABLE public.channel (
 	modif_dt timestamp NULL,
 	secret_key varchar(100) NULL,
 	transaction_limit_amount numeric(19, 2) NULL,
+	merchant_code varchar(255) NULL,
 	CONSTRAINT channel_pkey PRIMARY KEY (channel_id)
 );
 
@@ -53,37 +93,19 @@ CREATE TABLE public.channel (
 CREATE TABLE public.channel_transaction (
 	id int8 NOT NULL,
 	amount numeric(19, 2) NULL,
-	creditor_account_name varchar(255) NULL,
-	creditor_account_number varchar(255) NULL,
-	debtor_account_name varchar(255) NULL,
-	debtor_account_number varchar(255) NULL,
-	error_msg varchar(255) NULL,
-	msg_name varchar(255) NULL,
-	recpt_bank varchar(255) NULL,
+	call_status varchar(15) NULL,
+	channel_id varchar(15) NULL,
+	channel_ref_id varchar(20) NULL,
+	creditor_account_number varchar(35) NULL,
+	debtor_account_number varchar(35) NULL,
+	elapsed_time int8 NULL,
+	error_msg varchar(250) NULL,
+	komi_trns_id varchar(8) NULL,
+	msg_name varchar(100) NULL,
+	recpt_bank varchar(8) NULL,
 	request_time timestamp NULL,
-	response_time timestamp NULL,
-	status varchar(255) NULL,
-	transaction_id varchar(255) NULL,
-	channel_id varchar(50) NULL,
-	komi_trns_id varchar(16) NULL,
+	response_code varchar(255) NULL,
 	CONSTRAINT channel_transaction_pkey PRIMARY KEY (id)
-);
-
-
--- public.client definition
-
--- Drop table
-
--- DROP TABLE public.client;
-
-CREATE TABLE public.client (
-	client_id varchar(255) NOT NULL,
-	channel_code varchar(10) NULL,
-	client_name varchar(100) NULL,
-	create_dt timestamp NULL,
-	modif_dt timestamp NULL,
-	secret_key varchar(100) NULL,
-	CONSTRAINT client_pkey PRIMARY KEY (client_id)
 );
 
 
@@ -94,21 +116,30 @@ CREATE TABLE public.client (
 -- DROP TABLE public.corebank_transaction;
 
 CREATE TABLE public.corebank_transaction (
-	transaction_id int8 NOT NULL,
+	id int8 NOT NULL,
 	addt_info varchar(255) NULL,
-	channel_ref_id varchar(255) NULL,
+	cb_trns_id int4 NULL,
+	channel_id varchar(255) NULL,
 	credit_amount numeric(19, 2) NULL,
 	creditor_bank varchar(255) NULL,
 	cstm_account_name varchar(255) NULL,
 	cstm_account_no varchar(255) NULL,
 	cstm_account_type varchar(255) NULL,
+	date_time varchar(255) NULL,
 	debit_amount numeric(19, 2) NULL,
 	debtor_bank varchar(255) NULL,
+	fee_amount numeric(19, 2) NULL,
+	komi_trns_id varchar(255) NULL,
+	orgnl_cb_trns_id int4 NULL,
+	orgnl_date_time varchar(255) NULL,
 	status varchar(255) NULL,
+	terminal_id varchar(255) NULL,
 	transaction_type varchar(255) NULL,
 	trns_dt timestamp NULL,
+	channel_ref_id varchar(255) NULL,
 	chnl_trx_id int8 NULL,
-	CONSTRAINT corebank_transaction_pkey PRIMARY KEY (transaction_id)
+	transaction_id int8 NOT NULL,
+	CONSTRAINT corebank_transaction_pkey PRIMARY KEY (id)
 );
 
 
@@ -123,6 +154,7 @@ CREATE TABLE public.credit_transfer (
 	settlconf_bizmsgid varchar(255) NULL,
 	amount numeric(19, 2) NULL,
 	call_status varchar(20) NULL,
+	cihub_elapsed_time int8 NULL,
 	cihub_req_time timestamp NULL,
 	cihub_resp_time timestamp NULL,
 	crdttrn_req_bizmsgid varchar(255) NULL,
@@ -138,14 +170,14 @@ CREATE TABLE public.credit_transfer (
 	debtor_type varchar(255) NULL,
 	full_request_msg varchar(4000) NULL,
 	full_response_msg varchar(4000) NULL,
-	intr_ref_id varchar(255) NULL,
+	komi_trns_id varchar(255) NULL,
 	msg_type varchar(255) NULL,
 	orign_bank varchar(255) NULL,
 	recpt_bank varchar(255) NULL,
 	resp_status varchar(20) NULL,
 	reversal varchar(255) NULL,
 	chnl_trx_id int8 NULL,
-	cihub_elapsed_time int8 NULL,
+	intr_ref_id varchar(255) NULL,
 	CONSTRAINT credit_transfer_pkey PRIMARY KEY (id)
 );
 
@@ -179,6 +211,37 @@ CREATE TABLE public.fault_class (
 );
 
 
+-- public.fi_credit_transfer definition
+
+-- Drop table
+
+-- DROP TABLE public.fi_credit_transfer;
+
+CREATE TABLE public.fi_credit_transfer (
+	id int8 NOT NULL,
+	settlconf_bizmsgid varchar(50) NULL,
+	amount numeric(19, 2) NULL,
+	call_status varchar(20) NULL,
+	chnl_trx_id int8 NULL,
+	cihub_elapsed_time int8 NULL,
+	cihub_req_time timestamp NULL,
+	cihub_resp_time timestamp NULL,
+	cre_dt timestamp NULL,
+	credit_bic varchar(255) NULL,
+	debtor_bic varchar(255) NULL,
+	full_request_msg varchar(4000) NULL,
+	full_response_msg varchar(4000) NULL,
+	intr_ref_id varchar(255) NULL,
+	orign_bank varchar(255) NULL,
+	req_bizmsgid varchar(50) NULL,
+	resp_bizmsgid varchar(50) NULL,
+	response_status varchar(20) NULL,
+	saf varchar(20) NULL,
+	saf_counter int4 NULL,
+	CONSTRAINT fi_credit_transfer_pkey PRIMARY KEY (id)
+);
+
+
 -- public.inbound_counter definition
 
 -- Drop table
@@ -189,6 +252,30 @@ CREATE TABLE public.inbound_counter (
 	tanggal int4 NOT NULL,
 	last_number int4 NULL,
 	CONSTRAINT inbound_counter_pkey PRIMARY KEY (tanggal)
+);
+
+
+-- public.inbound_message definition
+
+-- Drop table
+
+-- DROP TABLE public.inbound_message;
+
+CREATE TABLE public.inbound_message (
+	id int8 NOT NULL,
+	bizmsgid varchar(50) NULL,
+	cihub_request_time timestamp NULL,
+	cihub_response_time timestamp NULL,
+	copydupl varchar(20) NULL,
+	errormsg varchar(500) NULL,
+	orgn_bank varchar(20) NULL,
+	full_request_msg varchar(4000) NULL,
+	full_response_msg varchar(4000) NULL,
+	msg_name varchar(50) NULL,
+	resp_bizmsgidr varchar(50) NULL,
+	resp_reject_msg varchar(255) NULL,
+	resp_status varchar(255) NULL,
+	CONSTRAINT inbound_message_pkey PRIMARY KEY (id)
 );
 
 
@@ -294,13 +381,15 @@ CREATE TABLE public.payment_status (
 	orgn_endtoendid varchar(50) NULL,
 	request_dt timestamp NULL,
 	request_full_message varchar(5000) NULL,
-	response_dt timestamp NULL,
 	response_full_message varchar(5000) NULL,
 	retry_count int4 NOT NULL,
 	saf varchar(255) NULL,
 	status varchar(255) NULL,
 	chnl_trx_id int8 NULL,
 	cihub_elapsed_time int8 NULL,
+	komi_trns_id varchar(16) NULL,
+	last_update_dt timestamp NULL,
+	response_dt timestamp NULL,
 	CONSTRAINT payment_status_pkey PRIMARY KEY (id)
 );
 
@@ -348,31 +437,30 @@ CREATE TABLE public.proxy_message (
 
 CREATE TABLE public.settlement (
 	id int8 NOT NULL,
-	crdt_account_no varchar(100) NULL,
-	crdt_bank_account_no varchar(100) NULL,
-	dbtr_account_no varchar(100) NULL,
-	dbtr_bank_account_no varchar(100) NULL,
+	crdt_account_no varchar(35) NULL,
+	crdt_bank_account_no varchar(35) NULL,
+	dbtr_account_no varchar(35) NULL,
+	dbtr_bank_account_no varchar(35) NULL,
+	full_message varchar(5000) NULL,
 	orgnl_crdt_trn_bizmsgid varchar(50) NULL,
 	orign_bank varchar(20) NULL,
+	receive_date timestamp NULL,
 	recpt_bank varchar(20) NULL,
 	settl_conf_bizmsgid varchar(50) NULL,
-	crdt_account_type varchar(255) NULL,
-	crdt_id varchar(255) NULL,
-	crdt_id_type varchar(255) NULL,
-	dbtr_account_type varchar(255) NULL,
-	dbtr_id varchar(255) NULL,
-	dbtr_id_type varchar(255) NULL,
-	full_message varchar(5000) NULL,
-	receive_date timestamp NULL,
+	corebank_response_id int8 NULL,
 	CONSTRAINT settlement_pkey PRIMARY KEY (id)
 );
 
--- public.sequence definition
 
-CREATE SEQUENCE public.table_seq_generator
-	INCREMENT BY 1
-	MINVALUE 5000
-	MAXVALUE 9223372036854775807
-	START 5000
-	CACHE 10;
+-- public.status_reason definition
 
+-- Drop table
+
+-- DROP TABLE public.status_reason;
+
+CREATE TABLE public.status_reason (
+	status_reason_code varchar(255) NOT NULL,
+	description varchar(255) NULL,
+	status_code varchar(255) NULL,
+	CONSTRAINT status_reason_pkey PRIMARY KEY (status_reason_code)
+);

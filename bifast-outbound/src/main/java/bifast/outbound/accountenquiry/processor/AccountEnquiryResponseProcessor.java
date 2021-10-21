@@ -10,14 +10,13 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.pojo.chnlresponse.ChnlAccountEnquiryResponsePojo;
+import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
@@ -34,7 +33,6 @@ public class AccountEnquiryResponseProcessor implements Processor {
 
 		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
 		channelResponseWr.setResponseCode("U000");
-		channelResponseWr.setResponseMessage("Success/ Transaction Accepted");
 		channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 		channelResponseWr.setContent(new ArrayList<>());
@@ -48,49 +46,64 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		Object objBody = exchange.getMessage().getBody(Object.class);
 		if (objBody.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
-		
-			channelResponseWr.setResponseCode(fault.getErrorCode());
-			if (fault.getErrorCode().equals("ERROR-KM"))
-				channelResponseWr.setResponseMessage("KOMI Internal Error");
-			else if (fault.getErrorCode().equals("ERROR-CIHUB"))
-				channelResponseWr.setResponseMessage("CIHUB Internal Error");
-			else
-				channelResponseWr.setResponseMessage("KOMI Error");
 			
+			channelResponseWr.setResponseCode("KSTS");
+			channelResponseWr.setReasonCode(fault.getErrorCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getErrorCode());
+			if (oStatusReason.isPresent())
+				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+			else
+				channelResponseWr.setResponseMessage("General Error");
+		}
+		
+		else if (objBody.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
+
+			channelResponseWr.setResponseCode("RJCT");
+			channelResponseWr.setReasonCode("U215");
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById("U215");
+			if (oStatusReason.isPresent())
+				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+			else
+				channelResponseWr.setResponseMessage("General Error");
+
 		}
 
 		else {
 			
-			BusinessMessage bm = (BusinessMessage)objBody;
-						
-			PaymentTransaction110 biResp = bm.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
+			FlatPacs002Pojo bm = (FlatPacs002Pojo)objBody;
+									
+			channelResponseWr.setResponseCode(bm.getTransactionStatus());
+			channelResponseWr.setReasonCode(bm.getReasonCode());
 			
-			channelResponseWr.setResponseCode(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
-			
-			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getResponseCode());
+			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getReasonCode());
 			if (optStatusReason.isPresent()) {
 				String desc = optStatusReason.get().getDescription();
-				channelResponseWr.setResponseMessage(desc);
+				channelResponseWr.setReasonMessage(desc);
 			}	
 			
-			chnResp.setCreditorAccountNumber(chnReq.getCreditorAccountNumber());					
-			chnResp.setCreditorAccountType(biResp.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
+			chnResp.setCreditorAccountNumber(bm.getCdtrAcctId());
+			chnResp.setCreditorAccountType(bm.getCdtrAcctTp());
 			
-			if (null != biResp.getOrgnlTxRef().getCdtr())
-				chnResp.setCreditorName(biResp.getOrgnlTxRef().getCdtr().getPty().getNm());
+			if (null != chnReq.getProxyId())
+				chnResp.setProxyId(chnReq.getProxyId());
 			
-			if (biResp.getSplmtryData().size()>0) {
-				if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr()) {
-					if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId())
-						chnResp.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
-					if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp())
-						chnResp.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
-					if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts())
-						chnResp.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
-					if (null != biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm())
-						chnResp.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
-				}
-			}			
+			if (null != chnReq.getProxyType())
+				chnResp.setProxyType(chnReq.getProxyType());
+
+			if (null != bm.getCdtrNm())
+				chnResp.setCreditorName(bm.getCdtrNm());
+			
+			if (null != bm.getCdtrId())
+				chnResp.setCreditorId(bm.getCdtrId());
+
+			if (null != bm.getCdtrTp())
+				chnResp.setCreditorType(bm.getCdtrTp());
+			
+			if (null != bm.getCdtrRsdntSts())
+				chnResp.setCreditorResidentStatus(bm.getCdtrRsdntSts());
+			
+			if (null != bm.getCdtrTwnNm())
+				chnResp.setCreditorTownName(bm.getCdtrTwnNm());
 		}
 
 		channelResponseWr.getContent().add(chnResp);

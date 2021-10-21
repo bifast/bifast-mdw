@@ -1,9 +1,10 @@
 package bifast.outbound.credittransfer.processor;
 
-import java.util.List;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.MessageHistory;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,40 +12,35 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.model.CreditTransfer;
+import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.ResponseMessageCollection;
+import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.repository.CreditTransferRepository;
-import bifast.outbound.service.UtilService;
 
 @Component
 public class StoreCreditTransferProcessor implements Processor {
 
 	@Autowired
 	private CreditTransferRepository creditTransferRepo;
-	@Autowired
-	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		@SuppressWarnings("unchecked")
-		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
-
-		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
-
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		
 		CreditTransfer ct = new CreditTransfer();
 
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ct.setKomiTrnsId(rmw.getKomiTrxId());
 
-		BusinessMessage biRequest = exchange.getMessage().getHeader("hdr_cihub_request", BusinessMessage.class);
-		
+		BusinessMessage biRequest = rmw.getCreditTransferRequest();
 		FIToFICustomerCreditTransferV08 creditTransferReq = biRequest.getDocument().getFiToFICstmrCdtTrf();
 		
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 
-		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
-		ct.setCihubElapsedTime(routeElapsed);
+		ct.setCihubRequestDT(LocalDateTime.now());
+		long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
+		ct.setCihubElapsedTime(timeElapsed);
 
 		ct.setCrdtTrnRequestBizMsgIdr(biRequest.getAppHdr().getBizMsgIdr());
 		
@@ -59,8 +55,9 @@ public class StoreCreditTransferProcessor implements Processor {
 		else
 			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
 
-		ct.setCreDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
-
+		ct.setCreateDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
+		ct.setLastUpdateDt(LocalDateTime.now());
+		
 		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
 		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
 		ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getTp());
@@ -70,41 +67,47 @@ public class StoreCreditTransferProcessor implements Processor {
 		else
 			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		
 		
-		String encrRequestMesg = exchange.getMessage().getHeader("cihubroute_encr_request", String.class);
-		String encrResponseMesg = exchange.getMessage().getHeader("cihubroute_encr_response", String.class);
+		ct.setFullRequestMessage(rmw.getCihubEncriptedRequest());
 		
-		ct.setFullRequestMessage(encrRequestMesg);
-		if (!(null==encrResponseMesg))
-			ct.setFullResponseMsg(encrResponseMesg);
+		if (null != rmw.getCihubEncriptedResponse())
+			ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
 
 		ct.setMsgType("Credit Transfer");
-//		if (null==chnlRequest.getOrgnlEndToEndId())
-//			ct.setMsgType("Credit Transfer");
-//		else
+//		if (null != chnlRequest.getOrgnlEndToEndId())
 //			ct.setMsgType("Reverse CT");
 
 		ct.setOriginatingBank(biRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 		ct.setRecipientBank(biRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 
+		ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+		ct.setErrorMessage(rmc.getLastError());
 		
 		// CHECK RESPONSE
-		BusinessMessage biResponse = exchange.getMessage().getHeader("hdr_cihub_response", BusinessMessage.class);
+		Object oBiResponse = exchange.getMessage().getBody(Object.class);
 
-		if (!(null==biResponse)) {
-			ct.setCrdtTrnResponseBizMsgIdr(biResponse.getAppHdr().getBizMsgIdr());
-			ct.setResponseStatus(biResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+		if (oBiResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
+			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)oBiResponse;
+			ct.setErrorMessage(fault.getDescription());
+			ct.setResponseStatus(fault.getErrorCode());
+			ct.setCallStatus(fault.getFaultCategory());
+		}
+			
+		else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
+			ct.setCallStatus("REJECT-CICONN");
+			ct.setResponseStatus("RJCT");
+			ct.setErrorMessage("Message Rejected with Admi.002");
 		}
 		
-		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
-	
-
-		if (!(null==errorStatus)) {
-			ct.setCallStatus(errorStatus);
-		}
-		else
+		else {
 			ct.setCallStatus("SUCCESS");
-		
-
+			FlatPacs002Pojo ctResponse = (FlatPacs002Pojo) oBiResponse;
+			ct.setCrdtTrnResponseBizMsgIdr(ctResponse.getBizMsgIdr());
+			ct.setResponseStatus(ctResponse.getReasonCode());
+			
+			if (!(null==rmw.getCihubEncriptedResponse()))
+				ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
+		}
+			
 		creditTransferRepo.save(ct);
 	}
 }

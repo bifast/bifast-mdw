@@ -3,7 +3,7 @@ package bifast.outbound.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity(name="MESSAGE_COUNTER")
+@Entity(name="KC_MESSAGE_COUNTER")
 public class MessageCounter {
 
 	@Id

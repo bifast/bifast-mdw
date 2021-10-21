@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-@Entity(name="PAYMENT_STATUS")
+@Entity(name="KC_PAYMENT_STATUS")
 public class PaymentStatus {
 
 	@Id 

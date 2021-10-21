@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import bifast.outbound.corebank.pojo.CBDebitInstructionRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.FaultResponseProcessor;
 
 @Component
 public class CorebankRoute extends RouteBuilder{
@@ -22,8 +21,6 @@ public class CorebankRoute extends RouteBuilder{
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
 	private MockCBResponseProcessor mockCBResponse;
-	@Autowired
-	private FaultResponseProcessor faultProcessor;
 	@Autowired
 	private SaveCBTableProcessor saveCBTableProcessor;
 
@@ -45,19 +42,6 @@ public class CorebankRoute extends RouteBuilder{
 		cbInstructionWrapper.setInclude("NON_NULL");
 		cbInstructionWrapper.setInclude("NON_EMPTY");
 		cbInstructionWrapper.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-
-		onException(Exception.class) 
-			.log("ERROR route callingCB")
-	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-	    	.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
-			.process(faultProcessor)
-			.marshal(chnlResponseJDF)
-			.removeHeaders("hdr_*")
-			.removeHeaders("req_*")
-			.removeHeaders("ct_*")
-			.removeHeader("HttpMethod")
-			.handled(true);
-		;
 
 		from("direct:callcb").routeId("komi.cb.corebank")
 			.log("[ChReq:${header.hdr_chnlRefId}][CB] started")

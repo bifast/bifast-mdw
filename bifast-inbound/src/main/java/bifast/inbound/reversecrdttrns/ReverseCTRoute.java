@@ -25,8 +25,6 @@ public class ReverseCTRoute extends RouteBuilder {
 	private CTCorebankRequestProcessor ctCorebankRequestProcessor;
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
-	@Autowired
-	private 
 
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
 	JacksonDataFormat cbCreditTransferRequestJDF = new JacksonDataFormat(CBCreditInstructionRequestPojo.class);

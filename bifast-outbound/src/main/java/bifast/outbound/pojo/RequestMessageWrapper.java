@@ -12,6 +12,7 @@ import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.pojo.chnlrequest.PaymentStatusRequestSAFPojo;
 
 public class RequestMessageWrapper {
 
@@ -19,8 +20,13 @@ public class RequestMessageWrapper {
 	private String msgName;
 	private String channelId;   // nomor id channel = clientId
 	private String channelType;
-	private Long chnlTrnsIdTable;
-	private Instant start;
+	private String merchantType;
+//	private Long chnlTrnsIdTable;
+	private String senderAccountNumber;
+	private Instant komiStart;
+	private Instant cihubStart;
+	private String cihubEncriptedRequest;
+	private String cihubEncriptedResponse;
 	
 	private String komiTrxId;   // internal tranaction id dari komi
 								// digenerate dari utilService.getkomiid;
@@ -37,6 +43,8 @@ public class RequestMessageWrapper {
 
 	@JsonProperty("PaymentStatusRequest")
 	private ChnlPaymentStatusRequestPojo chnlPaymentStatusRequest;
+
+	private PaymentStatusRequestSAFPojo PaymentStatusRequestSAF;
 
 	@JsonProperty("ProxyRegistrationRequest")
 	private ChnlProxyRegistrationRequestPojo chnlProxyRegistrationRequest;
@@ -73,20 +81,32 @@ public class RequestMessageWrapper {
 	public void setChannelType(String channelType) {
 		this.channelType = channelType;
 	}
-	public Long getChnlTrnsIdTable() {
-		return chnlTrnsIdTable;
+	public String getSenderAccountNumber() {
+		return senderAccountNumber;
 	}
-	public void setChnlTrnsIdTable(Long chnlTrnsIdTable) {
-		this.chnlTrnsIdTable = chnlTrnsIdTable;
+	public void setSenderAccountNumber(String senderAccountNumber) {
+		this.senderAccountNumber = senderAccountNumber;
 	}
-	public Instant getStart() {
-		return start;
+	public String getMerchantType() {
+		return merchantType;
 	}
-	public void setStart(Instant start) {
-		this.start = start;
+	public void setMerchantType(String merchantType) {
+		this.merchantType = merchantType;
+	}
+	public Instant getKomiStart() {
+		return komiStart;
+	}
+	public void setKomiStart(Instant komiStart) {
+		this.komiStart = komiStart;
 	}
 	public String getKomiTrxId() {
 		return komiTrxId;
+	}
+	public Instant getCihubStart() {
+		return cihubStart;
+	}
+	public void setCihubStart(Instant cihubStart) {
+		this.cihubStart = cihubStart;
 	}
 	public void setKomiTrxId(String komiTrxId) {
 		this.komiTrxId = komiTrxId;
@@ -139,6 +159,12 @@ public class RequestMessageWrapper {
 	public void setAccountEnquiryRequest(BusinessMessage accountEnquiryRequest) {
 		this.accountEnquiryRequest = accountEnquiryRequest;
 	}
+	public PaymentStatusRequestSAFPojo getPaymentStatusRequestSAF() {
+		return PaymentStatusRequestSAF;
+	}
+	public void setPaymentStatusRequestSAF(PaymentStatusRequestSAFPojo paymentStatusRequestSAF) {
+		PaymentStatusRequestSAF = paymentStatusRequestSAF;
+	}
 	public BusinessMessage getCreditTransferRequest() {
 		return creditTransferRequest;
 	}
@@ -156,6 +182,18 @@ public class RequestMessageWrapper {
 	}
 	public void setProxyResolutionRequest(BusinessMessage proxyResolutionRequest) {
 		this.proxyResolutionRequest = proxyResolutionRequest;
+	}
+	public String getCihubEncriptedRequest() {
+		return cihubEncriptedRequest;
+	}
+	public void setCihubEncriptedRequest(String cihubEncriptedRequest) {
+		this.cihubEncriptedRequest = cihubEncriptedRequest;
+	}
+	public String getCihubEncriptedResponse() {
+		return cihubEncriptedResponse;
+	}
+	public void setCihubEncriptedResponse(String cihubEncriptedResponse) {
+		this.cihubEncriptedResponse = cihubEncriptedResponse;
 	}
 	
 

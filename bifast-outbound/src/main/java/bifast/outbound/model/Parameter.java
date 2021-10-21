@@ -3,7 +3,7 @@ package bifast.outbound.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+@Entity(name="KC_PARAMETER")
 public class Parameter {
 
 	@Id

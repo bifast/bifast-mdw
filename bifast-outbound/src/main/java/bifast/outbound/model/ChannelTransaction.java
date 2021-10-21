@@ -10,7 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-@Entity
+@Entity(name="KC_CHANNEL_TRANSACTION")
 public class ChannelTransaction {
 
 	@Id
@@ -41,115 +41,106 @@ public class ChannelTransaction {
 	@Column(length=35)
 	private String creditorAccountNumber;
 	
+	private String responseCode;
+	
 	private LocalDateTime requestTime;
 	private Long elapsedTime;
 
-	@Column(length=12)
-	private String status;
-
+	@Column(length=15)
+	private String callStatus;
 	@Column(length=250)
 	private String errorMsg;
-
+	
+	@Column(length=1000)
+	private String textMessage;
+	
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	public String getKomiTrnsId() {
 		return komiTrnsId;
 	}
-
 	public void setKomiTrnsId(String komiTrnsId) {
 		this.komiTrnsId = komiTrnsId;
 	}
-
 	public String getChannelRefId() {
 		return channelRefId;
 	}
-
 	public void setChannelRefId(String channelRefId) {
 		this.channelRefId = channelRefId;
 	}
-
 	public String getChannelId() {
 		return channelId;
 	}
-
 	public void setChannelId(String channelId) {
 		this.channelId = channelId;
 	}
-
 	public String getMsgName() {
 		return msgName;
 	}
-
 	public void setMsgName(String msgName) {
 		this.msgName = msgName;
 	}
-
 	public BigDecimal getAmount() {
 		return amount;
 	}
-
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
-
 	public String getDebtorAccountNumber() {
 		return debtorAccountNumber;
 	}
-
 	public void setDebtorAccountNumber(String debtorAccountNumber) {
 		this.debtorAccountNumber = debtorAccountNumber;
 	}
-
 	public String getRecptBank() {
 		return recptBank;
 	}
-
 	public void setRecptBank(String recptBank) {
 		this.recptBank = recptBank;
 	}
-
 	public String getCreditorAccountNumber() {
 		return creditorAccountNumber;
 	}
-
 	public void setCreditorAccountNumber(String creditorAccountNumber) {
 		this.creditorAccountNumber = creditorAccountNumber;
 	}
-
+	public String getResponseCode() {
+		return responseCode;
+	}
+	public void setResponseCode(String responseCode) {
+		this.responseCode = responseCode;
+	}
 	public LocalDateTime getRequestTime() {
 		return requestTime;
 	}
-
 	public void setRequestTime(LocalDateTime requestTime) {
 		this.requestTime = requestTime;
 	}
-
+	public String getTextMessage() {
+		return textMessage;
+	}
+	public void setTextMessage(String textMessage) {
+		this.textMessage = textMessage;
+	}
 	public Long getElapsedTime() {
 		return elapsedTime;
 	}
-
 	public void setElapsedTime(Long elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
-
-	public String getStatus() {
-		return status;
+	public String getCallStatus() {
+		return callStatus;
 	}
-
-	public void setStatus(String status) {
-		this.status = status;
+	public void setCallStatus(String callStatus) {
+		this.callStatus = callStatus;
 	}
-
 	public String getErrorMsg() {
 		return errorMsg;
 	}
-
 	public void setErrorMsg(String errorMsg) {
 		this.errorMsg = errorMsg;
 	}

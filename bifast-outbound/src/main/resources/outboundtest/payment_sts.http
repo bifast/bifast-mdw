@@ -1,12 +1,12 @@
 # Payment Status Request from channel on generic endpoint
 POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
-clientId: IB1
+clientId: TELLER
 
 {
     "PaymentStatusRequest" : {
-      "NoRef" : "20210912IDA010R00938",
-      "OriginalNoRef" : "252225"
+      "NoRef" : "1112",
+      "OriginalNoRef" : "1143"
     }
 }
 

@@ -5,9 +5,9 @@ clientId: IB1
 
 {
     "ProxyResolutionRequest": {
-        "NoRef": "1B23l24541",
+        "NoRef": "555552",
         "AccountNumber" : "01",
-        "ProxyType" : "02",
+        "ProxyType" : "01",
         "ProxyValue" : "frans.mazhar@gmail.com"
     }
 }
