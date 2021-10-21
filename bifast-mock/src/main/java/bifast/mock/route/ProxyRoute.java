@@ -23,25 +23,42 @@ public class ProxyRoute extends RouteBuilder {
 
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
-    @Override
-    public void configure() throws Exception {
-
-        jsonBusinessMessageDataFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+	private void configureJson() {
+		jsonBusinessMessageDataFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		jsonBusinessMessageDataFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 		jsonBusinessMessageDataFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
 		jsonBusinessMessageDataFormat.setInclude("NON_NULL");
 		jsonBusinessMessageDataFormat.setInclude("NON_EMPTY");
+	}
+	
+    @Override
+    public void configure() throws Exception {
+
+    	configureJson();
 
         from("direct:prxyregn").routeId("proxyregistration")
-            // .convertBodyTo(String.class)
+        	
             .log("Terima di mock")
             .log("${body}")
-            // .delay(500)
-            // .unmarshal(jsonBusinessMessageDataFormat)
-            .log("unmarshal ${body}")
+            .delay(500)
+            .log("end-delay")
             .process(proxyRegistrationResponseProcessor)
-
+            .log("End Process")
+            
         ;
+        
+        
+        from("direct:prxyreso").routeId("proxyresolution")
+        
+	        .log("Terima di mock")
+	        .log("${body}")
+	        .delay(500)
+	        .log("end-delay")
+	        .process(proxyResolutionResponseProcessor)
+	        .log("End Process")
+	        
+	    ;
+    
     }
     
 }

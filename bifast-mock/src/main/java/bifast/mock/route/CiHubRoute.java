@@ -158,9 +158,7 @@ public class CiHubRoute extends RouteBuilder {
 				.endChoice()
 
 				.when().simple("${header.msgType} == 'ProxyResolutionRequest'")
-					.log("ProxyResolutionRequest")
-					.process(proxyResolutionProc)
-					.unmarshal(jsonBusinessMessageDataFormat)
+					.to("direct:prxyreso")
 				.endChoice()
 
 
