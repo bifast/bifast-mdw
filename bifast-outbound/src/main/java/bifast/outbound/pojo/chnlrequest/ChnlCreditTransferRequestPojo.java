@@ -2,33 +2,86 @@ package bifast.outbound.pojo.chnlrequest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("CreditTransferRequest")
+@JsonPropertyOrder({
+	"channelRefId"
+	,"terminalId"
+	,"categoryPurpose"
+	,"dbtrName"
+	,"dbtrType"
+	,"dbtrId"
+	,"dbtrAccountNo"
+	,"dbtrAccountType"
+	,"dbtrResidentialStatus"
+	,"dbtrTownName"
+	,"amount"
+	,"feeTransfer"
+	,"recptBank"
+	,"crdtName"
+	,"crdtType"
+	,"crdtId"
+	,"crdtAccountNo"
+	,"crdtAccountType"
+	,"crdtResidentialStatus"
+	,"crdtTownName"
+	,"crdtProxyIdValue"
+	,"crdtProxyIdType"
+	,"paymentInfo"
+	})
+
 public class ChnlCreditTransferRequestPojo {
 	
+	@JsonProperty("NoRef")
 	private String channelRefId;
+	@JsonProperty("TerminalId")
 	private String terminalId; 
+	@JsonProperty("CategoryPurpose")
 	private String categoryPurpose; 
+	@JsonProperty("DebtorName")
 	private String dbtrName; 
+	@JsonProperty("DebtorType")
 	private String dbtrType; 
+	@JsonProperty("DebtorId")
 	private String dbtrId;   
+	@JsonProperty("DebtorAccountNumber")
 	private String dbtrAccountNo;  
+	@JsonProperty("DebtorAccountType")
 	private String dbtrAccountType;
+	
+	@JsonProperty("DebtorResidentialStatus")
 	private String dbtrResidentialStatus;
+	@JsonProperty("DebtorTownName")
 	private String dbtrTownName;
+	@JsonProperty("Amount")
 	private String amount; 
+	
+	@JsonProperty("FeeTransfer")
 	private String feeTransfer; 
+	@JsonProperty("RecipientBank")
 	private String recptBank; 
+	@JsonProperty("CreditorName")
 	private String crdtName; 
+	
+	@JsonProperty("CreditorType")
 	private String crdtType; 
+	@JsonProperty("CreditorId")
 	private String crdtId;  
+	@JsonProperty("CreditorAccountNumber")
 	private String crdtAccountNo;   
+	@JsonProperty("CreditorAccountType")
 	private String crdtAccountType;  
+	@JsonProperty("CreditorResidentialStatus")
 	private String crdtResidentialStatus;
+	@JsonProperty("CreditorTownName")
 	private String crdtTownName;
+	@JsonProperty("CreditorProxyId")
 	private String crdtProxyIdValue;
+	@JsonProperty("CreditorProxyType")
 	private String crdtProxyIdType;
+	@JsonProperty("PaymentInformation")
 	private String paymentInfo;
 	
 	@JsonCreator

@@ -18,7 +18,7 @@ public class ChannelTransaction {
 	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 
-	@Column(length=8)
+	@Column(length=20)
 	private String komiTrnsId;
 
 	@Column(length=20)

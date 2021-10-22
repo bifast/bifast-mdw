@@ -18,29 +18,34 @@ public class CreditTransfer {
 	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 	
+	@Column(length=50)
 	private String komiTrnsId;
 	
+	@Column(length=50)
 	private String msgType;
 	
-	@Column(name="ORIGN_BANK")
+	@Column(name="ORIGN_BANK", length=10)
 	private String originatingBank;
-	@Column(name="RECPT_BANK")
+	@Column(name="RECPT_BANK", length=10)
 	private String recipientBank;
 	
-	@Column(name="DEBTOR_ACCT_NO")
+	@Column(name="DEBTOR_ACCT_NO", length=50)
 	private String debtorAccountNumber;
-	@Column(name="DEBTOR_ACCT_TYPE")
+	@Column(name="DEBTOR_ACCT_TYPE", length=10)
 	private String debtorAccountType;
 
+	@Column(length=50)
 	private String debtorId;
+	@Column(length=10)
 	private String debtorType;
 	
-	@Column(name="CREDITOR_ACCT_NO")
+	@Column(name="CREDITOR_ACCT_NO", length=50)
 	private String creditorAccountNumber;
-	@Column(name="CREDITOR_ACCT_TYPE")
+	@Column(name="CREDITOR_ACCT_TYPE", length=10)
 	private String creditorAccountType;
-	@Column(name="CREDITOR_ID")
+	@Column(name="CREDITOR_ID", length=50)
 	private String creditorId;
+	@Column(length=10)
 	private String creditorType;
 	
 	private BigDecimal amount;	
@@ -48,10 +53,10 @@ public class CreditTransfer {
 	@Column(name="REQ_BIZMSGID")
 	private String crdtTrnRequestBizMsgIdr;
 
-	@Column(name="RESP_BIZMSGID")
+	@Column(name="RESP_BIZMSGID", length=50)
 	private String crdtTrnResponseBizMsgIdr;
 
-	@Column(name="STTL_BIZMSGID")
+	@Column(name="STTL_BIZMSGID", length=50)
 	private String SettlementBizMsgId;
 	
 	@Column(name="CIHUB_REQ_TIME")

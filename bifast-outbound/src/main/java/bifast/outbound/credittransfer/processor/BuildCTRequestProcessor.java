@@ -63,6 +63,7 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
 		seedCreditTrn.setCrdtId(chnReq.getCrdtId());
 		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
+			
 		seedCreditTrn.setCrdtIdType(chnReq.getCrdtType());
 		
 		seedCreditTrn.setDbtrAccountNo(chnReq.getDbtrAccountNo());
@@ -105,11 +106,6 @@ public class BuildCTRequestProcessor implements Processor {
 
 		exchange.getIn().setBody(busMsg);
 		
-//		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-//		BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
-		
-		
-
 	}
 
 }
