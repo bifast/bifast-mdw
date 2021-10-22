@@ -39,18 +39,21 @@ public class CreditTransferResponseProcessor implements Processor{
 		
 		seed.setMsgId(msgId);
 		
+		if (null == msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm())
+			seed.setCreditorName(utilService.getFullName());
+		else
+			seed.setCreditorName(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
+
         // int posbl4 = rand.nextInt(4);
 		if (norek.startsWith("5")) {
 			seed.setStatus("RJCT");
 			seed.setReason("U110");
 			seed.setAdditionalInfo("Additional Info abbc lsdjf 46");
-			seed.setCreditorName(utilService.getFullName());
 		}
 		else {
 			seed.setStatus("ACTC");
 			seed.setReason("U000");
 
-			seed.setCreditorName(utilService.getFullName());
 			seed.setCreditorType("01");
 			seed.setCreditorId("KTP-2004384");
 			seed.setCreditorResidentialStatus("01");
