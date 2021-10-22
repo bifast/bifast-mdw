@@ -165,7 +165,7 @@ public class ProxyResolutionResponseProcessor implements Processor{
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"prxy.003.001.01", bizMsgId);
+									"prxy.004.001.01", bizMsgId);
 		OriginalGroupInformation3 originalGroupInformation3 =  new OriginalGroupInformation3();
 		originalGroupInformation3.setOrgnlMsgId(hdr.getBizMsgIdr());
 		originalGroupInformation3.setOrgnlCreDtTm(hdr.getCreDt());
