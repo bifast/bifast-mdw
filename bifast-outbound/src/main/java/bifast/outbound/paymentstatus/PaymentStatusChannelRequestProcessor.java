@@ -22,7 +22,6 @@ import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.CreditTransferRepository;
 import bifast.outbound.repository.StatusReasonRepository;
-import bifast.outbound.service.UtilService;
 
 @Component
 public class PaymentStatusChannelRequestProcessor implements Processor {

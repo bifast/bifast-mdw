@@ -44,6 +44,7 @@ public class CreditTransferResponseProcessor implements Processor{
 			seed.setStatus("RJCT");
 			seed.setReason("U110");
 			seed.setAdditionalInfo("Additional Info abbc lsdjf 46");
+			seed.setCreditorName(utilService.getFullName());
 		}
 		else {
 			seed.setStatus("ACTC");
@@ -55,15 +56,18 @@ public class CreditTransferResponseProcessor implements Processor{
 			seed.setCreditorResidentialStatus("01");
 			seed.setCreditorTown("0300");
 		}
+		
 
 		if (seed.getStatus().equals("ACTC"))	
 			exchange.getMessage().setHeader("hdr_ctRespondStatus", "ACTC");
 		else
 			exchange.getMessage().setHeader("hdr_ctRespondStatus", "RJCT");
 			
-
+		System.out.println("creditor Name:  " + seed.getCreditorName());
 		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, msg);
 
+		System.out.println(response.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtr().getPty().getNm());
+		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		System.out.println("from Bank: " + msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 

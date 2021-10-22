@@ -5,8 +5,8 @@ clientId: TELLER
 
 {
     "PaymentStatusRequest" : {
-      "NoRef" : "1112",
-      "OriginalNoRef" : "1143"
+      "NoRef" : "1327",
+      "OriginalNoRef" : "27111"
     }
 }
 

@@ -1,12 +1,12 @@
-# Proxy Register  from channel
+# Proxy Resolution  from channel
 POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
 clientId: IB1
 
 {
     "ProxyResolutionRequest": {
-        "NoRef": "555552",
-        "AccountNumber" : "01",
+        "NoRef": "25001",
+        "SenderAccountNumber" : "22341111",
         "ProxyType" : "01",
         "ProxyValue" : "frans.mazhar@gmail.com"
     }

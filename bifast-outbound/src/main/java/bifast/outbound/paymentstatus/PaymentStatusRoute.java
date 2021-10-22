@@ -18,59 +18,69 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.paymentstatus.processor.PaymentStatusRequestProcessor;
 import bifast.outbound.paymentstatus.processor.PaymentStatusResponseProcessor;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
-import bifast.outbound.pojo.chnlrequest.PaymentStatusRequestSAFPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
-import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
-import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.report.pojo.RequestPojo;
-import bifast.outbound.report.pojo.ResponsePojo;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.CreditTransferRepository;
+import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class PaymentStatusRoute extends RouteBuilder {
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
    
-    @Autowired
-    private PaymentStatusChannelRequestProcessor paymentStatusChannelRequestProcessor;
-	@Autowired
-	private PaymentStatusRequestProcessor paymentStatusRequestProcessor;
-	@Autowired
-	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
 	@Autowired
 	private ChannelTransactionRepository channelRequestRepo;
 	@Autowired
-	private EnrichmentAggregator enrichmentAggregator;
-
-	@Autowired
 	private CreditTransferRepository creditTransferRepo;
-	
-	JacksonDataFormat ctRequestJDF = new JacksonDataFormat(ChnlCreditTransferRequestPojo.class);
+	@Autowired
+	private JacksonDataFormatService jdfService;
+
 
 	@Override
 	public void configure() throws Exception {
-		ctRequestJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		ctRequestJDF.setInclude("NON_NULL");
-		ctRequestJDF.setInclude("NON_EMPTY");
-		ctRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		ctRequestJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+		JacksonDataFormat ctRequestJDF = jdfService.unwrapRoot(ChnlCreditTransferRequestPojo.class);
 
 		
 		from("direct:pschnl").routeId("komi.ps.chnl")
 			.log("Payment_status channel")
 			
-			.process(paymentStatusChannelRequestProcessor)
+			//find CT
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					ChnlPaymentStatusRequestPojo chnReq = rmw.getChnlPaymentStatusRequest();
+					ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+					
+					String status = "#000";
+					List<ChannelTransaction> lCT = channelRequestRepo.findByChannelIdAndChannelRefId(rmw.getChannelId(), chnReq.getOrgnlRefId());
+					System.out.println("Jumlah " + lCT.size() + "dengan komiID " + lCT.get(0).getKomiTrnsId());
+					
+					if (lCT.size()>0) {
+						System.out.println("Cari CreditTransfer unt " + lCT.get(0).getKomiTrnsId());
+						Optional<CreditTransfer> oCreditTransfer = creditTransferRepo.findByKomiTrnsId(lCT.get(0).getKomiTrnsId());
+						if (oCreditTransfer.isPresent()) {
+							CreditTransfer crTrns = oCreditTransfer.get();
+							rmc.setResponseCode(crTrns.getResponseStatus());
+							exchange.getMessage().setBody(lCT.get(0).getTextMessage());
+						}
+					}
+					exchange.getMessage().setHeader("hdr_response_list", rmc);
+				}
+			})
+			
+//			.process(paymentStatusChannelRequestProcessor)
 
+			
 			.log("${body}")
+		
 			.unmarshal(ctRequestJDF)
 			
 			.process(new Processor() {
@@ -84,8 +94,8 @@ public class PaymentStatusRoute extends RouteBuilder {
 					channelResponseWr.getContent().add(ctReq);
 					exchange.getMessage().setBody(channelResponseWr);
 				}
-				
 			})
+			
 		;
 		
 		
