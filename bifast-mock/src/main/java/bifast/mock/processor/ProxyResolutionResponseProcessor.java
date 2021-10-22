@@ -16,6 +16,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.prxy001.ProxyRegistrationType1Code;
+import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.library.iso20022.prxy003.ProxyLookUpType1Code;
 import bifast.library.iso20022.prxy004.AccountIdentification4Choice;
 import bifast.library.iso20022.prxy004.BIAddtlCstmrInf;
@@ -42,6 +43,8 @@ import bifast.library.iso20022.service.Proxy002MessageService;
 import bifast.library.iso20022.service.Proxy002Seed;
 import bifast.library.iso20022.service.Proxy003MessageService;
 import bifast.library.iso20022.service.Proxy003Seed;
+import bifast.library.iso20022.service.Proxy004MessageService;
+import bifast.library.iso20022.service.Proxy004Seed;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
 
@@ -53,10 +56,7 @@ public class ProxyResolutionResponseProcessor implements Processor{
 	@Autowired
 	private AppHeaderService hdrService;
 	@Autowired
-	private Proxy002MessageService proxy002MessageService;
-	
-	@Autowired
-	private Proxy003MessageService proxy003MessageService;
+	private Proxy004MessageService proxy004MessageService;
 	
 	@Autowired
 	private UtilService utilService;
@@ -75,24 +75,19 @@ public class ProxyResolutionResponseProcessor implements Processor{
 		String msgId = utilService.genMessageId("610", "INDOIDJA");
 
 		Random rand = new Random();
-		Proxy003Seed seed = new Proxy003Seed();
-		
-		String status = "";
-		String reason = "";
+		Proxy004Seed seed = new Proxy004Seed();
 		
 		seed.setMsgId(msgId);
+		
         int posbl = rand.nextInt(10);
 		if (posbl == 0) {
-			status = "RJCT";
-			reason = "U001";
-			//seed.setStatus("RJCT");
-			//seed.setReason("U001");
+			seed.setStatus("RJCT");
+			seed.setReason("U001");
 		}
 		else {
-			status = "ACTC";
-			reason = "U000";
-			//seed.setStatus("ACTC");
-			//seed.setReason("U000");
+
+			seed.setStatus("ACTC");
+			seed.setReason("U000");
 			
 		}
 		
@@ -100,6 +95,8 @@ public class ProxyResolutionResponseProcessor implements Processor{
 		
 		String proxyType = msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getPrxyRtrvl().getTp();
 		String proxyVal =  msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getPrxyRtrvl().getVal();;
+		seed.setPrxyRtrvlTp(proxyType);
+		seed.setPrxyRtrvlVal(proxyVal);
 		
 		AccountProxy accountProxy = new AccountProxy();	
 		accountProxy = accountProxyRepository.getByProxyTypeAndByProxyVal(proxyType,proxyVal);
@@ -107,161 +104,64 @@ public class ProxyResolutionResponseProcessor implements Processor{
 		if(msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getLkUpTp() ==  ProxyLookUpType1Code.PXRS) {
 			if(accountProxy != null) {
 				if(accountProxy.getAccountStatus().equals("ICTV")) {
-					status = "RJCT";
-					reason = "U804";
+					seed.setStatus("RJCT");
+					seed.setReason("U804");
 				}else if(accountProxy.getAccountStatus().equals("SUSP")) {
-					status = "RJCT";
-					reason = "U805";
+					seed.setStatus("RJCT");
+					seed.setReason("U805");
 				}else if(accountProxy.getAccountStatus().equals("SUSB")) {
-					status = "RJCT";
-					reason = "U811";
+					seed.setStatus("RJCT");
+					seed.setReason("U811");
 				}else if(accountProxy.getAccountStatus().equals("ACTV")) {
 					accountProxy.setRegisterBank(msg.getDocument().getPrxyLookUp().getGrpHdr().getMsgSndr().getAgt().getFinInstnId().getOthr().getId());
 					accountProxyRepository.save(accountProxy);
 				}
 			}else {
-				status = "RJCT";
-				reason = "U811";
+				seed.setStatus("RJCT");
+				seed.setReason("U811");
 			}
 		}else if(msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getLkUpTp()  ==  ProxyLookUpType1Code.CHCK) {
 			if(accountProxy != null) {
 				if(accountProxy.getAccountStatus().equals("ICTV")) {
-					status = "RJCT";
-					reason = "U804";
+					seed.setStatus("RJCT");
+					seed.setReason("U804");
 				}else if(accountProxy.getAccountStatus().equals("SUSP")) {
-					status = "RJCT";
-					reason = "U805";
+					seed.setStatus("RJCT");
+					seed.setReason("U805");
 				}else if(accountProxy.getAccountStatus().equals("SUSB")) {
-					status = "RJCT";
-					reason = "U811";
+					seed.setStatus("RJCT");
+					seed.setReason("U811");
 				}
 			}else {
-				status = "RJCT";
-				reason = "U811";
+				seed.setStatus("RJCT");
+				seed.setReason("U811");
 			}
 		}else if(msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getLkUpTp()  ==  ProxyLookUpType1Code.NMEQ) {
 			if(accountProxy != null) {
 				if(accountProxy.getAccountStatus().equals("ICTV")) {
-					status = "RJCT";
-					reason = "U804";
+					seed.setStatus("RJCT");
+					seed.setReason("U804");
 				}else if(accountProxy.getAccountStatus().equals("SUSP")) {
-					status = "RJCT";
-					reason = "U805";
+					seed.setStatus("RJCT");
+					seed.setReason("U805");
 				}else if(accountProxy.getAccountStatus().equals("SUSB")) {
-					status = "RJCT";
-					reason = "U811";
+					seed.setStatus("RJCT");
+					seed.setReason("U811");
 				}
 			}else {
-				status = "RJCT";
-				reason = "U811";
+				seed.setStatus("RJCT");
+				seed.setReason("U811");
 			}
 		}
-		//Response
-		ProxyLookUpResponseV01 rest = new ProxyLookUpResponseV01();
 		
-		GroupHeader60 grpHdr = new GroupHeader60();
-		grpHdr.setMsgId(seed.getMsgId());
+		if(accountProxy != null) {
+			seed.setAccountName(accountProxy.getAccountName());
+			seed.setAccountNumber(accountProxy.getAccountNumber());
+			seed.setAccountType(accountProxy.getAccountType());
+			seed.setDisplayName(accountProxy.getDisplayName());
+		}
 		
-		GregorianCalendar gcal = new GregorianCalendar();
-		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		grpHdr.setCreDtTm(xcal);
-		
-		// GrpHdr / MsgSndr / Agt/ FinInstnId/ Othr /Id
-		GenericFinancialIdentification1 sndrId = new GenericFinancialIdentification1();
-		sndrId.setId(config.getBankcode());
-		FinancialInstitutionIdentification8 finInstnId = new FinancialInstitutionIdentification8();
-		finInstnId.setOthr(sndrId);
-		BranchAndFinancialInstitutionIdentification5 sndrAgt = new BranchAndFinancialInstitutionIdentification5();
-		sndrAgt.setFinInstnId(finInstnId);
-		
-		Party12Choice msgSndr = new Party12Choice();
-		msgSndr.setAgt(sndrAgt);
-		
-		grpHdr.setMsgRcpt(msgSndr);
-		rest.setGrpHdr(grpHdr);	
-		
-		
-		ProxyLookUpResponse1 regnRspn = new ProxyLookUpResponse1();
-				  
-		regnRspn.setOrgnlId(seed.getMsgId());
-		  
-		 ProxyDefinition1 prxyRtrvl = new ProxyDefinition1();
-		 prxyRtrvl.setTp(msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getPrxyRtrvl().getTp()); 
-		 prxyRtrvl.setVal(msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getPrxyRtrvl().getVal());
-		 
-		 regnRspn.setOrgnlPrxyRtrvl(prxyRtrvl);
-		 
-		 ProxyLookUpRegistration1 regn = new ProxyLookUpRegistration1();
-		 
-			if(status.equals("ACTC")) {
-				regn.setPrxRspnSts(ProxyStatusCode.ACTC);
-			}else {
-				regn.setPrxRspnSts(ProxyStatusCode.RJCT);
-			}
-				
-			ProxyStatusChoice StsRsnInf = new ProxyStatusChoice();
-			StsRsnInf.setPrtry(reason);
-			regn.setStsRsnInf(StsRsnInf);
-			
-			regn.setPrxy(prxyRtrvl);
-			
-			if(accountProxy != null) {
-			
-				ProxyLookUpAccount1 prxyAcc = new ProxyLookUpAccount1();
-				GenericFinancialIdentification1 othrRegnRspn = new GenericFinancialIdentification1();
-				othrRegnRspn.setId(accountProxy.getRegisterBank());
-				
-				FinancialInstitutionIdentification8 finInstnIdRegnRspn = new FinancialInstitutionIdentification8();
-				finInstnIdRegnRspn.setOthr(othrRegnRspn);
-				
-				BranchAndFinancialInstitutionIdentification5 agtRegnRspn = new BranchAndFinancialInstitutionIdentification5();
-				agtRegnRspn.setFinInstnId(finInstnIdRegnRspn);
-				prxyAcc.setAgt(agtRegnRspn);
-				
-				GenericAccountIdentification1 othr = new GenericAccountIdentification1();
-				othr.setId(accountProxy.getAccountNumber());
-				
-				AccountIdentification4Choice id = new AccountIdentification4Choice();
-				id.setOthr(othr);
-				
-				CashAccountType2ChoiceProxy tp = new CashAccountType2ChoiceProxy();
-				tp.setPrtry(accountProxy.getAccountType());
-				
-				CashAccount40 cashAccount40 =  new CashAccount40();
-				cashAccount40.setId(id);
-				
-				cashAccount40.setTp(tp);
-				cashAccount40.setNm(accountProxy.getAccountName());
-				
-				prxyAcc.setAcct(cashAccount40);
-				prxyAcc.setDsplNm(accountProxy.getDisplayName());
-				prxyAcc.setRegnId("0102030405060708");
-				
-				regn.setRegn(prxyAcc);
-				
-				
-			 // Lookup / PrxyOnly ProxyLookUpChoice1 lookup = new ProxyLookUpChoice1();
-				
-			}	 
-		regnRspn.setRegnRspn(regn);
-		rest.setLkUpRspn(regnRspn);
-		
-		///
-		BIAddtlCstmrInf bIAddtlCstmrInf = new BIAddtlCstmrInf();
-		bIAddtlCstmrInf.setId("5302022290990001");
-		bIAddtlCstmrInf.setTp("01");
-		bIAddtlCstmrInf.setTwnNm("0300");
-		
-		///
-		BISupplementaryDataEnvelope1 biSupplementaryDataEnvelope1 =  new BISupplementaryDataEnvelope1();
-		biSupplementaryDataEnvelope1.setCstmr(bIAddtlCstmrInf);
-		
-		///
-		BISupplementaryData1 biSupplementaryData1 = new BISupplementaryData1();
-		biSupplementaryData1.setEnvlp(biSupplementaryDataEnvelope1);
-		
-		///
-		rest.getSplmtryData().add(biSupplementaryData1);
+		ProxyLookUpResponseV01 response = proxy004MessageService.proxyResolutionResponse(seed, msg);
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
@@ -270,10 +170,10 @@ public class ProxyResolutionResponseProcessor implements Processor{
 		originalGroupInformation3.setOrgnlMsgId(hdr.getBizMsgIdr());
 		originalGroupInformation3.setOrgnlCreDtTm(hdr.getCreDt());
 		originalGroupInformation3.setOrgnlMsgNmId(hdr.getMsgDefIdr());
-		rest.setOrgnlGrpInf(originalGroupInformation3);
+		response.setOrgnlGrpInf(originalGroupInformation3);
 		
 		Document doc = new Document();
-		doc.setPrxyLookUpRspn(rest);
+		doc.setPrxyLookUpRspn(response);
 		BusinessMessage busMesg = new BusinessMessage();
 		busMesg.setAppHdr(hdr);
 		busMesg.setDocument(doc);
