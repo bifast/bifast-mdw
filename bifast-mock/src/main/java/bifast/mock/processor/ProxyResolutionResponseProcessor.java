@@ -179,6 +179,10 @@ public class ProxyResolutionResponseProcessor implements Processor{
 			seed.setRegisterBank(accountProxy.getRegisterBank());
 			seed.setPrxyRtrvlTp(accountProxy.getProxyType());
 			seed.setPrxyRtrvlVal(accountProxy.getProxyVal());
+			seed.setCstmrId(accountProxy.getCstmrId());
+			seed.setCstmrTp(accountProxy.getCstmrTp());
+			seed.setCstmrRsdntSts(accountProxy.getCstmrRsdntSts());
+			seed.setCstmrTwnNm(accountProxy.getCstmrTwnNm());
 		}
 		
 		ProxyLookUpResponseV01 response = proxy004MessageService.proxyResolutionResponse(seed, msg);

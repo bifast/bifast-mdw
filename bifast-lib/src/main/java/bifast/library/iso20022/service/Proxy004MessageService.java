@@ -154,29 +154,28 @@ public class Proxy004MessageService {
 				
 				regn.setRegn(prxyAcc);
 				
+				BIAddtlCstmrInf bIAddtlCstmrInf = new BIAddtlCstmrInf();
+				bIAddtlCstmrInf.setId(seed.getCstmrId());
+				bIAddtlCstmrInf.setTp(seed.getCstmrTp());
+				bIAddtlCstmrInf.setTwnNm(seed.getCstmrTwnNm());
+				bIAddtlCstmrInf.setRsdntSts(seed.getCstmrRsdntSts());
 				
-			 // Lookup / PrxyOnly ProxyLookUpChoice1 lookup = new ProxyLookUpChoice1();
+				///
+				BISupplementaryDataEnvelope1 biSupplementaryDataEnvelope1 =  new BISupplementaryDataEnvelope1();
+				biSupplementaryDataEnvelope1.setCstmr(bIAddtlCstmrInf);
 				
+				///
+				BISupplementaryData1 biSupplementaryData1 = new BISupplementaryData1();
+				biSupplementaryData1.setEnvlp(biSupplementaryDataEnvelope1);
+				
+				///
+				response.getSplmtryData().add(biSupplementaryData1);
 			}	 
 		regnRspn.setRegnRspn(regn);
 		response.setLkUpRspn(regnRspn);
 		
 		///
-		BIAddtlCstmrInf bIAddtlCstmrInf = new BIAddtlCstmrInf();
-		bIAddtlCstmrInf.setId("5302022290990001");
-		bIAddtlCstmrInf.setTp("01");
-		bIAddtlCstmrInf.setTwnNm("0300");
 		
-		///
-		BISupplementaryDataEnvelope1 biSupplementaryDataEnvelope1 =  new BISupplementaryDataEnvelope1();
-		biSupplementaryDataEnvelope1.setCstmr(bIAddtlCstmrInf);
-		
-		///
-		BISupplementaryData1 biSupplementaryData1 = new BISupplementaryData1();
-		biSupplementaryData1.setEnvlp(biSupplementaryDataEnvelope1);
-		
-		///
-		response.getSplmtryData().add(biSupplementaryData1);
 		
 		return response;
 	}

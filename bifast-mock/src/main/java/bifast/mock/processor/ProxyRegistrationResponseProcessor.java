@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
+import bifast.library.iso20022.prxy001.BISupplementaryDataEnvelope1;
 import bifast.library.iso20022.prxy001.ProxyRegistrationType1Code;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.library.iso20022.service.AppHeaderService;
@@ -50,14 +51,16 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 			seed.setReason("U000");
 			
 		}
-
-		seed.setAdditionalInfo("Terimakasih atas perhaitiannya");
-		seed.setCstmrId("5302022290990001");
-		seed.setCstmrTp("01");
-		seed.setCstmrTwnNm("0300");
-		seed.setCstmrRsdntSts("01");
 		
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
+		
+		BISupplementaryDataEnvelope1 enlp = msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp();
+		
+		seed.setAdditionalInfo("Terimakasih atas perhaitiannya");
+		seed.setCstmrId(enlp.getCstmr().getId());
+		seed.setCstmrTp(enlp.getCstmr().getTp());
+		seed.setCstmrTwnNm(enlp.getCstmr().getTwnNm());
+		seed.setCstmrRsdntSts(enlp.getCstmr().getRsdntSts());
 		
 		AccountProxy accountProxy = new AccountProxy();
 		

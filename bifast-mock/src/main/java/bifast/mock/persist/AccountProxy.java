@@ -21,6 +21,11 @@ public class AccountProxy {
     private String accountStatus;
     private String scndIdTp;
     private String scndIdVal;
+    private String cstmrId;
+    private String cstmrTp;
+    private String cstmrRsdntSts;
+    private String cstmrTwnNm;
+    
 	public Long getId() {
 		return id;
 	}
@@ -87,6 +92,28 @@ public class AccountProxy {
 	public void setScndIdVal(String scndIdVal) {
 		this.scndIdVal = scndIdVal;
 	}
-    
-	
+	public String getCstmrId() {
+		return cstmrId;
+	}
+	public void setCstmrId(String cstmrId) {
+		this.cstmrId = cstmrId;
+	}
+	public String getCstmrTp() {
+		return cstmrTp;
+	}
+	public void setCstmrTp(String cstmrTp) {
+		this.cstmrTp = cstmrTp;
+	}
+	public String getCstmrRsdntSts() {
+		return cstmrRsdntSts;
+	}
+	public void setCstmrRsdntSts(String cstmrRsdntSts) {
+		this.cstmrRsdntSts = cstmrRsdntSts;
+	}
+	public String getCstmrTwnNm() {
+		return cstmrTwnNm;
+	}
+	public void setCstmrTwnNm(String cstmrTwnNm) {
+		this.cstmrTwnNm = cstmrTwnNm;
+	}
 }
