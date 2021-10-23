@@ -3,32 +3,21 @@ package bifast.outbound.paymentstatus;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
-import bifast.outbound.model.ChannelTransaction;
-import bifast.outbound.model.CreditTransfer;
-import bifast.outbound.paymentstatus.processor.PaymentStatusRequestProcessor;
-import bifast.outbound.paymentstatus.processor.PaymentStatusResponseProcessor;
+import bifast.outbound.model.StatusReason;
+import bifast.outbound.paymentstatus.processor.CheckSAFResultProcessor;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
-import bifast.outbound.repository.ChannelTransactionRepository;
-import bifast.outbound.repository.CreditTransferRepository;
+import bifast.outbound.repository.StatusReasonRepository;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
@@ -37,12 +26,11 @@ public class PaymentStatusRoute extends RouteBuilder {
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
    
 	@Autowired
-	private ChannelTransactionRepository channelRequestRepo;
-	@Autowired
-	private CreditTransferRepository creditTransferRepo;
+	private CheckSAFResultProcessor checkSAFResult;
 	@Autowired
 	private JacksonDataFormatService jdfService;
-
+    @Autowired
+    private StatusReasonRepository statusReasonRepo;
 
 	@Override
 	public void configure() throws Exception {
@@ -53,52 +41,42 @@ public class PaymentStatusRoute extends RouteBuilder {
 			.log("Payment_status channel")
 			
 			//find CT
+			.process(checkSAFResult)
+
+			.log("${body}")
+
+			.filter().simple("${header.hdr_response_list.reasonCode} == 'U000'")
+				.log("Akan unmarshal")
+				.unmarshal(ctRequestJDF)
+			.end()
+			
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-					ChnlPaymentStatusRequestPojo chnReq = rmw.getChnlPaymentStatusRequest();
+					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);				
 					ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
 					
-					String status = "#000";
-					List<ChannelTransaction> lCT = channelRequestRepo.findByChannelIdAndChannelRefId(rmw.getChannelId(), chnReq.getOrgnlRefId());
-					System.out.println("Jumlah " + lCT.size() + "dengan komiID " + lCT.get(0).getKomiTrnsId());
-					
-					if (lCT.size()>0) {
-						System.out.println("Cari CreditTransfer unt " + lCT.get(0).getKomiTrnsId());
-						Optional<CreditTransfer> oCreditTransfer = creditTransferRepo.findByKomiTrnsId(lCT.get(0).getKomiTrnsId());
-						if (oCreditTransfer.isPresent()) {
-							CreditTransfer crTrns = oCreditTransfer.get();
-							rmc.setResponseCode(crTrns.getResponseStatus());
-							exchange.getMessage().setBody(lCT.get(0).getTextMessage());
-						}
-					}
-					exchange.getMessage().setHeader("hdr_response_list", rmc);
-				}
-			})
-			
-//			.process(paymentStatusChannelRequestProcessor)
-
-			
-			.log("${body}")
-		
-			.unmarshal(ctRequestJDF)
-			
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					ChnlCreditTransferRequestPojo ctReq = exchange.getMessage().getBody(ChnlCreditTransferRequestPojo.class);
 					ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
-					channelResponseWr.setResponseCode("U000");
+					channelResponseWr.setResponseCode(rmc.getResponseCode());
+					channelResponseWr.setReasonCode(rmc.getReasonCode());
 					channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 					channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
-					channelResponseWr.setContent(new ArrayList<>());
-					channelResponseWr.getContent().add(ctReq);
+					channelResponseWr.setResponses(new ArrayList<>());
+					
+					String reasonMessage = statusReasonRepo.findById(rmc.getReasonCode()).orElse(new StatusReason()).getDescription();
+					channelResponseWr.setReasonMessage(reasonMessage);
+					
+					ChnlCreditTransferRequestPojo ctReq = new ChnlCreditTransferRequestPojo();
+					ctReq.setChannelRefId(rmw.getRequestId());
+
+					if (rmc.getReasonCode().equals("U000")) {
+						ctReq = exchange.getMessage().getBody(ChnlCreditTransferRequestPojo.class);
+					}
+					channelResponseWr.getResponses().add(ctReq);
 					exchange.getMessage().setBody(channelResponseWr);
 				}
 			})
 			
 		;
-		
-		
 
 	}
 

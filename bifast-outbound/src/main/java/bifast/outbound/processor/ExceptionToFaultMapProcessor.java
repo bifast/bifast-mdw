@@ -30,8 +30,8 @@ public class ExceptionToFaultMapProcessor implements Processor {
 		ResponseMessageCollection responseCol = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
 		
 		int statusCode = 500;
-		exchange.getMessage().setHeader("hdr_error_status", "ERROR-CICONN");
-		fault.setFaultCategory("ERROR-CICONN");
+		exchange.getMessage().setHeader("hdr_error_status", "ERROR");
+		fault.setFaultCategory("ERROR");
 
 		try {
 			Method getStatusCode = objException.getClass().getMethod("getStatusCode");
@@ -39,12 +39,12 @@ public class ExceptionToFaultMapProcessor implements Processor {
 		} catch(NoSuchMethodException noMethodE) {}
 		
 		if (exceptionClassName.equals("java.net.SocketTimeoutException"))
-			fault.setFaultCategory("TIMEOUT-CICONN");
+			fault.setFaultCategory("TIMEOUT");
 		else if (statusCode == 504) {
-			fault.setFaultCategory("TIMEOUT-CICONN");
+			fault.setFaultCategory("TIMEOUT");
 		}
 		else 
-			fault.setFaultCategory("ERROR-CICONN");
+			fault.setFaultCategory("ERROR");
 
 		String description = "Check error log";
 		try {
@@ -60,13 +60,16 @@ public class ExceptionToFaultMapProcessor implements Processor {
 		fault.setDescription(description);
 
 		if (statusCode == 504) {
-			fault.setErrorCode("K000");
+			fault.setResponseCode("KSTS");
+			fault.setReasonCode("K000");
 		}
 		else if (oFaultClass.isPresent()) {
-			fault.setErrorCode(oFaultClass.get().getReason());
+			fault.setResponseCode("KSTS");
+			fault.setReasonCode(oFaultClass.get().getReason());
 		}
 		else {
-			fault.setErrorCode("U220");
+			fault.setResponseCode("RJCT");
+			fault.setReasonCode("U220");
 		}
 		
 		responseCol.setFault(fault);

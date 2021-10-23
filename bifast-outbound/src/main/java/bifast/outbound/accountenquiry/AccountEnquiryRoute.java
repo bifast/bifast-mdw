@@ -45,6 +45,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 				}	
 			})
 			
+			// akan panggil Proxy Resolution
 			.filter().simple("${body.creditorAccountNumber} == null")
 				.log("accountNo is null")
 				.process(new Processor() {
@@ -66,17 +67,26 @@ public class AccountEnquiryRoute extends RouteBuilder{
 
 				.process(proxyResolutionRequestProcessor)
 				.to("direct:call-cihub")
-				.log("${body.class}")
+				
 				.process(aeProxyEnrichment)
 				
 			.end()
+			// selesai panggil Proxy Resolution
+			.log("classname : ${body.class}")
+			.log("response proxy res: ${header.hdr_response_list.responseCode}")
 			
-			.process(buildAccountEnquiryRequestProcessor)
-	
-			.to("direct:call-cihub")
-			
-			.process(saveAccountEnquiryProcessor)
+			.filter().simple("${header.hdr_response_list.responseCode} == 'ACTC'")
+				.log("Akan panggil account_enquiry")
+				.process(buildAccountEnquiryRequestProcessor)
+		
+				.to("direct:call-cihub")
+				.log("${body.class}")
 
+				.process(saveAccountEnquiryProcessor)
+
+			.end()
+
+			
 			.process(accountEnqrResponseProcessor)
 
 		;

@@ -5,7 +5,7 @@ clientId: IB1
 
 {
     "ProxyResolutionRequest": {
-        "NoRef": "25001",
+        "NoRef": "121",
         "SenderAccountNumber" : "22341111",
         "ProxyType" : "01",
         "ProxyValue" : "frans.mazhar@gmail.com"

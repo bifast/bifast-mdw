@@ -35,7 +35,7 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		chnlResponseWr.setResponseCode("U000");
 		chnlResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 		chnlResponseWr.setTime(LocalDateTime.now().format(timeformatter));
-		chnlResponseWr.setContent(new ArrayList<>());
+		chnlResponseWr.setResponses(new ArrayList<>());
 
 		Object objResponse = exchange.getMessage().getBody(Object.class);
 		String bodyClass = objResponse.getClass().getSimpleName();
@@ -52,8 +52,8 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objResponse;
 			
 			chnlResponseWr.setResponseCode("KSTS");
-			chnlResponseWr.setReasonCode(fault.getErrorCode());
-			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getErrorCode());
+			chnlResponseWr.setReasonCode(fault.getReasonCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 			if (oStatusReason.isPresent())
 				chnlResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 			else
@@ -91,7 +91,7 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 			
 		}
 		
-		chnlResponseWr.getContent().add(chnResponse);
+		chnlResponseWr.getResponses().add(chnResponse);
 
 		exchange.getMessage().setBody(chnlResponseWr);
 

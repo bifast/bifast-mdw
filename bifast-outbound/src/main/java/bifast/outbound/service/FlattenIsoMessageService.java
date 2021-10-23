@@ -226,19 +226,25 @@ public class FlattenIsoMessageService {
 		FlatPrxy004Pojo flatMsg = new FlatPrxy004Pojo();
 		ProxyLookUpResponseV01 prxResp = busMsg.getDocument().getPrxyLookUpRspn();
 		
-		flatMsg.setAccountNumber(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getId().getOthr().getId());
+		if (null != prxResp.getLkUpRspn().getRegnRspn().getRegn()) {
+			flatMsg.setDisplayName(prxResp.getLkUpRspn().getRegnRspn().getRegn().getDsplNm());
+			flatMsg.setAccountType(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getTp().getPrtry());
+			flatMsg.setAccountNumber(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getId().getOthr().getId());
+			flatMsg.setRegisterBank(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAgt().getFinInstnId().getOthr().getId());
+			flatMsg.setRegistrationId(prxResp.getLkUpRspn().getRegnRspn().getRegn().getRegnId());
+
+			if (null != prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getNm())
+				flatMsg.setAccountName(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getNm());
+		}
+
 		flatMsg.setResponseCode(prxResp.getLkUpRspn().getRegnRspn().getPrxRspnSts().value());
 		flatMsg.setReasonCode(prxResp.getLkUpRspn().getRegnRspn().getStsRsnInf().getPrtry());
-		flatMsg.setRegisterBank(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAgt().getFinInstnId().getOthr().getId());
 		
-		flatMsg.setProxyType(prxResp.getLkUpRspn().getRegnRspn().getPrxy().getTp());
-		flatMsg.setProxyValue(prxResp.getLkUpRspn().getRegnRspn().getPrxy().getVal());
-		flatMsg.setRegistrationId(prxResp.getLkUpRspn().getRegnRspn().getRegn().getRegnId());
-		flatMsg.setDisplayName(prxResp.getLkUpRspn().getRegnRspn().getRegn().getDsplNm());
-		flatMsg.setAccountType(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getTp().getPrtry());
+//		flatMsg.setProxyType(prxResp.getLkUpRspn().getRegnRspn().getPrxy().getTp());
+//		flatMsg.setProxyValue(prxResp.getLkUpRspn().getRegnRspn().getPrxy().getVal());
+		flatMsg.setProxyType(prxResp.getLkUpRspn().getOrgnlPrxyRqstr().getTp());
+		flatMsg.setProxyValue(prxResp.getLkUpRspn().getOrgnlPrxyRqstr().getVal());
 		
-		if (null != prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getNm())
-			flatMsg.setAccountName(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getNm());
 
 		if (prxResp.getSplmtryData().size() > 0 ) {
 

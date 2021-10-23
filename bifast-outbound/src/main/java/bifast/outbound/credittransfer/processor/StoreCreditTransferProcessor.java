@@ -87,22 +87,33 @@ public class StoreCreditTransferProcessor implements Processor {
 
 		if (oBiResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)oBiResponse;
-			ct.setErrorMessage(fault.getDescription());
-			ct.setResponseStatus(fault.getErrorCode());
 			ct.setCallStatus(fault.getFaultCategory());
+			ct.setResponseCode(fault.getResponseCode());
+			ct.setReasonCode(fault.getReasonCode());
+			ct.setErrorMessage(fault.getDescription());
 		}
 			
 		else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
-			ct.setCallStatus("REJECT-CICONN");
-			ct.setResponseStatus("RJCT");
+			ct.setCallStatus("REJECT");
+			ct.setResponseCode("RJCT");
+			ct.setReasonCode("U215");
 			ct.setErrorMessage("Message Rejected with Admi.002");
 		}
 		
 		else {
-			ct.setCallStatus("SUCCESS");
+
 			FlatPacs002Pojo ctResponse = (FlatPacs002Pojo) oBiResponse;
+
+			if (ctResponse.getReasonCode().equals("U900")) {
+				ct.setCallStatus("TIMEOUT");
+			}
+			else {
+				ct.setCallStatus("SUCCESS");
+			}
+			
+			ct.setResponseCode(ctResponse.getTransactionStatus());
+			ct.setReasonCode(ctResponse.getReasonCode());
 			ct.setCrdtTrnResponseBizMsgIdr(ctResponse.getBizMsgIdr());
-			ct.setResponseStatus(ctResponse.getReasonCode());
 			
 			if (!(null==rmw.getCihubEncriptedResponse()))
 				ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());

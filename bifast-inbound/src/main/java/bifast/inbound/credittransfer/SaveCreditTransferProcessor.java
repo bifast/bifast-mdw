@@ -50,7 +50,7 @@ public class SaveCreditTransferProcessor implements Processor {
 		if (!(null == exchange.getMessage().getHeader("hdr_toBIobj"))) {
 			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj",BusinessMessage.class);
 
-			ct.setResponseStatus(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			ct.setResponseCode(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
 			ct.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
 			
 		}

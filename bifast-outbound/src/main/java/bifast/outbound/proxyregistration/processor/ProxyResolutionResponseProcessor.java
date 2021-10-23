@@ -35,7 +35,7 @@ public class ProxyResolutionResponseProcessor implements Processor {
 		channelResponseWr.setResponseCode("U000");
 		channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
-		channelResponseWr.setContent(new ArrayList<>());
+		channelResponseWr.setResponses(new ArrayList<>());
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ChnlProxyResolutionRequestPojo chnRequest = rmw.getChnlProxyResolutionRequest();
@@ -48,8 +48,8 @@ public class ProxyResolutionResponseProcessor implements Processor {
 
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
 
-			channelResponseWr.setResponseCode(fault.getErrorCode());
-			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getErrorCode());
+			channelResponseWr.setResponseCode(fault.getResponseCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 			if (oStatusReason.isPresent())
 				channelResponseWr.setResponseMessage(oStatusReason.get().getDescription());
 			else
@@ -106,7 +106,7 @@ public class ProxyResolutionResponseProcessor implements Processor {
 				chnResponse.setTownName(resp.getTownName());
 		}
 
-		channelResponseWr.getContent().add(chnResponse);
+		channelResponseWr.getResponses().add(chnResponse);
 		exchange.getIn().setBody(channelResponseWr);
 	
 	}

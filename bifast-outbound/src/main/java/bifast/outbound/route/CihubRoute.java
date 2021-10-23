@@ -10,20 +10,15 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.ExceptionToFaultMapProcessor;
 import bifast.outbound.processor.FlatResponseProcessor;
+import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class CihubRoute extends RouteBuilder {
-
-	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
 
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
@@ -31,26 +26,22 @@ public class CihubRoute extends RouteBuilder {
 	private ExceptionToFaultMapProcessor exceptionToFaultMap;
 	@Autowired
 	private FlatResponseProcessor flatResponseProcessor;
+	@Autowired
+	private JacksonDataFormatService jdfService;
 
 	@Override
 	public void configure() throws Exception {
 		
-		businessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		businessMessageJDF.setInclude("NON_NULL");
-		businessMessageJDF.setInclude("NON_EMPTY");
-		businessMessageJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		businessMessageJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-		
+		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
 		from("direct:call-cihub").routeId("komi.call-cihub")
-//		.messageHistory()
 		
 			.setHeader("hdr_cihub_request", simple("${body}")).id("start_route")
 	
 			.marshal(businessMessageJDF)
 	
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][${header.hdr_trxname}] request: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][${header.hdr_trxname}] CIHUB request: ${body}")
 
 			// zip dulu body ke cihubroute_encr_request
 			.setHeader("tmp_body", simple("${body}"))
@@ -77,7 +68,7 @@ public class CihubRoute extends RouteBuilder {
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)				
-				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][][${header.hdr_trxname}] response: ${body}")
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][${header.hdr_trxname}] CIHUB response: ${body}")
 	
 				.setHeader("tmp_body", simple("${body}"))
 				.marshal().zipDeflater()
@@ -110,10 +101,6 @@ public class CihubRoute extends RouteBuilder {
 //			.endDoTry()
 			.end()
 	
-			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-			.setHeader("hdr_cihub_response", simple("${body}"))
-				
-			
 			.removeHeaders("tmp_*")
 			.removeHeaders("cihubroute_*")
 		;

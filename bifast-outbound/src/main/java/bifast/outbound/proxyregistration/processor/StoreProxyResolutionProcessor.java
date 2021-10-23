@@ -21,8 +21,6 @@ public class StoreProxyResolutionProcessor implements Processor{
 
 	@Autowired
 	private ProxyMessageRepository proxyMessageRepo;
-	@Autowired
-	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {

@@ -17,6 +17,7 @@ import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.pojo.chnlresponse.ChnlAccountEnquiryResponsePojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
 import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
@@ -35,7 +36,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		channelResponseWr.setResponseCode("U000");
 		channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
-		channelResponseWr.setContent(new ArrayList<>());
+		channelResponseWr.setResponses(new ArrayList<>());
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class);
 		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
@@ -48,8 +49,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
 			
 			channelResponseWr.setResponseCode("KSTS");
-			channelResponseWr.setReasonCode(fault.getErrorCode());
-			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getErrorCode());
+			channelResponseWr.setReasonCode(fault.getReasonCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 			if (oStatusReason.isPresent())
 				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 			else
@@ -66,6 +67,18 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			else
 				channelResponseWr.setResponseMessage("General Error");
 
+		}
+
+		else if (objBody.getClass().getSimpleName().equals("FlatPrxy004Pojo")) {
+			FlatPrxy004Pojo prxRsltResponse = (FlatPrxy004Pojo) objBody;
+			
+			channelResponseWr.setResponseCode(prxRsltResponse.getResponseCode());
+			channelResponseWr.setReasonCode(prxRsltResponse.getReasonCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(prxRsltResponse.getReasonCode());
+			if (oStatusReason.isPresent())
+				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+			else
+				channelResponseWr.setResponseMessage("General Error");
 		}
 
 		else {
@@ -106,7 +119,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 				chnResp.setCreditorTownName(bm.getCdtrTwnNm());
 		}
 
-		channelResponseWr.getContent().add(chnResp);
+		channelResponseWr.getResponses().add(chnResp);
 
 		exchange.getMessage().setBody(channelResponseWr);
 	}

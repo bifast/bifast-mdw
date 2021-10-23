@@ -44,7 +44,6 @@ public class BuildCTRequestProcessor implements Processor {
 		else	
 			msgType = "110";	
 			
-		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
 		String bizMsgId = utilService.genOfiBusMsgId(msgType, rmw.getChannelType());
@@ -62,15 +61,20 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setCrdtAccountNo(chnReq.getCrdtAccountNo());		
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
 		seedCreditTrn.setCrdtId(chnReq.getCrdtId());
+		seedCreditTrn.setCrdtType(chnReq.getCrdtType());
 		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
-			
-		seedCreditTrn.setCrdtIdType(chnReq.getCrdtType());
+		seedCreditTrn.setCrdtResidentStatus(chnReq.getCrdtResidentialStatus());
+		seedCreditTrn.setCrdtTownName(chnReq.getCrdtTownName());
+		
 		
 		seedCreditTrn.setDbtrAccountNo(chnReq.getDbtrAccountNo());
 		seedCreditTrn.setDbtrAccountType(chnReq.getDbtrAccountType());
 		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
 		seedCreditTrn.setDbtrId(chnReq.getDbtrId());
-		seedCreditTrn.setDbtrIdType(chnReq.getDbtrType());
+		seedCreditTrn.setDbtrType(chnReq.getDbtrType());
+		seedCreditTrn.setDbtrResidentStatus(chnReq.getDbtrResidentialStatus());
+		seedCreditTrn.setDbtrTownName(chnReq.getDbtrTownName());
+
 		seedCreditTrn.setOrignBank(config.getBankcode());
 		seedCreditTrn.setPaymentInfo(chnReq.getPaymentInfo());
 		seedCreditTrn.setRecptBank(chnReq.getRecptBank());

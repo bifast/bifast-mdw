@@ -17,16 +17,20 @@ public class Pacs008Seed {
 	
 	private String dbtrId;   
 	private String dbtrName;
-	private String dbtrIdType;  
+	private String dbtrType;  
 	private String dbtrAccountNo;  
-	private String dbtrAccountType; 
+	private String dbtrAccountType;
+	private String dbtrResidentStatus;
+	private String dbtrTownName;
 	
 	private String crdtId;  // CrdtTrn
 	private String crdtName;
-	private String crdtIdType; 
+	private String crdtType; 
 	private String crdtAccountNo;   // AcctEnq CrdtTrn
 	private String crdtAccountType;  // CrdtTrn
-	
+	private String crdtResidentStatus;
+	private String crdtTownName;
+
 	private String crdtProxyIdType;
 	private String crdtProxyIdValue;
 
@@ -106,11 +110,11 @@ public class Pacs008Seed {
 		this.dbtrName = dbtrName;
 	}
 
-	public String getDbtrIdType() {
-		return dbtrIdType;
+	public String getDbtrType() {
+		return dbtrType;
 	}
-	public void setDbtrIdType(String dbtrIdType) {
-		this.dbtrIdType = dbtrIdType;
+	public void setDbtrType(String dbtrType) {
+		this.dbtrType = dbtrType;
 	}
 	public String getDbtrAccountNo() {
 		return dbtrAccountNo;
@@ -141,12 +145,12 @@ public class Pacs008Seed {
 		this.crdtName = crdtName;
 	}
 
-	public String getCrdtIdType() {
-		return crdtIdType;
+	public String getCrdtType() {
+		return crdtType;
 	}
 
-	public void setCrdtIdType(String crdtIdType) {
-		this.crdtIdType = crdtIdType;
+	public void setCrdtType(String crdtType) {
+		this.crdtType = crdtType;
 	}
 
 	public String getCrdtAccountNo() {
@@ -163,6 +167,38 @@ public class Pacs008Seed {
 
 	public void setCrdtAccountType(String crdtAccountType) {
 		this.crdtAccountType = crdtAccountType;
+	}
+
+	public String getDbtrResidentStatus() {
+		return dbtrResidentStatus;
+	}
+
+	public void setDbtrResidentStatus(String dbtrResidentStatus) {
+		this.dbtrResidentStatus = dbtrResidentStatus;
+	}
+
+	public String getDbtrTownName() {
+		return dbtrTownName;
+	}
+
+	public void setDbtrTownName(String dbtrTownName) {
+		this.dbtrTownName = dbtrTownName;
+	}
+
+	public String getCrdtResidentStatus() {
+		return crdtResidentStatus;
+	}
+
+	public void setCrdtResidentStatus(String crdtResidentStatus) {
+		this.crdtResidentStatus = crdtResidentStatus;
+	}
+
+	public String getCrdtTownName() {
+		return crdtTownName;
+	}
+
+	public void setCrdtTownName(String crdtTownName) {
+		this.crdtTownName = crdtTownName;
 	}
 
 	public String getCrdtProxyIdType() {

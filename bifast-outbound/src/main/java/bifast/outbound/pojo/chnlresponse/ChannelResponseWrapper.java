@@ -33,7 +33,7 @@ public class ChannelResponseWrapper {
 	@JsonProperty("Time")
 	private String time;
 	@JsonProperty("Content")
-	private List<Object> content;
+	private List<Object> responses;
 
 	@JsonProperty("DebitResponse")
 	private CBDebitInstructionResponsePojo cbDebitInstructionResponse;
@@ -104,12 +104,12 @@ public class ChannelResponseWrapper {
 		this.time = time;
 	}
 
-	public List<Object> getContent() {
-		return content;
+	public List<Object> getResponses() {
+		return responses;
 	}
 
-	public void setContent(List<Object> content) {
-		this.content = content;
+	public void setResponses(List<Object> responses) {
+		this.responses = responses;
 	}
 
 	public CBDebitInstructionResponsePojo getCbDebitInstructionResponse() {

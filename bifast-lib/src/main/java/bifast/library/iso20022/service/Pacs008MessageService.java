@@ -199,7 +199,7 @@ public class Pacs008MessageService {
 			dbtr.setNm(seed.getDbtrName());
 
 		Party38Choice dbtrId = new Party38Choice();
-		if (seed.getDbtrIdType().equals("01")) {
+		if (seed.getDbtrType().equals("01")) {
 			GenericPersonIdentification1 debtId = new GenericPersonIdentification1();
 			debtId.setId(seed.getDbtrId());
 			PersonIdentification13 personIdentification13 = new PersonIdentification13();
@@ -260,7 +260,7 @@ public class Pacs008MessageService {
 			cdtr.setNm(seed.getCrdtName());
 			
 		Party38Choice cdtrId = new Party38Choice();
-		if (seed.getCrdtIdType().equals("01")) {
+		if (seed.getCrdtType().equals("01")) {
 			GenericPersonIdentification1 cdtrPrvOthrId = new GenericPersonIdentification1();
 			cdtrPrvOthrId.setId(seed.getCrdtId());
 			PersonIdentification13 personId = new PersonIdentification13();
@@ -309,23 +309,44 @@ public class Pacs008MessageService {
 		
 		// CdtTrfTxInf / SplmtryData
 		// unt credit transfer tidak digunakan
+		
+		cdtTrfTxInf.getSplmtryData().add(new BISupplementaryData1());
+		cdtTrfTxInf.getSplmtryData().get(0).setEnvlp(new BISupplementaryDataEnvelope1());
+		
 		BISupplementaryDataEnvelope1 envl = new BISupplementaryDataEnvelope1();
 
-		if (!(null==seed.getCrdtIdType())) {
-			BIAddtlCstmrInf custInfo = new BIAddtlCstmrInf();
-			custInfo.setTp(seed.getCrdtIdType());
-			envl.setCdtr(custInfo);
+		if ((null != seed.getCrdtType()) ||
+			(null != seed.getCrdtResidentStatus()) ||
+			(null != seed.getCrdtTownName()) 
+			) {
+			
+			BIAddtlCstmrInf cdtr1 = new BIAddtlCstmrInf();
+			
+			if (!(null==seed.getCrdtType())) 
+				cdtr1.setTp(seed.getCrdtType());
+			if (!(null==seed.getCrdtResidentStatus())) 
+				cdtr1.setRsdntSts(seed.getCrdtResidentStatus());
+			if (!(null==seed.getCrdtTownName())) 
+				cdtr1.setTwnNm(seed.getCrdtTownName());
+			
+			cdtTrfTxInf.getSplmtryData().get(0).getEnvlp().setCdtr(cdtr1);
 		}
-		if (!(null==seed.getDbtrIdType())) {
-			BIAddtlCstmrInf custInfo = new BIAddtlCstmrInf();
-			custInfo.setTp(seed.getDbtrIdType());
-			envl.setDbtr(custInfo);
-		}
-		
-		if ((!(null==envl.getCdtr())) || (!(null==envl.getDbtr())) ) {
-			BISupplementaryData1 suppData = new BISupplementaryData1();
-			suppData.setEnvlp(envl);
-			cdtTrfTxInf.getSplmtryData().add(suppData);
+
+		if ((null != seed.getDbtrType()) ||
+			(null != seed.getDbtrResidentStatus()) ||
+			(null != seed.getDbtrTownName()) 
+			) {
+				
+			BIAddtlCstmrInf dbtr1 = new BIAddtlCstmrInf();
+			
+			if (!(null==seed.getCrdtType())) 
+				dbtr1.setTp(seed.getCrdtType());
+			if (!(null==seed.getCrdtResidentStatus())) 
+				dbtr1.setRsdntSts(seed.getCrdtResidentStatus());
+			if (!(null==seed.getCrdtTownName())) 
+				dbtr1.setTwnNm(seed.getCrdtTownName());
+			
+			cdtTrfTxInf.getSplmtryData().get(0).getEnvlp().setDbtr(dbtr1);
 		}
 		
 		pacs008.getCdtTrfTxInf().add(cdtTrfTxInf);

@@ -36,7 +36,7 @@ public class FindMessageService {
 	
 	public String findAccountEnquiry (String bizMsgIdr) {
 		
-		List<AccountEnquiry> listAE = accountEnquiryRepo.findAllByBizMsgIdr(bizMsgIdr);
+		List<AccountEnquiry> listAE = accountEnquiryRepo.findAllByReqBizMsgIdr(bizMsgIdr);
 		if (listAE.size() > 0 )
 			return listAE.get(0).getFullRequestMessage();
 		else 
