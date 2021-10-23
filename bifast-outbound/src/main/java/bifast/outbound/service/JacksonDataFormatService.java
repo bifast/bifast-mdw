@@ -40,4 +40,20 @@ public class JacksonDataFormatService {
 		jdf.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 		return jdf;
 	}
+	
+	public JacksonDataFormat basic (Class<?> unmarshalType) {
+		JacksonDataFormat jdf = new JacksonDataFormat(unmarshalType);
+		jdf.setInclude("NON_NULL");
+		jdf.setInclude("NON_EMPTY");
+		return jdf;
+	}
+
+	public JacksonDataFormat basicPrettyPrint (Class<?> unmarshalType) {
+		JacksonDataFormat jdf = new JacksonDataFormat(unmarshalType);
+		jdf.setInclude("NON_NULL");
+		jdf.setInclude("NON_EMPTY");
+		jdf.setPrettyPrint(true);
+		return jdf;
+	}
+
 }

@@ -18,42 +18,44 @@ public class CreditTransfer {
 	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 	
+	@Column(length=50)
 	private String komiTrnsId;
 	
+	@Column(length=50)
 	private String msgType;
 	
-	@Column(name="ORIGN_BANK")
+	@Column(name="ORIGN_BANK", length=10)
 	private String originatingBank;
-	@Column(name="RECPT_BANK")
+	@Column(name="RECPT_BANK", length=10)
 	private String recipientBank;
 	
-	@Column(name="DEBTOR_ACCT_NO")
+	@Column(name="DEBTOR_ACCT_NO", length=50)
 	private String debtorAccountNumber;
-	@Column(name="DEBTOR_ACCT_TYPE")
+	@Column(name="DEBTOR_ACCT_TYPE", length=10)
 	private String debtorAccountType;
 
+	@Column(length=50)
 	private String debtorId;
+	@Column(length=10)
 	private String debtorType;
 	
-	@Column(name="CREDITOR_ACCT_NO")
+	@Column(name="CREDITOR_ACCT_NO", length=50)
 	private String creditorAccountNumber;
-	@Column(name="CREDITOR_ACCT_TYPE")
+	@Column(name="CREDITOR_ACCT_TYPE", length=10)
 	private String creditorAccountType;
-	@Column(name="CREDITOR_ID")
+	@Column(name="CREDITOR_ID", length=50)
 	private String creditorId;
+	@Column(length=10)
 	private String creditorType;
 	
 	private BigDecimal amount;	
 	
-	@Column(name="REQ_BIZMSGID")
+	@Column(name="REQ_BIZMSGID", length=50)
 	private String crdtTrnRequestBizMsgIdr;
 
-	@Column(name="RESP_BIZMSGID")
+	@Column(name="RESP_BIZMSGID", length=50)
 	private String crdtTrnResponseBizMsgIdr;
 
-	@Column(name="STTL_BIZMSGID")
-	private String SettlementBizMsgId;
-	
 	@Column(name="CIHUB_REQ_TIME")
 	private LocalDateTime cihubRequestDT;
 	
@@ -70,17 +72,19 @@ public class CreditTransfer {
 	
 	private Integer ps_counter;
 		
+	@Column(length=10)
 	private String reversal;
 
 	@Column(length=20)
 	private String callStatus;
 	
-	@Column(name="RESP_STATUS", length=20)
-	private String responseStatus;
+	@Column(length=20)
+	private String reasonCode;
+	@Column(length=20)
+	private String responseCode;
 	
 	private LocalDateTime createDt;
 	private LocalDateTime lastUpdateDt;
-	
 	public Long getId() {
 		return id;
 	}
@@ -177,12 +181,6 @@ public class CreditTransfer {
 	public void setCrdtTrnResponseBizMsgIdr(String crdtTrnResponseBizMsgIdr) {
 		this.crdtTrnResponseBizMsgIdr = crdtTrnResponseBizMsgIdr;
 	}
-	public String getSettlementBizMsgId() {
-		return SettlementBizMsgId;
-	}
-	public void setSettlementBizMsgId(String settlementBizMsgId) {
-		SettlementBizMsgId = settlementBizMsgId;
-	}
 	public LocalDateTime getCihubRequestDT() {
 		return cihubRequestDT;
 	}
@@ -207,6 +205,12 @@ public class CreditTransfer {
 	public void setFullResponseMsg(String fullResponseMsg) {
 		this.fullResponseMsg = fullResponseMsg;
 	}
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
 	public Integer getPs_counter() {
 		return ps_counter;
 	}
@@ -225,17 +229,17 @@ public class CreditTransfer {
 	public void setCallStatus(String callStatus) {
 		this.callStatus = callStatus;
 	}
-	public String getResponseStatus() {
-		return responseStatus;
+	public String getReasonCode() {
+		return reasonCode;
 	}
-	public void setResponseStatus(String responseStatus) {
-		this.responseStatus = responseStatus;
+	public void setReasonCode(String reasonCode) {
+		this.reasonCode = reasonCode;
 	}
-	public String getErrorMessage() {
-		return errorMessage;
+	public String getResponseCode() {
+		return responseCode;
 	}
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
+	public void setResponseCode(String responseCode) {
+		this.responseCode = responseCode;
 	}
 	public LocalDateTime getCreateDt() {
 		return createDt;
@@ -249,6 +253,8 @@ public class CreditTransfer {
 	public void setLastUpdateDt(LocalDateTime lastUpdateDt) {
 		this.lastUpdateDt = lastUpdateDt;
 	}
+	
+
 
 	
 }

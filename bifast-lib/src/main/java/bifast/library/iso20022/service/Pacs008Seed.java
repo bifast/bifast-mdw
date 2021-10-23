@@ -19,14 +19,18 @@ public class Pacs008Seed {
 	private String dbtrName;
 	private String dbtrIdType;  
 	private String dbtrAccountNo;  
-	private String dbtrAccountType; 
+	private String dbtrAccountType;
+	private String dbtrResidentStatus;
+	private String dbtrTownName;
 	
 	private String crdtId;  // CrdtTrn
 	private String crdtName;
 	private String crdtIdType; 
 	private String crdtAccountNo;   // AcctEnq CrdtTrn
 	private String crdtAccountType;  // CrdtTrn
-	
+	private String crdtResidentStatus;
+	private String crdtTownName;
+
 	private String crdtProxyIdType;
 	private String crdtProxyIdValue;
 
@@ -163,6 +167,38 @@ public class Pacs008Seed {
 
 	public void setCrdtAccountType(String crdtAccountType) {
 		this.crdtAccountType = crdtAccountType;
+	}
+
+	public String getDbtrResidentStatus() {
+		return dbtrResidentStatus;
+	}
+
+	public void setDbtrResidentStatus(String dbtrResidentStatus) {
+		this.dbtrResidentStatus = dbtrResidentStatus;
+	}
+
+	public String getDbtrTownName() {
+		return dbtrTownName;
+	}
+
+	public void setDbtrTownName(String dbtrTownName) {
+		this.dbtrTownName = dbtrTownName;
+	}
+
+	public String getCrdtResidentStatus() {
+		return crdtResidentStatus;
+	}
+
+	public void setCrdtResidentStatus(String crdtResidentStatus) {
+		this.crdtResidentStatus = crdtResidentStatus;
+	}
+
+	public String getCrdtTownName() {
+		return crdtTownName;
+	}
+
+	public void setCrdtTownName(String crdtTownName) {
+		this.crdtTownName = crdtTownName;
 	}
 
 	public String getCrdtProxyIdType() {

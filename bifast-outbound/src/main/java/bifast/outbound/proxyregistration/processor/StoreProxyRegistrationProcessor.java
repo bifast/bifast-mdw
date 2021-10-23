@@ -76,11 +76,11 @@ public class StoreProxyRegistrationProcessor implements Processor{
 
 		
 		Object oBiResponse = exchange.getMessage().getBody(Object.class);
-		System.out.println("classname " + oBiResponse.getClass().getName());
+
 		if (oBiResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)oBiResponse;
 			proxyMessage.setErrorMessage(fault.getDescription());
-			proxyMessage.setRespStatus(fault.getErrorCode());
+			proxyMessage.setRespStatus(fault.getReasonCode());
 			proxyMessage.setCallStatus(fault.getFaultCategory());
 		}
 			

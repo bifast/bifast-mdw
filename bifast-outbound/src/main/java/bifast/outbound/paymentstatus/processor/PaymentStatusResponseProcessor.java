@@ -44,10 +44,10 @@ public class PaymentStatusResponseProcessor implements Processor {
 
 		if (objBody.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
-			channelResponseWr.setResponseCode(fault.getErrorCode());
-			if (fault.getErrorCode().equals("ERROR-KM"))
+			channelResponseWr.setResponseCode(fault.getResponseCode());
+			if (fault.getFaultCategory().equals("ERROR-KM"))
 				channelResponseWr.setResponseMessage("KOMI Internal Error");
-			else if (fault.getErrorCode().equals("ERROR-CIHUB"))
+			else if (fault.getFaultCategory().equals("ERROR-CIHUB"))
 				channelResponseWr.setResponseMessage("CIHUB Internal Error");
 			else
 				channelResponseWr.setResponseMessage("KOMI Error");

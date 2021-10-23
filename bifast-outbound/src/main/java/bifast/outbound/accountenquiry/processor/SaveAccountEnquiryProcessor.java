@@ -16,7 +16,6 @@ import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.repository.AccountEnquiryRepository;
-import bifast.outbound.service.UtilService;
 
 @Component
 public class SaveAccountEnquiryProcessor implements Processor {
@@ -33,9 +32,9 @@ public class SaveAccountEnquiryProcessor implements Processor {
 		BusinessMessage outRequest = rmw.getAccountEnquiryRequest();
 		
 		ae.setKomiTrnsId(rmw.getKomiTrxId());
-		ae.setIntrRefId(rmw.getRequestId());
+		ae.setChnlRefId(rmw.getRequestId());
 		
-		ae.setBizMsgIdr(outRequest.getAppHdr().getBizMsgIdr());
+		ae.setReqBizMsgIdr(outRequest.getAppHdr().getBizMsgIdr());
 
 		String orgnlBank = outRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
 		String recptBank = outRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
@@ -49,22 +48,24 @@ public class SaveAccountEnquiryProcessor implements Processor {
 
 		ae.setFullRequestMessage(rmw.getCihubEncriptedRequest());
 
-		ae.setCihubRequestDT(LocalDateTime.now());
+		ae.setSubmitDt(LocalDateTime.now());
 		long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
-		ae.setCihubElapsedTime(timeElapsed);
+		ae.setElapsedTime(timeElapsed);
 
 		Object oBiResponse = exchange.getMessage().getBody(Object.class);
 
 		if (oBiResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)oBiResponse;
+			ae.setResponseCode(fault.getResponseCode());
 			ae.setErrorMessage(fault.getDescription());
-			ae.setResponseStatus(fault.getErrorCode());
+			ae.setReasonCode(fault.getReasonCode());
 			ae.setCallStatus(fault.getFaultCategory());
 		}
 			
 		else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
-			ae.setCallStatus("REJECT-CICONN");
-			ae.setResponseStatus("RJCT");
+			ae.setCallStatus("REJECT");
+			ae.setResponseCode("RJCT");
+			ae.setReasonCode("U215");
 			ae.setErrorMessage("Message Rejected with Admi.002");
 		}
 		
@@ -73,7 +74,9 @@ public class SaveAccountEnquiryProcessor implements Processor {
 
 			FlatPacs002Pojo aeResponse = (FlatPacs002Pojo) oBiResponse;
 			ae.setRespBizMsgIdr(aeResponse.getBizMsgIdr());
-			ae.setResponseStatus(aeResponse.getReasonCode());
+		
+			ae.setResponseCode(aeResponse.getTransactionStatus());
+			ae.setReasonCode(aeResponse.getReasonCode());
 
 			if (!(null==rmw.getCihubEncriptedResponse()))
 				ae.setFullResponseMsg(rmw.getCihubEncriptedResponse());

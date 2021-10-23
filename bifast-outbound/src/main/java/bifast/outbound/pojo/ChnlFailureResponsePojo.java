@@ -14,53 +14,63 @@ public class ChnlFailureResponsePojo {
 	
 	private String faultCategory;   // TIMEOUT-CICONN, TIMEOUT-CB, ERROR-KOMI, ERROR-CICONN, ERROR-CB
 	
-	@JsonProperty("ErrorCode")
-	private String errorCode;
+//	@JsonProperty("ErrorCode")
+//	private String errorCode;
 	
 	private String responseCode;
+
+	private String reasonCode;
+	private String reasonMessage;
 	
 	@JsonProperty("TransactionId")
 	private String referenceId;
-	
 
 	@JsonProperty("Description")
 	private String description;
-
 
 	public String getFaultCategory() {
 		return faultCategory;
 	}
 
-
 	public void setFaultCategory(String faultCategory) {
 		this.faultCategory = faultCategory;
 	}
 
-
-	public String getErrorCode() {
-		return errorCode;
-	}
-
-
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
-	}
-
+//	public String getErrorCode() {
+//		return errorCode;
+//	}
+//
+//	public void setErrorCode(String errorCode) {
+//		this.errorCode = errorCode;
+//	}
 
 	public String getResponseCode() {
 		return responseCode;
 	}
 
-
 	public void setResponseCode(String responseCode) {
 		this.responseCode = responseCode;
 	}
 
+	public String getReasonCode() {
+		return reasonCode;
+	}
+
+	public void setReasonCode(String reasonCode) {
+		this.reasonCode = reasonCode;
+	}
+
+	public String getReasonMessage() {
+		return reasonMessage;
+	}
+
+	public void setReasonMessage(String reasonMessage) {
+		this.reasonMessage = reasonMessage;
+	}
 
 	public String getReferenceId() {
 		return referenceId;
 	}
-
 
 	public void setReferenceId(String referenceId) {
 		this.referenceId = referenceId;
@@ -70,10 +80,10 @@ public class ChnlFailureResponsePojo {
 		return description;
 	}
 
-
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 
 	
 }

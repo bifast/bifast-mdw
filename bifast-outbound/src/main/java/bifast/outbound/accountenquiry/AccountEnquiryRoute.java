@@ -64,6 +64,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 					
 				})
 
+				.log("${body}")
 				.process(proxyResolutionRequestProcessor)
 				.to("direct:call-cihub")
 				.log("${body.class}")
@@ -74,7 +75,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.process(buildAccountEnquiryRequestProcessor)
 	
 			.to("direct:call-cihub")
-			
+			.log("${body.class}")
 			.process(saveAccountEnquiryProcessor)
 
 			.process(accountEnqrResponseProcessor)

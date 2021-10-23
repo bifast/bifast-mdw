@@ -24,6 +24,19 @@ CREATE SEQUENCE public.hibernate_sequence
 	NO CYCLE;
 
 
+-- public.corebank_sequence definition
+
+-- DROP SEQUENCE public.komi_sequence;
+
+CREATE SEQUENCE public.komi_sequence
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 9999999
+	START 1
+	CACHE 1
+	CYCLE;
+	
+	
 -- public.table_seq_generator definition
 
 -- DROP SEQUENCE public.table_seq_generator;
@@ -36,6 +49,8 @@ CREATE SEQUENCE public.table_seq_generator
 	CACHE 1
 	NO CYCLE;
 
+-- ------------------
+
 -- public.kc_account_enquiry definition
 
 -- Drop table
@@ -46,19 +61,20 @@ CREATE TABLE public.kc_account_enquiry (
 	id int8 NOT NULL,
 	account_no varchar(50) NULL,
 	amount numeric(19, 2) NULL,
-	bizmsgid varchar(50) NULL,
-	call_status varchar(255) NULL,
-	cihub_elapsed_time int8 NULL,
-	cihub_req_time timestamp NULL,
+	call_status varchar(20) NULL,
+	chnl_ref_id varchar(20) NULL,
+	elapsed_time int8 NULL,
 	error_message varchar(400) NULL,
 	full_request_msg varchar(4000) NULL,
 	full_response_msg varchar(4000) NULL,
-	intr_ref_id varchar(20) NULL,
-	komi_trns_id varchar(255) NULL,
+	komi_trns_id varchar(20) NULL,
 	orign_bank varchar(20) NULL,
+	reason_code varchar(20) NULL,
 	recpt_bank varchar(20) NULL,
+	req_bizmsgid varchar(50) NULL,
 	resp_bizmsgid varchar(50) NULL,
-	response_status varchar(20) NULL,
+	response_code varchar(20) NULL,
+	cihub_req_time timestamp NULL,
 	CONSTRAINT kc_account_enquiry_pkey PRIMARY KEY (id)
 );
 
@@ -95,11 +111,9 @@ CREATE TABLE public.kc_channel_transaction (
 	call_status varchar(15) NULL,
 	channel_id varchar(15) NULL,
 	channel_ref_id varchar(20) NULL,
-	creditor_account_number varchar(35) NULL,
-	debtor_account_number varchar(35) NULL,
 	elapsed_time int8 NULL,
 	error_msg varchar(250) NULL,
-	komi_trns_id varchar(8) NULL,
+	komi_trns_id varchar(20) NULL,
 	msg_name varchar(100) NULL,
 	recpt_bank varchar(8) NULL,
 	request_time timestamp NULL,
@@ -147,33 +161,33 @@ CREATE TABLE public.kc_corebank_transaction (
 
 CREATE TABLE public.kc_credit_transfer (
 	id int8 NOT NULL,
-	sttl_bizmsgid varchar(255) NULL,
 	amount numeric(19, 2) NULL,
 	call_status varchar(20) NULL,
 	cihub_elapsed_time int8 NULL,
 	cihub_req_time timestamp NULL,
-	req_bizmsgid varchar(255) NULL,
-	resp_bizmsgid varchar(255) NULL,
+	req_bizmsgid varchar(50) NULL,
+	resp_bizmsgid varchar(50) NULL,
 	create_dt timestamp NULL,
-	creditor_acct_no varchar(255) NULL,
-	creditor_acct_type varchar(255) NULL,
-	creditor_id varchar(255) NULL,
-	creditor_type varchar(255) NULL,
-	debtor_acct_no varchar(255) NULL,
-	debtor_acct_type varchar(255) NULL,
-	debtor_id varchar(255) NULL,
-	debtor_type varchar(255) NULL,
+	creditor_acct_no varchar(50) NULL,
+	creditor_acct_type varchar(10) NULL,
+	creditor_id varchar(50) NULL,
+	creditor_type varchar(10) NULL,
+	debtor_acct_no varchar(50) NULL,
+	debtor_acct_type varchar(10) NULL,
+	debtor_id varchar(50) NULL,
+	debtor_type varchar(10) NULL,
 	error_message varchar(400) NULL,
 	full_request_msg varchar(4000) NULL,
 	full_response_msg varchar(4000) NULL,
-	komi_trns_id varchar(255) NULL,
+	komi_trns_id varchar(50) NULL,
 	last_update_dt timestamp NULL,
-	msg_type varchar(255) NULL,
-	orign_bank varchar(255) NULL,
+	msg_type varchar(50) NULL,
+	orign_bank varchar(10) NULL,
 	ps_counter int4 NULL,
-	recpt_bank varchar(255) NULL,
-	resp_status varchar(20) NULL,
-	reversal varchar(255) NULL,
+	reason_code varchar(20) NULL,
+	recpt_bank varchar(10) NULL,
+	response_code varchar(20) NULL,
+	reversal varchar(10) NULL,
 	CONSTRAINT kc_credit_transfer_pkey PRIMARY KEY (id)
 );
 
