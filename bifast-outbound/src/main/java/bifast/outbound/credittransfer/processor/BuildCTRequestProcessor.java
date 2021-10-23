@@ -61,7 +61,7 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setCrdtAccountNo(chnReq.getCrdtAccountNo());		
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
 		seedCreditTrn.setCrdtId(chnReq.getCrdtId());
-		seedCreditTrn.setCrdtIdType(chnReq.getCrdtType());
+		seedCreditTrn.setCrdtType(chnReq.getCrdtType());
 		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
 		seedCreditTrn.setCrdtResidentStatus(chnReq.getCrdtResidentialStatus());
 		seedCreditTrn.setCrdtTownName(chnReq.getCrdtTownName());
@@ -71,7 +71,7 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setDbtrAccountType(chnReq.getDbtrAccountType());
 		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
 		seedCreditTrn.setDbtrId(chnReq.getDbtrId());
-		seedCreditTrn.setDbtrIdType(chnReq.getDbtrType());
+		seedCreditTrn.setDbtrType(chnReq.getDbtrType());
 		seedCreditTrn.setDbtrResidentStatus(chnReq.getDbtrResidentialStatus());
 		seedCreditTrn.setDbtrTownName(chnReq.getDbtrTownName());
 

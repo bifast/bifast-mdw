@@ -17,6 +17,7 @@ import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.pojo.flat.FlatMessageWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.ValidateProcessor;
+import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class RouterEndpointRoute extends RouteBuilder {
@@ -25,32 +26,14 @@ public class RouterEndpointRoute extends RouteBuilder {
 	private CheckChannelRequestTypeProcessor checkChannelRequest;
 	@Autowired
 	private ValidateProcessor validateInputProcessor;
-//	@Autowired
-//	private SaveTableChannelProcessor saveChannelRequestProcessor;
-
-
-	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
-	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(RequestMessageWrapper.class);
-	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
-	JacksonDataFormat flatResponseJDF = new JacksonDataFormat(FlatMessageWrapper.class);
+	@Autowired
+	private JacksonDataFormatService jdfService;
 
 	@Override
 	public void configure() throws Exception {
-
-		businessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		businessMessageJDF.setInclude("NON_NULL");
-		businessMessageJDF.setInclude("NON_EMPTY");
-		businessMessageJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		businessMessageJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-		
-		chnlRequestJDF.setInclude("NON_NULL");
-		chnlRequestJDF.setInclude("NON_EMPTY");
-		chnlResponseJDF.setInclude("NON_NULL");
-		chnlResponseJDF.setInclude("NON_EMPTY");
-
-		flatResponseJDF.setInclude("NON_NULL");
-		flatResponseJDF.setInclude("NON_EMPTY");
-
+		JacksonDataFormat chnlRequestJDF = jdfService.basic(RequestMessageWrapper.class);	
+		JacksonDataFormat flatResponseJDF = jdfService.basic(FlatMessageWrapper.class);	
+	
 		restConfiguration().component("servlet");
 		
 		rest("/")

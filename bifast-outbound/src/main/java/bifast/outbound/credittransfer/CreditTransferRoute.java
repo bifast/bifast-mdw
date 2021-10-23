@@ -98,12 +98,15 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			.process(crdtTransferProcessor)
 		
+			// TODO debit-account dulu donk
+			
 			// kirim ke CI-HUB
 			.to("direct:call-cihub")
 
 			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}][CT] setelah call CIHUB.")
 			
 			.log("sesudah call cihub ${body.class}")
+			.log("${body.reasonCode}")
 
 			// TODO jika response RJCT, harus reversal ke corebanking
 
@@ -112,6 +115,7 @@ public class CreditTransferRoute extends RouteBuilder {
 				.log(LoggingLevel.DEBUG, "komi.ct.aft_cbcall", "[ChnlReq:${header.hdr_chnlRefId}][CT] akan cari Settlement.")
 				.to("seda:caristtl")
 			.end()
+			// termasuk timeout jike response ci-hub reason_code "U900"
 			
 			.process(saveCrdtTrnsProcessor)
     		

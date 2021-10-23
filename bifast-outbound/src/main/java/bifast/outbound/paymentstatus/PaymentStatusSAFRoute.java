@@ -37,8 +37,6 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
    
-    @Autowired
-    private PaymentStatusChannelRequestProcessor paymentStatusChannelRequestProcessor;
 	@Autowired
 	private PaymentStatusRequestProcessor paymentStatusRequestProcessor;
 	@Autowired
@@ -99,12 +97,12 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 							channelResponseWr.setResponseMessage("Original Payment Not Found");
 							channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 							channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
-							channelResponseWr.setContent(new ArrayList<>());
+							channelResponseWr.setResponses(new ArrayList<>());
 							ChnlCreditTransferResponsePojo chnResp = new ChnlCreditTransferResponsePojo();
 							
 							chnResp.setOrignReffId(psReq.getChannelRefId());
 						
-							channelResponseWr.getContent().add(chnResp);
+							channelResponseWr.getResponses().add(chnResp);
 							exchange.getMessage().setBody(channelResponseWr);
 						}
 					})

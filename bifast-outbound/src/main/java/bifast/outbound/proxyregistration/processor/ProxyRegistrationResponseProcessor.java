@@ -35,7 +35,7 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		chnlResponseWr.setResponseCode("U000");
 		chnlResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 		chnlResponseWr.setTime(LocalDateTime.now().format(timeformatter));
-		chnlResponseWr.setContent(new ArrayList<>());
+		chnlResponseWr.setResponses(new ArrayList<>());
 
 		Object objResponse = exchange.getMessage().getBody(Object.class);
 		String bodyClass = objResponse.getClass().getSimpleName();
@@ -91,7 +91,7 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 			
 		}
 		
-		chnlResponseWr.getContent().add(chnResponse);
+		chnlResponseWr.getResponses().add(chnResponse);
 
 		exchange.getMessage().setBody(chnlResponseWr);
 

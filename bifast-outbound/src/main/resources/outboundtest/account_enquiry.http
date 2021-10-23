@@ -7,12 +7,13 @@ ClientId: CMS
 
 {
   "AccountEnquiryRequest" : {
-    "NoRef" : "2235",
+    "NoRef" : "6454",
     "SenderAccountNumber": "54130",
     "RecipientBank" : "CITYIDJA",
     "Amount" : "245000",
     "CategoryPurpose" : "01",
-    "RecipientAccountNumber" : "546669"
+    "ProxyType" : "02",
+    "ProxyId" : "yogi@gmail.com"
  }
 }
 

@@ -16,7 +16,6 @@ import bifast.outbound.paymentstatus.processor.CheckSAFResultProcessor;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.repository.StatusReasonRepository;
 import bifast.outbound.service.JacksonDataFormatService;
@@ -53,9 +52,7 @@ public class PaymentStatusRoute extends RouteBuilder {
 			
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-					ChnlPaymentStatusRequestPojo chnlReq = rmw.getChnlPaymentStatusRequest();
-					
+					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);				
 					ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
 					
 					ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
@@ -63,7 +60,7 @@ public class PaymentStatusRoute extends RouteBuilder {
 					channelResponseWr.setReasonCode(rmc.getReasonCode());
 					channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 					channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
-					channelResponseWr.setContent(new ArrayList<>());
+					channelResponseWr.setResponses(new ArrayList<>());
 					
 					String reasonMessage = statusReasonRepo.findById(rmc.getReasonCode()).orElse(new StatusReason()).getDescription();
 					channelResponseWr.setReasonMessage(reasonMessage);
@@ -74,7 +71,7 @@ public class PaymentStatusRoute extends RouteBuilder {
 					if (rmc.getReasonCode().equals("U000")) {
 						ctReq = exchange.getMessage().getBody(ChnlCreditTransferRequestPojo.class);
 					}
-					channelResponseWr.getContent().add(ctReq);
+					channelResponseWr.getResponses().add(ctReq);
 					exchange.getMessage().setBody(channelResponseWr);
 				}
 			})

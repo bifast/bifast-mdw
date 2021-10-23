@@ -44,20 +44,20 @@ public class CreditTransferResponseProcessor implements Processor{
 		else
 			seed.setCreditorName(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
 
+		seed.setCreditorType("01");
+		seed.setCreditorId("KTP-2004384");
+		seed.setCreditorResidentialStatus("01");
+		seed.setCreditorTown(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
+
         // int posbl4 = rand.nextInt(4);
 		if (norek.startsWith("5")) {
 			seed.setStatus("RJCT");
-			seed.setReason("U110");
+			seed.setReason("U901");
 			seed.setAdditionalInfo("Additional Info abbc lsdjf 46");
 		}
 		else {
 			seed.setStatus("ACTC");
 			seed.setReason("U000");
-
-			seed.setCreditorType("01");
-			seed.setCreditorId("KTP-2004384");
-			seed.setCreditorResidentialStatus("01");
-			seed.setCreditorTown("0300");
 		}
 		
 

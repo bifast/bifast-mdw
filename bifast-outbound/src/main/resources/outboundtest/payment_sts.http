@@ -5,8 +5,8 @@ clientId: CB
 
 {
     "PaymentStatusRequest" : {
-      "NoRef" : "132137",
-      "OriginalNoRef" : "6564"
+      "NoRef" : "214",
+      "OriginalNoRef" : "7221"
     }
 }
 

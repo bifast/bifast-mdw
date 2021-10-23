@@ -6,6 +6,7 @@ import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChnlProxyRegistrationResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChnlProxyResolutionResponsePojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
 
 public class ResponseMessageCollection {
 
@@ -25,7 +26,7 @@ public class ResponseMessageCollection {
 	private FlatPacs002Pojo settlement;
 	
 	private BusinessMessage proxyRegistrationResponse;
-	private BusinessMessage proxyResolutionResponse;
+	private FlatPrxy004Pojo proxyResolutionResponse;
 	
 	public String getCallStatus() {
 		return callStatus;
@@ -105,10 +106,10 @@ public class ResponseMessageCollection {
 	public void setProxyRegistrationResponse(BusinessMessage proxyRegistrationResponse) {
 		this.proxyRegistrationResponse = proxyRegistrationResponse;
 	}
-	public BusinessMessage getProxyResolutionResponse() {
+	public FlatPrxy004Pojo getProxyResolutionResponse() {
 		return proxyResolutionResponse;
 	}
-	public void setProxyResolutionResponse(BusinessMessage proxyResolutionResponse) {
+	public void setProxyResolutionResponse(FlatPrxy004Pojo proxyResolutionResponse) {
 		this.proxyResolutionResponse = proxyResolutionResponse;
 	}
 	

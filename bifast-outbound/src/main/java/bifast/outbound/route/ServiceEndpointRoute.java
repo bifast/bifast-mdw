@@ -10,7 +10,6 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -50,9 +49,6 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
 		JacksonDataFormat chnlRequestJDF = jdfService.basic(RequestMessageWrapper.class);
 
-		jdfChnlRequestNoWr.setInclude("NON_NULL");
-		jdfChnlRequestNoWr.setInclude("NON_EMPTY");
-		jdfChnlRequestNoWr.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
 
 		restConfiguration().component("servlet");
 		

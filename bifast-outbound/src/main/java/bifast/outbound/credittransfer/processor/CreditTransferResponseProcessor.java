@@ -35,7 +35,7 @@ public class CreditTransferResponseProcessor implements Processor {
 		chnlResponseWr.setResponseCode("U000");
 		chnlResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 		chnlResponseWr.setTime(LocalDateTime.now().format(timeformatter));
-		chnlResponseWr.setContent(new ArrayList<>());
+		chnlResponseWr.setResponses(new ArrayList<>());
 		
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ChnlCreditTransferRequestPojo chnRequest = rmw.getChnlCreditTransferRequest();
@@ -74,8 +74,14 @@ public class CreditTransferResponseProcessor implements Processor {
 			
 			FlatPacs002Pojo biResp = (FlatPacs002Pojo)objResponse;
 
-			chnlResponseWr.setResponseCode(biResp.getTransactionStatus());
-			chnlResponseWr.setReasonCode(biResp.getReasonCode());
+			if (biResp.getReasonCode().equals("U900")) {
+				chnlResponseWr.setResponseCode("KSTS");
+				chnlResponseWr.setReasonCode("K000");
+			}
+			else {
+				chnlResponseWr.setResponseCode(biResp.getTransactionStatus());
+				chnlResponseWr.setReasonCode(biResp.getReasonCode());				
+			}
 			
 			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(chnlResponseWr.getReasonCode());
 			if (optStatusReason.isPresent()) {
@@ -88,7 +94,7 @@ public class CreditTransferResponseProcessor implements Processor {
 				chnResponse.setCreditorName(biResp.getCdtrNm());
 		}
 
-		chnlResponseWr.getContent().add(chnResponse);
+		chnlResponseWr.getResponses().add(chnResponse);
 		exchange.getIn().setBody(chnlResponseWr);
 
 	}

@@ -117,7 +117,7 @@ public class ProxyResolutionResponseProcessor implements Processor{
 		
 		AccountProxy accountProxy = new AccountProxy();	
 		accountProxy = accountProxyRepository.getByProxyTypeAndByProxyVal(proxyType,proxyVal);
-		
+		System.out.println("acctProxy: " + accountProxy);
 		if(msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getLkUpTp() ==  ProxyLookUpType1Code.PXRS) {
 			if(accountProxy != null) {
 				if(accountProxy.getAccountStatus().equals("ICTV")) {
@@ -134,6 +134,7 @@ public class ProxyResolutionResponseProcessor implements Processor{
 					accountProxyRepository.save(accountProxy);
 				}
 			}else {
+				System.out.println("ternyata disini");
 				seed.setStatus("RJCT");
 				seed.setReason("U811");
 			}

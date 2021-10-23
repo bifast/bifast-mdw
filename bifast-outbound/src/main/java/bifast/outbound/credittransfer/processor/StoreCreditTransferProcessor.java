@@ -99,11 +99,18 @@ public class StoreCreditTransferProcessor implements Processor {
 			ct.setReasonCode("U215");
 			ct.setErrorMessage("Message Rejected with Admi.002");
 		}
-		else {
 		
-			ct.setCallStatus("SUCCESS");
-			
+		else {
+
 			FlatPacs002Pojo ctResponse = (FlatPacs002Pojo) oBiResponse;
+
+			if (ctResponse.getReasonCode().equals("U900")) {
+				ct.setCallStatus("TIMEOUT");
+			}
+			else {
+				ct.setCallStatus("SUCCESS");
+			}
+			
 			ct.setResponseCode(ctResponse.getTransactionStatus());
 			ct.setReasonCode(ctResponse.getReasonCode());
 			ct.setCrdtTrnResponseBizMsgIdr(ctResponse.getBizMsgIdr());

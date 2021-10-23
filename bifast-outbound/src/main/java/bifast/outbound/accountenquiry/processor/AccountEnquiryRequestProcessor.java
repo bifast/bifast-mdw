@@ -33,9 +33,9 @@ public class AccountEnquiryRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChnlAccountEnquiryRequestPojo chnReq = exchange.getIn().getBody(ChnlAccountEnquiryRequestPojo.class);
+//		ChnlAccountEnquiryRequestPojo chnReq = exchange.getIn().getBody(ChnlAccountEnquiryRequestPojo.class);
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-//		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
+		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
 		
 		String msgType = "510";
 		String bizMsgId = utilService.genOfiBusMsgId(msgType, rmw.getChannelType());
