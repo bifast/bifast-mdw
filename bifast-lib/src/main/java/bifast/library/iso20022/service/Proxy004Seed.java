@@ -1,5 +1,7 @@
 package bifast.library.iso20022.service;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 public class Proxy004Seed {
 	
 	private String msgId; 
@@ -9,6 +11,14 @@ public class Proxy004Seed {
     
     protected String prxyRtrvlTp;
     protected String prxyRtrvlVal;
+    
+    protected String orgnlPrxyRqstrTp;
+    protected String orgnlPrxyRqstrVal;
+
+    protected String OrgnlMsgId;
+    protected String OrgnlMsgNmId;
+    protected XMLGregorianCalendar OrgnlCreDtTm;
+    
     
     private String status; 
 	private String reason;
@@ -128,7 +138,35 @@ public class Proxy004Seed {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-	
-    
+	public String getOrgnlPrxyRqstrTp() {
+		return orgnlPrxyRqstrTp;
+	}
+	public void setOrgnlPrxyRqstrTp(String orgnlPrxyRqstrTp) {
+		this.orgnlPrxyRqstrTp = orgnlPrxyRqstrTp;
+	}
+	public String getOrgnlPrxyRqstrVal() {
+		return orgnlPrxyRqstrVal;
+	}
+	public void setOrgnlPrxyRqstrVal(String orgnlPrxyRqstrVal) {
+		this.orgnlPrxyRqstrVal = orgnlPrxyRqstrVal;
+	}
+	public String getOrgnlMsgId() {
+		return OrgnlMsgId;
+	}
+	public void setOrgnlMsgId(String orgnlMsgId) {
+		OrgnlMsgId = orgnlMsgId;
+	}
+	public String getOrgnlMsgNmId() {
+		return OrgnlMsgNmId;
+	}
+	public void setOrgnlMsgNmId(String orgnlMsgNmId) {
+		OrgnlMsgNmId = orgnlMsgNmId;
+	}
+	public XMLGregorianCalendar getOrgnlCreDtTm() {
+		return OrgnlCreDtTm;
+	}
+	public void setOrgnlCreDtTm(XMLGregorianCalendar orgnlCreDtTm) {
+		OrgnlCreDtTm = orgnlCreDtTm;
+	}
 	
 }

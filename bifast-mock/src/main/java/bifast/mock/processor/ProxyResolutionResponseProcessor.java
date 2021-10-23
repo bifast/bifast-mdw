@@ -3,6 +3,7 @@ package bifast.mock.processor;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -94,9 +95,25 @@ public class ProxyResolutionResponseProcessor implements Processor{
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
 		
 		String proxyType = msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getPrxyRtrvl().getTp();
-		String proxyVal =  msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getPrxyRtrvl().getVal();;
-		seed.setPrxyRtrvlTp(proxyType);
-		seed.setPrxyRtrvlVal(proxyVal);
+		String proxyVal =  msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getPrxyRtrvl().getVal();
+		
+		seed.setOrgnlPrxyRqstrTp(proxyType);
+		seed.setOrgnlPrxyRqstrVal(proxyVal);
+		
+		GregorianCalendar gcal = new GregorianCalendar();
+		XMLGregorianCalendar xcal;
+		try {
+
+			xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+			seed.setOrgnlCreDtTm(xcal);
+		} catch (DatatypeConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		seed.setOrgnlMsgId(msg.getAppHdr().getBizMsgIdr());
+		seed.setOrgnlMsgNmId(msg.getAppHdr().getMsgDefIdr());
 		
 		AccountProxy accountProxy = new AccountProxy();	
 		accountProxy = accountProxyRepository.getByProxyTypeAndByProxyVal(proxyType,proxyVal);
@@ -159,6 +176,9 @@ public class ProxyResolutionResponseProcessor implements Processor{
 			seed.setAccountNumber(accountProxy.getAccountNumber());
 			seed.setAccountType(accountProxy.getAccountType());
 			seed.setDisplayName(accountProxy.getDisplayName());
+			seed.setRegisterBank(accountProxy.getRegisterBank());
+			seed.setPrxyRtrvlTp(accountProxy.getProxyType());
+			seed.setPrxyRtrvlVal(accountProxy.getProxyVal());
 		}
 		
 		ProxyLookUpResponseV01 response = proxy004MessageService.proxyResolutionResponse(seed, msg);
@@ -166,11 +186,6 @@ public class ProxyResolutionResponseProcessor implements Processor{
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"prxy.004.001.01", bizMsgId);
-		OriginalGroupInformation3 originalGroupInformation3 =  new OriginalGroupInformation3();
-		originalGroupInformation3.setOrgnlMsgId(hdr.getBizMsgIdr());
-		originalGroupInformation3.setOrgnlCreDtTm(hdr.getCreDt());
-		originalGroupInformation3.setOrgnlMsgNmId(hdr.getMsgDefIdr());
-		response.setOrgnlGrpInf(originalGroupInformation3);
 		
 		Document doc = new Document();
 		doc.setPrxyLookUpRspn(response);

@@ -68,6 +68,8 @@ public class Proxy004MessageService {
 		sndrId.setId(config.getBankcode());
 		FinancialInstitutionIdentification8 finInstnId = new FinancialInstitutionIdentification8();
 		finInstnId.setOthr(sndrId);
+		finInstnId.setNm("Popular Bank");
+		
 		BranchAndFinancialInstitutionIdentification5 sndrAgt = new BranchAndFinancialInstitutionIdentification5();
 		sndrAgt.setFinInstnId(finInstnId);
 		
@@ -77,6 +79,12 @@ public class Proxy004MessageService {
 		grpHdr.setMsgRcpt(msgSndr);
 		response.setGrpHdr(grpHdr);	
 		
+		//OrgnlGrpInf
+		OriginalGroupInformation3 OrgnlGrpInf =  new OriginalGroupInformation3();
+		OrgnlGrpInf.setOrgnlMsgId(seed.getOrgnlMsgId());
+		OrgnlGrpInf.setOrgnlCreDtTm(seed.getOrgnlCreDtTm());
+		OrgnlGrpInf.setOrgnlMsgNmId(seed.getOrgnlMsgNmId());
+		response.setOrgnlGrpInf(OrgnlGrpInf);
 		
 		ProxyLookUpResponse1 regnRspn = new ProxyLookUpResponse1();
 				  
@@ -87,6 +95,11 @@ public class Proxy004MessageService {
 		 prxyRtrvl.setVal(seed.getPrxyRtrvlVal());
 		 
 		 regnRspn.setOrgnlPrxyRtrvl(prxyRtrvl);
+		 
+		 ProxyDefinition1 OrgnlPrxyRqstr = new ProxyDefinition1();
+		 OrgnlPrxyRqstr.setTp(seed.getOrgnlPrxyRqstrTp()); 
+		 OrgnlPrxyRqstr.setVal(seed.getOrgnlPrxyRqstrVal());
+		 regnRspn.setOrgnlPrxyRqstr(OrgnlPrxyRqstr);
 		 
 		 ProxyLookUpRegistration1 regn = new ProxyLookUpRegistration1();
 		 
@@ -100,9 +113,14 @@ public class Proxy004MessageService {
 			StsRsnInf.setPrtry(seed.getReason());
 			regn.setStsRsnInf(StsRsnInf);
 			
-			regn.setPrxy(prxyRtrvl);
-			
 			if(seed.getRegisterBank() != null) {
+				regn.setPrxy(prxyRtrvl);
+				
+				CashAccountType2ChoiceProxy cashAccountType2ChoiceProxy = new CashAccountType2ChoiceProxy();
+				cashAccountType2ChoiceProxy.setPrtry(seed.getAccountType());
+				
+				regnRspn.setOrgnlDsplNm(seed.getDisplayName());
+				regnRspn.setOrgnlAcctTp(cashAccountType2ChoiceProxy);
 			
 				ProxyLookUpAccount1 prxyAcc = new ProxyLookUpAccount1();
 				GenericFinancialIdentification1 othrRegnRspn = new GenericFinancialIdentification1();
