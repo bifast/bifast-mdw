@@ -21,6 +21,7 @@ import bifast.outbound.processor.InitRequestMessageWrapperProcessor;
 import bifast.outbound.processor.SaveChannelTransactionProcessor;
 import bifast.outbound.processor.ValidateProcessor;
 import bifast.outbound.repository.ChannelTransactionRepository;
+import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class ServiceEndpointRoute extends RouteBuilder {
@@ -35,28 +36,23 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	private SaveChannelTransactionProcessor saveChannelTransactionProcessor;
 	@Autowired
 	private ChannelTransactionRepository channelTransactionRepo;
+	@Autowired
+	private JacksonDataFormatService jdfService;
 
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
 
-	JacksonDataFormat chnlRequestJDF = new JacksonDataFormat(RequestMessageWrapper.class);
 	JacksonDataFormat jdfChnlRequestNoWr = new JacksonDataFormat(RequestMessageWrapper.class);
-	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 	@Override
 	public void configure() throws Exception {
+		
+		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
+		JacksonDataFormat chnlRequestJDF = jdfService.basic(RequestMessageWrapper.class);
 
 		jdfChnlRequestNoWr.setInclude("NON_NULL");
 		jdfChnlRequestNoWr.setInclude("NON_EMPTY");
 		jdfChnlRequestNoWr.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-//		jdfChnlRequestNoWr.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-
-		chnlRequestJDF.setInclude("NON_NULL");
-		chnlRequestJDF.setInclude("NON_EMPTY");
-		chnlResponseJDF.setInclude("NON_NULL");
-		chnlResponseJDF.setInclude("NON_EMPTY");
-		chnlResponseJDF.setPrettyPrint(true);
-
 
 		restConfiguration().component("servlet");
 		

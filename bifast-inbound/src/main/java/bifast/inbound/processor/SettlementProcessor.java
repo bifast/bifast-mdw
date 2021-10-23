@@ -24,13 +24,7 @@ public class SettlementProcessor implements Processor {
 		
 		String ctBizMsgId = bm.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlEndToEndId();
 		Optional<CreditTransfer> oCrdtTrns = ctRepo.findByCrdtTrnRequestBizMsgIdr(ctBizMsgId);
-		
-		if (oCrdtTrns.isPresent()) {
-			CreditTransfer ct = oCrdtTrns.get();
-			ct.setSettlementBizMsgId(bm.getAppHdr().getBizMsgIdr());
-			ctRepo.save(ct);
-		}
-		
+			
 		
 		//TODO kirim settlement ke COREBANK
 		

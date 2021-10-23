@@ -5,11 +5,13 @@ import bifast.outbound.pojo.chnlresponse.ChnlAccountEnquiryResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChnlProxyRegistrationResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChnlProxyResolutionResponsePojo;
+import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 
 public class ResponseMessageCollection {
 
 	private String callStatus;
 	private String responseCode;
+	private String reasonCode;
 	private String lastError;
 	
 	private ChnlFailureResponsePojo fault;
@@ -20,6 +22,8 @@ public class ResponseMessageCollection {
 	
 	private BusinessMessage accountEnquiryResponse;
 	private BusinessMessage creditTransferResponse;
+	private FlatPacs002Pojo settlement;
+	
 	private BusinessMessage proxyRegistrationResponse;
 	private BusinessMessage proxyResolutionResponse;
 	
@@ -28,6 +32,12 @@ public class ResponseMessageCollection {
 	}
 	public void setCallStatus(String callStatus) {
 		this.callStatus = callStatus;
+	}
+	public String getReasonCode() {
+		return reasonCode;
+	}
+	public void setReasonCode(String reasonCode) {
+		this.reasonCode = reasonCode;
 	}
 	public String getResponseCode() {
 		return responseCode;
@@ -82,6 +92,12 @@ public class ResponseMessageCollection {
 	}
 	public void setCreditTransferResponse(BusinessMessage creditTransferResponse) {
 		this.creditTransferResponse = creditTransferResponse;
+	}
+	public FlatPacs002Pojo getSettlement() {
+		return settlement;
+	}
+	public void setSettlement(FlatPacs002Pojo settlement) {
+		this.settlement = settlement;
 	}
 	public BusinessMessage getProxyRegistrationResponse() {
 		return proxyRegistrationResponse;

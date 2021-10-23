@@ -48,8 +48,8 @@ public class ProxyResolutionResponseProcessor implements Processor {
 
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
 
-			channelResponseWr.setResponseCode(fault.getErrorCode());
-			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getErrorCode());
+			channelResponseWr.setResponseCode(fault.getResponseCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 			if (oStatusReason.isPresent())
 				channelResponseWr.setResponseMessage(oStatusReason.get().getDescription());
 			else

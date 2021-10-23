@@ -50,8 +50,8 @@ public class CreditTransferResponseProcessor implements Processor {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objResponse;
 			
 			chnlResponseWr.setResponseCode("KSTS");
-			chnlResponseWr.setReasonCode(fault.getErrorCode());
-			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getErrorCode());
+			chnlResponseWr.setReasonCode(fault.getReasonCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 			if (oStatusReason.isPresent())
 				chnlResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 			else

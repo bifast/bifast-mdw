@@ -3,7 +3,6 @@ version: '3.7'
 services:
     komidb:
       container_name: komidb
-      image: postgres:12.7
       image: fransmzh/komi-db:1.5
       restart: always
       environment:
@@ -38,7 +37,7 @@ services:
         - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
         - SPRING.DATASOURCE.USERNAME=postgres 
         - SPRING.DATASOURCE.PASSWORD=postgres 
-        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=none
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.COREBANK-URL=localhost:9003/services/cb
@@ -69,7 +68,7 @@ services:
         - SPRING.DATASOURCE.USERNAME=postgres 
         - SPRING.DATASOURCE.PASSWORD=postgres 
         - SPRING.MAIN.BANNER-MODE=OFF 
-        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=none
       volumes: 
         - /home/fransdm/workspace/bifast-log/outbound:/home/logs
       networks: 

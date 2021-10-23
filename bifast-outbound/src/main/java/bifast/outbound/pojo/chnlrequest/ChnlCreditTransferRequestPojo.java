@@ -84,6 +84,8 @@ public class ChnlCreditTransferRequestPojo {
 	@JsonProperty("PaymentInformation")
 	private String paymentInfo;
 	
+	public ChnlCreditTransferRequestPojo () {}
+	
 	@JsonCreator
 	public ChnlCreditTransferRequestPojo (
 			@JsonProperty(value="NoRef", required=true) String channelRefId,

@@ -32,14 +32,14 @@ public class ChannelTransaction {
 	
 	private BigDecimal amount;
 
-	@Column(length=35)
-	private String debtorAccountNumber;
+//	@Column(length=35)
+//	private String debtorAccountNumber;
 	
 	@Column(length=8)
 	private String recptBank;
 	
-	@Column(length=35)
-	private String creditorAccountNumber;
+//	@Column(length=35)
+//	private String creditorAccountNumber;
 	
 	private String responseCode;
 	
@@ -90,23 +90,11 @@ public class ChannelTransaction {
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
-	public String getDebtorAccountNumber() {
-		return debtorAccountNumber;
-	}
-	public void setDebtorAccountNumber(String debtorAccountNumber) {
-		this.debtorAccountNumber = debtorAccountNumber;
-	}
 	public String getRecptBank() {
 		return recptBank;
 	}
 	public void setRecptBank(String recptBank) {
 		this.recptBank = recptBank;
-	}
-	public String getCreditorAccountNumber() {
-		return creditorAccountNumber;
-	}
-	public void setCreditorAccountNumber(String creditorAccountNumber) {
-		this.creditorAccountNumber = creditorAccountNumber;
 	}
 	public String getResponseCode() {
 		return responseCode;

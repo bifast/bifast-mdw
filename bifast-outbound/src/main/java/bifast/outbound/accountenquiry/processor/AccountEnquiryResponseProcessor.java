@@ -48,8 +48,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
 			
 			channelResponseWr.setResponseCode("KSTS");
-			channelResponseWr.setReasonCode(fault.getErrorCode());
-			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getErrorCode());
+			channelResponseWr.setReasonCode(fault.getReasonCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 			if (oStatusReason.isPresent())
 				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 			else
