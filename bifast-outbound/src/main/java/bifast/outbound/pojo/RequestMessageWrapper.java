@@ -30,7 +30,7 @@ public class RequestMessageWrapper {
 	
 	private String komiTrxId;   // internal tranaction id dari komi
 								// digenerate dari utilService.getkomiid;
-	private LocalDateTime requestTime;
+//	private LocalDateTime requestTime;
 
 	@JsonProperty("DebitRequest")
 	private CBDebitInstructionRequestPojo debitRequest;
@@ -111,12 +111,12 @@ public class RequestMessageWrapper {
 	public void setKomiTrxId(String komiTrxId) {
 		this.komiTrxId = komiTrxId;
 	}
-	public LocalDateTime getRequestTime() {
-		return requestTime;
-	}
-	public void setRequestTime(LocalDateTime requestTime) {
-		this.requestTime = requestTime;
-	}
+//	public LocalDateTime getRequestTime() {
+//		return requestTime;
+//	}
+//	public void setRequestTime(LocalDateTime requestTime) {
+//		this.requestTime = requestTime;
+//	}
 	public CBDebitInstructionRequestPojo getDebitRequest() {
 		return debitRequest;
 	}

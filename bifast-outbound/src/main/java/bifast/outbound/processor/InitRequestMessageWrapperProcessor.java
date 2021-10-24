@@ -1,7 +1,6 @@
 package bifast.outbound.processor;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -32,7 +31,7 @@ public class InitRequestMessageWrapperProcessor implements Processor {
 		
 		rmw.setMerchantType(channel.getMerchantCode());
 		rmw.setKomiTrxId(komiTrnsId);
-		rmw.setRequestTime(LocalDateTime.now());
+//		rmw.setRequestTime(LocalDateTime.now());
 		rmw.setKomiStart(Instant.now());
 		
 		exchange.getMessage().setHeader("hdr_request_list", rmw);

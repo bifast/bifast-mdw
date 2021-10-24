@@ -15,6 +15,7 @@ import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.ExceptionToFaultMapProcessor;
 import bifast.outbound.processor.FlatResponseProcessor;
+import bifast.outbound.processor.SetRemainTimeProcessor;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
@@ -28,6 +29,8 @@ public class CihubRoute extends RouteBuilder {
 	private FlatResponseProcessor flatResponseProcessor;
 	@Autowired
 	private JacksonDataFormatService jdfService;
+	@Autowired
+	private SetRemainTimeProcessor setRemainTime;
 
 	@Override
 	public void configure() throws Exception {
@@ -60,13 +63,18 @@ public class CihubRoute extends RouteBuilder {
 				}
 			})
 			
+			.process(setRemainTime)
+			.log("${header.hdr_remain_time}")
 			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{komi.ciconnector-url}}?"
-						+ "socketTimeout={{komi.timeout}}&" 
-						+ "bridgeEndpoint=true",
-						enrichmentAggregator)
+				
+				.enrich()
+					.simple("http:{{komi.ciconnector-url}}?"
+						+ "socketTimeout=${header.hdr_remain_time}&" 
+						+ "bridgeEndpoint=true")
+					.aggregationStrategy(enrichmentAggregator)
+				
 				.convertBodyTo(String.class)				
 				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][${header.hdr_trxname}] CIHUB response: ${body}")
 	
