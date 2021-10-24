@@ -74,15 +74,15 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		from("direct:service").routeId("komi.endpointRoute")
 			.convertBodyTo(String.class)
 			
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "Receive: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "Terima: ${body}")
 
 			.setHeader("hdr_fulltextinput", simple("${body}"))
 			
-//			.log("${body}")
 			.unmarshal(chnlRequestJDF)
 	
 			.process(initRmwProcessor)
-						
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "dari ${header.hdr_request_list.channelId}")
+
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
 				
 			.process(validateInputProcessor)
@@ -135,13 +135,14 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.to("seda:savetablechannel")
 
+			.removeHeaders("*")
 			.marshal(chnlResponseJDF)
 
-			.removeHeader("clientid")
-			.removeHeaders("hdr_*")
-			.removeHeaders("req_*")
-			.removeHeader("HttpMethod")
-			.removeHeader("cookie")
+//			.removeHeader("clientid")
+//			.removeHeaders("hdr_*")
+//			.removeHeaders("req_*")
+//			.removeHeader("HttpMethod")
+//			.removeHeader("cookie")
 		;
 		
 		from("seda:savetablechannel").routeId("komi.savechnltrns")

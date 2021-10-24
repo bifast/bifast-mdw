@@ -1,4 +1,4 @@
-package bifast.outbound.config;
+package bifast.outbound.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,12 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -27,12 +22,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
 	@Autowired
-	private UserDetailsService jwtUserDetailsService;
+	private UserDetailsService userDetailsService;
 
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
+		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 	
 	@Bean
@@ -63,7 +58,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
 		http.csrf().disable();
-		http.headers().frameOptions().disable();
+		http
+//		.headers().frameOptions().disable();
+			.headers()
+				// do not use any default headers unless explicitly listed
+				.defaultsDisabled()
+				.cacheControl();
+
     }
 
 }
