@@ -30,7 +30,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
 	@Autowired
 	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
-
+	
 	@Override
 	public void configure() throws Exception {
 
@@ -72,20 +72,16 @@ public class AccountEnquiryRoute extends RouteBuilder{
 				
 			.end()
 			// selesai panggil Proxy Resolution
-			.log("classname : ${body.class}")
-			.log("response proxy res: ${header.hdr_response_list.responseCode}")
 			
 			.filter().simple("${header.hdr_response_list.responseCode} == 'ACTC'")
-				.log("Akan panggil account_enquiry")
 				.process(buildAccountEnquiryRequestProcessor)
-		
+				
 				.to("direct:call-cihub")
 				.log("${body.class}")
 
 				.process(saveAccountEnquiryProcessor)
 
 			.end()
-
 			
 			.process(accountEnqrResponseProcessor)
 

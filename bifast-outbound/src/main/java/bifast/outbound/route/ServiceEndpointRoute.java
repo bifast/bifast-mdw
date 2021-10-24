@@ -49,11 +49,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
 		JacksonDataFormat chnlRequestJDF = jdfService.basic(RequestMessageWrapper.class);
 
-
 		restConfiguration().component("servlet");
 		
 		rest("/")
-
 			.post("/service")
 				.consumes("application/json")
 				.to("direct:service")
@@ -63,13 +61,10 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		from("direct:service").routeId("komi.endpointRoute")
 			.convertBodyTo(String.class)
 			.setHeader("hdr_fulltextinput", simple("${body}"))
-			.setHeader("req_channelRequestTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
 			
 //			.log("${body}")
 			.unmarshal(chnlRequestJDF)
-
-			.setHeader("hdr_errorlocation", constant("EndpointRoute/checkChannelRequest"))
-			
+	
 			.process(initRmwProcessor)
 						
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest

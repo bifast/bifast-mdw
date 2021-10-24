@@ -3,7 +3,7 @@ version: '3.7'
 services:
     komidb:
       container_name: komidb
-      image: fransmzh/komi-db:1.5
+      image: fransmzh/komi-db:1.6
       restart: always
       environment:
         - POSTGRES_USER=postgres
@@ -24,7 +24,7 @@ services:
 
     inbound:
       build: bifast-inbound
-      image: fransmzh/komi-inbound:1.5
+      image: fransmzh/komi-inbound:1.6
       container_name: komi-inbound
       restart: always
       depends_on: 
@@ -48,7 +48,7 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:1.5
+      image: fransmzh/komi-outbound:1.6
       container_name: komi-outbound
       restart: always
       depends_on: 
@@ -77,7 +77,7 @@ services:
     mock:
       build: bifast-mock
       container_name: komi-mock
-      image: fransmzh/komi-mock:1.5
+      image: fransmzh/komi-mock:1.6
       restart: always
       depends_on: 
         - komidb

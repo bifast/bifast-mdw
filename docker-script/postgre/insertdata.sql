@@ -1,8 +1,7 @@
 INSERT INTO public.kc_channel (channel_id,channel_name,channel_type,create_dt,daily_limit_amount,merchant_code,modif_dt,secret_key,transaction_limit_amount) VALUES
-	 ('IB1','Internet Banking','01',NULL,NULL,NULL,NULL,NULL,NULL),
-	 ('MB1','Mobile Banking','02',NULL,NULL,NULL,NULL,NULL,NULL),
-	 ('CS','Customer Service','03',NULL,NULL,NULL,NULL,NULL,NULL),
-	 ('CB','Over The Top','03',NULL,NULL,'6010',NULL,NULL,NULL);INSERT INTO public.kc_domain_code (id,grp,"key",value) VALUES
+	 ('CMS','Internet Banking','01',NULL,NULL,NULL,NULL,NULL,NULL),
+	 ('MB','Mobile Banking','02',NULL,NULL,NULL,NULL,NULL,NULL),
+	 ('CB','Corebank','03',NULL,NULL,'6010',NULL,NULL,NULL);INSERT INTO public.kc_domain_code (id,grp,"key",value) VALUES
 	 (311,'PROXY.TYPE','03','IPT ID'),
 	 (312,'PROXY.TYPE','01','Mobile Phone No'),
 	 (313,'PROXY.TYPE','02','Email Address'),
@@ -34,12 +33,11 @@ INSERT INTO public.kc_domain_code (id,grp,"key",value) VALUES
 	 (1,'com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException','Attribute tidak dikenal'),
 	 (2,'com.fasterxml.jackson.core.io.JsonEOFException','Json parsing Exception'),
 	 (4,'java.util.NoSuchElementException','Validation Error'),
-	 (5,'org.apache.http.conn.HttpHostConnectException','U902'),
 	 (6,'org.apache.http.NoHttpResponseException','U902'),
-	 (7,'java.net.SocketException','U902'),
-	 (3,'java.net.SocketTimeoutException','U900'),
 	 (8,'org.apache.camel.http.common.HttpOperationFailedException','U902'),
-	 (10,'SocketTimeoutException','U900');INSERT INTO public.kc_inbound_counter (tanggal,last_number) VALUES
+	 (5,'org.apache.http.conn.HttpHostConnectException','K006'),
+	 (7,'java.net.SocketException','K010'),
+	 (3,'java.net.SocketTimeoutException','K000');INSERT INTO public.kc_inbound_counter (tanggal,last_number) VALUES
 	 (20210915,50000032),
 	 (20210911,50000006),
 	 (20210912,50000006),
@@ -66,13 +64,16 @@ INSERT INTO public.kc_message_counter (tanggal,last_number) VALUES
 	 (20211016,52),
 	 (20211015,144),
 	 (20211007,216),
-	 (20211014,217);INSERT INTO public.kc_parameter (id,code,"module",notes,value) VALUES
+	 (20211014,217),
+	 (20211023,279);INSERT INTO public.kc_parameter (id,code,"module",notes,value) VALUES
 	 (10,'LIMIT.DAILY.AMOUNT','OUTBOUND','Batas nilai transaksi perhari',NULL),
 	 (20,'LIMIT.DAILY.FREQ','OUTBOUND','Batas berapa kali transaksi perhari',NULL),
 	 (30,'LIMIT.TRNS.AMOUNT','OUTBOUND','Batas nilai per transaksi',NULL),
 	 (40,'RETRY.TIMEOUT','OUTBOUND','Berapa kali timeout sebelum dilaporkan ke admin',NULL),
 	 (50,'TIMEOUT.AE','OUTBOUND','Berapa lama sebelum timeout untuk Account Enquiry (milidetik)','6000'),
-	 (60,'TIMEOUT.CT','OUTBOUND','Berapa lama sebelum timeout untuk Credit Transfer (milidetik)','10000');INSERT INTO public.kc_status_reason (status_reason_code,description,status_code) VALUES
+	 (60,'TIMEOUT.CT','OUTBOUND','Berapa lama sebelum timeout untuk Credit Transfer (milidetik)','10000'),
+	 (80,'SLA_CHNL_TRANSACTION','OUTBOUND','SLA ke channel untuk call transactional (ms)','15000'),
+	 (70,'SLA_CHNL_ENQUIRY','OUTBOUND','SLA ke channel unt call jenis enquiry (ms)','5000');INSERT INTO public.kc_status_reason (status_reason_code,description,status_code) VALUES
 	 ('U000','Success/ Transaction Accepted','ACSP'),
 	 ('U002','Success/ Transaction Accepted Stored in SAF','ACTC'),
 	 ('U101','Tenant Not Found','RJCT'),
@@ -266,4 +267,6 @@ INSERT INTO public.kc_status_reason (status_reason_code,description,status_code)
 	 ('K003','InputValidationFailure','KSTS'),
 	 ('K001','NoRefNotFound','KSTS'),
 	 ('K004','TransactionLimitViolation','KSTS'),
-	 ('K005','AuthenticationFailure','KSTS');
+	 ('K005','AuthenticationFailure','KSTS'),
+	 ('K006','Communication Error','KSTS'),
+	 ('K010','KomiInternalError','KSTS');
