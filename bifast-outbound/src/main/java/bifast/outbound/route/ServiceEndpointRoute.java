@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -16,6 +17,7 @@ import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
+import bifast.outbound.processor.ExceptionProcessor;
 import bifast.outbound.processor.InitRequestMessageWrapperProcessor;
 import bifast.outbound.processor.SaveChannelTransactionProcessor;
 import bifast.outbound.processor.ValidateProcessor;
@@ -37,11 +39,12 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	private ChannelTransactionRepository channelTransactionRepo;
 	@Autowired
 	private JacksonDataFormatService jdfService;
+	@Autowired
+	private ExceptionProcessor exceptionProcessor;
 
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
 
-	JacksonDataFormat jdfChnlRequestNoWr = new JacksonDataFormat(RequestMessageWrapper.class);
 
 	@Override
 	public void configure() throws Exception {
@@ -49,6 +52,16 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
 		JacksonDataFormat chnlRequestJDF = jdfService.basic(RequestMessageWrapper.class);
 
+		onException(Exception.class).routeId("komi.endpointRoute.onException")
+			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+			.process(exceptionProcessor)
+			.marshal(chnlResponseJDF)
+			.removeHeaders("*")
+			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
+	    	.handled(true)
+ 		;
+		
+		
 		restConfiguration().component("servlet");
 		
 		rest("/")

@@ -27,29 +27,20 @@ public class Param {
 	@PostConstruct
 	public void init() {
 
-		Parameter pSlaChannelTrns =	paramRepo.findByModuleAndCode("OUTBOUND", "SLA.CHNL.TRANSACTION").orElse(new Parameter());
-		this.slaChannelTrns = Integer.valueOf(pSlaChannelTrns.getValue());
+		Optional<Parameter> oSlaChannelTrns = paramRepo.findByModuleAndCode("OUTBOUND", "SLA.CHNL.TRANSACTION");
+		this.slaChannelTrns = Integer.valueOf(oSlaChannelTrns.get().getValue());
 
-		Parameter pSlaChannelEnqr =	paramRepo.findByModuleAndCode("OUTBOUND", "SLA.CHNL.ENQUIRY").orElse(new Parameter());
-		this.slaChannelEnqr = Integer.valueOf(pSlaChannelEnqr.getValue());
+		Optional<Parameter> oSlaChannelEnqr =	paramRepo.findByModuleAndCode("OUTBOUND", "SLA.CHNL.ENQUIRY");
+		this.slaChannelEnqr = Integer.valueOf(oSlaChannelEnqr.get().getValue());
 		
 		Optional<Parameter> oLimitDailyAmount = paramRepo.findByModuleAndCode("OUTBOUND", "LIMIT.DAILY.AMOUNT");
-		if (oLimitDailyAmount.isPresent())
-			this.limitDailyAmount = new BigDecimal(oLimitDailyAmount.get().getValue());
-		else 
-			this.limitDailyAmount = new BigDecimal(0);
+		this.limitDailyAmount = new BigDecimal(oLimitDailyAmount.get().getValue());
 		
 		Optional<Parameter> oLimitDailyFreq = paramRepo.findByModuleAndCode("OUTBOUND", "LIMIT.DAILY.FREQ");
-		if (oLimitDailyFreq.isPresent())
-			this.limitDailyFrequency = Long.parseLong(oLimitDailyFreq.get().getValue());
-		else 
-			this.limitDailyFrequency = 0;
-		
+		this.limitDailyFrequency = Long.parseLong(oLimitDailyFreq.get().getValue());
+			
 		Optional<Parameter> oLimitTransAmount = paramRepo.findByModuleAndCode("OUTBOUND", "LIMIT.TRNS.AMOUNT");
-		if (oLimitTransAmount.isPresent())
-			this.limitTrnsAmount = new BigDecimal(oLimitTransAmount.get().getValue());
-		else 
-			this.limitTrnsAmount = new BigDecimal(0);
+		this.limitTrnsAmount = new BigDecimal(oLimitTransAmount.get().getValue());
 
 	}
 	

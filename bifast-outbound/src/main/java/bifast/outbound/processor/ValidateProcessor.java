@@ -44,7 +44,7 @@ public class ValidateProcessor implements Processor  {
 
 		//TODO nilai transaksi harian
 		//TODO frekuensi transaksi harian
-		//TODO mandatori input parameter
+		//TODO kombinasi optional input parameter
 		//TODO format data input
 		//TODO sesuai domaincode, daftar bank
 		

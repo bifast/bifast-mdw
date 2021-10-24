@@ -1,7 +1,6 @@
 package bifast.outbound.pojo;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,12 +1,9 @@
 package bifast.outbound.accountenquiry.processor;
 
-import java.util.Optional;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
