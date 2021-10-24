@@ -73,6 +73,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		
 		from("direct:service").routeId("komi.endpointRoute")
 			.convertBodyTo(String.class)
+			
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "Receive: ${body}")
+
 			.setHeader("hdr_fulltextinput", simple("${body}"))
 			
 //			.log("${body}")
@@ -99,7 +102,6 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					channelTransactionRepo.save(chnlTrns);
 				}
 			})
-//			.process(saveChannelTransactionProcessor)
 
 			// siapkan header penampung data2 hasil process.
 			.process(new Processor() {
@@ -142,8 +144,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.removeHeader("cookie")
 		;
 		
-		from("seda:savetablechannel")
-			.log("Akan save channel transaction")
+		from("seda:savetablechannel").routeId("komi.savechnltrns")
+			.log(LoggingLevel.DEBUG, "komi.savechnltrns", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] save table channel_transaction.")
 			.process(saveChannelTransactionProcessor)
 		;		
 

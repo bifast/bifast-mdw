@@ -73,7 +73,22 @@ qJJ9mUnd6tPVjEelXutmVdure9WVwOr5W44d3sjr2ER5m098cJn7MgUKNHmFKqit3IUyFRVMPwi6
 kgDBEqyOXYydoQscNgTy3ABfkAQZMkuDfCYYHI2tBlqQW2bYGl+R0uoImGfwANXffOdfZbl5Z6m2
 /iN9NMvCeAvVoZB34EJlMTL9MiA/SXTXz1/dJZQ4Q891CKEWLuprZuYzhmzb1/WuhLsg1rGVGMr3
 XX0twgQibKzZvI8i6lM8pkPHiO+BpVTq1rIFiYO0erFjvZ038MH4AkK/05M=
-','29600341','SIHBIDJ1','U000','CITYIDJA','20211023SIHBIDJ1510O0129600346','20211023CITYIDJA510R0200001280','ACTC','2021-10-23 23:08:18.625362');INSERT INTO public.kc_channel (channel_id,channel_name,channel_type,create_dt,daily_limit_amount,merchant_code,modif_dt,secret_key,transaction_limit_amount) VALUES
+','29600341','SIHBIDJ1','U000','CITYIDJA','20211023SIHBIDJ1510O0129600346','20211023CITYIDJA510R0200001280','ACTC','2021-10-23 23:08:18.625362'),
+	 (5020,'12134863112',245000.00,'SUCCESS','9922',39,NULL,'eJyVUttuwjAM/Zc8A0rSMhhvvXDJNAaCaNI07QHaUtDoRamRYIh/n5O00jYNjVVqYtc+PkenPhP/
+UE2rlAzOxCvLSax0NLLnbhfbOxd5Bbkw2Qy2pqozshQTX4QPjFzwaRFZ3IgLhHxBnFfj/N0HahCa
+nHDKGaPcbUZ3GZ1Rxu97lFLeIy2CnWGysc3lKqo6lPbxZR3ax2qgkhDqMW1G29yVjA2c7oA5BJnC
+IjpkSQ5WHxQjEVSQqSAGqTb641g1JhhFvwuq1fCGT2ZXGFvkaT3byGOFdYbZEmCfidwwmXgKxo7H
+xZhoI6wOeTQtr2cyz8C6N8xjWeBxTdF3i3DAX8qRDIfLshYTQHqaH1Sp47kCdUI4tlNmZIkclP9u
+BHuZ8e55tT8kmsLt4jy0X1sRaZQIF3p4sFWpr39ROPQlFsM1aFcvNvJS+MdmGV9uwHzdKouxjAYd
+RdA0/oAxzhy3f+cwxs0+vunjE+gK5HI=
+','eJyNUW1vgjAQ/itLP6tpCyryDYtOXKYGuyzL4gdCQUmkEKjbnPG/71pkcctMdoS+XJ+757m7Exof
+6sd6i9wT8spyJip9mjZrlolml4GslQzMbal25lXfEJssvMCfe+gM1kG8+GfcOpiNIY5c4sbZJ2gI
+NDmimBKCqc0C/qJT9wkOMcVgxBrYqIMA6SdpAy6juO5hTOEnPYLhlVWJry5pugR3qc2x7Vp9l1gI
+mPwiPuSJVI0+VUyDVa7Wqg5L47qv2hYYPX/LMeZQp2Xj+W0+/hHI1JMCKJD7Cl2otnI/kYIXsPwg
+aFsCBEtM6GgIJHQIHCYE8twAX5AUaTJDgzzGGVx1WTWMIDXMcNR1rSpVHQHzBEHQ/c13/jBJ9TsT
+ytS/Uke9LXRt82IXybvnTBSiQHpeGuTFsWrn+Wu6hBLLdgYWIdTAeXnNzDzGkBn7utzn4PMjFRmJ
+E/m2L69F6ECECdRi8j7wVZdie0ScPh6AM6yFVE3JBsTfpdGLLVPbeQMf2BcxotOY
+','29700022','SIHBIDJ1','U000','CITYIDJA','20211024SIHBIDJ1510O0129700027','20211024CITYIDJA510R0200001364','ACTC','2021-10-24 11:35:13.820157');INSERT INTO public.kc_channel (channel_id,channel_name,channel_type,create_dt,daily_limit_amount,merchant_code,modif_dt,secret_key,transaction_limit_amount) VALUES
 	 ('CMS','Internet Banking','01',NULL,NULL,NULL,NULL,NULL,NULL),
 	 ('MB','Mobile Banking','02',NULL,NULL,NULL,NULL,NULL,NULL),
 	 ('CB','Corebank','03',NULL,NULL,'6010',NULL,NULL,NULL);INSERT INTO public.kc_channel_transaction (id,amount,call_status,channel_id,channel_ref_id,elapsed_time,error_msg,komi_trns_id,msg_name,recpt_bank,request_time,response_code,text_message) VALUES
@@ -226,6 +241,62 @@ INSERT INTO public.kc_channel_transaction (id,amount,call_status,channel_id,chan
     "ProxyType" : "02",
     "ProxyId" : "yogi@gmail.com"
  }
+}'),
+	 (5019,245000.00,'SUCCESS','CMS','9922',1204,NULL,'29700022','AEReq','CITYIDJA','2021-10-24 11:35:12.634847','ACTC','{
+  "AccountEnquiryRequest" : {
+    "NoRef" : "9922",
+    "SenderAccountNumber": "54130",
+    "RecipientBank" : "CITYIDJA",
+    "Amount" : "245000",
+    "CategoryPurpose" : "01",
+    "ProxyType" : "02",
+    "ProxyId" : "yogi@gmail.com"
+ }
+}'),
+	 (5021,NULL,NULL,'CMS','992222',NULL,NULL,'29700033','AEReq',NULL,'2021-10-24 11:50:35.775241',NULL,'{
+  "AccountEnquiryRequest" : {
+    "NoRef" : "992222",
+    "SenderAccountNumber": "54130",
+    "RecipientBank" : "CITYIDJA",
+    "Amount" : "245000",
+    "CategoryPurpose" : "01"
+ }
+}'),
+	 (5022,NULL,NULL,'CMS','9522',NULL,NULL,'29700037','AEReq',NULL,'2021-10-24 11:51:14.915952',NULL,'{
+  "AccountEnquiryRequest" : {
+    "NoRef" : "9522",
+    "SenderAccountNumber": "54130",
+    "RecipientBank" : "CITYIDJA",
+    "Amount" : "245000",
+    "CategoryPurpose" : "01"
+ }
+}'),
+	 (5023,NULL,NULL,'CMS','242',NULL,NULL,'29700039','AEReq',NULL,'2021-10-24 11:53:54.808413',NULL,'{
+  "AccountEnquiryRequest" : {
+    "NoRef" : "242",
+    "SenderAccountNumber": "54130",
+    "RecipientBank" : "CITYIDJA",
+    "Amount" : "245000",
+    "CategoryPurpose" : "01"
+ }
+}'),
+	 (5024,NULL,NULL,'CMS','24252',NULL,NULL,'29700043','AEReq',NULL,'2021-10-24 11:54:59.43055',NULL,'{
+  "AccountEnquiryRequest" : {
+    "NoRef" : "24252",
+    "SenderAccountNumber": "54130",
+    "RecipientBank" : "CITYIDJA",
+    "Amount" : "245000",
+    "CategoryPurpose" : "01"
+ }
+}'),
+	 (5025,NULL,NULL,'CMS','44252',NULL,NULL,'29700045','AEReq',NULL,'2021-10-24 11:56:50.301705',NULL,'{
+  "AccountEnquiryRequest" : {
+    "NoRef" : "44252",
+    "SenderAccountNumber": "54130",
+    "RecipientBank" : "CITYIDJA",
+    "Amount" : "245000",
+    "CategoryPurpose" : "01"
+ }
 }');INSERT INTO public.kc_credit_transfer (id,amount,call_status,cihub_elapsed_time,cihub_req_time,req_bizmsgid,resp_bizmsgid,create_dt,creditor_acct_no,creditor_acct_type,creditor_id,creditor_type,debtor_acct_no,debtor_acct_type,debtor_id,debtor_type,error_message,full_request_msg,full_response_msg,komi_trns_id,last_update_dt,msg_type,orign_bank,ps_counter,reason_code,recpt_bank,response_code,reversal) VALUES
 	 (5001,46705420.00,'SUCCESS',1304,'2021-10-23 21:33:33.854112','20211023SIHBIDJ1010O0329600283','20211023BMNDIDJA010R0200000595','2021-10-23 21:33:32.526','555896','SVGS','C12103','01','515554','CACC','6055','01',NULL,'eJyVUttu4jAQ/ZXKz7SyHcKmvOVCaaqSIOLtC+IhJEDRJiZyhm5ZxL/v2CFdWPVCIxFiz5yZc+bM
 nnjbelSvSH9P3Kq6z5X+umve63Xe/MtQ1iBDc4rh2UT1iSThvRcGD4wc8OkQsbkQ542iAHHuEeet
@@ -290,14 +361,19 @@ INSERT INTO public.kc_domain_code (id,grp,"key",value) VALUES
 	 (302,'CHANNEL.TYPE','02','Mobile Banking'),
 	 (303,'CHANNEL.TYPE','03','Over the Counter'),
 	 (304,'CHANNEL.TYPE','99','Other');INSERT INTO public.kc_fault_class (id,exception_class,reason) VALUES
-	 (1,'com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException','Attribute tidak dikenal'),
-	 (2,'com.fasterxml.jackson.core.io.JsonEOFException','Json parsing Exception'),
-	 (4,'java.util.NoSuchElementException','Validation Error'),
 	 (6,'org.apache.http.NoHttpResponseException','U902'),
 	 (8,'org.apache.camel.http.common.HttpOperationFailedException','U902'),
 	 (5,'org.apache.http.conn.HttpHostConnectException','K006'),
 	 (7,'java.net.SocketException','K010'),
-	 (3,'java.net.SocketTimeoutException','K000');INSERT INTO public.kc_inbound_counter (tanggal,last_number) VALUES
+	 (3,'java.net.SocketTimeoutException','K000'),
+	 (21,'bifast.outbound.exception.DuplicateIdException','K002'),
+	 (1,'com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException','K003'),
+	 (2,'com.fasterxml.jackson.core.io.JsonEOFException','K003'),
+	 (4,'java.util.NoSuchElementException','K003'),
+	 (22,'org.springframework.dao.InvalidDataAccessApiUsageException','K003');
+INSERT INTO public.kc_fault_class (id,exception_class,reason) VALUES
+	 (23,'com.fasterxml.jackson.databind.exc.MismatchedInputException','K003'),
+	 (24,'bifast.outbound.exception.InputValidationException','K003');INSERT INTO public.kc_inbound_counter (tanggal,last_number) VALUES
 	 (20210915,50000032),
 	 (20210911,50000006),
 	 (20210912,50000006),
@@ -325,7 +401,8 @@ INSERT INTO public.kc_message_counter (tanggal,last_number) VALUES
 	 (20211015,144),
 	 (20211007,216),
 	 (20211014,217),
-	 (20211023,346);INSERT INTO public.kc_parameter (id,code,"module",notes,value) VALUES
+	 (20211023,346),
+	 (20211024,45);INSERT INTO public.kc_parameter (id,code,"module",notes,value) VALUES
 	 (80,'SLA.CHNL.TRANSACTION','OUTBOUND','SLA ke channel untuk call transactional (ms)','15000'),
 	 (70,'SLA.CHNL.ENQUIRY','OUTBOUND','SLA ke channel unt call jenis enquiry (ms)','5000'),
 	 (20,'LIMIT.DAILY.FREQ','OUTBOUND','Batas berapa kali transaksi perhari','100'),

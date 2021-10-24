@@ -44,7 +44,7 @@ public class CihubRoute extends RouteBuilder {
 	
 			.marshal(businessMessageJDF)
 	
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][${header.hdr_trxname}] CIHUB request: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
 
 			// zip dulu body ke cihubroute_encr_request
 			.setHeader("tmp_body", simple("${body}"))
@@ -64,7 +64,6 @@ public class CihubRoute extends RouteBuilder {
 			})
 			
 			.process(setRemainTime)
-			.log("${header.hdr_remain_time}")
 			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
@@ -76,7 +75,7 @@ public class CihubRoute extends RouteBuilder {
 					.aggregationStrategy(enrichmentAggregator)
 				
 				.convertBodyTo(String.class)				
-				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_chnlRefId}][${header.hdr_trxname}] CIHUB response: ${body}")
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB response: ${body}")
 	
 				.setHeader("tmp_body", simple("${body}"))
 				.marshal().zipDeflater()
@@ -102,7 +101,7 @@ public class CihubRoute extends RouteBuilder {
 			
 			.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_chnlRefId}] Call CI-HUB Error.")
+				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_request_list.requestId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultMap)
 	

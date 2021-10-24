@@ -50,7 +50,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.process(exceptionProcessor)
 			.marshal(chnlResponseJDF)
 			.removeHeaders("*")
-			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
 		;
 
@@ -68,7 +67,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			
 			// akan panggil Proxy Resolution
 			.filter().simple("${body.creditorAccountNumber} == null")
-				.log("accountNo is null")
+				.log(LoggingLevel.DEBUG, "komi.acctenq", "[ChnlReq:${header.hdr_request_list.requestId}][AE] akan panggil ProxyResolution.")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
@@ -85,16 +84,16 @@ public class AccountEnquiryRoute extends RouteBuilder{
 					}
 					
 				})
-
 				.process(proxyResolutionRequestProcessor)
 				.to("direct:call-cihub")
-				
 				.process(aeProxyEnrichment)
 				
 			.end()
 			// selesai panggil Proxy Resolution
 			
-			.filter().simple("${header.hdr_response_list.responseCode} == 'ACTC'")
+			
+			.filter().simple("${body.class} endsWith 'ChnlAccountEnquiryRequestPojo' && "
+							+ "${body.creditorAccountNumber} != null") 
 				.process(buildAccountEnquiryRequestProcessor)
 				
 				.to("direct:call-cihub")

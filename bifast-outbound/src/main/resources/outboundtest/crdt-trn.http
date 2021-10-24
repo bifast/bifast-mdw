@@ -16,7 +16,7 @@ clientId: CB
 
 {
   "CreditTransferRequest" : {
-    "NoRef" : "4122",   
+    "NoRef" : "41112",   
     "TerminalId" : "B0434",
     "CategoryPurpose" : "01",
     "DebtorName" : "ANTON",
@@ -32,7 +32,7 @@ clientId: CB
     "CreditorName" : "JONI N",
     "CreditorId" : "C12103",
     "CreditorType" : "01",
-    "CreditorAccountNumber" : "555896",
+    "CreditorAccountNumber" : "65896",
     "CreditorAccountType" : "SVGS",
     "CreditorResidentialStatus": "01",
     "CreditorTownName": "0300",

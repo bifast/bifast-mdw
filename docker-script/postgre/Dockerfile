@@ -4,6 +4,9 @@ ENV POSTGRES_DB=postgres
 ENV POSTGRES_DB=komidb
 COPY dbobject.sql /docker-entrypoint-initdb.d/
 COPY insertdata.sql /docker-entrypoint-initdb.d/
+COPY kktadmdbdev.sql /docker-entrypoint-initdb.d/
+COPY kktkomidbdev.sql /docker-entrypoint-initdb.d/
+COPY kktinsertadmmantap.sql /docker-entrypoint-initdb.d/
 VOLUME /var/lib/postgresql/data
 
 # docker build -t fransmzh/komi-db:1.5 .
@@ -13,4 +16,4 @@ VOLUME /var/lib/postgresql/data
 
 #COPY kktadmdbdev.sql /docker-entrypoint-initdb.d/
 #COPY kktkomidbdev.sql /docker-entrypoint-initdb.d/
-#COPY insertadmmantap.sql /docker-entrypoint-initdb.d/
+#COPY kktinsertadmmantap.sql /docker-entrypoint-initdb.d/
