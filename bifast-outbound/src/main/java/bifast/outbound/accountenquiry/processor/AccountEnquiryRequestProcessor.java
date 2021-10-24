@@ -1,5 +1,7 @@
 package bifast.outbound.accountenquiry.processor;
 
+import java.math.BigDecimal;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +13,9 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.config.Config;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.service.UtilService;
 
 @Component
@@ -30,12 +33,13 @@ public class AccountEnquiryRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChnlAccountEnquiryRequestPojo chnReq = exchange.getIn().getBody(ChnlAccountEnquiryRequestPojo.class);
-
+//		ChnlAccountEnquiryRequestPojo chnReq = exchange.getIn().getBody(ChnlAccountEnquiryRequestPojo.class);
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
+		
 		String msgType = "510";
-		String bizMsgId = utilService.genOfiBusMsgId(msgType, chnReq.getChannel());
-//		String msgId = utilService.genMessageId(msgType);
-		String msgId = utilService.genMsgId(msgType, chnReq.getChannelRefId());
+		String bizMsgId = utilService.genOfiBusMsgId(msgType, rmw.getChannelType());
+		String msgId = utilService.genMsgId(msgType, rmw.getKomiTrxId());
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
@@ -45,7 +49,9 @@ public class AccountEnquiryRequestProcessor implements Processor {
 		
 		seedAcctEnquiry.setMsgId(msgId);
 		seedAcctEnquiry.setBizMsgId(hdr.getBizMsgIdr());
-		seedAcctEnquiry.setAmount(chnReq.getAmount());
+		
+		seedAcctEnquiry.setAmount(new BigDecimal(chnReq.getAmount()));
+		
 		seedAcctEnquiry.setCategoryPurpose(chnReq.getCategoryPurpose());
 		seedAcctEnquiry.setCrdtAccountNo(chnReq.getCreditorAccountNumber());
 		seedAcctEnquiry.setOrignBank(config.getBankcode());
@@ -60,6 +66,7 @@ public class AccountEnquiryRequestProcessor implements Processor {
 		busMsg.setAppHdr(hdr);
 		busMsg.setDocument(doc);
 	
+		rmw.setAccountEnquiryRequest(busMsg);
 		exchange.getIn().setBody(busMsg);
 	}
 

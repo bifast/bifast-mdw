@@ -1,9 +1,6 @@
 package bifast.outbound.proxyregistration.processor;
 
-import java.util.List;
-
 import org.apache.camel.Exchange;
-import org.apache.camel.MessageHistory;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,61 +8,40 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
 import bifast.outbound.model.ProxyMessage;
-import bifast.outbound.proxyregistration.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.repository.ProxyMessageRepository;
-import bifast.outbound.service.UtilService;
 
 @Component
 public class StoreProxyResolutionProcessor implements Processor{
 
 	@Autowired
 	private ProxyMessageRepository proxyMessageRepo;
-	@Autowired
-	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-//		BusinessMessage proxyRequest = exchange.getMessage().getHeader("prx_birequest", BusinessMessage.class);
-//		ProxyLookUpV01 regRequest = proxyRequest.getDocument().getPrxyLookUp();
-		
-		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY,List.class);
-
-		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
 
 		ProxyMessage proxyMessage = new ProxyMessage();
 		
-		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
-		if (!(null == chnlTrxId))
-			proxyMessage.setChnlTrxId(chnlTrxId);
-
 		String encrRequestMesg = exchange.getMessage().getHeader("hdr_encr_request", String.class);
 		String encrResponseMesg = exchange.getMessage().getHeader("hdr_encr_response", String.class);
 		
 		proxyMessage.setFullRequestMesg(encrRequestMesg);
 		proxyMessage.setFullResponseMesg(encrResponseMesg);
 
-		ChnlProxyResolutionRequestPojo channelRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlProxyResolutionRequestPojo.class);
-
-		proxyMessage.setIntrnRefId(channelRequest.getOrignReffId());
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		
-		proxyMessage.setOperationType(channelRequest.getLookupType());
+		ChnlProxyResolutionRequestPojo channelRequest = rmw.getChnlProxyResolutionRequest();
+
+	
+		proxyMessage.setOperationType("PXRS");
 		proxyMessage.setProxyType(channelRequest.getProxyType());
 		proxyMessage.setProxyValue(channelRequest.getProxyValue());
 		
-//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-//
-//		String strPrxyReqTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-//		String strPrxyRespTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-	
-//		LocalDateTime prxyRequestTime = LocalDateTime.parse(strPrxyReqTime, dtf);
-//		LocalDateTime prxyResponseTime = LocalDateTime.parse(strPrxyRespTime, dtf);
-//
-//		proxyMessage.setRequestDt(prxyRequestTime);
-//		proxyMessage.setResponseDt(prxyResponseTime);
-		proxyMessage.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-		proxyMessage.setResponseDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
-		proxyMessage.setCihubElapsedTime(routeElapsed);
+//		proxyMessage.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+//		proxyMessage.setResponseDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
+//		proxyMessage.setCihubElapsedTime(routeElapsed);
 
 		
 //		proxyMessage.setScndIdType(regRequest.getRegn().getPrxyRegn().getScndId().getTp());
@@ -89,7 +65,6 @@ public class StoreProxyResolutionProcessor implements Processor{
 			proxyMessage.setRespStatus(resolutionResponse.getLkUpRspn().getRegnRspn().getPrxRspnSts().value());
 		}
 		
-
 		
 		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
 		String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);

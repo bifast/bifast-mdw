@@ -1,138 +1,101 @@
 package bifast.outbound.credittransfer.processor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.iso20022.admi002.MessageRejectV01;
-import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs002.PaymentTransaction110;
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
-import bifast.outbound.corebank.CBDebitInstructionResponsePojo;
-import bifast.outbound.credittransfer.ChnlCreditTransferRequestPojo;
-import bifast.outbound.credittransfer.ChnlCreditTransferResponsePojo;
-import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
+import bifast.outbound.pojo.flat.FlatPacs002Pojo;
+import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class CreditTransferResponseProcessor implements Processor {
 
+	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
+
+    @Autowired
+    private StatusReasonRepository statusReasonRepo;
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		String ctFailurePoint = exchange.getMessage().getHeader("ct_failure_point", String.class);
+		ChannelResponseWrapper chnlResponseWr = new ChannelResponseWrapper();
+		chnlResponseWr.setResponseCode("U000");
+		chnlResponseWr.setDate(LocalDateTime.now().format(dateformatter));
+		chnlResponseWr.setTime(LocalDateTime.now().format(timeformatter));
+		chnlResponseWr.setResponses(new ArrayList<>());
 		
-		ChnlCreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		ChnlCreditTransferRequestPojo chnRequest = rmw.getChnlCreditTransferRequest();
+
+		ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
+		chnResponse.setOrignReffId(chnRequest.getChannelRefId());
+		chnResponse.setAccountNumber(chnRequest.getCrdtAccountNo());
+
+		Object objResponse = exchange.getMessage().getBody(Object.class);
 		
-		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
-
-		if ((!(null== ctFailurePoint)) && (ctFailurePoint.equals("AERJCT"))) {
+		if (objResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
+			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objResponse;
 			
-			ChannelResponseWrapper aeResponseWr = exchange.getMessage().getBody(ChannelResponseWrapper.class);	
-			ChnlAccountEnquiryResponsePojo aeResponse = aeResponseWr.getAccountEnquiryResponse();
-			ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
-			
-			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
-			chnResponse.setReason("Account Enquiry Rejected");
-			chnResponse.setStatus(aeResponse.getStatus());
-			chnResponse.setAddtInfo(aeResponse.getReason());
-
-			channelResponseWr.setCreditTransferResponse(chnResponse);
-			exchange.getIn().setBody(channelResponseWr);
-
+			chnlResponseWr.setResponseCode("KSTS");
+			chnlResponseWr.setReasonCode(fault.getReasonCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
+			if (oStatusReason.isPresent())
+				chnlResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+			else
+				chnlResponseWr.setResponseMessage("General Error");
 		}
 		
-		else if ((!(null== ctFailurePoint)) && (ctFailurePoint.equals("CBRJCT"))) {
-			
-			CBDebitInstructionResponsePojo cbResponse = exchange.getMessage().getHeader("ct_cbresponse", CBDebitInstructionResponsePojo.class);
+		else if (objResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
 
-			ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
-			
-			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
-			chnResponse.setReason("Corebank Service Reject");
-			if (cbResponse.getStatus().equals("FAILED"))
-				chnResponse.setStatus("REJECT-CB");
-			chnResponse.setAddtInfo(cbResponse.getAddtInfo());
-	
-			channelResponseWr.setCreditTransferResponse(chnResponse);
-			exchange.getIn().setBody(channelResponseWr);
+			chnlResponseWr.setResponseCode("RJCT");
+			chnlResponseWr.setReasonCode("U215");
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById("U215");
+			if (oStatusReason.isPresent())
+				chnlResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+			else
+				chnlResponseWr.setResponseMessage("General Error");
 
-		}
-		
-		else if ((!(null== ctFailurePoint)) && (ctFailurePoint.equals("PSTIMEOUT"))) {
-			ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
-			chnResponse.setOrignReffId(chnRequest.getOrignReffId());
-			chnResponse.setReason("Tidak terima response dari CI-Connector");
-			chnResponse.setStatus("Timeout");
-			
-			channelResponseWr.setCreditTransferResponse(chnResponse);
-			exchange.getIn().setBody(channelResponseWr);
 		}
 
 		else {
 			
-			BusinessMessage obj_crdtrnResp = exchange.getMessage().getHeader("ct_biresponse", BusinessMessage.class);
+			FlatPacs002Pojo biResp = (FlatPacs002Pojo)objResponse;
 
-			if (null == obj_crdtrnResp.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
-		
-				PaymentTransaction110 biResp = obj_crdtrnResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
-				ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
-	
-				// from CI-HUB response
-				chnResponse.setOrignReffId(chnRequest.getOrignReffId());
-				chnResponse.setBizMsgId(obj_crdtrnResp.getAppHdr().getBizMsgIdr());
-				
-				chnResponse.setStatus(biResp.getTxSts());
-				chnResponse.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
-				
-				
-				if (biResp.getStsRsnInf().get(0).getAddtlInf().size() > 0) {
-					chnResponse.setAddtInfo(biResp.getStsRsnInf().get(0).getAddtlInf().get(0));
-				}
-				
-				if (!(null == biResp.getOrgnlTxRef().getCdtr().getPty()))
-					if (!(null == biResp.getOrgnlTxRef().getCdtr().getPty().getNm()))
-						chnResponse.setCreditorName(biResp.getOrgnlTxRef().getCdtr().getPty().getNm());
-		
-				if (biResp.getSplmtryData().size() >0 ) {
-					
-					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId()))
-						chnResponse.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
-		
-					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp()))
-						chnResponse.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
-			
-					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts()))
-						chnResponse.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
-			
-					if (!(null == biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm()))
-						chnResponse.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
-			
-				}
-	
-				channelResponseWr.setCreditTransferResponse(chnResponse);
-	
-				exchange.getIn().setBody(channelResponseWr);
-	
+			if (biResp.getReasonCode().equals("U900")) {
+				chnlResponseWr.setResponseCode("KSTS");
+				chnlResponseWr.setReasonCode("K000");
 			}
-		
-			else {   // ternyata berupa message reject
-			
-				MessageRejectV01 rejectResp = obj_crdtrnResp.getDocument().getMessageReject();
-				
-				ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
-	
-				reject.setReferenceId(rejectResp.getRltdRef().getRef());
-				reject.setReason(rejectResp.getRsn().getRjctgPtyRsn());
-				reject.setDescription(rejectResp.getRsn().getRsnDesc());
-				reject.setLocation(rejectResp.getRsn().getErrLctn());
-				reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
-		
-				channelResponseWr.setFaultResponse(reject);
-	
-				exchange.getIn().setBody(channelResponseWr);
-	
+			else {
+				chnlResponseWr.setResponseCode(biResp.getTransactionStatus());
+				chnlResponseWr.setReasonCode(biResp.getReasonCode());				
 			}
+			
+			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(chnlResponseWr.getReasonCode());
+			if (optStatusReason.isPresent()) {
+				String desc = optStatusReason.get().getDescription();
+				chnlResponseWr.setReasonMessage(desc);
+			}	
+
+			// from CI-HUB response						
+			if (null != biResp.getCdtrNm())
+				chnResponse.setCreditorName(biResp.getCdtrNm());
 		}
+
+		chnlResponseWr.getResponses().add(chnResponse);
+		exchange.getIn().setBody(chnlResponseWr);
+
 	}
 }

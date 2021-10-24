@@ -1,6 +1,6 @@
 package bifast.outbound.route;
 
-import java.net.SocketTimeoutException;
+import java.time.Instant;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -10,121 +10,104 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
-import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
-import bifast.outbound.ficredittransfer.processor.SaveFICreditTransferProcessor;
-import bifast.outbound.paymentstatus.StorePaymentStatusProcessor;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.service.UtilService;
+import bifast.outbound.processor.ExceptionToFaultMapProcessor;
+import bifast.outbound.processor.FlatResponseProcessor;
+import bifast.outbound.processor.SetRemainTimeProcessor;
+import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class CihubRoute extends RouteBuilder {
 
-	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
-
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
-	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
+	private ExceptionToFaultMapProcessor exceptionToFaultMap;
 	@Autowired
-	private StoreCreditTransferProcessor storeCreditTransferProcessor;
+	private FlatResponseProcessor flatResponseProcessor;
 	@Autowired
-	private StorePaymentStatusProcessor storePaymentStatusProcessor;
+	private JacksonDataFormatService jdfService;
 	@Autowired
-	private SaveFICreditTransferProcessor saveFICreditTransferProcessor;
-	@Autowired
-	private UtilService utilService;
+	private SetRemainTimeProcessor setRemainTime;
 
 	@Override
 	public void configure() throws Exception {
 		
-		businessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		businessMessageJDF.setInclude("NON_NULL");
-		businessMessageJDF.setInclude("NON_EMPTY");
-		businessMessageJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		businessMessageJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-		
+		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
-		from("direct:call-cihub").routeId("komi.call-cihub").messageHistory()
+		from("direct:call-cihub").routeId("komi.call-cihub")
 		
-
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					BusinessMessage bm = exchange.getIn().getBody(BusinessMessage.class);
-					String msgType = utilService.getMsgType(bm.getAppHdr().getMsgDefIdr(), bm.getAppHdr().getBizMsgIdr());
-					exchange.getMessage().setHeader("hdr_trxname", msgType);
-				}
-			})
-			.id("start_route")
-			.log("${header.hdr_trxname}")	
-			
-			.setHeader("hdr_cihub_request", simple("${body}"))
-
-			.marshal(businessMessageJDF)
-
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] Post ${header.hdr_trxname} request: ${body}")
+			.setHeader("hdr_cihub_request", simple("${body}")).id("start_route")
 	
+			.marshal(businessMessageJDF)
+	
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
+
+			// zip dulu body ke cihubroute_encr_request
 			.setHeader("tmp_body", simple("${body}"))
 			.marshal().zipDeflater()
 			.marshal().base64()
-
 			.setHeader("cihubroute_encr_request", simple("${body}"))
 			.setBody(simple("${header.tmp_body}"))
 			
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					String encrMsg = exchange.getMessage().getHeader("cihubroute_encr_request", String.class);
+					rmw.setCihubEncriptedRequest(encrMsg);
+					rmw.setCihubStart(Instant.now());
+					exchange.getMessage().setHeader("hdr_request_list", rmw);
+				}
+			})
+			
+			.process(setRemainTime)
+			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{komi.ciconnector-url}}?"
-						+ "socketTimeout={{komi.timeout}}&" 
-						+ "bridgeEndpoint=true",
-						enrichmentAggregator)
+				
+				.enrich()
+					.simple("http:{{komi.ciconnector-url}}?"
+						+ "socketTimeout=${header.hdr_remain_time}&" 
+						+ "bridgeEndpoint=true")
+					.aggregationStrategy(enrichmentAggregator)
+				
 				.convertBodyTo(String.class)				
-				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChRefId:${header.hdr_chnlRefId}] CI-HUB response: ${body}")
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB response: ${body}")
 	
 				.setHeader("tmp_body", simple("${body}"))
 				.marshal().zipDeflater()
 				.marshal().base64()
 				.setHeader("cihubroute_encr_response", simple("${body}"))
+				
+				.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						String body = exchange.getMessage().getBody(String.class);
+						RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+						rmw.setCihubEncriptedResponse(body);
+						exchange.getMessage().setHeader("hdr_request_list", rmw);
+					}
+					
+				})
 				.setBody(simple("${header.tmp_body}"))
 	
 				.unmarshal(businessMessageJDF)
+				
 				.setHeader("hdr_error_status", constant(null))
-	
-			.doCatch(SocketTimeoutException.class)
-				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Timeout")
-				.setHeader("hdr_error_status", constant("TIMEOUT-CIHUB"))
-				.setHeader("hdr_error_mesg", constant("Timeout menunggu response dari CIHUB"))
-		    	.setBody(constant(null))
-	
-	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[ChRefId:${header.hdr_chnlRefId}] Call CI-HUB Error.")
-		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-				.setHeader("hdr_error_status", constant("ERROR-CIHUB"))
-				.setHeader("hdr_error_mesg", simple("${exception.message}"))
-		    	.setBody(constant(null))
-	
-			.endDoTry()
-			.end()
-	
-			.setHeader("hdr_cihubResponseTime", simple("${date:now:yyyyMMdd hh:mm:ss}"))
-			.setHeader("hdr_cihub_response", simple("${body}"))
+				
+				.process(flatResponseProcessor)
 			
-			.choice().id("end_route")
-				.when().simple("${header.hdr_trxname} == 'AccountEnquiryRequest'")
-					.process(saveAccountEnquiryProcessor)
-				.when().simple("${header.hdr_trxname} == 'CreditTransferRequest'")
-					.process(storeCreditTransferProcessor)
-				.when().simple("${header.hdr_trxname} == 'FICreditTransferRequest'")
-					.process(saveFICreditTransferProcessor)
-				.when().simple("${header.hdr_trxname} == 'PaymentStatusRequest'")
-					.process(storePaymentStatusProcessor)
+			.endDoTry()
+	    	.doCatch(Exception.class)
+				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_request_list.requestId}] Call CI-HUB Error.")
+		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+		    	.process(exceptionToFaultMap)
+	
+//			.endDoTry()
 			.end()
-
+	
 			.removeHeaders("tmp_*")
 			.removeHeaders("cihubroute_*")
 		;

@@ -4,8 +4,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 
 @Component
 public class CBTransactionFailureProcessor implements Processor {
@@ -25,10 +26,7 @@ public class CBTransactionFailureProcessor implements Processor {
 		if (!(null == cbResponse.getAddtInfo()))
 			cbFailure.setDescription(cbResponse.getAddtInfo());
 		
-		cbFailure.setLocation("Corebank service call");
-		
-		if (msgType.equals("crdttrns"))
-			cbFailure.setReason("Debit transaction failed");
+//		cbFailure.setLocation("Corebank service call");
 		
 		
 		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();

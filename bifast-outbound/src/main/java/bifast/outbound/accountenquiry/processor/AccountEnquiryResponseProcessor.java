@@ -1,89 +1,126 @@
 package bifast.outbound.accountenquiry.processor;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.iso20022.admi002.MessageRejectV01;
-import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs002.PaymentTransaction110;
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
-import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.pojo.chnlresponse.ChnlAccountEnquiryResponsePojo;
+import bifast.outbound.pojo.flat.FlatPacs002Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
+import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class AccountEnquiryResponseProcessor implements Processor {
 
+    DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
+
+    @Autowired
+    private StatusReasonRepository statusReasonRepo;
+    
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-//		BusinessMessage busMesg = exchange.getMessage().getHeader("ae_objresp_bi", BusinessMessage.class);
-		
-		ChnlAccountEnquiryRequestPojo chnReq = exchange.getMessage().getHeader("ae_channel_request",ChnlAccountEnquiryRequestPojo.class);
-		
 		ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
+		channelResponseWr.setResponseCode("U000");
+		channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
+		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
+		channelResponseWr.setResponses(new ArrayList<>());
+
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class);
+		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
 		
-		BusinessMessage busMesg = exchange.getIn().getBody(BusinessMessage.class);
+		ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
+		chnResp.setOrignReffId(chnReq.getChannelRefId());
 
-		if (null == busMesg) {
+		Object objBody = exchange.getMessage().getBody(Object.class);
+		if (objBody.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
+			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
 			
-			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
-
-			reject.setReferenceId(chnReq.getChannelRefId());
-			
-			String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
-			String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
-			reject.setReason(errorStatus);
-			reject.setDescription(errorMesg);
-			
-//			reject.setLocation(rejectResp.getRsn().getErrLctn());
-//			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
-	
-			channelResponseWr.setFaultResponse(reject);
-			exchange.getIn().setBody(channelResponseWr);
-
+			channelResponseWr.setResponseCode("KSTS");
+			channelResponseWr.setReasonCode(fault.getReasonCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
+			if (oStatusReason.isPresent())
+				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+			else
+				channelResponseWr.setResponseMessage("General Error");
 		}
 		
-		else if (null == busMesg.getDocument().getMessageReject())  {   // cek apakah response berupa bukan message reject 
-			
-			PaymentTransaction110 biResp = busMesg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
-	
-			ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
-			
-			chnResp.setOrignReffId(chnReq.getChannelRefId());
-			
-			chnResp.setCreditorAccountType(biResp.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
-			chnResp.setCreditorId(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
-			
-			chnResp.setCreditorName(biResp.getOrgnlTxRef().getCdtr().getPty().getNm());
-			chnResp.setCreditorResidentStatus(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
-			chnResp.setCreditorTownName(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
-			chnResp.setCreditorType(biResp.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
-			
-			chnResp.setStatus(biResp.getTxSts());
-			chnResp.setReason(biResp.getStsRsnInf().get(0).getRsn().getPrtry());
-					
-			channelResponseWr.setAccountEnquiryResponse(chnResp);
+		else if (objBody.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
+
+			channelResponseWr.setResponseCode("RJCT");
+			channelResponseWr.setReasonCode("U215");
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById("U215");
+			if (oStatusReason.isPresent())
+				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+			else
+				channelResponseWr.setResponseMessage("General Error");
 
 		}
-		
-		else {   // ternyata berupa message reject
+
+		else if (objBody.getClass().getSimpleName().equals("FlatPrxy004Pojo")) {
+			FlatPrxy004Pojo prxRsltResponse = (FlatPrxy004Pojo) objBody;
 			
-			MessageRejectV01 rejectResp = busMesg.getDocument().getMessageReject();
-
-			ChnlFailureResponsePojo reject = new ChnlFailureResponsePojo();
-		
-			reject.setReferenceId(chnReq.getChannelRefId());
-			reject.setTransactionType ("AccountEnquiry");
-			reject.setReason(rejectResp.getRsn().getRjctgPtyRsn());
-			reject.setDescription(rejectResp.getRsn().getRsnDesc());
-			reject.setLocation("[CI-HUB] " + rejectResp.getRsn().getErrLctn());
-			reject.setAdditionalData(rejectResp.getRsn().getAddtlData());
-
-			channelResponseWr.setFaultResponse(reject);
+			channelResponseWr.setResponseCode(prxRsltResponse.getResponseCode());
+			channelResponseWr.setReasonCode(prxRsltResponse.getReasonCode());
+			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(prxRsltResponse.getReasonCode());
+			if (oStatusReason.isPresent())
+				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+			else
+				channelResponseWr.setResponseMessage("General Error");
 		}
-		
+
+		else {
+			
+			FlatPacs002Pojo bm = (FlatPacs002Pojo)objBody;
+									
+			channelResponseWr.setResponseCode(bm.getTransactionStatus());
+			channelResponseWr.setReasonCode(bm.getReasonCode());
+			
+			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getReasonCode());
+			if (optStatusReason.isPresent()) {
+				String desc = optStatusReason.get().getDescription();
+				channelResponseWr.setReasonMessage(desc);
+			}	
+			
+			chnResp.setCreditorAccountNumber(bm.getCdtrAcctId());
+			chnResp.setCreditorAccountType(bm.getCdtrAcctTp());
+			
+			if (null != chnReq.getProxyId())
+				chnResp.setProxyId(chnReq.getProxyId());
+			
+			if (null != chnReq.getProxyType())
+				chnResp.setProxyType(chnReq.getProxyType());
+
+			if (null != bm.getCdtrNm())
+				chnResp.setCreditorName(bm.getCdtrNm());
+			
+			if (null != bm.getCdtrId())
+				chnResp.setCreditorId(bm.getCdtrId());
+
+			if (null != bm.getCdtrTp())
+				chnResp.setCreditorType(bm.getCdtrTp());
+			
+			if (null != bm.getCdtrRsdntSts())
+				chnResp.setCreditorResidentStatus(bm.getCdtrRsdntSts());
+			
+			if (null != bm.getCdtrTwnNm())
+				chnResp.setCreditorTownName(bm.getCdtrTwnNm());
+		}
+
+		channelResponseWr.getResponses().add(chnResp);
+
 		exchange.getMessage().setBody(channelResponseWr);
 	}
 

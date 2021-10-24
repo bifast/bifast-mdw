@@ -10,6 +10,6 @@ import bifast.outbound.model.AccountEnquiry;
 @Repository
 public interface AccountEnquiryRepository extends JpaRepository<AccountEnquiry, Long> {
 
-	List<AccountEnquiry> findAllByBizMsgIdr (String bizMsgIdr);
+	List<AccountEnquiry> findAllByReqBizMsgIdr (String reqBizMsgIdr);
 	
 }

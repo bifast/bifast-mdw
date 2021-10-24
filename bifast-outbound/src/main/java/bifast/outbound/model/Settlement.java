@@ -5,137 +5,68 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
-@Entity(name="SETTLEMENT")
+@Entity(name="KC_SETTLEMENT")
 public class Settlement {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
+	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 	
-//	private Long logMessageId;
-	
+	@Column(length=20)
 	private String orignBank;
+	@Column(length=20)
 	private String recptBank;
 	
-	@Column(name="SETTL_CONF_BIZMSGID")
+	@Column(name="SETTL_CONF_BIZMSGID", length=50)
 	private String settlConfBizMsgId;
-	@Column(name="ORGNL_CRDT_TRN_BIZMSGID")
+	@Column(name="ORGNL_CRDT_TRN_BIZMSGID", length=50)
 	private String orgnlCrdtTrnReqBizMsgId;
-
-	private String crdtAccountNo;
-	private String crdtAccountType;
-	private String crdtId;
-	private String crdtIdType;
-	private String dbtrAccountNo;
-	private String dbtrAccountType;
-	private String dbtrId;
-	private String dbtrIdType;
-
-	public Settlement () {}
+	
+	private String fullMessage;
 	
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	public String getOrignBank() {
 		return orignBank;
 	}
-
 	public void setOrignBank(String orignBank) {
 		this.orignBank = orignBank;
 	}
-
 	public String getRecptBank() {
 		return recptBank;
 	}
-
 	public void setRecptBank(String recptBank) {
 		this.recptBank = recptBank;
 	}
-
 	public String getSettlConfBizMsgId() {
 		return settlConfBizMsgId;
 	}
-
 	public void setSettlConfBizMsgId(String settlConfBizMsgId) {
 		this.settlConfBizMsgId = settlConfBizMsgId;
 	}
-
 	public String getOrgnlCrdtTrnReqBizMsgId() {
 		return orgnlCrdtTrnReqBizMsgId;
 	}
-
 	public void setOrgnlCrdtTrnReqBizMsgId(String orgnlCrdtTrnReqBizMsgId) {
 		this.orgnlCrdtTrnReqBizMsgId = orgnlCrdtTrnReqBizMsgId;
 	}
-
-	public String getCrdtAccountNo() {
-		return crdtAccountNo;
+	public String getFullMessage() {
+		return fullMessage;
 	}
-
-	public void setCrdtAccountNo(String crdtAccountNo) {
-		this.crdtAccountNo = crdtAccountNo;
+	public void setFullMessage(String fullMessage) {
+		this.fullMessage = fullMessage;
 	}
+	
+	
+	
+	
 
-	public String getCrdtAccountType() {
-		return crdtAccountType;
-	}
-
-	public void setCrdtAccountType(String crdtAccountType) {
-		this.crdtAccountType = crdtAccountType;
-	}
-
-	public String getCrdtId() {
-		return crdtId;
-	}
-
-	public void setCrdtId(String crdtId) {
-		this.crdtId = crdtId;
-	}
-
-	public String getCrdtIdType() {
-		return crdtIdType;
-	}
-
-	public void setCrdtIdType(String crdtIdType) {
-		this.crdtIdType = crdtIdType;
-	}
-
-	public String getDbtrAccountNo() {
-		return dbtrAccountNo;
-	}
-
-	public void setDbtrAccountNo(String dbtrAccountNo) {
-		this.dbtrAccountNo = dbtrAccountNo;
-	}
-
-	public String getDbtrAccountType() {
-		return dbtrAccountType;
-	}
-
-	public void setDbtrAccountType(String dbtrAccountType) {
-		this.dbtrAccountType = dbtrAccountType;
-	}
-
-	public String getDbtrId() {
-		return dbtrId;
-	}
-
-	public void setDbtrId(String dbtrId) {
-		this.dbtrId = dbtrId;
-	}
-
-	public String getDbtrIdType() {
-		return dbtrIdType;
-	}
-
-	public void setDbtrIdType(String dbtrIdType) {
-		this.dbtrIdType = dbtrIdType;
-	}
-
+	
 }

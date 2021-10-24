@@ -1,11 +1,11 @@
 package bifast.outbound.proxyregistration.processor;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.time.ZoneId;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.MessageHistory;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,95 +13,91 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.outbound.model.ProxyMessage;
-import bifast.outbound.proxyregistration.ChnlProxyRegistrationRequestPojo;
+import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
+import bifast.outbound.pojo.flat.FlatPrxy002Pojo;
 import bifast.outbound.repository.ProxyMessageRepository;
-import bifast.outbound.service.UtilService;
 
 @Component
 public class StoreProxyRegistrationProcessor implements Processor{
 
 	@Autowired
 	private ProxyMessageRepository proxyMessageRepo;
-	@Autowired
-	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY,List.class);
-
-		long routeElapsed = utilService.getRouteElapsed(listHistory, "komi.call-cihub");
-
-		BusinessMessage proxyRequest = exchange.getMessage().getHeader("prx_birequest", BusinessMessage.class);
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		
+		BusinessMessage proxyRequest = rmw.getProxyRegistrationRequest();
 		ProxyRegistrationV01 regRequest = proxyRequest.getDocument().getPrxyRegn();
 		
 		ProxyMessage proxyMessage = new ProxyMessage();
-		
-		Long chnlTrxId = exchange.getMessage().getHeader("hdr_chnlTable_id", Long.class);
-		if (!(null == chnlTrxId))
-			proxyMessage.setChnlTrxId(chnlTrxId);
+				
+		proxyMessage.setKomiTrnsId(rmw.getKomiTrxId());
+		proxyMessage.setChnlNoRef(rmw.getRequestId());
 
-		proxyMessage.setAccountName(regRequest.getRegn().getPrxyRegn().getAcct().getNm());
-		proxyMessage.setAccountNumber(regRequest.getRegn().getPrxyRegn().getAcct().getId().getOthr().getId());
-		proxyMessage.setAccountType(regRequest.getRegn().getPrxyRegn().getAcct().getTp().getPrtry());
 		proxyMessage.setCustomerId(regRequest.getSplmtryData().get(0).getEnvlp().getCstmr().getId());
 		proxyMessage.setCustomerType(regRequest.getSplmtryData().get(0).getEnvlp().getCstmr().getTp());
-
-		proxyMessage.setDisplayName(regRequest.getRegn().getPrxyRegn().getDsplNm());
 		
-		String encrRequestMesg = exchange.getMessage().getHeader("hdr_encr_request", String.class);
-		String encrResponseMesg = exchange.getMessage().getHeader("hdr_encr_response", String.class);
+		proxyMessage.setFullRequestMesg(rmw.getCihubEncriptedRequest());
+		if (null != rmw.getCihubEncriptedResponse()) {
+			proxyMessage.setFullResponseMesg(rmw.getCihubEncriptedResponse());
+		}
+
+		long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
+		proxyMessage.setRequestDt(LocalDateTime.ofInstant(rmw.getCihubStart(), ZoneId.systemDefault()));
+		proxyMessage.setCihubElapsedTime(timeElapsed);
+
+		ChnlProxyRegistrationRequestPojo channelRequest = rmw.getChnlProxyRegistrationRequest();
 		
-		proxyMessage.setFullRequestMesg(encrRequestMesg);
-		proxyMessage.setFullResponseMesg(encrResponseMesg);
-
-		ChnlProxyRegistrationRequestPojo channelRequest = exchange.getMessage().getHeader("hdr_channelRequest", ChnlProxyRegistrationRequestPojo.class);
-
-		proxyMessage.setIntrnRefId(channelRequest.getOrignReffId());
+		proxyMessage.setOperationType(channelRequest.getRegistrationType());
+		proxyMessage.setProxyType(channelRequest.getProxyType());
+		proxyMessage.setProxyValue(channelRequest.getProxyValue());
 		
-		proxyMessage.setOperationType(channelRequest.getRegnTp());
-		proxyMessage.setProxyType(channelRequest.getProxyTp());
-		proxyMessage.setProxyValue(channelRequest.getProxyVal());
+		if (null != channelRequest.getDisplayName())
+			proxyMessage.setDisplayName(channelRequest.getDisplayName());
 		
-		proxyMessage.setResidentStatus(regRequest.getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts());
+		if (null != channelRequest.getAccountNumber())
+			proxyMessage.setAccountNumber(channelRequest.getAccountNumber());
+		if (null != channelRequest.getAccountType())
+			proxyMessage.setAccountType(channelRequest.getAccountType());
+		if (null != channelRequest.getAccountName())
+			proxyMessage.setAccountName(channelRequest.getAccountName());
 
-//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss");
-//
-//		String strPrxyReqTime = exchange.getMessage().getHeader("hdr_cihubRequestTime", String.class);
-//		String strPrxyRespTime = exchange.getMessage().getHeader("hdr_cihubResponseTime", String.class);
-//	
-//		LocalDateTime prxyRequestTime = LocalDateTime.parse(strPrxyReqTime, dtf);
-//		
-//		LocalDateTime prxyResponseTime = LocalDateTime.parse(strPrxyRespTime, dtf);
-//
-//		proxyMessage.setRequestDt(prxyRequestTime);
-//		proxyMessage.setResponseDt(prxyResponseTime);
-		proxyMessage.setRequestDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-		proxyMessage.setResponseDt(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
-		proxyMessage.setCihubElapsedTime(routeElapsed);
-
-		proxyMessage.setScndIdType(regRequest.getRegn().getPrxyRegn().getScndId().getTp());
-		proxyMessage.setScndValue(regRequest.getRegn().getPrxyRegn().getScndId().getVal());
-		proxyMessage.setTownName(regRequest.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
-
-		proxyMessage.setOperationType(regRequest.getRegn().getRegnTp().value());
+		proxyMessage.setScndIdType(channelRequest.getSecondIdType());
+		proxyMessage.setScndValue(channelRequest.getSecondIdValue());
 		
-		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
-		String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
-
-		BusinessMessage biResponse = exchange.getMessage().getHeader("prx_biresponse", BusinessMessage.class);
-		
-		if (!(null == biResponse))
-			proxyMessage.setRespStatus(biResponse.getDocument().getPrxyRegnRspn().getRegnRspn().getPrxRspnSts().value());
+		if (null != channelRequest.getTownName())
+			proxyMessage.setTownName(channelRequest.getTownName());
+		if (null != channelRequest.getResidentialStatus())
+			proxyMessage.setResidentStatus(channelRequest.getResidentialStatus());
 
 		
-		if (!(null == errorStatus)) {
-			proxyMessage.setCallStatus(errorStatus);
-			if (!(null == errorMesg)) 
-				proxyMessage.setErrorMessage(errorMesg);
-		} 
-		else
+		Object oBiResponse = exchange.getMessage().getBody(Object.class);
+
+		if (oBiResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
+			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)oBiResponse;
+			proxyMessage.setErrorMessage(fault.getDescription());
+			proxyMessage.setRespStatus(fault.getReasonCode());
+			proxyMessage.setCallStatus(fault.getFaultCategory());
+		}
+			
+		else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
+			proxyMessage.setCallStatus("REJECT-CICONN");
+			proxyMessage.setRespStatus("RJCT");
+			proxyMessage.setErrorMessage("Message Rejected with Admi.002");
+		}
+		
+		else {
 			proxyMessage.setCallStatus("SUCCESS");
+			FlatPrxy002Pojo prslResponse = (FlatPrxy002Pojo) oBiResponse;
+			proxyMessage.setRespStatus(prslResponse.getStatusReason());
+			
+			if (!(null==rmw.getCihubEncriptedResponse()))
+				proxyMessage.setFullResponseMesg(rmw.getCihubEncriptedResponse());
+		}
 
 		
 		proxyMessageRepo.save(proxyMessage);

@@ -68,12 +68,16 @@ public class Pacs008MessageService {
 		
 		// CdtTrfTxInf / PmtId
 		
-		PaymentIdentification7 PmtId = new PaymentIdentification7();
-		PmtId.setEndToEndId(seed.getBizMsgId());
-		PmtId.setTxId(grpHdr.getMsgId());
+		cdtTrfTxInf.setPmtId(new PaymentIdentification7());
+		cdtTrfTxInf.getPmtId().setEndToEndId(seed.getBizMsgId());
+		cdtTrfTxInf.getPmtId().setTxId(grpHdr.getMsgId());
+
+		// CdtTrfTxInf / ++PmtTpInf / +++CtgyPurp / ++++Prtry
 		
-		cdtTrfTxInf.setPmtId(PmtId);
-	
+		cdtTrfTxInf.setPmtTpInf(new PaymentTypeInformation28());
+		cdtTrfTxInf.getPmtTpInf().setCtgyPurp(new CategoryPurpose1Choice());
+		cdtTrfTxInf.getPmtTpInf().getCtgyPurp().setPrtry(seed.getTrnType() + seed.getCategoryPurpose());
+
 		// CdtTrfTxInf / IntrBkSttlmAmt
 
 		ActiveCurrencyAndAmount ccyAmount = new ActiveCurrencyAndAmount();
@@ -156,12 +160,11 @@ public class Pacs008MessageService {
 		CreditTransferTransaction39 cdtTrfTxInf = new CreditTransferTransaction39();
 		
 		// CdtTrfTxInf / PmtId
+		cdtTrfTxInf.setPmtId(new PaymentIdentification7());
 		
-		PaymentIdentification7 PmtId = new PaymentIdentification7();
-		PmtId.setEndToEndId(seed.getBizMsgId());
-		PmtId.setTxId(seed.getMsgId());
+		cdtTrfTxInf.getPmtId().setEndToEndId(seed.getBizMsgId());
+		cdtTrfTxInf.getPmtId().setTxId(seed.getMsgId());
 		
-		cdtTrfTxInf.setPmtId(PmtId);
 		
 		// CdtTrfTxInf / PmtTpInf
 
@@ -172,9 +175,9 @@ public class Pacs008MessageService {
 
 		CategoryPurpose1Choice ctgyPurp = new CategoryPurpose1Choice();
 		if (null==seed.getCategoryPurpose()) 
-			ctgyPurp.setPrtry("99");
+			ctgyPurp.setPrtry(seed.getTrnType() + "99");
 		else
-			ctgyPurp.setPrtry(seed.getCategoryPurpose());
+			ctgyPurp.setPrtry(seed.getTrnType() + seed.getCategoryPurpose());
 		pmtTpInf.setCtgyPurp(ctgyPurp);
 		
 		cdtTrfTxInf.setPmtTpInf(pmtTpInf);
@@ -196,7 +199,7 @@ public class Pacs008MessageService {
 			dbtr.setNm(seed.getDbtrName());
 
 		Party38Choice dbtrId = new Party38Choice();
-		if (seed.getDbtrIdType().equals("01")) {
+		if (seed.getDbtrType().equals("01")) {
 			GenericPersonIdentification1 debtId = new GenericPersonIdentification1();
 			debtId.setId(seed.getDbtrId());
 			PersonIdentification13 personIdentification13 = new PersonIdentification13();
@@ -257,7 +260,7 @@ public class Pacs008MessageService {
 			cdtr.setNm(seed.getCrdtName());
 			
 		Party38Choice cdtrId = new Party38Choice();
-		if (seed.getCrdtIdType().equals("01")) {
+		if (seed.getCrdtType().equals("01")) {
 			GenericPersonIdentification1 cdtrPrvOthrId = new GenericPersonIdentification1();
 			cdtrPrvOthrId.setId(seed.getCrdtId());
 			PersonIdentification13 personId = new PersonIdentification13();
@@ -286,17 +289,13 @@ public class Pacs008MessageService {
 		CashAccountType2Choice cdtrAcctTp = new CashAccountType2Choice();
 		cdtrAcctTp.setPrtry(seed.getCrdtAccountType());
 		cdtrAcct.setTp(cdtrAcctTp);
-		
-		if (!(null == seed.getCrdtProxyIdType())) {
-			ProxyAccountType1Choice prxyTp = new ProxyAccountType1Choice();
-			
-			prxyTp.setPrtry(seed.getCrdtProxyIdType());
-			ProxyAccountIdentification1 prxyAcct = new ProxyAccountIdentification1();
-			
-			prxyAcct.setTp(prxyTp);
-			prxyAcct.setId(seed.getCrdtProxyIdValue());
 
-			cdtrAcct.setPrxy(prxyAcct);
+		if (!(null == seed.getCrdtProxyIdValue())) {
+
+			cdtrAcct.setPrxy(new ProxyAccountIdentification1());
+			cdtrAcct.getPrxy().setId(seed.getCrdtProxyIdValue());
+			cdtrAcct.getPrxy().setTp(new ProxyAccountType1Choice());
+			cdtrAcct.getPrxy().getTp().setPrtry(seed.getCrdtProxyIdType());
 		}
 		
 		cdtTrfTxInf.setCdtrAcct(cdtrAcct);
@@ -310,23 +309,44 @@ public class Pacs008MessageService {
 		
 		// CdtTrfTxInf / SplmtryData
 		// unt credit transfer tidak digunakan
+		
+		cdtTrfTxInf.getSplmtryData().add(new BISupplementaryData1());
+		cdtTrfTxInf.getSplmtryData().get(0).setEnvlp(new BISupplementaryDataEnvelope1());
+		
 		BISupplementaryDataEnvelope1 envl = new BISupplementaryDataEnvelope1();
 
-		if (!(null==seed.getCrdtIdType())) {
-			BIAddtlCstmrInf custInfo = new BIAddtlCstmrInf();
-			custInfo.setTp(seed.getCrdtIdType());
-			envl.setCdtr(custInfo);
+		if ((null != seed.getCrdtType()) ||
+			(null != seed.getCrdtResidentStatus()) ||
+			(null != seed.getCrdtTownName()) 
+			) {
+			
+			BIAddtlCstmrInf cdtr1 = new BIAddtlCstmrInf();
+			
+			if (!(null==seed.getCrdtType())) 
+				cdtr1.setTp(seed.getCrdtType());
+			if (!(null==seed.getCrdtResidentStatus())) 
+				cdtr1.setRsdntSts(seed.getCrdtResidentStatus());
+			if (!(null==seed.getCrdtTownName())) 
+				cdtr1.setTwnNm(seed.getCrdtTownName());
+			
+			cdtTrfTxInf.getSplmtryData().get(0).getEnvlp().setCdtr(cdtr1);
 		}
-		if (!(null==seed.getDbtrIdType())) {
-			BIAddtlCstmrInf custInfo = new BIAddtlCstmrInf();
-			custInfo.setTp(seed.getDbtrIdType());
-			envl.setDbtr(custInfo);
-		}
-		
-		if ((!(null==envl.getCdtr())) || (!(null==envl.getDbtr())) ) {
-			BISupplementaryData1 suppData = new BISupplementaryData1();
-			suppData.setEnvlp(envl);
-			cdtTrfTxInf.getSplmtryData().add(suppData);
+
+		if ((null != seed.getDbtrType()) ||
+			(null != seed.getDbtrResidentStatus()) ||
+			(null != seed.getDbtrTownName()) 
+			) {
+				
+			BIAddtlCstmrInf dbtr1 = new BIAddtlCstmrInf();
+			
+			if (!(null==seed.getCrdtType())) 
+				dbtr1.setTp(seed.getCrdtType());
+			if (!(null==seed.getCrdtResidentStatus())) 
+				dbtr1.setRsdntSts(seed.getCrdtResidentStatus());
+			if (!(null==seed.getCrdtTownName())) 
+				dbtr1.setTwnNm(seed.getCrdtTownName());
+			
+			cdtTrfTxInf.getSplmtryData().get(0).getEnvlp().setDbtr(dbtr1);
 		}
 		
 		pacs008.getCdtTrfTxInf().add(cdtTrfTxInf);

@@ -49,20 +49,20 @@ public class UtilService {
 		return Integer.valueOf(posbl4);
 	}
 
-	public String genMessageId (String trxType) {
+	public String genMessageId (String trxType, String bankCode) {
 		String strToday = LocalDateTime.now().format(formatter);
 		DecimalFormat df = new DecimalFormat("00000000");
 		String strCounter = df.format(getInboundCounter());
-		String msgId = strToday + config.getBankcode() + trxType + strCounter;
+		String msgId = strToday + bankCode + trxType + strCounter;
 		return msgId;
 	}
 	
 
-	public String genRfiBusMsgId (String trxType, String channel ) {
+	public String genRfiBusMsgId (String trxType, String channel, String bankCode ) {
 		String strToday = LocalDateTime.now().format(formatter);
 		DecimalFormat df = new DecimalFormat("00000000");
 		String strCounter = df.format(getInboundCounter());
-		String msgId = strToday + config.getBankcode() + trxType + "R" + channel + strCounter;
+		String msgId = strToday + bankCode + trxType + "R" + channel + strCounter;
 		return msgId;
 	}
 

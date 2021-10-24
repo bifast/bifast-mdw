@@ -3,8 +3,7 @@ version: '3.7'
 services:
     komidb:
       container_name: komidb
-      image: postgres:12.7
-      image: fransmzh/komi-db:1.5
+      image: fransmzh/komi-db:1.6
       restart: always
       environment:
         - POSTGRES_USER=postgres
@@ -25,7 +24,7 @@ services:
 
     inbound:
       build: bifast-inbound
-      image: fransmzh/komi-inbound:1.5
+      image: fransmzh/komi-inbound:1.6
       container_name: komi-inbound
       restart: always
       depends_on: 
@@ -38,7 +37,7 @@ services:
         - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
         - SPRING.DATASOURCE.USERNAME=postgres 
         - SPRING.DATASOURCE.PASSWORD=postgres 
-        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=none
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.COREBANK-URL=localhost:9003/services/cb
@@ -49,12 +48,11 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:1.5
+      image: fransmzh/komi-outbound:1.6
       container_name: komi-outbound
       restart: always
       depends_on: 
         - komidb
-        - mock
       expose: 
         - "9002"
       ports: 
@@ -70,7 +68,7 @@ services:
         - SPRING.DATASOURCE.USERNAME=postgres 
         - SPRING.DATASOURCE.PASSWORD=postgres 
         - SPRING.MAIN.BANNER-MODE=OFF 
-        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=none
       volumes: 
         - /home/fransdm/workspace/bifast-log/outbound:/home/logs
       networks: 
@@ -79,20 +77,15 @@ services:
     mock:
       build: bifast-mock
       container_name: komi-mock
-      image: fransmzh/komi-mock:1.4
+      image: fransmzh/komi-mock:1.6
       restart: always
       depends_on: 
         - komidb
-        - inbound
       expose: 
         - "9006"
       ports: 
         - "9006:9006"
       environment: 
-        - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
-        - SPRING.DATASOURCE.USERNAME=postgres 
-        - SPRING.DATASOURCE.PASSWORD=postgres 
-        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
         - BIFAST.INBOUND-LOG-FOLDER=/home/logs
         - KOMI.INBOUND-URL=komi-inbound:9001/services/api
       networks: 

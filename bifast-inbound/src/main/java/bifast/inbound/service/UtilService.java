@@ -3,6 +3,7 @@ package bifast.inbound.service;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -66,6 +67,15 @@ public class UtilService {
 		}
 	}
 
+	public String genKomiTrnsId () {
+		int doy = LocalDate.now().getDayOfYear();
+		DecimalFormat doyDf = new DecimalFormat("000");
+		String strDoy = doyDf.format(doy);
+		DecimalFormat df = new DecimalFormat("00000");
+		String strCounter = strDoy + df.format(getInboundCounter());
+		return strCounter;
+	}
+
 	public String genMessageId (String trxType) {
 		String strToday = LocalDateTime.now().format(formatter);
 		DecimalFormat df = new DecimalFormat("00000000");
@@ -75,11 +85,11 @@ public class UtilService {
 	}
 	
 
-	public String genRfiBusMsgId (String trxType, String channel ) {
+	public String genRfiBusMsgId (String trxType, String channel, String komiId ) {
 		String strToday = LocalDateTime.now().format(formatter);
-		DecimalFormat df = new DecimalFormat("00000000");
-		String strCounter = df.format(getInboundCounter());
-		String msgId = strToday + config.getBankcode() + trxType + "R" + channel + strCounter;
+//		DecimalFormat df = new DecimalFormat("00000000");
+//		String strCounter = df.format(getInboundCounter());
+		String msgId = strToday + config.getBankcode() + trxType + "R" + channel + komiId;
 		return msgId;
 	}
 

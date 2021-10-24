@@ -1,6 +1,5 @@
 package bifast.inbound.accountenquiry;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.camel.Exchange;
@@ -26,6 +25,7 @@ public class SaveAccountEnquiryProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
+		@SuppressWarnings("unchecked")
 		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY,List.class);
 		
 		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");
@@ -43,12 +43,12 @@ public class SaveAccountEnquiryProcessor implements Processor {
 		
 		ae.setAccountNo(req.getCdtrAcct().getId().getOthr().getId());
 		ae.setAmount(req.getIntrBkSttlmAmt().getValue());
-		ae.setBizMsgIdr(bmRequest.getAppHdr().getBizMsgIdr());
+		ae.setReqBizMsgIdr(bmRequest.getAppHdr().getBizMsgIdr());
 		ae.setCallStatus("SUCCESS");
 //		ae.setChnlTrxId(null);
 		
-		ae.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-		ae.setCihubElapsedTime(routeElapsed);
+		ae.setSubmitDt(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+		ae.setElapsedTime(routeElapsed);
 
 //		ae.setCreDt(LocalDateTime.now());
 //		ae.setErrorMessage(null);
@@ -60,7 +60,8 @@ public class SaveAccountEnquiryProcessor implements Processor {
 		ae.setRecipientBank(bmRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 
 		ae.setRespBizMsgIdr(bmResponse.getAppHdr().getBizMsgIdr());
-		ae.setResponseStatus(bmResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+		ae.setResponseCode(bmResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+		ae.setReasonCode(bmResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry());
 		
 		accountEnquiryRepo.save(ae);
 		

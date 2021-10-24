@@ -1,50 +1,89 @@
 package bifast.outbound.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({
+	"referenceId"
+	,"errorCode"
+	,"location"
+	,"description"
+	,"additionalData"
+	})
 public class ChnlFailureResponsePojo {
 	
-	private String transactionType;
-	private String referenceId;
-	private String reason;
-	private String location;
-	private String description;
-	private String additionalData;
+	private String faultCategory;   // TIMEOUT-CICONN, TIMEOUT-CB, ERROR-KOMI, ERROR-CICONN, ERROR-CB
 	
-	public String getTransactionType() {
-		return transactionType;
+//	@JsonProperty("ErrorCode")
+//	private String errorCode;
+	
+	private String responseCode;
+
+	private String reasonCode;
+	private String reasonMessage;
+	
+	@JsonProperty("TransactionId")
+	private String referenceId;
+
+	@JsonProperty("Description")
+	private String description;
+
+	public String getFaultCategory() {
+		return faultCategory;
 	}
-	public void setTransactionType(String transactionType) {
-		this.transactionType = transactionType;
+
+	public void setFaultCategory(String faultCategory) {
+		this.faultCategory = faultCategory;
 	}
+
+//	public String getErrorCode() {
+//		return errorCode;
+//	}
+//
+//	public void setErrorCode(String errorCode) {
+//		this.errorCode = errorCode;
+//	}
+
+	public String getResponseCode() {
+		return responseCode;
+	}
+
+	public void setResponseCode(String responseCode) {
+		this.responseCode = responseCode;
+	}
+
+	public String getReasonCode() {
+		return reasonCode;
+	}
+
+	public void setReasonCode(String reasonCode) {
+		this.reasonCode = reasonCode;
+	}
+
+	public String getReasonMessage() {
+		return reasonMessage;
+	}
+
+	public void setReasonMessage(String reasonMessage) {
+		this.reasonMessage = reasonMessage;
+	}
+
 	public String getReferenceId() {
 		return referenceId;
 	}
+
 	public void setReferenceId(String referenceId) {
 		this.referenceId = referenceId;
 	}
-	public String getReason() {
-		return reason;
-	}
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
-	public String getLocation() {
-		return location;
-	}
-	public void setLocation(String location) {
-		this.location = location;
-	}
+
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getAdditionalData() {
-		return additionalData;
-	}
-	public void setAdditionalData(String additionalData) {
-		this.additionalData = additionalData;
-	}
+
 
 	
 }

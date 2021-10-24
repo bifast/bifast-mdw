@@ -2,11 +2,18 @@ package bifast.outbound.corebank;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import bifast.outbound.corebank.pojo.CBDebitInstructionRequestPojo;
+import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
+import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.repository.CorebankTransactionRepository;
 
 @Component
 public class MockCBResponseProcessor implements Processor {
-
+	@Autowired
+	private CorebankTransactionRepository cbRepo;
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
@@ -33,23 +40,15 @@ public class MockCBResponseProcessor implements Processor {
 			
 		}
 		
-		else {
-			
-			CBFITransferRequestPojo request = cbRequestWr.getCbFITransferRequest();
-
-			response.setTransactionId(request.getTransactionId());
-
-			if (request.getTransactionId().startsWith("9")) 
-				status = "FAILED";
-			else 
-				status = "SUCCESS";
-
-		}
 		response.setStatus(status);
 		response.setAddtInfo("Info tambahan disini");
 
 //		cbResponse.setCbDebitInstructionResponse(response);
+		
+//		ChannelResponseWrapper chnlResponseWr = new ChannelResponseWrapper();
+//		chnlResponseWr.setCbDebitInstructionResponse(response);
 		exchange.getIn().setBody(response);
+//		exchange.getIn().setBody(chnlResponseWr);
 	}
 
 }

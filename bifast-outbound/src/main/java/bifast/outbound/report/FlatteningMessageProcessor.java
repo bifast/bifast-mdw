@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.pojo.FlatMessageWrapper;
-import bifast.outbound.pojo.FlatPacs008Pojo;
+import bifast.outbound.pojo.flat.FlatMessageWrapper;
+import bifast.outbound.pojo.flat.FlatPacs008Pojo;
 import bifast.outbound.service.FlattenIsoMessageService;
 import bifast.outbound.service.UtilService;
 

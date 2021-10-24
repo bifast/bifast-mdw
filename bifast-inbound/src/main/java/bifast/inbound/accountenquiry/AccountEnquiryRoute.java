@@ -5,20 +5,13 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.BuildCBResponseProcessor;
-import bifast.inbound.processor.EnrichmentAggregator;
-
 @Component
 public class AccountEnquiryRoute extends RouteBuilder {
 
 	@Autowired
 	private AECorebankReponseProcessor aeCorebankReponseProcessor;
 	@Autowired
-	private AECorebankRequestProcessor aeCorebankRequestProcessor;
-	@Autowired
-	private EnrichmentAggregator enrichmentAggregator;
-	@Autowired
-	private BuildCBResponseProcessor buildCBResponse;
+	private BuildAccountEnquiryRequestMessageProcessor buildAccountEnquiryRequestProcessor;
 
 	@Override
 	public void configure() throws Exception {
@@ -33,10 +26,10 @@ public class AccountEnquiryRoute extends RouteBuilder {
 				
 			.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] ${body}")
 			// prepare untuk request ke corebank
-			.process(aeCorebankRequestProcessor)
+			.process(buildAccountEnquiryRequestProcessor)
 			.setHeader("ae_cbrequest", simple("${body}"))
 				
-			// process corebank response
+			//TODO call corebank Account Enquiry
 			.process(aeCorebankReponseProcessor)
 			
 			.removeHeaders("ae_*")

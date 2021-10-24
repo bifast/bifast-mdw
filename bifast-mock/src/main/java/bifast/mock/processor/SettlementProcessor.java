@@ -1,15 +1,22 @@
 package bifast.mock.processor;
 
+import java.util.HashMap;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs002.AccountIdentification4Choice;
 import bifast.library.iso20022.pacs002.BISupplementaryData1;
 import bifast.library.iso20022.pacs002.BISupplementaryDataEnvelope1;
 import bifast.library.iso20022.pacs002.CashAccount38;
+import bifast.library.iso20022.pacs002.CashAccountType2Choice;
 import bifast.library.iso20022.pacs002.GenericAccountIdentification1;
 import bifast.mock.persist.MockPacs002;
 import bifast.mock.persist.MockPacs002Repository;
@@ -25,50 +32,52 @@ public class SettlementProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 	
-		BusinessMessage objRequest = exchange.getMessage().getHeader("objRequest", BusinessMessage.class);		
+		BusinessMessage in = exchange.getMessage().getBody(BusinessMessage.class);		
 
-		BusinessMessage in = exchange.getMessage().getHeader("hdr_ctResponseObj", BusinessMessage.class);
-		String fullMsg = exchange.getMessage().getBody(String.class);
+//		BusinessMessage in = exchange.getMessage().getHeader("hdr_ctResponseObj", BusinessMessage.class);
+		HashMap<String, String> frTable = exchange.getMessage().getHeader("sttl_tableqry", HashMap.class);
+		
 		String bizMsgId = "";
 		String msgId = "";
-		String msgType = exchange.getMessage().getHeader("msgType", String.class);
-		String orgnlMsgId = "";
+		String msgName = frTable.get("ORGNL_MSG_NAME");
+		
+		String orgnlMsgId = exchange.getMessage().getHeader("sttl_orgnlmsgid", String.class);
 
-		if (msgType.equals("CreditTransferRequest")) {
-			bizMsgId = utilService.genRfiBusMsgId("010", "02");
-			msgId = utilService.genMessageId("010");
-
-			orgnlMsgId = objRequest.getDocument().getFiToFICstmrCdtTrf().getGrpHdr().getMsgId();
+		if (msgName.startsWith("pacs.008")) {
+			bizMsgId = utilService.genRfiBusMsgId("010", "02", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+			msgId = utilService.genMessageId("010", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 
 		} else {
-			bizMsgId = utilService.genRfiBusMsgId("019", "02");
-			msgId = utilService.genMessageId("019");
-			orgnlMsgId = objRequest.getDocument().getFiCdtTrf().getGrpHdr().getMsgId();
+			bizMsgId = utilService.genRfiBusMsgId("019", "02", 
+							in.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+			msgId = utilService.genMessageId("019",
+							in.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		}
-
-		if (msgType.equals("CreditTransferRequest")) {
-
-			String cdtrAcct = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
-			String dbtrAcct = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId();
 		
-			GenericAccountIdentification1 oth1 = new GenericAccountIdentification1();
-			oth1.setId(cdtrAcct);
-			
-			AccountIdentification4Choice id1 = new AccountIdentification4Choice();
-			id1.setOthr(oth1);
+		if (msgName.startsWith("pacs.008")) {
 
+			String cdtrAcct = frTable.get("cdtr_acct");
+		
 			CashAccount38 cdtrAcctT = new CashAccount38();
-			cdtrAcctT.setId(id1);
+			cdtrAcctT.setId(new AccountIdentification4Choice());
+			cdtrAcctT.getId().setOthr(new GenericAccountIdentification1());
+			cdtrAcctT.getId().getOthr().setId(cdtrAcct);
 
-			GenericAccountIdentification1 oth2 = new GenericAccountIdentification1();
-			oth2.setId(dbtrAcct);
-			AccountIdentification4Choice id2 = new AccountIdentification4Choice();
-			id2.setOthr(oth2);
-
-			CashAccount38 dbtrAcctT = new CashAccount38();
-			dbtrAcctT.setId(id2);
+			cdtrAcctT.setTp(new CashAccountType2Choice());
+			cdtrAcctT.getTp().setPrtry("CACC");
 
 			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setCdtrAcct(cdtrAcctT);
+
+			String dbtrAcct = frTable.get("dbtr_acct"); 
+
+			CashAccount38 dbtrAcctT = new CashAccount38();
+			dbtrAcctT.setId(new AccountIdentification4Choice());
+			dbtrAcctT.getId().setOthr(new GenericAccountIdentification1());
+			dbtrAcctT.getId().getOthr().setId(dbtrAcct);
+			
+			dbtrAcctT.setTp(new CashAccountType2Choice());
+			dbtrAcctT.getTp().setPrtry("CACC");
+			
 			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setDbtrAcct(dbtrAcctT);
 
 		}
@@ -76,7 +85,7 @@ public class SettlementProcessor implements Processor {
 	
 		in.getAppHdr().setBizMsgIdr(bizMsgId);
 		in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().setMsgId(msgId);
-		in.getAppHdr().setBizSvc("SETTLEMENTCONFIRMATION");
+		in.getAppHdr().setBizSvc("STTL");
 		
 		GenericAccountIdentification1 dbtrAgtAcctIdOth = new GenericAccountIdentification1();
 		dbtrAgtAcctIdOth.setId("123456");
@@ -106,14 +115,21 @@ public class SettlementProcessor implements Processor {
 		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setDbtrAgtAcct(dbtrAgtAcct);
 
 		
+		ObjectMapper map = new ObjectMapper();
+		map.registerModule(new JaxbAnnotationModule());
+		map.enable(SerializationFeature.WRAP_ROOT_VALUE);
+
+		String strSttl = map.writeValueAsString(in);
+		
 		MockPacs002 pacs002 = new MockPacs002();
 		pacs002.setBizMsgIdr(bizMsgId);
-		pacs002.setFullMessage(fullMsg);
-		pacs002.setOrgnlEndToEndId(objRequest.getAppHdr().getBizMsgIdr());
+		pacs002.setFullMessage(strSttl);
+		pacs002.setOrgnlEndToEndId(frTable.get("orgnl_end_to_end_id"));
 		pacs002.setOrgnlMsgId(orgnlMsgId);
-		pacs002.setOrgnlMsgName(objRequest.getAppHdr().getMsgDefIdr());
+		pacs002.setOrgnlMsgName(msgName);
+		pacs002.setSttl("DONE");
 
-		pacs002.setTrxType("SettlementConfirmation");
+		pacs002.setTrxType("STTL");
 		mockPacs002Repo.save(pacs002);
 
 		exchange.getMessage().setBody(in);

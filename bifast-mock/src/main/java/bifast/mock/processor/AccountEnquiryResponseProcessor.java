@@ -34,8 +34,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
         // int posbl4 = rand.nextInt(4);
 
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
-		String bizMsgId = utilService.genRfiBusMsgId("510", "02");
-		String msgId = utilService.genMessageId("510");
+		String bizMsgId = utilService.genRfiBusMsgId("510", "02", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		String msgId = utilService.genMessageId("510", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 
 		String acctNo = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
 

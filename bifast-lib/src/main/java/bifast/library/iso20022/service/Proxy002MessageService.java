@@ -84,6 +84,8 @@ public class Proxy002MessageService {
 		
 		ProxyRegistrationAccount1 prxyRegn = new ProxyRegistrationAccount1();
 		
+		prxyRegn.setRegnId("3234009595");
+
 		///
 		BIAddtlCstmrInf bIAddtlCstmrInf = new BIAddtlCstmrInf();
 		bIAddtlCstmrInf.setId(seed.getCstmrId());
@@ -101,7 +103,6 @@ public class Proxy002MessageService {
 		///
 		prxyRegn.getSplmtryData().add(biSupplementaryData1);
 		
-		prxyRegn.setRegnId(seed.getRegnId());
 		
 		GenericFinancialIdentification1 othrRegnRspn = new GenericFinancialIdentification1();
 		othrRegnRspn.setId(seed.getAgtId());

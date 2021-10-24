@@ -34,9 +34,13 @@ public class CreditResponseStoreProcessor implements Processor {
 			
 	        pacs002.setOrgnlMsgId(responseMsg.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).getOrgnlMsgId());
 			
-	        pacs002.setOrgnlMsgName(objRequest.getAppHdr().getMsgDefIdr());
-
-            if (objRequest.getAppHdr().getMsgDefIdr().startsWith("pacs.008"))
+	        String orgnlMsgName = responseMsg.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).getOrgnlMsgNmId();
+	        pacs002.setOrgnlMsgName(orgnlMsgName);
+	        pacs002.setResult(responseMsg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+	        pacs002.setCdtrAcct(objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
+	        pacs002.setDbtrAcct(objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
+	        
+            if (orgnlMsgName.startsWith("pacs.008"))
                 pacs002.setTrxType("CreditConfirmation");
             else
                 pacs002.setTrxType("FICreditConfirmation");

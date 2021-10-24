@@ -50,75 +50,113 @@ public class Proxy001MessageService {
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
 		grpHdr.setCreDtTm(xcal);
 		
-		proxy001.setGrpHdr(grpHdr);	
-		
 		Party12Choice msgSndr = new Party12Choice();
 		msgSndr.setAgt(new BranchAndFinancialInstitutionIdentification5());
 		msgSndr.getAgt().setFinInstnId(new FinancialInstitutionIdentification8());
 		msgSndr.getAgt().getFinInstnId().setOthr(new GenericFinancialIdentification1());
-		msgSndr.getAgt().getFinInstnId().getOthr().setId(config.getBicode());
+		msgSndr.getAgt().getFinInstnId().getOthr().setId(config.getBankcode());
+		
 		grpHdr.setMsgSndr(msgSndr);
-		///
+		
+		proxy001.setGrpHdr(grpHdr);	
+		
+		// PrxyRegn/ Regn
 		ProxyRegistration1 pRegistration = new ProxyRegistration1();
-		pRegistration.setRegnTp(ProxyRegistrationType1Code.NEWR);		
-		
-		///
-		ProxyDefinition1 prxy = new ProxyDefinition1();
-		prxy.setTp(seed.getProxyTp());
-		prxy.setVal(seed.getProxyVal());
-		pRegistration.setPrxy(prxy);
-		
-		///
-		ScndIdDefinition1 scndIdDefinition1 = new ScndIdDefinition1();
-		scndIdDefinition1.setTp(seed.getScndIdTp());
-		scndIdDefinition1.setVal(seed.getScndIdVal());
-		
-		///
-		ProxyRegistrationAccount1 pRegistrationaccount = new ProxyRegistrationAccount1();
-		pRegistrationaccount.setRegnId(seed.getRegnId());
-		pRegistrationaccount.setDsplNm(seed.getDsplNm());
-		pRegistrationaccount.setRegnSts(ProxyRegistrationType1Code.ACTV.toString());
-		pRegistrationaccount.setScndId(scndIdDefinition1);
-		
-		pRegistrationaccount.setAgt(new BranchAndFinancialInstitutionIdentification5());
-		pRegistrationaccount.getAgt().setFinInstnId(new FinancialInstitutionIdentification8());
-		pRegistrationaccount.getAgt().getFinInstnId().setOthr(new GenericFinancialIdentification1());
-		pRegistrationaccount.getAgt().getFinInstnId().getOthr().setId(config.getBicode());
-		
-		///
-		CashAccount40 cashAccount40 = new CashAccount40();
-		cashAccount40.setNm(seed.getAccName());
-		cashAccount40.setId(new AccountIdentification4Choice());
-		cashAccount40.getId().setOthr(new GenericAccountIdentification1());
-		cashAccount40.getId().getOthr().setId(seed.getAccNumber());
-		
-		cashAccount40.setTp(new CashAccountType2ChoiceProxy());
-		cashAccount40.getTp().setPrtry(seed.getAccTpPrtry());
-		
-		pRegistrationaccount.setAcct(cashAccount40);
-		
-		///
-		BIAddtlCstmrInf bIAddtlCstmrInf = new BIAddtlCstmrInf();
-		bIAddtlCstmrInf.setId(seed.getCstmrId());
-		bIAddtlCstmrInf.setTp(seed.getCstmrTp());
-		bIAddtlCstmrInf.setTwnNm(seed.getCstmrTwnNm());
-		bIAddtlCstmrInf.setRsdntSts(seed.getCstmrRsdntSts());
-		///
-		BISupplementaryDataEnvelope1 biSupplementaryDataEnvelope1 =  new BISupplementaryDataEnvelope1();
-		biSupplementaryDataEnvelope1.setCstmr(bIAddtlCstmrInf);
-		
-		
-		///
-		BISupplementaryData1 biSupplementaryData1 = new BISupplementaryData1();
-		biSupplementaryData1.setEnvlp(biSupplementaryDataEnvelope1);
-		
-		///
-		pRegistration.setPrxy(prxy);
-		pRegistration.setPrxyRegn(pRegistrationaccount);
-		
-		///
 		proxy001.setRegn(pRegistration);
-		proxy001.getSplmtryData().add(biSupplementaryData1);
+		
+		if (seed.getRegistrationType().equals("NEWR"))
+			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.NEWR);
+		else if (seed.getRegistrationType().equals("AMND"))
+			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.AMND);
+		else if (seed.getRegistrationType().equals("DEAC"))
+			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.DEAC);
+		else if (seed.getRegistrationType().equals("SUSP"))
+			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.SUSP);
+		else if (seed.getRegistrationType().equals("ACTV"))
+			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.ACTV);
+		else if (seed.getRegistrationType().equals("PORT"))
+			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.PORT);
+
+		ProxyDefinition1 prxy = new ProxyDefinition1();
+		prxy.setTp(seed.getProxyType());
+		prxy.setVal(seed.getProxyValue());
+
+		proxy001.getRegn().setPrxy(prxy);
+
+		// PrxyRegn / +Regn / ++PrxyRegn
+		proxy001.getRegn().setPrxyRegn(new ProxyRegistrationAccount1());
+
+		if (!(seed.getRegistrationType().equals("NEWR"))) {
+			proxy001.getRegn().getPrxyRegn().setRegnId(seed.getRegistrationId());
+		}
+		
+		if (!(null == seed.getRegisterDisplayName()))
+			proxy001.getRegn().getPrxyRegn().setDsplNm(seed.getRegisterDisplayName());
+		
+		// PrxyRegn / +Regn / ++PrxyRegn / +++Agt
+
+		proxy001.getRegn().getPrxyRegn().setAgt(new BranchAndFinancialInstitutionIdentification5());
+		proxy001.getRegn().getPrxyRegn().getAgt().setFinInstnId(new FinancialInstitutionIdentification8() );
+		proxy001.getRegn().getPrxyRegn().getAgt().getFinInstnId().setOthr(new GenericFinancialIdentification1());;
+		proxy001.getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().setId(seed.getRegisterAgentId());
+
+		// PrxyRegn / +Regn / ++PrxyRegn / +++Acct / ++++Id
+		proxy001.getRegn().getPrxyRegn().setAcct(new CashAccount40());
+		proxy001.getRegn().getPrxyRegn().getAcct().setId(new AccountIdentification4Choice ());;
+		proxy001.getRegn().getPrxyRegn().getAcct().getId().setOthr(new GenericAccountIdentification1());
+		proxy001.getRegn().getPrxyRegn().getAcct().getId().getOthr().setId(seed.getRegisterAccountNumber());
+
+		// PrxyRegn / +Regn / ++PrxyRegn / +++Acct / ++++Tp
+		if (!(null == seed.getRegisterAccountType())) {
+			
+			proxy001.getRegn().getPrxyRegn().getAcct().setTp(new CashAccountType2ChoiceProxy());
+			proxy001.getRegn().getPrxyRegn().getAcct().getTp().setPrtry(seed.getRegisterAccountType());
+		}
+		
+		// PrxyRegn / +Regn / ++PrxyRegn / +++Acct / ++++Nm
+		if (!(null == seed.getRegisterAccountName()))
+			proxy001.getRegn().getPrxyRegn().getAcct().setNm(seed.getRegisterAccountName());
+
+		// PrxyRegn / +Regn / ++PrxyRegn / +++ScndId
+		proxy001.getRegn().getPrxyRegn().setScndId(new ScndIdDefinition1());
+		
+		proxy001.getRegn().getPrxyRegn().getScndId().setTp(seed.getRegisterSecondIdType());
+		proxy001.getRegn().getPrxyRegn().getScndId().setVal(seed.getRegisterSecondIdValue());
+		
+		// PrxyRegn / +Regn / ++PrxyRegn / +++RegnSts
+//		if (!(null == seed.setstgetRegnStatus()))
+//			proxy001.getRegn().getPrxyRegn().setRegnSts(seed.getRegnStatus());
+		
+		// PrxyRegn / +SplmtryData
+
+		Boolean addtInfoExists = false;
+		BIAddtlCstmrInf addtCstmrInf = new BIAddtlCstmrInf();
+	
+		if (!(null == seed.getCustomerType())) {
+			addtCstmrInf.setTp(seed.getCustomerType());
+			addtInfoExists = true;
+		}
+
+		if (!(null == seed.getCustomerId())) {
+			addtCstmrInf.setId(seed.getCustomerId());
+			addtInfoExists = true;
+		}
+
+		if (!(null == seed.getResidentialStatus())) {
+			addtCstmrInf.setRsdntSts(seed.getResidentialStatus());
+			addtInfoExists = true;
+		}
+
+		if (!(null == seed.getTownName())) {
+			addtCstmrInf.setTwnNm(seed.getTownName());
+			addtInfoExists = true;
+		}
+
+		if (addtInfoExists) {
+			proxy001.getSplmtryData().add(new BISupplementaryData1());
+			proxy001.getSplmtryData().get(0).setEnvlp(new BISupplementaryDataEnvelope1());
+			proxy001.getSplmtryData().get(0).getEnvlp().setCstmr(addtCstmrInf);
+		}
 		
 		return proxy001;
 	}

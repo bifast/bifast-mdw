@@ -3,30 +3,56 @@ package bifast.outbound.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
-@Entity
+@Entity(name="KC_CHANNEL_TRANSACTION")
 public class ChannelTransaction {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
+	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
-	private String transactionId;
-	private String channelCode;
+
+	@Column(length=20)
+	private String komiTrnsId;
+
+	@Column(length=20)
+	private String channelRefId;
+
+	@Column(length=15)
+	private String channelId;
+	
+	@Column(length=100)
 	private String msgName;
+	
 	private BigDecimal amount;
-	private String debtorAccountNumber;
-	private String debtorAccountName;
+
+//	@Column(length=35)
+//	private String debtorAccountNumber;
+	
+	@Column(length=8)
 	private String recptBank;
-	private String creditorAccountNumber;
-	private String creditorAccountName;
+	
+//	@Column(length=35)
+//	private String creditorAccountNumber;
+	
+	private String responseCode;
+	
 	private LocalDateTime requestTime;
-	private LocalDateTime responseTime;
-	private String status;
+	private Long elapsedTime;
+
+	@Column(length=15)
+	private String callStatus;
+	@Column(length=250)
 	private String errorMsg;
+	
+	@Column(length=1000)
+	private String textMessage;
 	
 	public Long getId() {
 		return id;
@@ -34,17 +60,23 @@ public class ChannelTransaction {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getTransactionId() {
-		return transactionId;
+	public String getKomiTrnsId() {
+		return komiTrnsId;
 	}
-	public void setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
 	}
-	public String getChannelCode() {
-		return channelCode;
+	public String getChannelRefId() {
+		return channelRefId;
 	}
-	public void setChannelCode(String channelCode) {
-		this.channelCode = channelCode;
+	public void setChannelRefId(String channelRefId) {
+		this.channelRefId = channelRefId;
+	}
+	public String getChannelId() {
+		return channelId;
+	}
+	public void setChannelId(String channelId) {
+		this.channelId = channelId;
 	}
 	public String getMsgName() {
 		return msgName;
@@ -58,35 +90,17 @@ public class ChannelTransaction {
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
-	public String getDebtorAccountNumber() {
-		return debtorAccountNumber;
-	}
-	public void setDebtorAccountNumber(String debtorAccountNumber) {
-		this.debtorAccountNumber = debtorAccountNumber;
-	}
-	public String getDebtorAccountName() {
-		return debtorAccountName;
-	}
-	public void setDebtorAccountName(String debtorAccountName) {
-		this.debtorAccountName = debtorAccountName;
-	}
 	public String getRecptBank() {
 		return recptBank;
 	}
 	public void setRecptBank(String recptBank) {
 		this.recptBank = recptBank;
 	}
-	public String getCreditorAccountNumber() {
-		return creditorAccountNumber;
+	public String getResponseCode() {
+		return responseCode;
 	}
-	public void setCreditorAccountNumber(String creditorAccountNumber) {
-		this.creditorAccountNumber = creditorAccountNumber;
-	}
-	public String getCreditorAccountName() {
-		return creditorAccountName;
-	}
-	public void setCreditorAccountName(String creditorAccountName) {
-		this.creditorAccountName = creditorAccountName;
+	public void setResponseCode(String responseCode) {
+		this.responseCode = responseCode;
 	}
 	public LocalDateTime getRequestTime() {
 		return requestTime;
@@ -94,17 +108,23 @@ public class ChannelTransaction {
 	public void setRequestTime(LocalDateTime requestTime) {
 		this.requestTime = requestTime;
 	}
-	public LocalDateTime getResponseTime() {
-		return responseTime;
+	public String getTextMessage() {
+		return textMessage;
 	}
-	public void setResponseTime(LocalDateTime responseTime) {
-		this.responseTime = responseTime;
+	public void setTextMessage(String textMessage) {
+		this.textMessage = textMessage;
 	}
-	public String getStatus() {
-		return status;
+	public Long getElapsedTime() {
+		return elapsedTime;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setElapsedTime(Long elapsedTime) {
+		this.elapsedTime = elapsedTime;
+	}
+	public String getCallStatus() {
+		return callStatus;
+	}
+	public void setCallStatus(String callStatus) {
+		this.callStatus = callStatus;
 	}
 	public String getErrorMsg() {
 		return errorMsg;
@@ -113,6 +133,5 @@ public class ChannelTransaction {
 		this.errorMsg = errorMsg;
 	}
 	
-	
-	
+		
 }

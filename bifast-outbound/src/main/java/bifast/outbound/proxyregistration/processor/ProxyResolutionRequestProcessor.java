@@ -13,7 +13,8 @@ import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Proxy003MessageService;
 import bifast.library.iso20022.service.Proxy003Seed;
 import bifast.outbound.config.Config;
-import bifast.outbound.proxyregistration.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.service.UtilService;
 
 @Component
@@ -31,12 +32,13 @@ public class ProxyResolutionRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ChnlProxyResolutionRequestPojo chnReq = exchange.getIn().getBody(ChnlProxyResolutionRequestPojo.class);
-
+		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		ChnlProxyResolutionRequestPojo chnReq = rmw.getChnlProxyResolutionRequest();
+		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
 		String trxType = "610";
-		String bizMsgId = utilService.genOfiBusMsgId(trxType, chnReq.getChannel());
+		String bizMsgId = utilService.genOfiBusMsgId(trxType, rmw.getChannelType());
 		String msgId = utilService.genMessageId(trxType);
 		
 		hdr = appHeaderService.getAppHdr(config.getBicode(), "prxy.003.001.01", bizMsgId);
@@ -46,10 +48,11 @@ public class ProxyResolutionRequestProcessor implements Processor {
 		seedProxyResolution.setMsgId(msgId);
 		seedProxyResolution.setTrnType(trxType);
 		
-		if (chnReq.getLookupType().equals("PXRS")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
-		else if (chnReq.getLookupType().equals("CHCK")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.CHCK);
-		else if (chnReq.getLookupType().equals("NMEQ")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.NMEQ);
-
+//		if (chnReq.getLookupType().equals("PXRS")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
+//		else if (chnReq.getLookupType().equals("CHCK")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.CHCK);
+//		else if (chnReq.getLookupType().equals("NMEQ")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.NMEQ);
+		seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
+		
 		seedProxyResolution.setProxyType(chnReq.getProxyType());
 		seedProxyResolution.setProxyValue(chnReq.getProxyValue());
 		
@@ -60,6 +63,8 @@ public class ProxyResolutionRequestProcessor implements Processor {
 		busMsg.setAppHdr(hdr);
 		busMsg.setDocument(doc);
 	
+		rmw.setProxyRegistrationRequest(busMsg);
+		exchange.getMessage().setHeader("hdr_request_list",  rmw);
 		exchange.getIn().setBody(busMsg);
 	}
 

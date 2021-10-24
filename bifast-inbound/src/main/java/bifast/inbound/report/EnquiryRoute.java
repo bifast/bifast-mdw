@@ -68,17 +68,15 @@ public class EnquiryRoute extends RouteBuilder {
 			.process(enquiryProcessor)
 
 			// unzip hasil query
-			.choice().when().simple("${body} != null")
+			.filter().simple("${body} != null")
 					.unmarshal().base64()
 					.unmarshal().zipDeflater()
 					.unmarshal(businessMessageJDF)
+					.log("[Enquiry] [${header.enq_request.msgType}:${header.enq_request.endToEndId}] found.")
 			.end()
 
-			.choice()
-				.when().simple("${body} != null")
-					.log("[Enquiry] [${header.enq_request.msgType}:${header.enq_request.endToEndId}] found.")
-				.otherwise()
-					.log("[Enquiry] [${header.enq_request.msgType}:${header.enq_request.endToEndId}] not found.")
+			.filter().simple("${body} == null")
+				.log("[Enquiry] [${header.enq_request.msgType}:${header.enq_request.endToEndId}] not found.")
 			.end()
 
 			.process(responseProcessor)

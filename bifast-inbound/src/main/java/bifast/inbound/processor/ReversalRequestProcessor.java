@@ -5,10 +5,8 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.model.BankCode;
 import bifast.inbound.model.DomainCode;
 import bifast.inbound.pojo.ReverseCTRequestPojo;
-import bifast.inbound.repository.BankCodeRepository;
 import bifast.inbound.repository.DomainCodeRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
@@ -16,8 +14,6 @@ import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
 @Component
 public class ReversalRequestProcessor implements Processor {
 	
-	@Autowired
-	private BankCodeRepository bankCodeRepo;
 	@Autowired
 	private DomainCodeRepository domainCodeRepo;
 	
@@ -75,9 +71,8 @@ public class ReversalRequestProcessor implements Processor {
 		reversalReq.setOrignReffId(businessMessage.getAppHdr().getBizMsgIdr());
 
 		String bankBic = businessMessage.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
-		BankCode bankCode = bankCodeRepo.findByBicCode(bankBic).orElse(new BankCode());
 		
-		reversalReq.setRecptBank(bankCode.getBankCode());
+		reversalReq.setRecptBank(bankBic);
 
 		if (null== ctReq.getRmtInf())
 			reversalReq.setPaymentInfo("[REVERSAL]");

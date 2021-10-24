@@ -50,13 +50,13 @@ public class SaveCreditTransferProcessor implements Processor {
 		if (!(null == exchange.getMessage().getHeader("hdr_toBIobj"))) {
 			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj",BusinessMessage.class);
 
-			ct.setResponseStatus(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			ct.setResponseCode(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
 			ct.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
 			
 		}
 		
 		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
+//		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
 		ct.setCihubElapsedTime(routeElapsed);
 		
 		String reversal = exchange.getMessage().getHeader("resp_reversal",String.class);
@@ -99,7 +99,7 @@ public class SaveCreditTransferProcessor implements Processor {
 
 		}
 		
-		ct.setCreDt(LocalDateTime.now());
+		ct.setCreateDt(LocalDateTime.now());
 		
 		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
 		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());

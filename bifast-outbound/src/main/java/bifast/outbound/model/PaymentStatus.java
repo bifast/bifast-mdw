@@ -7,12 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
-@Entity(name="PAYMENT_STATUS")
+@Entity(name="KC_PAYMENT_STATUS")
 public class PaymentStatus {
 
 	@Id 
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
+	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 	
 	private String internRefId;
@@ -34,10 +36,12 @@ public class PaymentStatus {
 	private String errorMsg;
 
 	private LocalDateTime requestDt;
-	private LocalDateTime responseDt;
 	private Long cihubElapsedTime;
 
-//	private LocalDateTime updateDt;
+	private LocalDateTime lastUpdateDt;
+
+	@Column(length=16)
+	private String komiTrnsId;
 
 	private String saf;
 	private int retryCount;
@@ -90,6 +94,18 @@ public class PaymentStatus {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public LocalDateTime getLastUpdateDt() {
+		return lastUpdateDt;
+	}
+	public void setLastUpdateDt(LocalDateTime lastUpdateDt) {
+		this.lastUpdateDt = lastUpdateDt;
+	}
+	public String getKomiTrnsId() {
+		return komiTrnsId;
+	}
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
+	}
 	public String getErrorMsg() {
 		return errorMsg;
 	}
@@ -101,12 +117,6 @@ public class PaymentStatus {
 	}
 	public void setRequestDt(LocalDateTime requestDt) {
 		this.requestDt = requestDt;
-	}
-	public LocalDateTime getResponseDt() {
-		return responseDt;
-	}
-	public void setResponseDt(LocalDateTime responseDt) {
-		this.responseDt = responseDt;
 	}
 	public Long getCihubElapsedTime() {
 		return cihubElapsedTime;

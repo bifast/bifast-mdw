@@ -33,8 +33,8 @@ public class FICreditTransferResponseProcessor implements Processor{
 		String rcptBank = req.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
 		exchange.getMessage().setHeader("hdr_rcptBank", rcptBank);
 
-		String bizMsgId = utilService.genRfiBusMsgId("019", "99");
-		String msgId = utilService.genMessageId("019");
+		String bizMsgId = utilService.genRfiBusMsgId("019", "99", req.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		String msgId = utilService.genMessageId("019", req.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 
 		Random rand = new Random();
 		Pacs002Seed seed = new Pacs002Seed();
