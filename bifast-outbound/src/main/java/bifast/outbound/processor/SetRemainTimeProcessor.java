@@ -26,6 +26,9 @@ public class SetRemainTimeProcessor implements Processor {
 		
 		else if (rmw.getMsgName().equals("CTReq"))
 			sla = param.getSlaChannelTrns();
+		else
+			sla = 15000;
+			
 
 		System.out.println("SLA: " + sla);
 		long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
