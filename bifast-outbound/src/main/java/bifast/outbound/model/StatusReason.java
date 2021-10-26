@@ -1,5 +1,6 @@
 package bifast.outbound.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -7,8 +8,11 @@ import javax.persistence.Id;
 public class StatusReason {
 
 	@Id
+	@Column(length=20)
 	private String statusReasonCode;
+	@Column(length=200)
 	private String description;
+	@Column(length=20)
 	private String statusCode;
 	
 	public String getStatusReasonCode() {

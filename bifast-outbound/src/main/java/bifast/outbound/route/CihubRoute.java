@@ -44,7 +44,6 @@ public class CihubRoute extends RouteBuilder {
 	
 			.marshal(businessMessageJDF)
 	
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
 
 			// zip dulu body ke cihubroute_encr_request
 			.setHeader("tmp_body", simple("${body}"))
@@ -53,6 +52,7 @@ public class CihubRoute extends RouteBuilder {
 			.setHeader("cihubroute_encr_request", simple("${body}"))
 			.setBody(simple("${header.tmp_body}"))
 			
+			// daftarkan encrypted dan startTime ke rmw
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
@@ -64,7 +64,8 @@ public class CihubRoute extends RouteBuilder {
 			})
 			
 			.process(setRemainTime)
-			
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request dengan sisa waktu ${header.hdr_remain_time} ms.")
+			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
 				

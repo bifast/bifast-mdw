@@ -12,11 +12,11 @@
 
 POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
-clientId: CB
+Authorization: Basic CMS:password
 
 {
   "CreditTransferRequest" : {
-    "NoRef" : "41112",   
+    "NoRef" : "5172",   
     "TerminalId" : "B0434",
     "CategoryPurpose" : "01",
     "DebtorName" : "ANTON",
@@ -26,8 +26,8 @@ clientId: CB
     "DebtorAccountType" : "CACC",
     "DebtorResidentialStatus": "01",
     "DebtorTownName": "0300",
-    "Amount" : 46705420,
-    "FeeTransfer" : 4000.00,
+    "Amount" : "46705400",
+    "FeeTransfer" : "4000.00",
     "RecipientBank" : "BMNDIDJA",
     "CreditorName" : "JONI N",
     "CreditorId" : "C12103",
@@ -36,9 +36,10 @@ clientId: CB
     "CreditorAccountType" : "SVGS",
     "CreditorResidentialStatus": "01",
     "CreditorTownName": "0300",
-    "PaymentInformation" : " bayaran"
+    "PaymentInformation" : "bayaran"
   }
 }
+
 ###
 
 ###

@@ -45,7 +45,7 @@ public class ProxyMessage {
 	
 	@Column(length=10)
 	private String customerType;
-	@Column(length=10)
+	@Column(length=100)
 	private String customerId;
 	@Column(length=10)
 	private String residentStatus;

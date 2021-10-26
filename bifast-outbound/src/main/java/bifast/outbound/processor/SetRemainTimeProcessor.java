@@ -27,7 +27,10 @@ public class SetRemainTimeProcessor implements Processor {
 		else if (rmw.getMsgName().equals("CTReq"))
 			sla = param.getSlaChannelTrns();
 
+		System.out.println("SLA: " + sla);
 		long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
+		System.out.println("elapsed " + timeElapsed);
+		
 		String sisa = Long.toString(sla - timeElapsed);
 		exchange.getMessage().setHeader("hdr_remain_time", sisa);
 	}

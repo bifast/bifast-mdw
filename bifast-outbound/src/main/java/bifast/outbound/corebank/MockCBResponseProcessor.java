@@ -5,7 +5,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.corebank.pojo.CBDebitInstructionRequestPojo;
+import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
 import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.repository.CorebankTransactionRepository;
@@ -26,7 +26,7 @@ public class MockCBResponseProcessor implements Processor {
 		
 		if (!(null == cbRequestWr.getCbDebitInstructionRequest()))  {
 			
-			CBDebitInstructionRequestPojo request = cbRequestWr.getCbDebitInstructionRequest();
+			CBDebitRequestPojo request = cbRequestWr.getCbDebitInstructionRequest();
 		
 			if (request.getTransactionId().startsWith("9")) 
 				status = "FAILED";

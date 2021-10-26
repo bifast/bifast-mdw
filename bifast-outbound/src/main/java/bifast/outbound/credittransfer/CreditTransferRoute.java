@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
+import bifast.outbound.corebank.pojo.CBDebitResponsePojo;
+import bifast.outbound.credittransfer.processor.BuildCBDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
 import bifast.outbound.credittransfer.processor.FindingSettlementProcessor;
@@ -32,6 +35,8 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired
 	private FindingSettlementProcessor findingSettlementProcessor;
 	@Autowired
+	private BuildCBDebitRequestProcessor buildDebitRequestProcessor;
+	@Autowired
 	private FlattenIsoMessageService flattenIsoMessage;
 	@Autowired
 	private JacksonDataFormatService jdfService;
@@ -41,83 +46,42 @@ public class CreditTransferRoute extends RouteBuilder {
     
 	@Override
 	public void configure() throws Exception {
-		
+		JacksonDataFormat cbDebitRequestJDF = jdfService.basic(CBDebitRequestPojo.class);
 		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 		
-//		from("direct:crdttrns").routeId("komi.ct")
-//			.setHeader("ct_channelRequest", simple("${body}"))
-//				
-//
-//			.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_chnlRefId}] direct:crdttrns...")
-//
-//			// invoke corebanking
-//			.setHeader("hdr_errorlocation", constant("corebank service call"))		
-//			.process(ctCorebankRequestProcessor)  // build request param
-//			
-//			.to("direct:callcb")
-//			
-//			.log("setelah cb: ${body.status}")
-//			.choice()
-//				.when().simple("${body.status} == 'SUCCESS'")
-//					.to("seda:ct_aft_corebank")
-//				.endChoice()
-//				
-//				.when().simple("${body.status} == 'FAILED'")
-//					.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_chnlRefId}][CT] Corebank reject.")
-//					.setHeader("ct_failure_point", constant("CBRJCT"))
-//					.setHeader("hdr_error_status", constant("REJECT-CB"))
-//					
-//					.process(new Processor() {
-//						public void process(Exchange exchange) throws Exception {
-//							ChnlCreditTransferRequestPojo chnRequest = exchange.getMessage().getHeader("ct_channelRequest", ChnlCreditTransferRequestPojo.class);
-//							
-//							ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();
-//							chnResponse.setOrignReffId(chnRequest.getChannelRefId());
-//							
-//							ChannelResponseWrapper respWr = new ChannelResponseWrapper();
-//							respWr.setResponseCode("REJECT-CB");
-//							respWr.setResponseMessage("REJECT-CB");
-//							
-//							respWr.setDate(LocalDateTime.now().format(dateformatter));
-//							respWr.setTime(LocalDateTime.now().format(timeformatter));
-//							respWr.setChnlCreditTransferResponse(chnResponse);
-//							exchange.getMessage().setBody(respWr);
-//						}
-//					})
-//				.endChoice()
-//
-//			.end()
-//
-//			.removeHeaders("ct_*")
-//			.removeHeaders("resp_*")
-//		;
-
-
 		from("seda:ct_aft_corebank").routeId("komi.ct.aft_cbcall")
-			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}][CT] After corebank accept.")
+			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_request_list.requestId}][CT] After corebank accept.")
 			
-			.process(crdtTransferProcessor)
-		
 			// TODO debit-account dulu donk
-			
-			// kirim ke CI-HUB
-			.to("direct:call-cihub")
+			.process(buildDebitRequestProcessor)
+			.to("seda:callcb")
+			.log(LoggingLevel.DEBUG, "komi.ct.aft_cbcall", "[ChnlReq:${header.hdr_request_list.requestId}][CT] request Core: ${body}")
 
-			.log(LoggingLevel.DEBUG, "komi.ct.after_cbcall", "[ChnlReq:${header.hdr_chnlRefId}][CT] setelah call CIHUB.")
+			.log("after call cb: ${body.class}")
 			
-			.log("sesudah call cihub ${body.class}")
-			.log("${body.reasonCode}")
+			.filter().simple("${body.class} endsWith 'CBDebitResponsePojo'")
+
+				.log("status corebank sukses")
+				// kirim ke CI-HUB
+				.process(crdtTransferProcessor)
+				.to("direct:call-cihub")
+				.log(LoggingLevel.DEBUG, "komi.ct.aft_cbcall", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] setelah call CIHUB")
+				.log("sesudah call cihub ${body.class}")
+				.log("ReasonCode: ${body.reasonCode}")
+				
+			.end()
+			
 
 			// TODO jika response RJCT, harus reversal ke corebanking
 
 			// jika timeout, check settlement dulu
 			.filter().simple("${body.class} endsWith 'ChnlFailureResponsePojo' && ${body.reasonCode} == 'K000'")
-				.log(LoggingLevel.DEBUG, "komi.ct.aft_cbcall", "[ChnlReq:${header.hdr_chnlRefId}][CT] akan cari Settlement.")
+				.log(LoggingLevel.DEBUG, "komi.ct.aft_cbcall", "[ChnlReq:${header.hdr_request_list.requestId}][CT] akan cari Settlement.")
 				.to("seda:caristtl")
 			.end()
 			// termasuk timeout jike response ci-hub reason_code "U900"
 			
-			.process(saveCrdtTrnsProcessor)
+//			.process(saveCrdtTrnsProcessor)
     		
 			.process(crdtTransferResponseProcessor)
 			

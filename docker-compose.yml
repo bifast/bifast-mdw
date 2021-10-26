@@ -42,7 +42,7 @@ services:
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.COREBANK-URL=localhost:9003/services/cb
       volumes: 
-        - /home/fransdm/workspace/bifast-log/inbound:/home/logs
+b        - /home/fransdm/workspace/bifast-log/inbound:/home/logs
       networks: 
         - docnet
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.FaultClass;
 import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.FaultClassRepository;
 

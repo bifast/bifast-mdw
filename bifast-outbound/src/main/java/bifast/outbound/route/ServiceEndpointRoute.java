@@ -92,13 +92,13 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				public void process(Exchange exchange) throws Exception {
 					ChannelTransaction chnlTrns = new ChannelTransaction();
 					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class );
-					String fullTextInput = exchange.getMessage().getHeader("hdr_fulltextinput", String.class);
+//					String fullTextInput = exchange.getMessage().getHeader("hdr_fulltextinput", String.class);
 					chnlTrns.setChannelRefId(rmw.getRequestId());
 					chnlTrns.setKomiTrnsId(rmw.getKomiTrxId());
 					chnlTrns.setChannelId(rmw.getChannelId());
 					chnlTrns.setRequestTime(LocalDateTime.now());
 					chnlTrns.setMsgName(rmw.getMsgName());
-					chnlTrns.setTextMessage(fullTextInput);
+//					chnlTrns.setTextMessage(fullTextInput);
 					channelTransactionRepo.save(chnlTrns);
 				}
 			})
