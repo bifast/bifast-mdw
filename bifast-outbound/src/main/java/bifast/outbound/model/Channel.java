@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+
 @Entity(name="KC_CHANNEL")
 public class Channel {
 
@@ -103,7 +104,5 @@ public class Channel {
 		this.modifDt = modifDt;
 	}
 
-
-	
 	
 }

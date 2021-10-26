@@ -5,7 +5,7 @@
 CREATE SEQUENCE public.corebank_sequence
 	INCREMENT BY 1
 	MINVALUE 1
-	MAXVALUE 999999
+	MAXVALUE 99999
 	START 1
 	CACHE 1
 	CYCLE;
@@ -43,9 +43,9 @@ CREATE SEQUENCE public.komi_sequence
 
 CREATE SEQUENCE public.table_seq_generator
 	INCREMENT BY 1
-	MINVALUE 5000
+	MINVALUE 1
 	MAXVALUE 9223372036854775807
-	START 5000
+	START 1000
 	CACHE 1
 	NO CYCLE;
 
@@ -331,7 +331,7 @@ CREATE TABLE public.kc_proxy_mgmt (
 	call_status varchar(50) NULL,
 	chnl_no_ref varchar(20) NULL,
 	cihub_elapsed_time int8 NULL,
-	customer_id varchar(10) NULL,
+	customer_id varchar(100) NULL,
 	customer_type varchar(10) NULL,
 	display_name varchar(100) NULL,
 	error_message varchar(400) NULL,
@@ -381,8 +381,8 @@ CREATE TABLE public.kc_settlement (
 -- DROP TABLE public.kc_status_reason;
 
 CREATE TABLE public.kc_status_reason (
-	status_reason_code varchar(255) NOT NULL,
-	description varchar(255) NULL,
-	status_code varchar(255) NULL,
+	status_reason_code varchar(20) NOT NULL,
+	description varchar(200) NULL,
+	status_code varchar(20) NULL,
 	CONSTRAINT kc_status_reason_pkey PRIMARY KEY (status_reason_code)
 );

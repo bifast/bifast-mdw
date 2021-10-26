@@ -8,7 +8,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.corebank.pojo.CBDebitInstructionRequestPojo;
+import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
 import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
 import bifast.outbound.model.CorebankTransaction;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -40,13 +40,13 @@ public class SaveCBTableProcessor implements Processor{
 		cb.setKomiTrnsId(rmw.getKomiTrxId());
 
 		if (requestClassName.equals("CBDebitInstructionRequestPojo")) {
-			CBDebitInstructionRequestPojo debitReq = (CBDebitInstructionRequestPojo) objCbRequest;
+			CBDebitRequestPojo debitReq = (CBDebitRequestPojo) objCbRequest;
 
 			cb.setDebitAmount(new BigDecimal(debitReq.getAmount()));
 			cb.setChannelId(rmw.getChannelId());
 			cb.setCstmAccountName(debitReq.getDebtorName());
-			cb.setCstmAccountNo(debitReq.getAccountNumber());
-			cb.setCstmAccountType(debitReq.getAccountType());
+			cb.setCstmAccountNo(debitReq.getDebtorAccountNumber());
+			cb.setCstmAccountType(debitReq.getDebtorAccountType());
 			cb.setTransactionType("Debit");
 
 		}

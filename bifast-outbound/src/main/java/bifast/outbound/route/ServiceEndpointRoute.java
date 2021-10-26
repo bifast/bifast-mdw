@@ -73,13 +73,16 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		
 		from("direct:service").routeId("komi.endpointRoute")
 			.convertBodyTo(String.class)
+			
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "Terima: ${body}")
+
 			.setHeader("hdr_fulltextinput", simple("${body}"))
 			
-//			.log("${body}")
 			.unmarshal(chnlRequestJDF)
 	
 			.process(initRmwProcessor)
-						
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "dari ${header.hdr_request_list.channelId}")
+
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
 				
 			.process(validateInputProcessor)
@@ -89,17 +92,16 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				public void process(Exchange exchange) throws Exception {
 					ChannelTransaction chnlTrns = new ChannelTransaction();
 					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class );
-					String fullTextInput = exchange.getMessage().getHeader("hdr_fulltextinput", String.class);
+//					String fullTextInput = exchange.getMessage().getHeader("hdr_fulltextinput", String.class);
 					chnlTrns.setChannelRefId(rmw.getRequestId());
 					chnlTrns.setKomiTrnsId(rmw.getKomiTrxId());
 					chnlTrns.setChannelId(rmw.getChannelId());
 					chnlTrns.setRequestTime(LocalDateTime.now());
 					chnlTrns.setMsgName(rmw.getMsgName());
-					chnlTrns.setTextMessage(fullTextInput);
+//					chnlTrns.setTextMessage(fullTextInput);
 					channelTransactionRepo.save(chnlTrns);
 				}
 			})
-//			.process(saveChannelTransactionProcessor)
 
 			// siapkan header penampung data2 hasil process.
 			.process(new Processor() {
@@ -133,17 +135,18 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.to("seda:savetablechannel")
 
+			.removeHeaders("*")
 			.marshal(chnlResponseJDF)
 
-			.removeHeader("clientid")
-			.removeHeaders("hdr_*")
-			.removeHeaders("req_*")
-			.removeHeader("HttpMethod")
-			.removeHeader("cookie")
+//			.removeHeader("clientid")
+//			.removeHeaders("hdr_*")
+//			.removeHeaders("req_*")
+//			.removeHeader("HttpMethod")
+//			.removeHeader("cookie")
 		;
 		
-		from("seda:savetablechannel")
-			.log("Akan save channel transaction")
+		from("seda:savetablechannel").routeId("komi.savechnltrns")
+			.log(LoggingLevel.DEBUG, "komi.savechnltrns", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] save table channel_transaction.")
 			.process(saveChannelTransactionProcessor)
 		;		
 

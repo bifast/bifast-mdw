@@ -93,17 +93,17 @@ public class UtilService {
 		return elapsed;
 	}
 
-	public LocalDateTime getTimestampFromMessageHistory (List<MessageHistory> list, String nodeId) {
-		LocalDateTime ldt = LocalDateTime.now();
-		for (MessageHistory msg : list) {
-			if (nodeId == msg.getNode().getId()) {
-				long time = msg.getTime();
-				ldt = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
-			}
-		}
-
-		return ldt;
-	}
+//	public LocalDateTime getTimestampFromMessageHistory (List<MessageHistory> list, String nodeId) {
+//		LocalDateTime ldt = LocalDateTime.now();
+//		for (MessageHistory msg : list) {
+//			if (nodeId == msg.getNode().getId()) {
+//				long time = msg.getTime();
+//				ldt = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalDateTime();
+//			}
+//		}
+//
+//		return ldt;
+//	}
 
 //	public long getRouteElapsed (List<MessageHistory> messageList, String routeId) {
 //		long start = 0;

@@ -10,8 +10,6 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-
 import bifast.outbound.model.FaultClass;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
@@ -43,7 +41,8 @@ public class ExceptionProcessor implements Processor {
 		catch(NoSuchMethodException nsme) {
 			reason = (statusReasonRepo.findById(fc.getReason()).orElse(new StatusReason())).getDescription();
 		}
-			
+		if (reason.length()> 140)
+			reason = reason.substring(0, 139);
 				
 		ChannelResponseWrapper responseWr = new ChannelResponseWrapper();
 		responseWr.setResponseCode("KSTS");

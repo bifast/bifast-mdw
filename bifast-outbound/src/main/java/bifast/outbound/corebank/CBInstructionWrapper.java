@@ -2,19 +2,19 @@ package bifast.outbound.corebank;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import bifast.outbound.corebank.pojo.CBDebitInstructionRequestPojo;
+import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
 
 public class CBInstructionWrapper {
 
 	@JsonProperty("DebitInstructionRequest")
-	private CBDebitInstructionRequestPojo cbDebitInstructionRequest;
+	private CBDebitRequestPojo cbDebitInstructionRequest;
 
 
-	public CBDebitInstructionRequestPojo getCbDebitInstructionRequest() {
+	public CBDebitRequestPojo getCbDebitInstructionRequest() {
 		return cbDebitInstructionRequest;
 	}
 
-	public void setCbDebitInstructionRequest(CBDebitInstructionRequestPojo cbDebitInstructionRequest) {
+	public void setCbDebitInstructionRequest(CBDebitRequestPojo cbDebitInstructionRequest) {
 		this.cbDebitInstructionRequest = cbDebitInstructionRequest;
 	}
 

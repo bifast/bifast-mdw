@@ -5,8 +5,10 @@ public class FaultPojo {
 	private String callStatus;
 	
 	private String responseCode;
+
+	private String reasonCode;
 	
-	private String responseMessage;
+	private String reasonMessage;
 	
 	private String errorMessage;
 
@@ -26,12 +28,20 @@ public class FaultPojo {
 		this.responseCode = responseCode;
 	}
 
-	public String getResponseMessage() {
-		return responseMessage;
+	public String getReasonCode() {
+		return reasonCode;
 	}
 
-	public void setResponseMessage(String responseMessage) {
-		this.responseMessage = responseMessage;
+	public void setReasonCode(String reasonCode) {
+		this.reasonCode = reasonCode;
+	}
+
+	public String getReasonMessage() {
+		return reasonMessage;
+	}
+
+	public void setReasonMessage(String reasonMessage) {
+		this.reasonMessage = reasonMessage;
 	}
 
 	public String getErrorMessage() {
@@ -40,7 +50,9 @@ public class FaultPojo {
 
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
-	}	
+	}
+
+
 
 	
 }

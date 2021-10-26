@@ -2,8 +2,10 @@ package bifast.outbound.pojo.chnlrequest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PaymentStatusRequestSAFPojo extends ChannelRequestBase{
+public class PaymentStatusRequestSAFPojo {
 
+	private String recptBank;
+	
 	@JsonProperty("NoRef")
 	private String noRef;
 	
@@ -13,6 +15,14 @@ public class PaymentStatusRequestSAFPojo extends ChannelRequestBase{
 	private String orgnlEndToEndId;
 	
 	private String creditorAccountNumber;
+
+	public String getRecptBank() {
+		return recptBank;
+	}
+
+	public void setRecptBank(String recptBank) {
+		this.recptBank = recptBank;
+	}
 
 	public String getNoRef() {
 		return noRef;
