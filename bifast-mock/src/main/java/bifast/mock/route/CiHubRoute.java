@@ -160,7 +160,10 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'ProxyResolutionRequest'")
 					.to("direct:prxyreso")
 				.endChoice()
-
+				
+				.when().simple("${header.msgType} == 'ProxyRegistrationInquiryRequest'")
+					.to("direct:prxyregninquiry")
+				.endChoice()
 
 				.otherwise()	
 					.log("Other message")

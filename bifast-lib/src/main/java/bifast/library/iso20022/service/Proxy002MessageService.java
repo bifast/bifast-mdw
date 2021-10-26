@@ -84,7 +84,7 @@ public class Proxy002MessageService {
 		
 		ProxyRegistrationAccount1 prxyRegn = new ProxyRegistrationAccount1();
 		
-		prxyRegn.setRegnId("3234009595");
+		prxyRegn.setRegnId(seed.getRegnId());
 
 		///
 		BIAddtlCstmrInf bIAddtlCstmrInf = new BIAddtlCstmrInf();

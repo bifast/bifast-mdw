@@ -101,7 +101,10 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 	
 	public Proxy002Seed processNewr(BusinessMessage msg,AccountProxy accountProxy,Proxy002Seed seed) {
 		if(accountProxy == null) {
-			this.saveAccountProxy(msg);
+			Random rand = new Random();
+			long random = (long)(rand.nextDouble()*10000000000L);
+			seed.setRegnId(String.valueOf(random));
+			this.insertAccountProxy(msg,seed);
 		}else {
 			String regisrerBank = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
 			if(regisrerBank.equals(accountProxy.getRegisterBank()) && (accountProxy.getAccountStatus().equals("ACTV") || accountProxy.getAccountStatus().equals("SUSP") || accountProxy.getAccountStatus().equals("SUSB"))){
@@ -111,7 +114,10 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 				seed.setStatus("RJCT");
 				seed.setReason("U807");
 			}else {
-				this.saveAccountProxy(msg);
+				Random rand = new Random();
+				long random = (long)(rand.nextDouble()*10000000000L);
+				seed.setRegnId(String.valueOf(random));
+				this.insertAccountProxy(msg,seed);
 			}
 		}
 		
@@ -202,7 +208,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 					seed.setStatus("RJCT");
 					seed.setReason("U811");
 				}else if(accountProxy.getAccountStatus().equals("ACTV")) {
-					this.saveAccountProxy(msg);
+					this.UpdateAccountProxy(msg,accountProxy);
 				}
 			
 			}else {
@@ -211,7 +217,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 					seed.setStatus("RJCT");
 					seed.setReason("U809");
 				}else if(accountProxy.getAccountStatus().equals("ACTV")) {
-					this.saveAccountProxy(msg);
+					this.UpdateAccountProxy(msg,accountProxy);
 				}
 			}
 		}else {
@@ -286,8 +292,29 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		return seed;
 	}
 	
-	void saveAccountProxy (BusinessMessage msg) {
+	void insertAccountProxy (BusinessMessage msg,Proxy002Seed seed) {
+		
 		AccountProxy accountProxy =  new AccountProxy();
+		accountProxy.setReginId(seed.getRegnId());
+		accountProxy.setAccountNumber(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAcct().getId().getOthr().getId());
+		accountProxy.setDisplayName(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getDsplNm());
+		accountProxy.setProxyType(msg.getDocument().getPrxyRegn().getRegn().getPrxy().getTp());
+		accountProxy.setProxyVal(msg.getDocument().getPrxyRegn().getRegn().getPrxy().getVal());
+		accountProxy.setRegisterBank(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId());
+		accountProxy.setAccountName(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAcct().getNm());
+		accountProxy.setAccountType(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAcct().getTp().getPrtry());
+		accountProxy.setAccountStatus("ACTV");
+		accountProxy.setScndIdTp(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getScndId().getTp());
+		accountProxy.setScndIdVal(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getScndId().getVal());
+		accountProxy.setCstmrId(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getCstmr().getId());
+		accountProxy.setCstmrRsdntSts(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts());
+		accountProxy.setCstmrTp(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getCstmr().getTp());
+		accountProxy.setCstmrTwnNm(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
+		accountProxyRepository.save(accountProxy);
+	}
+	
+	void UpdateAccountProxy (BusinessMessage msg,AccountProxy accountProxy) {
+
 		accountProxy.setAccountNumber(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAcct().getId().getOthr().getId());
 		accountProxy.setDisplayName(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getDsplNm());
 		accountProxy.setProxyType(msg.getDocument().getPrxyRegn().getRegn().getPrxy().getTp());

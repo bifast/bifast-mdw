@@ -14,6 +14,8 @@ import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.library.iso20022.prxy003.ProxyLookUpV01;
 import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
+import bifast.library.iso20022.prxy005.ProxyEnquiryV01;
+import bifast.library.iso20022.prxy006.ProxyEnquiryResponseV01;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -26,6 +28,7 @@ import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
     "prxyRegnRspn",
     "prxyLookUp",
     "prxyLookUpRspn",
+    "prxyNqryReq",
     "messageReject"
 })
 public class Document {
@@ -54,7 +57,12 @@ public class Document {
 
     @XmlElement(name = "PrxyLookUpRspn", required = false)
     protected ProxyLookUpResponseV01 prxyLookUpRspn;
-
+    
+    @XmlElement(name = "PrxyNqryReq", required = true)
+    protected ProxyEnquiryV01 prxyNqryReq;
+    
+    @XmlElement(name = "PrxyNqryRspn", required = true)
+    protected ProxyEnquiryResponseV01 prxyNqryRspn;
     // unt Message Reject
     @XmlElement(name = "MessageReject", required = false)
     protected MessageRejectV01 messageReject;
@@ -138,4 +146,21 @@ public class Document {
 	public void setPrxyRegnRspn(ProxyRegistrationResponseV01 prxyRegnRspn) {
 		this.prxyRegnRspn = prxyRegnRspn;
 	}
+
+	public ProxyEnquiryV01 getPrxyNqryReq() {
+		return prxyNqryReq;
+	}
+
+	public void setPrxyNqryReq(ProxyEnquiryV01 prxyNqryReq) {
+		this.prxyNqryReq = prxyNqryReq;
+	}
+
+	public ProxyEnquiryResponseV01 getPrxyNqryRspn() {
+		return prxyNqryRspn;
+	}
+
+	public void setPrxyNqryRspn(ProxyEnquiryResponseV01 prxyNqryRspn) {
+		this.prxyNqryRspn = prxyNqryRspn;
+	}
+
 }

@@ -10,6 +10,7 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.mock.processor.ProxyRegistrationInquiryProcessor;
 import bifast.mock.processor.ProxyRegistrationResponseProcessor;
 import bifast.mock.processor.ProxyResolutionResponseProcessor;
 
@@ -20,7 +21,9 @@ public class ProxyRoute extends RouteBuilder {
 	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
 	@Autowired
 	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
-
+	@Autowired
+	private ProxyRegistrationInquiryProcessor proxyRegistrationInquiryProcessor;
+	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
 	private void configureJson() {
@@ -55,6 +58,18 @@ public class ProxyRoute extends RouteBuilder {
 	        .delay(500)
 	        .log("end-delay")
 	        .process(proxyResolutionResponseProcessor)
+	        .log("End Process")
+	        
+	    ;
+        
+        from("direct:prxyregninquiry").routeId("proxyregistrationinquiry")
+        
+	        .log("Terima di mock")
+	        .log("${body}")
+	        .delay(500)
+	        .log("end-delay")
+	        .log("Run Processor Inquiry")
+	        .process(proxyRegistrationInquiryProcessor)
 	        .log("End Process")
 	        
 	    ;

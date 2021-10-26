@@ -37,6 +37,10 @@ public class OnRequestProcessor implements Processor {
 		else if (req.getAppHdr().getMsgDefIdr().startsWith("prxy.003")) {
 			exchange.getMessage().setHeader("msgType", "ProxyResolutionRequest");		
 		}
+		
+		else if (req.getAppHdr().getMsgDefIdr().startsWith("prxy.005")) {
+			exchange.getMessage().setHeader("msgType", "ProxyRegistrationInquiryRequest");		
+		}
 
 
 	}

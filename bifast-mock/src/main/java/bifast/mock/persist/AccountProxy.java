@@ -9,8 +9,9 @@ import javax.persistence.Id;
 public class AccountProxy {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String reginId;
     private String registerBank;
     private String accountNumber;
     private String proxyType;
@@ -31,6 +32,12 @@ public class AccountProxy {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getReginId() {
+		return reginId;
+	}
+	public void setReginId(String reginId) {
+		this.reginId = reginId;
 	}
 	public String getRegisterBank() {
 		return registerBank;
