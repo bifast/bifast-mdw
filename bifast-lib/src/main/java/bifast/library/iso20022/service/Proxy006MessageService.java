@@ -92,7 +92,7 @@ public class Proxy006MessageService {
 		}
 		
 		ProxyStatusChoice StsRsnInf = new ProxyStatusChoice();
-		StsRsnInf.setPrtry(seed.getStatus());
+		StsRsnInf.setPrtry(seed.getReason());
 		nqryRspn.setStsRsnInf(StsRsnInf);
 		
 		 if(seed.getProxy006SeedAccountList() != null ) {

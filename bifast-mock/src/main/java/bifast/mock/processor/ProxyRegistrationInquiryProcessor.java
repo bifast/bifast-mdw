@@ -68,6 +68,10 @@ public class ProxyRegistrationInquiryProcessor implements Processor{
 		String scndIdTp = msg.getDocument().getPrxyNqryReq().getNqry().getScndId().getTp();
 		String scndIdVal = msg.getDocument().getPrxyNqryReq().getNqry().getScndId().getVal();
 		
+		seed.setOrgnlMsgId(msg.getAppHdr().getBizMsgIdr());
+		seed.setOrgnlMsgNmId(msg.getAppHdr().getMsgDefIdr());
+		seed.setOrgnlCreDtTm(msg.getAppHdr().getCreDt());
+		
 		accountProxylist = accountProxyRepository.getListByScndIdTpAndByScndIdVal(scndIdTp,scndIdVal);
 		
 		if(accountProxylist.size() > 0) {
@@ -96,7 +100,7 @@ public class ProxyRegistrationInquiryProcessor implements Processor{
 
 		}else {
 			seed.setStatus("RJCT");
-			seed.setStatus("U804");
+			seed.setReason("U804");
 		}
 		
 		ProxyEnquiryResponseV01 response = proxy006MessageService.proxyRegistrationInquiryResponse(seed, msg);
