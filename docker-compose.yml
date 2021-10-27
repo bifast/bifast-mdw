@@ -87,8 +87,11 @@ services:
       ports: 
         - "9006:9006"
       environment: 
+        - LOGGING.FILE.NAME=/home/logs/komi-mock.log
         - BIFAST.INBOUND-LOG-FOLDER=/home/logs
         - KOMI.INBOUND-URL=komi-inbound:9001/services/api
+      volumes: 
+        - /home/fransdm/workspace/bifast-log/mock:/home/logs
       networks: 
         - docnet
     
