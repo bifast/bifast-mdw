@@ -2,6 +2,7 @@
 version: '3.7'
 services:
     komidb:
+      build: docker-script/postgre
       container_name: komidb
       image: fransmzh/komi-db:1.6
       restart: always

@@ -3,9 +3,11 @@ ENV POSTGRES_PASSWORD=postgres
 ENV POSTGRES_DB=postgres
 ENV POSTGRES_DB=komidb
 
-COPY akktadmdbdev.sql /docker-entrypoint-initdb.d/
-COPY bkktkomidbdev.sql /docker-entrypoint-initdb.d/
-COPY ckktinsertadmmantap.sql /docker-entrypoint-initdb.d/
+COPY dbobject.sql /docker-entrypoint-initdb.d/
+COPY insertdata.sql /docker-entrypoint-initdb.d/
+COPY kkt1admdbdev.sql /docker-entrypoint-initdb.d/
+COPY kkt2komidbdev.sql /docker-entrypoint-initdb.d/
+COPY kkt3insertadmmantap.sql /docker-entrypoint-initdb.d/
 VOLUME /var/lib/postgresql/data
 
 # docker build -t fransmzh/komi-db:1.6 .
