@@ -5,6 +5,7 @@ import java.time.Instant;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.corebank.pojo.CbAccountCustomerInfoRequestPojo;
 import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
@@ -55,11 +56,17 @@ public class RequestMessageWrapper {
 	@JsonProperty("ProxyRegistrationInquiry")
 	private ChnlProxyRegistrationInquiryRequestPojo chnlProxyRegistrationInquiryRequest;
 
+	private Object channelRequest;
+	
 	private BusinessMessage accountEnquiryRequest;
 	private BusinessMessage creditTransferRequest;
 	private BusinessMessage proxyRegistrationRequest;
 	private BusinessMessage proxyResolutionRequest;
+<<<<<<< HEAD
 	private BusinessMessage proxyRegistrationInquiry;
+=======
+	private CbAccountCustomerInfoRequestPojo accoutCustomerInfoRequest;
+>>>>>>> master
 	
 	public String getRequestId() {
 		return requestId;
@@ -157,6 +164,12 @@ public class RequestMessageWrapper {
 	public void setChnlProxyResolutionRequest(ChnlProxyResolutionRequestPojo chnlProxyResolutionRequest) {
 		this.chnlProxyResolutionRequest = chnlProxyResolutionRequest;
 	}
+	public Object getChannelRequest() {
+		return channelRequest;
+	}
+	public void setChannelRequest(Object channelRequest) {
+		this.channelRequest = channelRequest;
+	}
 	public BusinessMessage getAccountEnquiryRequest() {
 		return accountEnquiryRequest;
 	}
@@ -199,6 +212,7 @@ public class RequestMessageWrapper {
 	public void setCihubEncriptedResponse(String cihubEncriptedResponse) {
 		this.cihubEncriptedResponse = cihubEncriptedResponse;
 	}
+<<<<<<< HEAD
 	public ChnlProxyRegistrationInquiryRequestPojo getChnlProxyRegistrationInquiryRequest() {
 		return chnlProxyRegistrationInquiryRequest;
 	}
@@ -212,4 +226,16 @@ public class RequestMessageWrapper {
 	public void setProxyRegistrationInquiry(BusinessMessage proxyRegistrationInquiry) {
 		this.proxyRegistrationInquiry = proxyRegistrationInquiry;
 	}
+=======
+	public CbAccountCustomerInfoRequestPojo getAccoutCustomerInfoRequest() {
+		return accoutCustomerInfoRequest;
+	}
+	public void setAccoutCustomerInfoRequest(CbAccountCustomerInfoRequestPojo accoutCustomerInfoRequest) {
+		this.accoutCustomerInfoRequest = accoutCustomerInfoRequest;
+	}
+	
+
+
+
+>>>>>>> master
 }

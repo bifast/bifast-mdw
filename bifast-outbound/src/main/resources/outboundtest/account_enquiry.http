@@ -7,12 +7,30 @@ Authorization: Basic CMS:password
 
 {
   "AccountEnquiryRequest" : {
-    "NoRef" : "1113",
+    "NoRef" : "130002244761",
     "SenderAccountNumber": "54130",
     "RecipientBank" : "CITYIDJA",
     "Amount" : "245000",
     "CategoryPurpose" : "01",
-    "RecipientAccountNumber" : "7445589"
+    "RecipientAccountNumber" : "77565589"
+ }
+}
+
+###
+#  dengan proxy
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+  "AccountEnquiryRequest" : {
+    "NoRef" : "552222454",
+    "SenderAccountNumber": "54130",
+    "RecipientBank" : "CITYIDJA",
+    "Amount" : "245000",
+    "CategoryPurpose" : "01",
+    "ProxyType" : "012",
+    "ProxyId" : "20033002"
  }
 }
 
@@ -21,16 +39,3 @@ Authorization: Basic CMS:password
     "ProxyType" : "012",
     "ProxyId" : "20033002"
 
-POST http://localhost:9002/komi-outbound/routing HTTP/1.1
-Content-Type: application/json
-
-{
-  "AccountEnquiryRequest" : {
-    "channelRefId" : "40018",
-    "channel" : "01",
-    "recptBank" : "BMRIIDJA",
-    "amount" : 1545500,
-    "categoryPurpose" : "01",
-    "creditorAccountNumber" : "1814449"
-  }
-}

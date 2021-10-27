@@ -4,7 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
@@ -20,8 +20,8 @@ public class AEProxyEnrichmentProcessor implements Processor{
 
 		Object oResp = exchange.getMessage().getBody(Object.class);
 
-		if (oResp.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
-			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo) oResp;
+		if (oResp.getClass().getSimpleName().equals("FaultPojo")) {
+			FaultPojo fault = (FaultPojo) oResp;
 			rmc.setFault(fault);
 			rmc.setResponseCode(fault.getResponseCode());
 			rmc.setReasonCode(fault.getReasonCode());

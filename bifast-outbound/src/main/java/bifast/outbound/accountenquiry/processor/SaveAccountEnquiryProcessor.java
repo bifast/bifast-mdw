@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.model.AccountEnquiry;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.repository.AccountEnquiryRepository;
@@ -54,12 +54,12 @@ public class SaveAccountEnquiryProcessor implements Processor {
 
 		Object oBiResponse = exchange.getMessage().getBody(Object.class);
 
-		if (oBiResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
-			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)oBiResponse;
+		if (oBiResponse.getClass().getSimpleName().equals("FaultPojo")) {
+			FaultPojo fault = (FaultPojo)oBiResponse;
 			ae.setResponseCode(fault.getResponseCode());
-			ae.setErrorMessage(fault.getDescription());
+			ae.setErrorMessage(fault.getErrorMessage());
 			ae.setReasonCode(fault.getReasonCode());
-			ae.setCallStatus(fault.getFaultCategory());
+			ae.setCallStatus(fault.getCallStatus());
 		}
 			
 		else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {

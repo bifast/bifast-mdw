@@ -34,7 +34,7 @@ public class CorebankRoute extends RouteBuilder{
 			
 			.setHeader("cb_request", simple("${body}"))
 			
-	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}][CB] CB Request: ${body}")
+	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}][CT] CB Request: ${body}")
 			.setHeader("HttpMethod", constant("POST"))
 //			.enrich("http:{{komi.cb-url}}?"
 //					+ "bridgeEndpoint=true",
@@ -54,10 +54,14 @@ public class CorebankRoute extends RouteBuilder{
 					+ "\"accountNumber\" : \"0000000\"\n"
 					+ "}\n"))
 
+	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}][CT] CB Response: ${body}")
+
 	 		.unmarshal(chnlDebitResponseJDF)
 	 		
+	 		.log("corebank status: ${body.status}")
 			.choice()
 				.when().simple("${body.status} == 'ACTC'")
+					.log("ACTC")
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
 							ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
@@ -79,7 +83,9 @@ public class CorebankRoute extends RouteBuilder{
 							fault.setResponseCode(response.getStatus());
 							fault.setReasonCode(response.getReason());
 							rmc.setDebitResponse(fault);
+							rmc.setFault(fault);
 							exchange.getMessage().setHeader("hdr_response_list", rmc);
+							exchange.getMessage().setBody(fault);
 						}
 			 		})
 
@@ -87,7 +93,6 @@ public class CorebankRoute extends RouteBuilder{
 			
 //			.to("seda:savecbtable?exchangePattern=InOnly")
 
-//			.log("[ChReq:${header.hdr_chnlRefId}][CB] finish")
 
 			.removeHeaders("cb_*")
 		;

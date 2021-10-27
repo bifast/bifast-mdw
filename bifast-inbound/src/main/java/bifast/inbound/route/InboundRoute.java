@@ -1,6 +1,7 @@
 package bifast.inbound.route;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -58,7 +59,7 @@ public class InboundRoute extends RouteBuilder {
 				.to("direct:receive")
 		;	
 		
-		from("direct:receive").routeId("Inbound").messageHistory()
+		from("direct:receive").routeId("komi.inboundEndpoint").messageHistory()
 			.convertBodyTo(String.class).id("start_route")
 			
 			// simpan msg inbound compressed

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.StatusReason;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
@@ -48,8 +48,8 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		chnResponse.setNoRef(chnRequest.getChannelRefId());
 
 
-		if (objResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
-			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objResponse;
+		if (objResponse.getClass().getSimpleName().equals("FaultPojo")) {
+			FaultPojo fault = (FaultPojo)objResponse;
 			
 			chnlResponseWr.setResponseCode("KSTS");
 			chnlResponseWr.setReasonCode(fault.getReasonCode());

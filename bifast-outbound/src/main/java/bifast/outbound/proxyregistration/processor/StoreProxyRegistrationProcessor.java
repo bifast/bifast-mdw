@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.outbound.model.ProxyMessage;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.pojo.flat.FlatPrxy002Pojo;
@@ -77,11 +77,11 @@ public class StoreProxyRegistrationProcessor implements Processor{
 		
 		Object oBiResponse = exchange.getMessage().getBody(Object.class);
 
-		if (oBiResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
-			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)oBiResponse;
-			proxyMessage.setErrorMessage(fault.getDescription());
+		if (oBiResponse.getClass().getSimpleName().equals("FaultPojo")) {
+			FaultPojo fault = (FaultPojo)oBiResponse;
+			proxyMessage.setErrorMessage(fault.getErrorMessage());
 			proxyMessage.setRespStatus(fault.getReasonCode());
-			proxyMessage.setCallStatus(fault.getFaultCategory());
+			proxyMessage.setCallStatus(fault.getCallStatus());
 		}
 			
 		else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {

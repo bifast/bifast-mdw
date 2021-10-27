@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
+import bifast.outbound.pojo.chnlrequest.ChnlRequestWrapper;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.ExceptionProcessor;
@@ -50,7 +51,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
-		JacksonDataFormat chnlRequestJDF = jdfService.basic(RequestMessageWrapper.class);
+//		JacksonDataFormat chnlRequestJDF = jdfService.basic(RequestMessageWrapper.class);
+		JacksonDataFormat chnlRequestJDF = jdfService.basic(ChnlRequestWrapper.class);
 
 		onException(Exception.class).routeId("komi.endpointRoute.onException")
 			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
@@ -92,13 +94,13 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				public void process(Exchange exchange) throws Exception {
 					ChannelTransaction chnlTrns = new ChannelTransaction();
 					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class );
-//					String fullTextInput = exchange.getMessage().getHeader("hdr_fulltextinput", String.class);
+					String fullTextInput = exchange.getMessage().getHeader("hdr_fulltextinput", String.class);
 					chnlTrns.setChannelRefId(rmw.getRequestId());
 					chnlTrns.setKomiTrnsId(rmw.getKomiTrxId());
 					chnlTrns.setChannelId(rmw.getChannelId());
 					chnlTrns.setRequestTime(LocalDateTime.now());
 					chnlTrns.setMsgName(rmw.getMsgName());
-//					chnlTrns.setTextMessage(fullTextInput);
+					chnlTrns.setTextMessage(fullTextInput);
 					channelTransactionRepo.save(chnlTrns);
 				}
 			})
@@ -131,6 +133,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					
 				.when().simple("${header.hdr_request_list.msgName} == 'PrxRegnInquiryReq'")
 					.to("direct:prxyrgstinquiry")
+
+				.when().simple("${header.hdr_request_list.msgName} == 'AcctCustmrInfo'")
+					.to("direct:acctcustmrinfo")
 
 			.end()
 

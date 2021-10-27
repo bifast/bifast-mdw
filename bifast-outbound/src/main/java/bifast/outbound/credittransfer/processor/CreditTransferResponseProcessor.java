@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.StatusReason;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
@@ -45,18 +45,19 @@ public class CreditTransferResponseProcessor implements Processor {
 		chnResponse.setAccountNumber(chnRequest.getCrdtAccountNo());
 
 		Object objResponse = exchange.getMessage().getBody(Object.class);
-		
-		if (objResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
-			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objResponse;
 			
-			chnlResponseWr.setResponseCode("KSTS");
+		if (objResponse.getClass().getSimpleName().equals("FaultPojo")) {
+			FaultPojo fault = (FaultPojo)objResponse;
+			
+			chnlResponseWr.setResponseCode(fault.getResponseCode());
 			chnlResponseWr.setReasonCode(fault.getReasonCode());
 			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 			if (oStatusReason.isPresent())
 				chnlResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 			else
-				chnlResponseWr.setResponseMessage("General Error");
+				chnlResponseWr.setReasonMessage("General Error");
 		}
+
 		
 		else if (objResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
 
@@ -66,7 +67,7 @@ public class CreditTransferResponseProcessor implements Processor {
 			if (oStatusReason.isPresent())
 				chnlResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 			else
-				chnlResponseWr.setResponseMessage("General Error");
+				chnlResponseWr.setReasonMessage("General Error");
 
 		}
 

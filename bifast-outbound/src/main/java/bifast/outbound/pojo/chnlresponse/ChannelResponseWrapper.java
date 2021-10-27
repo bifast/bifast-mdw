@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.proxyregistration.ChnlProxyResolutionResponse;
 
 @JsonPropertyOrder({
@@ -53,8 +52,6 @@ public class ChannelResponseWrapper {
 	@JsonProperty("ProxyResolutionRequest")
 	private ChnlProxyResolutionResponse proxyResolutionResponse;
 
-	@JsonProperty("FailureResponse")
-	private ChnlFailureResponsePojo faultResponse;
 
 	public String getReasonCode() {
 		return reasonCode;
@@ -176,13 +173,6 @@ public class ChannelResponseWrapper {
 		this.proxyResolutionResponse = proxyResolutionResponse;
 	}
 
-	public ChnlFailureResponsePojo getFaultResponse() {
-		return faultResponse;
-	}
-
-	public void setFaultResponse(ChnlFailureResponsePojo faultResponse) {
-		this.faultResponse = faultResponse;
-	}
 
 
 

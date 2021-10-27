@@ -7,10 +7,12 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.pojo.CBAccountEnquiryRequestPojo;
+import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
+import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
+import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 
 @Component
 public class BuildAccountEnquiryRequestMessageProcessor implements Processor {
@@ -21,18 +23,27 @@ public class BuildAccountEnquiryRequestMessageProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage inboundMessage = exchange.getMessage().getBody(BusinessMessage.class);
-		CBAccountEnquiryRequestPojo cbRequest = new CBAccountEnquiryRequestPojo();
+//		BusinessMessage inboundMessage = exchange.getMessage().getBody(BusinessMessage.class);
+		FlatPacs008Pojo biReq = exchange.getMessage().getBody(FlatPacs008Pojo.class);
+//		CreditTransferTransaction39 biReq = inboundMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
 		
-//		DecimalFormat df = new DecimalFormat("00000000");
-//		String trxid = df.format(utilService.getInboundCounter());
-		String trxid = utilService.genKomiTrnsId();
+		CbAccountEnquiryRequestPojo cbRequest = new CbAccountEnquiryRequestPojo();
 		
-		CreditTransferTransaction39 biReq = inboundMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
-		cbRequest.setAccountNumber(biReq.getCdtrAcct().getId().getOthr().getId());
+		cbRequest.setAccountNumber(biReq.getCreditorAccountNo());
+		cbRequest.setAmount(biReq.getAmount());
+		
+		cbRequest.setCategoryPurpose(biReq.getCategoryPurpose());
 
-		cbRequest.setAmount(biReq.getIntrBkSttlmAmt().getValue());
-		cbRequest.setTransactionId(trxid);
+		cbRequest.setDateTime(biReq.getCreDtTm());
+		
+		cbRequest.setMerchantType("0000");
+		
+		cbRequest.setNoRef(null);
+		
+		cbRequest.setRecipientBank(biReq.getToBic());
+		
+		cbRequest.setTerminalId("000000");
+		cbRequest.setTransactionId("000000");
 		
 		exchange.getMessage().setBody(cbRequest);
 	}
