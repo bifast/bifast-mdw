@@ -2,11 +2,7 @@ INSERT INTO public.kc_channel (channel_id,channel_name,channel_type,create_dt,da
 	 ('CMS','Internet Banking','01',NULL,NULL,NULL,NULL,'$2a$12$r4o5RRFYnOMhDwg07YzlvebQxWMD8Bh4lDzfD1Ts.HfHunnv0wjiW',NULL),
 	 ('MB','Mobile Banking','02',NULL,NULL,NULL,NULL,'$2a$12$r4o5RRFYnOMhDwg07YzlvebQxWMD8Bh4lDzfD1Ts.HfHunnv0wjiW',NULL),
 	 ('CB','Corebank','03',NULL,NULL,'6010',NULL,'$2a$12$r4o5RRFYnOMhDwg07YzlvebQxWMD8Bh4lDzfD1Ts.HfHunnv0wjiW',NULL),
-	 ('PORTAL','Komi-Portal','04',NULL,NULL,'',NULL,'$2a$12$r4o5RRFYnOMhDwg07YzlvebQxWMD8Bh4lDzfD1Ts.HfHunnv0wjiW',NULL);INSERT INTO public.kc_channel_transaction (id,amount,call_status,channel_id,channel_ref_id,elapsed_time,error_msg,komi_trns_id,msg_name,recpt_bank,request_time,response_code,text_message) VALUES
-	 (5135,NULL,'ERROR','CMS','1511652125',1351,'HttpOperationFailedException: HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 500','29900118','PrxRegnReq',NULL,'2021-10-26 09:27:20.490699','KSTS',NULL),
-	 (5137,NULL,NULL,'CMS','5170',NULL,NULL,'29900123','CTReq',NULL,'2021-10-26 09:44:30.648839',NULL,NULL),
-	 (5138,NULL,NULL,'CMS','5171',NULL,NULL,'29900125','CTReq',NULL,'2021-10-26 09:47:10.28423',NULL,NULL),
-	 (5139,NULL,NULL,'CMS','5172',NULL,NULL,'29900127','CTReq',NULL,'2021-10-26 09:48:42.519409',NULL,NULL);INSERT INTO public.kc_domain_code (id,grp,"key",value) VALUES
+	 ('PORTAL','Komi-Portal','04',NULL,NULL,'',NULL,'$2a$12$r4o5RRFYnOMhDwg07YzlvebQxWMD8Bh4lDzfD1Ts.HfHunnv0wjiW',NULL);INSERT INTO public.kc_domain_code (id,grp,"key",value) VALUES
 	 (311,'PROXY.TYPE','03','IPT ID'),
 	 (312,'PROXY.TYPE','01','Mobile Phone No'),
 	 (313,'PROXY.TYPE','02','Email Address'),
@@ -50,22 +46,17 @@ INSERT INTO public.kc_fault_class (id,exception_class,reason) VALUES
 	 (24,'bifast.outbound.exception.InputValidationException','K003'),
 	 (25,'org.springframework.dao.DataIntegrityViolationException','K007');INSERT INTO public.kc_inbound_counter (tanggal,last_number) VALUES
 	 (20211001,50000002),
-	 (20211002,50000002);INSERT INTO public.kc_message_counter (tanggal,last_number) VALUES
-	 (20211025,112);INSERT INTO public.kc_parameter (id,code,"module",notes,value) VALUES
+	 (20211002,50000002),
+	 (20211027,50000003);INSERT INTO public.kc_message_counter (tanggal,last_number) VALUES
+	 (20211025,112),
+	 (20211026,145),
+	 (20211027,173);INSERT INTO public.kc_parameter (id,code,"module",notes,value) VALUES
 	 (70,'SLA.CHNL.ENQUIRY','OUTBOUND','SLA ke channel unt call jenis enquiry (ms)','5000'),
 	 (20,'LIMIT.DAILY.FREQ','OUTBOUND','Batas berapa kali transaksi perhari','100'),
 	 (10,'LIMIT.DAILY.AMOUNT','OUTBOUND','Batas nilai transaksi perhari','1000000000'),
 	 (30,'LIMIT.TRNS.AMOUNT','OUTBOUND','Batas nilai per transaksi','100000000'),
 	 (40,'PS.RETRY.WARN','OUTBOUND','Berapa kali PaymentStatus SAF sebelum dilaporkan ke admin','5'),
-	 (80,'SLA.CHNL.TRANSACTION','OUTBOUND','SLA ke channel untuk call transactional (ms)','10000');INSERT INTO public.kc_proxy_mgmt (id,account_name,account_number,account_type,call_status,chnl_no_ref,cihub_elapsed_time,customer_id,customer_type,display_name,error_message,full_request_mesg,full_response_mesg,komi_trns_id,operation_type,proxy_type,proxy_value,request_dt,resident_status,resp_status,scnd_id_type,scnd_value,town_name) VALUES
-	 (5136,'JOHN SMITH ','2040606012390112 ','CACC','ERROR','1511652125',1119,'KTP-222044020','01','JOHN SMITH','HttpOperationFailedException: HTTP operation failed invoking http://localhost:9006/mock/cihub with statusCode: 500','eJyVkW1vgjAQx7+K6Ws112o08GoIbuAiGiHbi2UvGDBGApXQuiez775rK2aabdlK6MP17n+/u+7J
-bCeWoiD2njhN42et2l2auSwzs/KAC8kDfVrJJ32rTiQK/FngLSj5wNEn8faPcUHorTDOOcTNyndk
-CFRywoBRCmzSSU8prIAyywKcgfQJenr5o3Fu2te3IV6Yn+Kt2+aePMgMKAzYJAbLZlMbYzGTt013
-dc6lIllj8CYvuNpftV3tGuR7Dj0oO6aJ6x8SaciIG0GnkP/pIkJ2UGqNG3QI57cbFFXAyq5twNBy
-k1S4fUhqcVHUSVkN022tyvxamieaKlSki5Uf9qJlEPsY+RuVhnDSVHaEZ7wMxjDBj7KRBZSyHtGP
-35imyhYhieu4riI5y9xTtijlmZE1ldBjJdfxesAY6o9BvZeSjZqqRkkvkQmx7/Zkzp8rnckVsm5P
-RTTdqQZ2U2RcRlJ0TvEL11AwAp3iXjX9Exr83c8=
-',NULL,'29900118','NEWR','02','bams@gmail.com','2021-10-26 09:27:20.644483','01','U902','01','KTP-222044020','0300');INSERT INTO public.kc_status_reason (status_reason_code,description,status_code) VALUES
+	 (80,'SLA.CHNL.TRANSACTION','OUTBOUND','SLA ke channel untuk call transactional (ms)','10000');INSERT INTO public.kc_status_reason (status_reason_code,description,status_code) VALUES
 	 ('U000','Success/ Transaction Accepted','ACSP'),
 	 ('U002','Success/ Transaction Accepted Stored in SAF','ACTC'),
 	 ('U101','Tenant Not Found','RJCT'),

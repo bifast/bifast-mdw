@@ -15,7 +15,6 @@ import bifast.outbound.corebank.pojo.CbAccountCustomerInfoRequestPojo;
 import bifast.outbound.corebank.pojo.CbAccountCustomerInfoResponsePojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountCustomerInfoRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.pojo.chnlresponse.ChnlAccountCustomerInfoResponsePojo;
 import bifast.outbound.service.JacksonDataFormatService;
@@ -31,7 +30,6 @@ public class AcctCustInfoRoute extends RouteBuilder{
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat aciResponseJdf = jdfService.basic(CbAccountCustomerInfoResponsePojo.class);
-		JacksonDataFormat chnlAciResponseJdf = jdfService.basic(ChnlAccountCustomerInfoResponsePojo.class);
 //		.validate(acctCustInfoValidate)
 		
 		from("direct:acctcustmrinfo").routeId("komi.acctcustinfo")
