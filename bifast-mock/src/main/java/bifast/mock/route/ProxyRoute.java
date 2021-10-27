@@ -41,7 +41,7 @@ public class ProxyRoute extends RouteBuilder {
 
         from("direct:prxyregn").routeId("proxyregistration")
         	
-            .log("Terima di mock")
+            .log("Terima di mock Regis")
             .log("${body}")
             .delay(500)
             .log("end-delay")

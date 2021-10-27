@@ -9,6 +9,7 @@ import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
+import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationInquiryRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.pojo.chnlrequest.PaymentStatusRequestSAFPojo;
@@ -50,11 +51,15 @@ public class RequestMessageWrapper {
 
 	@JsonProperty("ProxyResolutionRequest")
 	private ChnlProxyResolutionRequestPojo chnlProxyResolutionRequest;
+	
+	@JsonProperty("ProxyRegistrationInquiry")
+	private ChnlProxyRegistrationInquiryRequestPojo chnlProxyRegistrationInquiryRequest;
 
 	private BusinessMessage accountEnquiryRequest;
 	private BusinessMessage creditTransferRequest;
 	private BusinessMessage proxyRegistrationRequest;
 	private BusinessMessage proxyResolutionRequest;
+	private BusinessMessage proxyRegistrationInquiry;
 	
 	public String getRequestId() {
 		return requestId;
@@ -194,8 +199,17 @@ public class RequestMessageWrapper {
 	public void setCihubEncriptedResponse(String cihubEncriptedResponse) {
 		this.cihubEncriptedResponse = cihubEncriptedResponse;
 	}
-	
-
-
-
+	public ChnlProxyRegistrationInquiryRequestPojo getChnlProxyRegistrationInquiryRequest() {
+		return chnlProxyRegistrationInquiryRequest;
+	}
+	public void setChnlProxyRegistrationInquiryRequest(
+			ChnlProxyRegistrationInquiryRequestPojo chnlProxyRegistrationInquiryRequest) {
+		this.chnlProxyRegistrationInquiryRequest = chnlProxyRegistrationInquiryRequest;
+	}
+	public BusinessMessage getProxyRegistrationInquiry() {
+		return proxyRegistrationInquiry;
+	}
+	public void setProxyRegistrationInquiry(BusinessMessage proxyRegistrationInquiry) {
+		this.proxyRegistrationInquiry = proxyRegistrationInquiry;
+	}
 }

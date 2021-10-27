@@ -61,6 +61,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		seed.setCstmrTp(enlp.getCstmr().getTp());
 		seed.setCstmrTwnNm(enlp.getCstmr().getTwnNm());
 		seed.setCstmrRsdntSts(enlp.getCstmr().getRsdntSts());
+		seed.setMsgRcptAgtId(msg.getDocument().getPrxyRegn().getGrpHdr().getMsgSndr().getAgt().getFinInstnId().getOthr().getId());
 		
 		AccountProxy accountProxy = new AccountProxy();
 		
@@ -70,23 +71,31 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		accountProxy = accountProxyRepository.getByScndIdTpAndByScndIdVal(scndIdTp,scndIdVal);
 		
 		System.out.println(msg.getDocument().getPrxyRegn().getRegn().getRegnTp());
-		
+		bifast.library.iso20022.prxy002.ProxyRegistrationType1Code code = null;
 		if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.NEWR) {
+			code = bifast.library.iso20022.prxy002.ProxyRegistrationType1Code.NEWR;
+			seed.setAgtId(msg.getDocument().getPrxyRegn().getGrpHdr().getMsgSndr().getAgt().getFinInstnId().getOthr().getId());
 			seed = this.processNewr(msg, accountProxy, seed);
 		}else if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.DEAC) {
+			code = bifast.library.iso20022.prxy002.ProxyRegistrationType1Code.DEAC;
 			seed = this.processDeac(msg, accountProxy, seed);
 		}else if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.SUSP) {
+			code = bifast.library.iso20022.prxy002.ProxyRegistrationType1Code.SUSP;
 			seed = this.processSusp(msg, accountProxy, seed);
 		}else if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.AMND) {
+			code = bifast.library.iso20022.prxy002.ProxyRegistrationType1Code.AMND;
 			seed = this.processAmdn(msg, accountProxy, seed);
 		}else if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.PORT) {
+			code = bifast.library.iso20022.prxy002.ProxyRegistrationType1Code.PORT;
 			seed = this.processPort(msg, accountProxy, seed);
 		}else if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.ACTV) {
+			code = bifast.library.iso20022.prxy002.ProxyRegistrationType1Code.ACTV;
 			seed = this.processActv(msg, accountProxy, seed);
 		}
 		
 		ProxyRegistrationResponseV01 response = proxy002MessageService.proxyRegistrationResponse(seed, msg);
-
+		response.getRegnRspn().setOrgnlRegnTp(code);
+		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"prxy.002.001.01", bizMsgId);
@@ -128,6 +137,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		
 		if(accountProxy != null) {
 			String regisrerBank = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
+			seed.setAgtId(accountProxy.getRegisterBank());
 			if(regisrerBank.equals(accountProxy.getRegisterBank())){
 				if(accountProxy.getAccountStatus().equals("ICTV")) {
 					seed.setStatus("RJCT");
@@ -143,7 +153,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 					accountProxyRepository.save(accountProxy);
 				}
 			}else {
-
+				seed.setAgtId(accountProxy.getRegisterBank());
 				if(accountProxy.getAccountStatus().equals("ICTV") || accountProxy.getAccountStatus().equals("SUSP") || accountProxy.getAccountStatus().equals("SUSB")) {
 					seed.setStatus("RJCT");
 					seed.setReason("U809");
@@ -161,6 +171,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		
 		if(accountProxy != null) {
 			String regisrerBank = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
+			seed.setAgtId(accountProxy.getRegisterBank());
 			if(regisrerBank.equals(accountProxy.getRegisterBank())){
 				if(accountProxy.getAccountStatus().equals("ICTV")) {
 					seed.setStatus("RJCT");
@@ -177,6 +188,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 				}
 			
 			}else {
+				seed.setAgtId(accountProxy.getRegisterBank());
 				if(accountProxy.getAccountStatus().equals("ICTV") || accountProxy.getAccountStatus().equals("SUSP") || accountProxy.getAccountStatus().equals("SUSB")) {
 					seed.setStatus("RJCT");
 					seed.setReason("U809");
@@ -196,6 +208,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 	public Proxy002Seed processAmdn(BusinessMessage msg,AccountProxy accountProxy,Proxy002Seed seed) {
 		
 		if(accountProxy != null) {
+			seed.setAgtId(accountProxy.getRegisterBank());
 			String regisrerBank = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
 			if(regisrerBank.equals(accountProxy.getRegisterBank())){
 				if(accountProxy.getAccountStatus().equals("ICTV")) {
@@ -212,7 +225,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 				}
 			
 			}else {
-
+				seed.setAgtId(accountProxy.getRegisterBank());
 				if(accountProxy.getAccountStatus().equals("ICTV") || accountProxy.getAccountStatus().equals("SUSP") || accountProxy.getAccountStatus().equals("SUSB")) {
 					seed.setStatus("RJCT");
 					seed.setReason("U809");
@@ -231,6 +244,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 	public Proxy002Seed processPort(BusinessMessage msg,AccountProxy accountProxy,Proxy002Seed seed) {
 		
 		if(accountProxy != null) {
+			seed.setAgtId(accountProxy.getRegisterBank());
 			String regisrerBank = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
 			if(regisrerBank.equals(accountProxy.getRegisterBank())){
 				
@@ -262,6 +276,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 	public Proxy002Seed processActv(BusinessMessage msg,AccountProxy accountProxy,Proxy002Seed seed) {
 		
 		if(accountProxy != null) {
+			seed.setAgtId(accountProxy.getRegisterBank());
 			String regisrerBank = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
 			if(regisrerBank.equals(accountProxy.getRegisterBank())){
 				if(accountProxy.getAccountStatus().equals("ICTV")) {

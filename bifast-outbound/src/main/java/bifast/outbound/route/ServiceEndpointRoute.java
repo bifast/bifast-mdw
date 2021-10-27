@@ -128,6 +128,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 				.when().simple("${header.hdr_request_list.msgName} == 'ProxyResolution'")
 					.to("direct:proxyresolution")
+					
+				.when().simple("${header.hdr_request_list.msgName} == 'PrxRegnInquiryReq'")
+					.to("direct:prxyrgstinquiry")
 
 			.end()
 

@@ -12,6 +12,7 @@ import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.proxyregistration.processor.ProxyRegistrationInquiryRequestProcessor;
 import bifast.outbound.proxyregistration.processor.ProxyRegistrationRequestProcessor;
 import bifast.outbound.proxyregistration.processor.ProxyRegistrationResponseProcessor;
 import bifast.outbound.proxyregistration.processor.ProxyResolutionRequestProcessor;
@@ -29,6 +30,10 @@ public class ProxyRoute extends RouteBuilder {
 	private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
 	@Autowired
 	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
+	
+	@Autowired
+	private ProxyRegistrationInquiryRequestProcessor proxyRegistrationInquiryRequestProcessor;
+	
 	@Autowired
 	private StoreProxyRegistrationProcessor saveProxyRegnProc;
 
@@ -92,7 +97,18 @@ public class ProxyRoute extends RouteBuilder {
 			
 		;
 
+		from("direct:prxyrgstinquiry").routeId("komi.prxyrgstinquiry")
 		
+			.log(LoggingLevel.DEBUG, "komi.prxyrgstinquiry", "[ChRefId:${header.hdr_chnlRefId}] Proxy started.")
+			.process(proxyRegistrationInquiryRequestProcessor)
+	
+			.to("direct:call-cihub")
+			
+			.process(proxyResolutionResponseProcessor)
+			
+	//		.process(storeProxyResolutionProcessor)
+			
+		;
 
 	}
 }

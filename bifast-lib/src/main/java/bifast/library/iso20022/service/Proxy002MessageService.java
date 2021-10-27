@@ -80,7 +80,7 @@ public class Proxy002MessageService {
 		StsRsnInf.setPrtry(seed.getReason());
 		regnRspn.setStsRsnInf(StsRsnInf);
 		
-		regnRspn.setOrgnlRegnTp(ProxyRegistrationType1Code.NEWR);
+		//regnRspn.setOrgnlRegnTp(ProxyRegistrationType1Code.NEWR);
 		
 		ProxyRegistrationAccount1 prxyRegn = new ProxyRegistrationAccount1();
 		
@@ -91,7 +91,7 @@ public class Proxy002MessageService {
 		bIAddtlCstmrInf.setId(seed.getCstmrId());
 		bIAddtlCstmrInf.setTp(seed.getCstmrTp());
 		bIAddtlCstmrInf.setTwnNm(seed.getCstmrTwnNm());
-		
+		bIAddtlCstmrInf.setRsdntSts(seed.getCstmrRsdntSts());
 		///
 		BISupplementaryDataEnvelope1 biSupplementaryDataEnvelope1 =  new BISupplementaryDataEnvelope1();
 		biSupplementaryDataEnvelope1.setCstmr(bIAddtlCstmrInf);
