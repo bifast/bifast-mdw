@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.StatusReason;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
@@ -44,9 +44,9 @@ public class ProxyResolutionResponseProcessor implements Processor {
 		chnResponse.setNoRef(chnRequest.getChannelRefId());
 
 		Object objBody = exchange.getMessage().getBody(Object.class);
-		if (objBody.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
+		if (objBody.getClass().getSimpleName().equals("FaultPojo")) {
 
-			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
+			FaultPojo fault = (FaultPojo)objBody;
 
 			channelResponseWr.setResponseCode(fault.getResponseCode());
 			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());

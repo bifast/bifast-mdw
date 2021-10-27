@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.ExceptionToFaultMapProcessor;
+import bifast.outbound.processor.ExceptionToFaultProcessor;
 import bifast.outbound.processor.FlatResponseProcessor;
 import bifast.outbound.processor.SetRemainTimeProcessor;
 import bifast.outbound.service.JacksonDataFormatService;
@@ -24,7 +24,7 @@ public class CihubRoute extends RouteBuilder {
 	@Autowired
 	private EnrichmentAggregator enrichmentAggregator;
 	@Autowired
-	private ExceptionToFaultMapProcessor exceptionToFaultMap;
+	private ExceptionToFaultProcessor exceptionToFaultMap;
 	@Autowired
 	private FlatResponseProcessor flatResponseProcessor;
 	@Autowired

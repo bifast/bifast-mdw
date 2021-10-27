@@ -5,6 +5,7 @@ import java.time.Instant;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.corebank.pojo.CbAccountCustomerInfoRequestPojo;
 import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
@@ -51,10 +52,13 @@ public class RequestMessageWrapper {
 	@JsonProperty("ProxyResolutionRequest")
 	private ChnlProxyResolutionRequestPojo chnlProxyResolutionRequest;
 
+	private Object channelRequest;
+	
 	private BusinessMessage accountEnquiryRequest;
 	private BusinessMessage creditTransferRequest;
 	private BusinessMessage proxyRegistrationRequest;
 	private BusinessMessage proxyResolutionRequest;
+	private CbAccountCustomerInfoRequestPojo accoutCustomerInfoRequest;
 	
 	public String getRequestId() {
 		return requestId;
@@ -152,6 +156,12 @@ public class RequestMessageWrapper {
 	public void setChnlProxyResolutionRequest(ChnlProxyResolutionRequestPojo chnlProxyResolutionRequest) {
 		this.chnlProxyResolutionRequest = chnlProxyResolutionRequest;
 	}
+	public Object getChannelRequest() {
+		return channelRequest;
+	}
+	public void setChannelRequest(Object channelRequest) {
+		this.channelRequest = channelRequest;
+	}
 	public BusinessMessage getAccountEnquiryRequest() {
 		return accountEnquiryRequest;
 	}
@@ -193,6 +203,12 @@ public class RequestMessageWrapper {
 	}
 	public void setCihubEncriptedResponse(String cihubEncriptedResponse) {
 		this.cihubEncriptedResponse = cihubEncriptedResponse;
+	}
+	public CbAccountCustomerInfoRequestPojo getAccoutCustomerInfoRequest() {
+		return accoutCustomerInfoRequest;
+	}
+	public void setAccoutCustomerInfoRequest(CbAccountCustomerInfoRequestPojo accoutCustomerInfoRequest) {
+		this.accoutCustomerInfoRequest = accoutCustomerInfoRequest;
 	}
 	
 

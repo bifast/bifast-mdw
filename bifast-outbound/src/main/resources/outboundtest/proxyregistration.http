@@ -1,20 +1,23 @@
 # Proxy Register  from channel
+
 POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
-clientId: CMS
+Authorization: Basic CMS:password
 
 {
-    "ProxyRegistrationRequest": {
-        "NoRef": "1556211002",
-        "RegistrationType": "AMND",
-        "ProxyType" : "02",
-        "ProxyValue" : "frans.mazhar@gmail.com",
-        "DisplayName" : "assshahaja",
-        "AccountName" : "Fras Manse",
+    "ProxyRegistrationRequest" : {
+        "NoRef" : "12344",
+        "RegistrationType" : "NEWR",
+        "ProxyType" : "01",
+        "ProxyValue" : "08111545454",
+        "DisplayName" : "Frans Mazhawr",
+        "AccountNumber" : "22332 ",
+        "AccountType" : "CACC",
+        "AccountName" : "JOHN SMITH ",
         "SecondaryIdType" : "01",
-        "SecondaryIdValue" : "44443333",
+        "SecondaryIdValue" : "KTP-2224020",
         "CustomerType" : "01",
-        "CustomerId" : "2200111022",
+        "CustomerId" : "KTP-222044020",
         "ResidentialStatus" : "01",
         "TownName" : "0300"
     }
@@ -26,20 +29,20 @@ Content-Type: application/json
 Authorization: Basic CMS:password
 
 {
-    "ProxyRegistrationRequest" : {
-        "NoRef" : "1511652125",
-        "RegistrationType" : "NEWR",
+    "ProxyRegistrationRequest": {
+        "NoRef": "15562202",
+        "RegistrationType": "AMND",
         "ProxyType" : "02",
-        "ProxyValue" : "bams@gmail.com",
-        "DisplayName" : "JOHN SMITH",
-        "AccountNumber" : "2040606012390112 ",
-        "AccountType" : "CACC",
-        "AccountName" : "JOHN SMITH ",
+        "ProxyValue" : "frans.mazhar@gmail.com",
+        "DisplayName" : "Frans Mazhar",
+        "AccountName" : "Fras Manse",
         "SecondaryIdType" : "01",
-        "SecondaryIdValue" : "KTP-222044020",
+        "SecondaryIdValue" : "44443333",
         "CustomerType" : "01",
-        "CustomerId" : "KTP-222044020",
+        "CustomerId" : "2200111022",
         "ResidentialStatus" : "01",
         "TownName" : "0300"
     }
 }
+
+###

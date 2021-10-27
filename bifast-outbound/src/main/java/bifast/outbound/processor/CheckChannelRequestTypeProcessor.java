@@ -6,6 +6,7 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlRequestWrapper;
 
 @Component
 public class CheckChannelRequestTypeProcessor implements Processor {
@@ -13,7 +14,9 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class );
-		RequestMessageWrapper req = exchange.getIn().getBody(RequestMessageWrapper.class);
+		
+//		RequestMessageWrapper req = exchange.getIn().getBody(RequestMessageWrapper.class);
+		ChnlRequestWrapper req = exchange.getIn().getBody(ChnlRequestWrapper.class);
 
 		if (!(null == req.getChnlAccountEnquiryRequest())) {
 			rmw.setChnlAccountEnquiryRequest(req.getChnlAccountEnquiryRequest());
@@ -53,6 +56,13 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 			rmw.setMsgName("ProxyResolution");
 			rmw.setRequestId(req.getChnlProxyResolutionRequest().getChannelRefId());
 			exchange.getMessage().setBody(req.getChnlProxyResolutionRequest());
+		}
+
+		else if (null != req.getChnlAccountCstmrInfoRequest()) {
+			rmw.setChannelRequest(req.getChnlAccountCstmrInfoRequest());
+			rmw.setMsgName("AcctCustmrInfo");
+			rmw.setRequestId(req.getChnlAccountCstmrInfoRequest().getNoRef());
+			exchange.getMessage().setBody(req.getChnlAccountCstmrInfoRequest());
 		}
 
 		exchange.getMessage().setHeader("hdr_request_list", rmw);

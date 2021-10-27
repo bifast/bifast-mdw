@@ -17,7 +17,7 @@ public class ResponseMessageCollection {
 	private String lastError;
 	private String cbResponse;
 	
-	private ChnlFailureResponsePojo fault;
+	private FaultPojo fault;
 	private ChnlAccountEnquiryResponsePojo chnlAccountEnquiryResponse;
 	private ChnlCreditTransferResponsePojo chnlCreditTransferResponse;
 	private ChnlProxyRegistrationResponsePojo chnlProxyRegistrationResponse;
@@ -26,7 +26,7 @@ public class ResponseMessageCollection {
 	private Object debitResponse;
 	
 	private BusinessMessage accountEnquiryResponse;
-	private BusinessMessage creditTransferResponse;
+	private FlatPacs002Pojo creditTransferResponse;
 	private FlatPacs002Pojo settlement;
 	
 	private BusinessMessage proxyRegistrationResponse;
@@ -56,10 +56,10 @@ public class ResponseMessageCollection {
 	public void setLastError(String lastError) {
 		this.lastError = lastError;
 	}
-	public ChnlFailureResponsePojo getFault() {
+	public FaultPojo getFault() {
 		return fault;
 	}
-	public void setFault(ChnlFailureResponsePojo fault) {
+	public void setFault(FaultPojo fault) {
 		this.fault = fault;
 	}
 	public String getCbResponse() {
@@ -104,10 +104,10 @@ public class ResponseMessageCollection {
 	public void setAccountEnquiryResponse(BusinessMessage accountEnquiryResponse) {
 		this.accountEnquiryResponse = accountEnquiryResponse;
 	}
-	public BusinessMessage getCreditTransferResponse() {
+	public FlatPacs002Pojo getCreditTransferResponse() {
 		return creditTransferResponse;
 	}
-	public void setCreditTransferResponse(BusinessMessage creditTransferResponse) {
+	public void setCreditTransferResponse(FlatPacs002Pojo creditTransferResponse) {
 		this.creditTransferResponse = creditTransferResponse;
 	}
 	public FlatPacs002Pojo getSettlement() {

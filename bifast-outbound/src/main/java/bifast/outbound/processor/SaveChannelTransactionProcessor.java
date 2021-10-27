@@ -11,12 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.ChannelTransaction;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.repository.ChannelTransactionRepository;
 
@@ -35,14 +34,14 @@ public class SaveChannelTransactionProcessor implements Processor{
 		Optional<ChannelTransaction> optChannel = channelTransactionRepo.findByKomiTrnsId(rmw.getKomiTrxId());
 		ChannelTransaction chnlTrns = optChannel.get();
 		
-		ChnlFailureResponsePojo fault = null;
+		FaultPojo fault = null;
 
 		if (null == respColl.getFault())
 			chnlTrns.setCallStatus("SUCCESS");
 		else {
 			fault = respColl.getFault();
-			chnlTrns.setCallStatus(fault.getFaultCategory());
-			chnlTrns.setErrorMsg(fault.getDescription());
+			chnlTrns.setCallStatus(fault.getCallStatus());
+			chnlTrns.setErrorMsg(fault.getErrorMessage());
 		}
 
 		chnlTrns.setResponseCode(responseWr.getResponseCode());
@@ -66,10 +65,6 @@ public class SaveChannelTransactionProcessor implements Processor{
 
 		}
 		
-		else if (rmw.getMsgName().equals("PSReq")) {
-			ChnlPaymentStatusRequestPojo ctReq = rmw.getChnlPaymentStatusRequest();
-
-		}
 
 		channelTransactionRepo.save(chnlTrns);
 

@@ -16,7 +16,7 @@ Authorization: Basic CMS:password
 
 {
   "CreditTransferRequest" : {
-    "NoRef" : "5172",   
+    "NoRef" : "421114411",   
     "TerminalId" : "B0434",
     "CategoryPurpose" : "01",
     "DebtorName" : "ANTON",
@@ -32,7 +32,7 @@ Authorization: Basic CMS:password
     "CreditorName" : "JONI N",
     "CreditorId" : "C12103",
     "CreditorType" : "01",
-    "CreditorAccountNumber" : "65896",
+    "CreditorAccountNumber" : "8865896",
     "CreditorAccountType" : "SVGS",
     "CreditorResidentialStatus": "01",
     "CreditorTownName": "0300",

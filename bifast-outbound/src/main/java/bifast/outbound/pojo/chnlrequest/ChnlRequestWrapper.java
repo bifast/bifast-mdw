@@ -15,18 +15,13 @@ public class ChnlRequestWrapper {
 	private ChnlPaymentStatusRequestPojo chnlPaymentStatusRequest;
 
 	@JsonProperty("AccountCustomerInfo")
-	private ChnlAccountCustomerInfoRequestPojo ChnlAccountCstmrInfoRequest;
+	private ChnlAccountCustomerInfoRequestPojo chnlAccountCstmrInfoRequest;
 
 	@JsonProperty("ProxyRegistrationRequest")
 	private ChnlProxyRegistrationRequestPojo chnlProxyRegistrationRequest;
 
 	@JsonProperty("ProxyResolutionRequest")
 	private ChnlProxyResolutionRequestPojo chnlProxyResolutionRequest;
-
-//	@JsonProperty("ProxyRegistrationInquiry")
-//	private ChnlProxyRegistrationInquiryPojo chnlProxyRegistrationInquiry;
-
-
 
 	public ChnlAccountEnquiryRequestPojo getChnlAccountEnquiryRequest() {
 		return chnlAccountEnquiryRequest;
@@ -53,11 +48,11 @@ public class ChnlRequestWrapper {
 	}
 
 	public ChnlAccountCustomerInfoRequestPojo getChnlAccountCstmrInfoRequest() {
-		return ChnlAccountCstmrInfoRequest;
+		return chnlAccountCstmrInfoRequest;
 	}
 
 	public void setChnlAccountCstmrInfoRequest(ChnlAccountCustomerInfoRequestPojo chnlAccountCstmrInfoRequest) {
-		ChnlAccountCstmrInfoRequest = chnlAccountCstmrInfoRequest;
+		this.chnlAccountCstmrInfoRequest = chnlAccountCstmrInfoRequest;
 	}
 
 	public ChnlProxyRegistrationRequestPojo getChnlProxyRegistrationRequest() {
@@ -75,5 +70,10 @@ public class ChnlRequestWrapper {
 	public void setChnlProxyResolutionRequest(ChnlProxyResolutionRequestPojo chnlProxyResolutionRequest) {
 		this.chnlProxyResolutionRequest = chnlProxyResolutionRequest;
 	}
+
+//	@JsonProperty("ProxyRegistrationInquiry")
+//	private ChnlProxyRegistrationInquiryPojo chnlProxyRegistrationInquiry;
+
+
 
 }

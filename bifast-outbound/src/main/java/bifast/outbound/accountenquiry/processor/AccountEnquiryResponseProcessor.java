@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.StatusReason;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
@@ -45,8 +45,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		chnResp.setOrignReffId(chnReq.getChannelRefId());
 
 		Object objBody = exchange.getMessage().getBody(Object.class);
-		if (objBody.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
-			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
+		if (objBody.getClass().getSimpleName().equals("FaultPojo")) {
+			FaultPojo fault = (FaultPojo)objBody;
 			
 			channelResponseWr.setResponseCode("KSTS");
 			channelResponseWr.setReasonCode(fault.getReasonCode());

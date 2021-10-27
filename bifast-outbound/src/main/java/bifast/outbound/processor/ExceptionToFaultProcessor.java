@@ -15,7 +15,7 @@ import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.FaultClassRepository;
 
 @Component
-public class ExceptionToFaultMapProcessor implements Processor {
+public class ExceptionToFaultProcessor implements Processor {
 	@Autowired 
 	private FaultClassRepository faultClassRepo;
 
@@ -26,13 +26,12 @@ public class ExceptionToFaultMapProcessor implements Processor {
 		String exceptionClassName = objException.getClass().getName();
 		Optional<FaultClass> oFaultClass = faultClassRepo.findByExceptionClass(exceptionClassName);
 		
-		ChnlFailureResponsePojo fault = new ChnlFailureResponsePojo();
+		FaultPojo fault = new FaultPojo();
 	
 		ResponseMessageCollection responseCol = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
 		
 		int statusCode = 500;
-		exchange.getMessage().setHeader("hdr_error_status", "ERROR");
-		fault.setFaultCategory("ERROR");
+		fault.setCallStatus("ERROR");
 
 		try {
 			Method getStatusCode = objException.getClass().getMethod("getStatusCode");
@@ -40,12 +39,12 @@ public class ExceptionToFaultMapProcessor implements Processor {
 		} catch(NoSuchMethodException noMethodE) {}
 		
 		if (exceptionClassName.equals("java.net.SocketTimeoutException"))
-			fault.setFaultCategory("TIMEOUT");
+			fault.setCallStatus("TIMEOUT");
 		else if (statusCode == 504) {
-			fault.setFaultCategory("TIMEOUT");
+			fault.setCallStatus("TIMEOUT");
 		}
 		else 
-			fault.setFaultCategory("ERROR");
+			fault.setCallStatus("ERROR");
 
 		String description = "Check error log";
 		try {
@@ -58,7 +57,7 @@ public class ExceptionToFaultMapProcessor implements Processor {
 		catch(NoSuchMethodException noMethodE) {
 			description = "Check error log";
 		}
-		fault.setDescription(description);
+		fault.setErrorMessage(description);
 
 		if (statusCode == 504) {
 			fault.setResponseCode("KSTS");

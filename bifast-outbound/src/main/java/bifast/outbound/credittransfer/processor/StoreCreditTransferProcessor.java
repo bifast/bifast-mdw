@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.outbound.model.CreditTransfer;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
@@ -85,12 +85,12 @@ public class StoreCreditTransferProcessor implements Processor {
 		// CHECK RESPONSE
 		Object oBiResponse = exchange.getMessage().getBody(Object.class);
 
-		if (oBiResponse.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
-			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)oBiResponse;
-			ct.setCallStatus(fault.getFaultCategory());
+		if (oBiResponse.getClass().getSimpleName().equals("FaultPojo")) {
+			FaultPojo fault = (FaultPojo)oBiResponse;
+			ct.setCallStatus(fault.getCallStatus());
 			ct.setResponseCode(fault.getResponseCode());
 			ct.setReasonCode(fault.getReasonCode());
-			ct.setErrorMessage(fault.getDescription());
+			ct.setErrorMessage(fault.getErrorMessage());
 		}
 			
 		else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {

@@ -4,7 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.pojo.CBAccountEnquiryRequestPojo;
+import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
 import bifast.inbound.corebank.pojo.CBAccountEnquiryResponsePojo;
 
 
@@ -16,7 +16,7 @@ public class BuildCBResponseProcessor implements Processor {
 
 		CBAccountEnquiryResponsePojo response = new CBAccountEnquiryResponsePojo();
 		
-		CBAccountEnquiryRequestPojo request = exchange.getMessage().getBody(CBAccountEnquiryRequestPojo.class);
+		CbAccountEnquiryRequestPojo request = exchange.getMessage().getBody(CbAccountEnquiryRequestPojo.class);
 		
 		if (request.getAccountNumber().startsWith("11")) {
 			response.setAccountNumber(request.getAccountNumber());

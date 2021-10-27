@@ -9,12 +9,15 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 public class ChnlAccountEnquiryRequestPojo {
 
 	private String channelRefId;
+	
 	private String categoryPurpose;
 	
 	private String senderAccountNumber;
+	
 	private String amount; 
 
 	private String recptBank; 
+	
 	private String creditorAccountNumber; 
 	
 	private String proxyId; 
