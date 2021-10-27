@@ -22,7 +22,10 @@ public class ChnlRequestWrapper {
 
 	@JsonProperty("ProxyResolutionRequest")
 	private ChnlProxyResolutionRequestPojo chnlProxyResolutionRequest;
-
+	
+	@JsonProperty("ProxyRegistrationInquiry")
+	private ChnlProxyRegistrationInquiryRequestPojo chnlProxyRegistrationInquiryRequest;
+	
 	public ChnlAccountEnquiryRequestPojo getChnlAccountEnquiryRequest() {
 		return chnlAccountEnquiryRequest;
 	}
@@ -69,6 +72,15 @@ public class ChnlRequestWrapper {
 
 	public void setChnlProxyResolutionRequest(ChnlProxyResolutionRequestPojo chnlProxyResolutionRequest) {
 		this.chnlProxyResolutionRequest = chnlProxyResolutionRequest;
+	}
+
+	public ChnlProxyRegistrationInquiryRequestPojo getChnlProxyRegistrationInquiryRequest() {
+		return chnlProxyRegistrationInquiryRequest;
+	}
+
+	public void setChnlProxyRegistrationInquiryRequest(
+			ChnlProxyRegistrationInquiryRequestPojo chnlProxyRegistrationInquiryRequest) {
+		this.chnlProxyRegistrationInquiryRequest = chnlProxyRegistrationInquiryRequest;
 	}
 
 //	@JsonProperty("ProxyRegistrationInquiry")

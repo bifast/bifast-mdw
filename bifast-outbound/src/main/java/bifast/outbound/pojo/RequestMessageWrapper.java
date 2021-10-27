@@ -62,11 +62,8 @@ public class RequestMessageWrapper {
 	private BusinessMessage creditTransferRequest;
 	private BusinessMessage proxyRegistrationRequest;
 	private BusinessMessage proxyResolutionRequest;
-<<<<<<< HEAD
 	private BusinessMessage proxyRegistrationInquiry;
-=======
 	private CbAccountCustomerInfoRequestPojo accoutCustomerInfoRequest;
->>>>>>> master
 	
 	public String getRequestId() {
 		return requestId;
@@ -212,7 +209,6 @@ public class RequestMessageWrapper {
 	public void setCihubEncriptedResponse(String cihubEncriptedResponse) {
 		this.cihubEncriptedResponse = cihubEncriptedResponse;
 	}
-<<<<<<< HEAD
 	public ChnlProxyRegistrationInquiryRequestPojo getChnlProxyRegistrationInquiryRequest() {
 		return chnlProxyRegistrationInquiryRequest;
 	}
@@ -226,7 +222,6 @@ public class RequestMessageWrapper {
 	public void setProxyRegistrationInquiry(BusinessMessage proxyRegistrationInquiry) {
 		this.proxyRegistrationInquiry = proxyRegistrationInquiry;
 	}
-=======
 	public CbAccountCustomerInfoRequestPojo getAccoutCustomerInfoRequest() {
 		return accoutCustomerInfoRequest;
 	}
@@ -237,5 +232,4 @@ public class RequestMessageWrapper {
 
 
 
->>>>>>> master
 }
