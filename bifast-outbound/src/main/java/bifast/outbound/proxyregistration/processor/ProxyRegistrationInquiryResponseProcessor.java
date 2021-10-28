@@ -19,6 +19,7 @@ import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.pojo.chnlresponse.ChnlProxyRegistrationInquiryResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChnlProxyResolutionResponsePojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy006AliasPojo;
 import bifast.outbound.pojo.flat.FlatPrxy006Pojo;
 import bifast.outbound.repository.StatusReasonRepository;
 
@@ -43,8 +44,7 @@ public class ProxyRegistrationInquiryResponseProcessor implements Processor {
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ChnlProxyRegistrationInquiryRequestPojo chnRequest = rmw.getChnlProxyRegistrationInquiryRequest();
 
-		ChnlProxyRegistrationInquiryResponsePojo chnResponse = new ChnlProxyRegistrationInquiryResponsePojo();
-		chnResponse.setNoRef(chnRequest.getChannelRefId());
+		
 
 		Object objBody = exchange.getMessage().getBody(Object.class);
 		if (objBody.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
@@ -73,46 +73,74 @@ public class ProxyRegistrationInquiryResponseProcessor implements Processor {
 		}
 
 		else { 
+			
+			
 			FlatPrxy006Pojo resp = (FlatPrxy006Pojo)objBody;
 			
-			channelResponseWr.setResponseCode(resp.getResponseCode());
-			channelResponseWr.setReasonCode(resp.getReasonCode());
-			
-			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getReasonCode());
-			if (optStatusReason.isPresent()) {
-				String desc = optStatusReason.get().getDescription();
-				channelResponseWr.setReasonMessage(desc);
-			}	
+			if(resp.getAlias() !=  null) {
+				
+				for(FlatPrxy006AliasPojo data:resp.getAlias()) {
+					ChnlProxyRegistrationInquiryResponsePojo chnResponse = new ChnlProxyRegistrationInquiryResponsePojo();
+					chnResponse.setNoRef(chnRequest.getChannelRefId());
+					channelResponseWr.setResponseCode(resp.getResponseCode());
+					channelResponseWr.setReasonCode(resp.getReasonCode());
+					
+					Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getReasonCode());
+					if (optStatusReason.isPresent()) {
+						String desc = optStatusReason.get().getDescription();
+						channelResponseWr.setReasonMessage(desc);
+					}	
+				
+					chnResponse.setProxyType(data.getProxyType());
+					chnResponse.setProxyValue(data.getProxyValue());
+					chnResponse.setRegistrationId(data.getRegistrationId());
+					chnResponse.setDisplayName(data.getDisplayName());
+					chnResponse.setRegisterBank(data.getRegisterBank());
+					chnResponse.setAccountNumber(data.getAccountNumber());
+					chnResponse.setAccountType(data.getAccountType());
+					chnResponse.setAccountNumber(data.getAccountNumber());
+					chnResponse.setAccountType(data.getAccountType());
+					chnResponse.setProxyStatus(data.getProxySatus());
+					
+					if (null !=data.getAccountName())
+						chnResponse.setAccountName(data.getAccountName());
 
-			chnResponse.setNoRef(chnRequest.getChannelRefId());
-			chnResponse.setProxyType(resp.getProxyType());
-			chnResponse.setProxyValue(resp.getProxyValue());
-			chnResponse.setRegistrationId(resp.getRegistrationId());
-			chnResponse.setDisplayName(resp.getDisplayName());
-			chnResponse.setRegisterBank(resp.getRegisterBank());
-			chnResponse.setAccountNumber(resp.getAccountNumber());
-			chnResponse.setAccountType(resp.getAccountType());
-			chnResponse.setAccountNumber(resp.getAccountNumber());
-			chnResponse.setAccountType(resp.getAccountType());
-			
-			if (null !=resp.getAccountName())
-				chnResponse.setAccountName(resp.getAccountName());
+					if (null != data.getCustomerType())
+						chnResponse.setCustomerType(data.getCustomerType());
+					
+					
+					if (null != data.getResidentialStatus());
+					chnResponse.setResidentStatus(data.getResidentialStatus());
 
-			if (null != resp.getCustomerType())
-				chnResponse.setCustomerType(resp.getCustomerType());
-			
-			if (null != resp.getCustomerId())
-				chnResponse.setCustomerId(resp.getCustomerId());
-			
-			if (null != resp.getResidentialStatus());
-				chnResponse.setResidentStatus(resp.getResidentialStatus());
+					if (null != data.getTownName());
+					chnResponse.setTownName(data.getTownName());
+					
+				
+					chnResponse.setScndIdType(chnRequest.getScndIdType());
+					chnResponse.setScndIdValue(chnRequest.getScndIdValue());
+					
+					channelResponseWr.getResponses().add(chnResponse);
+				}
+				
+			}else {
+				ChnlProxyRegistrationInquiryResponsePojo chnResponse = new ChnlProxyRegistrationInquiryResponsePojo();
+				chnResponse.setNoRef(chnRequest.getChannelRefId());
+				channelResponseWr.setResponseCode(resp.getResponseCode());
+				channelResponseWr.setReasonCode(resp.getReasonCode());
+				
+				Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getReasonCode());
+				if (optStatusReason.isPresent()) {
+					String desc = optStatusReason.get().getDescription();
+					channelResponseWr.setReasonMessage(desc);
+				}	
+				
+				chnResponse.setScndIdType(chnRequest.getScndIdType());
+				chnResponse.setScndIdValue(chnRequest.getScndIdValue());
+				channelResponseWr.getResponses().add(chnResponse);
+			}
 
-			if (null != resp.getTownName());
-				chnResponse.setTownName(resp.getTownName());
-			
 		}
 
-		channelResponseWr.getResponses().add(chnResponse);
 		exchange.getIn().setBody(channelResponseWr);
 	
 	}

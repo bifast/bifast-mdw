@@ -1,6 +1,8 @@
 package bifast.outbound.service;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -16,12 +18,15 @@ import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
+import bifast.library.iso20022.prxy006.ProxyEnquiryInformation1;
+import bifast.library.iso20022.prxy006.ProxyEnquiryResponseV01;
 import bifast.outbound.pojo.flat.FlatAdmi002Pojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.pojo.flat.FlatPacs008Pojo;
 import bifast.outbound.pojo.flat.FlatPacs009Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy002Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy006AliasPojo;
 import bifast.outbound.pojo.flat.FlatPrxy006Pojo;
 
 @Service
@@ -268,7 +273,49 @@ public class FlattenIsoMessageService {
 	public FlatPrxy006Pojo flatteningPrxy006 (BusinessMessage busMsg) {
 		
 		FlatPrxy006Pojo flatMsg = new FlatPrxy006Pojo();
+		ProxyEnquiryResponseV01 response = busMsg.getDocument().getPrxyNqryRspn();
+		
+		if (response.getNqryRspn().getRspn().size() != 0) {
+			
+			List<FlatPrxy006AliasPojo> aliasList = new ArrayList<FlatPrxy006AliasPojo>();
+			
+			for(ProxyEnquiryInformation1 data:response.getNqryRspn().getRspn()) {
+				FlatPrxy006AliasPojo flatMsgAlias = new FlatPrxy006AliasPojo();
+				
+				flatMsgAlias.setDisplayName(data.getDsplNm());
+				flatMsgAlias.setAccountType(data.getAcctInf().getAcct().getTp().getPrtry());
+				flatMsgAlias.setAccountNumber(data.getAcctInf().getAcct().getId().getOthr().getId());
+				flatMsgAlias.setRegisterBank(data.getAcctInf().getAgt().getFinInstnId().getOthr().getId());
+				flatMsgAlias.setRegistrationId(data.getRegnId());
+				flatMsgAlias.setAccountName(data.getAcctInf().getAcct().getNm());
+				
+				flatMsgAlias.setProxyType(data.getPrxyInf().getTp());
+				flatMsgAlias.setProxyValue(data.getPrxyInf().getVal());
+				flatMsgAlias.setProxySatus(data.getPrxyInf().getSts());
+				
+				if (data.getSplmtryData() != null) {
 
+					if (null != data.getSplmtryData() .getEnvlp().getCstmr().getTp())
+						flatMsgAlias.setCustomerType(data.getSplmtryData() .getEnvlp().getCstmr().getTp());
+				
+					if (null != data.getSplmtryData() .getEnvlp().getCstmr().getId())
+						flatMsgAlias.setCustomerId(data.getSplmtryData() .getEnvlp().getCstmr().getId());
+					
+					if (null != data.getSplmtryData() .getEnvlp().getCstmr().getRsdntSts())
+						flatMsgAlias.setResidentialStatus(data.getSplmtryData() .getEnvlp().getCstmr().getRsdntSts());
+			
+					if (null != data.getSplmtryData() .getEnvlp().getCstmr().getTwnNm())
+						flatMsgAlias.setTownName(data.getSplmtryData().getEnvlp().getCstmr().getTwnNm());
+					
+				}
+				aliasList.add(flatMsgAlias);
+			}
+			
+			flatMsg.setAlias(aliasList);
+		}
+		
+		flatMsg.setResponseCode(response.getNqryRspn().getPrxRspnSts().value());
+		flatMsg.setReasonCode(response.getNqryRspn().getStsRsnInf().getPrtry());
 		
 		
 		return flatMsg;

@@ -1,71 +1,24 @@
-package bifast.outbound.pojo.chnlresponse;
+package bifast.outbound.pojo.flat;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.time.LocalDateTime;
 
-@JsonPropertyOrder({
-	"noRef"
-	,"proxyType"
-	,"proxyValue"
-	,"registrationId"
-	,"displayName"
-	,"registerBank"
-	,"displayName"
-	,"proxyStatus"
-	,"accountNumber"
-	,"accountType"
-	,"accountName"
-	,"scndIdType"
-	,"scndIdValue"
-	,"customerType"
-	,"customerId"
-	,"residentialStatus"
-	,"townName"
-	})
-public class ChnlProxyRegistrationInquiryResponsePojo  {
-
-	@JsonProperty("NoRef")
-	private String noRef;
-	@JsonProperty("ProxyType")
+public class FlatPrxy006AliasPojo extends FlatMessageBase{
+	
 	private String proxyType;
-	@JsonProperty("ProxyValue")
 	private String proxyValue;
-	@JsonProperty("RegistrationId")
 	private String registrationId;
-	@JsonProperty("DisplayName")
 	private String displayName;
-	@JsonProperty("ProxyStatus")
-	private String proxyStatus;
-	@JsonProperty("RegisterBank")
+	private String proxySatus;
 	private String registerBank;
-	
-	@JsonProperty("AccountNumber")
 	private String accountNumber;
-	@JsonProperty("AccountType")
 	private String accountType;
-	@JsonProperty("AccountName")
 	private String accountName;
-	
-	@JsonProperty("ScndIdType")
-	private String scndIdType;
-	@JsonProperty("ScndIdValue")
-	private String scndIdValue;
-	
-	@JsonProperty("CustomerType")
 	private String customerType;
-	@JsonProperty("CustomerId")
 	private String customerId;
-	@JsonProperty("ResidentStatus")
-	private String residentStatus;
-	@JsonProperty("TownName")
+	private String residentialStatus;
 	private String townName;
 	
-	public String getNoRef() {
-		return noRef;
-	}
-	public void setNoRef(String noRef) {
-		this.noRef = noRef;
-	}
+	
 	public String getProxyType() {
 		return proxyType;
 	}
@@ -78,6 +31,7 @@ public class ChnlProxyRegistrationInquiryResponsePojo  {
 	public void setProxyValue(String proxyValue) {
 		this.proxyValue = proxyValue;
 	}
+
 	public String getRegistrationId() {
 		return registrationId;
 	}
@@ -126,11 +80,11 @@ public class ChnlProxyRegistrationInquiryResponsePojo  {
 	public void setCustomerId(String customerId) {
 		this.customerId = customerId;
 	}
-	public String getResidentStatus() {
-		return residentStatus;
+	public String getResidentialStatus() {
+		return residentialStatus;
 	}
-	public void setResidentStatus(String residentStatus) {
-		this.residentStatus = residentStatus;
+	public void setResidentialStatus(String residentialStatus) {
+		this.residentialStatus = residentialStatus;
 	}
 	public String getTownName() {
 		return townName;
@@ -138,23 +92,11 @@ public class ChnlProxyRegistrationInquiryResponsePojo  {
 	public void setTownName(String townName) {
 		this.townName = townName;
 	}
-	public String getScndIdType() {
-		return scndIdType;
+	public String getProxySatus() {
+		return proxySatus;
 	}
-	public void setScndIdType(String scndIdType) {
-		this.scndIdType = scndIdType;
-	}
-	public String getScndIdValue() {
-		return scndIdValue;
-	}
-	public void setScndIdValue(String scndIdValue) {
-		this.scndIdValue = scndIdValue;
-	}
-	public String getProxyStatus() {
-		return proxyStatus;
-	}
-	public void setProxyStatus(String proxyStatus) {
-		this.proxyStatus = proxyStatus;
+	public void setProxySatus(String proxySatus) {
+		this.proxySatus = proxySatus;
 	}
 	
 }
