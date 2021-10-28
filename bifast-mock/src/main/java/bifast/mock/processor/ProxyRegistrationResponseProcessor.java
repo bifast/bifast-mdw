@@ -65,10 +65,10 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		
 		AccountProxy accountProxy = new AccountProxy();
 		
-		String scndIdTp = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getScndId().getTp();
-		String scndIdVal = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getScndId().getVal();
+		String proxyType = msg.getDocument().getPrxyRegn().getRegn().getPrxy().getTp();
+		String proxyVal = msg.getDocument().getPrxyRegn().getRegn().getPrxy().getVal();
 		
-		accountProxy = accountProxyRepository.getByScndIdTpAndByScndIdVal(scndIdTp,scndIdVal);
+		accountProxy = accountProxyRepository.getByProxyTypeAndByProxyVal(proxyType,proxyVal);
 		
 		System.out.println(msg.getDocument().getPrxyRegn().getRegn().getRegnTp());
 		bifast.library.iso20022.prxy002.ProxyRegistrationType1Code code = null;
