@@ -60,20 +60,20 @@ public class CorebankRoute extends RouteBuilder{
 	 		
 	 		.log("corebank status: ${body.status}")
 			.choice()
-				.when().simple("${body.status} == 'ACTC'")
-					.log("ACTC")
-			 		.process(new Processor() {
-						public void process(Exchange exchange) throws Exception {
-							ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
-							CBDebitResponsePojo response = exchange.getMessage().getBody(CBDebitResponsePojo.class);
-//							rmc.setCbResponse(response.getStatus());
-							rmc.setDebitResponse(response);
-							exchange.getMessage().setHeader("hdr_response_list", rmc);
-						}
-			 		})
-			 	.endChoice()
-			 	
-			 	.otherwise()
+//				.when().simple("${body.status} == 'ACTC'")
+//					.log("ACTC")
+//			 		.process(new Processor() {
+//						public void process(Exchange exchange) throws Exception {
+//							ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+//							CBDebitResponsePojo response = exchange.getMessage().getBody(CBDebitResponsePojo.class);
+////							rmc.setCbResponse(response.getStatus());
+//							rmc.setDebitResponse(response);
+//							exchange.getMessage().setHeader("hdr_response_list", rmc);
+//						}
+//			 		})
+//			 	.endChoice()
+//			 	
+				.when().simple("${body.status} == 'RJCT'")
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
 							CBDebitResponsePojo response = exchange.getMessage().getBody(CBDebitResponsePojo.class);
