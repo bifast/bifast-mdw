@@ -51,6 +51,7 @@ CREATE SEQUENCE public.table_seq_generator
 
 -- ------------------
 
+
 -- public.kc_account_enquiry definition
 
 -- Drop table
@@ -131,24 +132,26 @@ CREATE TABLE public.kc_channel_transaction (
 
 CREATE TABLE public.kc_corebank_transaction (
 	id int8 NOT NULL,
-	addt_info varchar(255) NULL,
-	cb_trns_id int4 NULL,
-	channel_id varchar(255) NULL,
+	addt_info varchar(140) NULL,
+	channel_id varchar(20) NULL,
+	channel_noref varchar(50) NULL,
 	credit_amount numeric(19, 2) NULL,
-	creditor_bank varchar(255) NULL,
-	cstm_account_name varchar(255) NULL,
-	cstm_account_no varchar(255) NULL,
-	cstm_account_type varchar(255) NULL,
-	date_time varchar(255) NULL,
+	creditor_bank varchar(10) NULL,
+	cstm_account_name varchar(140) NULL,
+	cstm_account_no varchar(50) NULL,
+	cstm_account_type varchar(10) NULL,
+	date_time varchar(50) NULL,
 	debit_amount numeric(19, 2) NULL,
-	debtor_bank varchar(255) NULL,
+	debtor_bank varchar(10) NULL,
 	fee_amount numeric(19, 2) NULL,
-	komi_trns_id varchar(255) NULL,
-	orgnl_cb_trns_id int4 NULL,
-	orgnl_date_time varchar(255) NULL,
-	status varchar(255) NULL,
-	transaction_type varchar(255) NULL,
+	komi_noref varchar(50) NULL,
+	komi_trns_id varchar(50) NULL,
+	orgnl_chnl_noref int4 NULL,
+	orgnl_date_time varchar(50) NULL,
+	status varchar(20) NULL,
+	transaction_type varchar(10) NULL,
 	trns_dt timestamp NULL,
+	trx_date varchar(8) NULL,
 	CONSTRAINT kc_corebank_transaction_pkey PRIMARY KEY (id)
 );
 

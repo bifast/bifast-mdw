@@ -30,9 +30,7 @@ public class SetRemainTimeProcessor implements Processor {
 			sla = 15000;
 			
 
-		System.out.println("SLA: " + sla);
 		long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
-		System.out.println("elapsed " + timeElapsed);
 		
 		String sisa = Long.toString(sla - timeElapsed);
 		exchange.getMessage().setHeader("hdr_remain_time", sisa);

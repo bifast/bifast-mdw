@@ -72,8 +72,27 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
+--
+-- Name: uuid10(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.uuid10() RETURNS character varying
+    LANGUAGE sql
+    AS $$SELECT string_agg (substr('abcdefghijklmnopqrstuvwxyz0123456789', ceil (random() * 36)::integer, 1), '') FROM generate_series(1, 10)$$;
 
 
+ALTER FUNCTION public.uuid10() OWNER TO postgres;
+
+--
+-- Name: uuid10num(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.uuid10num() RETURNS character varying
+    LANGUAGE sql
+    AS $$SELECT string_agg (substr('0123456789', ceil (random() * 10)::integer, 1), '') FROM generate_series(1, 10)$$;
+
+
+ALTER FUNCTION public.uuid10num() OWNER TO postgres;
 
 --
 -- Name: uuid4(); Type: FUNCTION; Schema: public; Owner: postgres

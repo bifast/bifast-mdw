@@ -30,6 +30,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 
 		else if (!(null == req.getChnlCreditTransferRequest())) {
 			rmw.setChnlCreditTransferRequest(req.getChnlCreditTransferRequest());
+			rmw.setChannelRequest(req.getChnlCreditTransferRequest());
 			rmw.setMsgName("CTReq");
 			exchange.getMessage().setHeader("hdr_msgType", "CTReq");
 			exchange.getMessage().setBody(req.getChnlCreditTransferRequest());

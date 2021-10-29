@@ -139,7 +139,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.end()
 
-			.log("[ChnlReq:${header.hdr_chnlRefId}] ${header.hdr_request_list.msgName} finish.")
+			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} finish.")
 
 			.to("seda:savetablechannel")
 

@@ -2,7 +2,6 @@ package bifast.outbound.credittransfer.processor;
 
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -10,15 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.config.Config;
-import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
+import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
-import bifast.outbound.repository.CorebankTransactionRepository;
+import bifast.outbound.service.CorebankService;
 
 @Component
 public class BuildCBDebitRequestProcessor implements Processor{
 	@Autowired
-	private CorebankTransactionRepository cbRepo;
+	private CorebankService cbService;
 	@Autowired
 	private Config config;
 	
@@ -27,33 +26,22 @@ public class BuildCBDebitRequestProcessor implements Processor{
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
 		
-		CBDebitRequestPojo debitReq = new CBDebitRequestPojo();
+		CbDebitRequestPojo debitReq = new CbDebitRequestPojo();
 		
-		
-//	    DateTimeFormatter dtf1 = DateTimeFormatter.ofPattern("yyMMddHHmmss")
-//	            .withZone(ZoneId.systemDefault());
-////	            .withZone(ZoneOffset.UTC);
-
-	    LocalDateTime ldtKomiStart = LocalDateTime.ofInstant(rmw.getKomiStart(), ZoneId.systemDefault());
-	    DateTimeFormatter fmt1 = DateTimeFormatter.ofPattern("yyMMddHHmmss");
-		
-		Long cbId = cbRepo.getCorebankSequence();
-		
+				
 		debitReq.setTransactionId("000000");
 
-	    DateTimeFormatter fmtMillis = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-
-		debitReq.setDateTime(fmtMillis.format(LocalDateTime.now()));
+		debitReq.setDateTime(cbService.getCurrentDatetime());
+		debitReq.setTrnsDt(cbService.getCurrentDateOnly());
 		
+		debitReq.setNoRef(cbService.getKomiNoref(rmw));
+		
+		debitReq.setOriginalNoRef(cbService.getOriginalNoref(rmw));
+		
+		debitReq.setOriginalDateTime(cbService.getOriginalDatetime(rmw));
+
 		debitReq.setMerchantType(rmw.getMerchantType());
 		debitReq.setTerminalId(chnReq.getTerminalId());
-		
-		String cbNoRef = "KOM" + fmt1.format(ldtKomiStart) + String.format("%05d", cbId);
-		debitReq.setNoRef(cbNoRef);
-		
-		debitReq.setOriginalNoRef(chnReq.getChannelRefId());
-		
-		debitReq.setOriginalDateTime(fmtMillis.format(ldtKomiStart));
 
 		debitReq.setCategoryPurpose(chnReq.getCategoryPurpose());
 		

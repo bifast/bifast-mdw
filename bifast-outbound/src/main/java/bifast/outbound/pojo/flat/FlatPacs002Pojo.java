@@ -34,6 +34,7 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	private String dbtrAgtAcctId;
 	private String cdtrAgtFinInstnId;
 	private String cdtrAgtAcctId;
+	
 	public String getMsgId() {
 		return msgId;
 	}

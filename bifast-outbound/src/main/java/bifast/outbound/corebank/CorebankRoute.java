@@ -8,9 +8,10 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
+import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.corebank.pojo.CBDebitResponsePojo;
 import bifast.outbound.pojo.FaultPojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.service.JacksonDataFormatService;
 
@@ -24,15 +25,26 @@ public class CorebankRoute extends RouteBuilder{
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat chnlDebitRequestJDF = jdfService.basic(CBDebitRequestPojo.class);
+		JacksonDataFormat chnlDebitRequestJDF = jdfService.basic(CbDebitRequestPojo.class);
 		JacksonDataFormat chnlDebitResponseJDF = jdfService.basic(CBDebitResponsePojo.class);
 				
 		from("seda:callcb").routeId("komi.cb.corebank")
 			.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] call Corebank")
 
-			.marshal(chnlDebitRequestJDF)
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					Object req = exchange.getMessage().getBody(Object.class);
+					rmw.setCorebankRequest(req);
+					exchange.getMessage().setHeader("hdr_request_list", rmw);
+				}
+			})
 			
-			.setHeader("cb_request", simple("${body}"))
+			.log("${body}")
+			.choice()
+				.when().simple("${body.class} endsWith 'CbDebitRequestPojo'")
+					.marshal(chnlDebitRequestJDF)
+			.end()
 			
 	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}][CT] CB Request: ${body}")
 			.setHeader("HttpMethod", constant("POST"))
@@ -60,19 +72,6 @@ public class CorebankRoute extends RouteBuilder{
 	 		
 	 		.log("corebank status: ${body.status}")
 			.choice()
-//				.when().simple("${body.status} == 'ACTC'")
-//					.log("ACTC")
-//			 		.process(new Processor() {
-//						public void process(Exchange exchange) throws Exception {
-//							ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
-//							CBDebitResponsePojo response = exchange.getMessage().getBody(CBDebitResponsePojo.class);
-////							rmc.setCbResponse(response.getStatus());
-//							rmc.setDebitResponse(response);
-//							exchange.getMessage().setHeader("hdr_response_list", rmc);
-//						}
-//			 		})
-//			 	.endChoice()
-//			 	
 				.when().simple("${body.status} == 'RJCT'")
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
@@ -88,10 +87,22 @@ public class CorebankRoute extends RouteBuilder{
 							exchange.getMessage().setBody(fault);
 						}
 			 		})
+		 		.endChoice()
+		 		
+		 		.otherwise()
+		 		.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						CBDebitResponsePojo response = exchange.getMessage().getBody(CBDebitResponsePojo.class);
+						ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+						// TODO ngapain ya
+						exchange.getMessage().setHeader("hdr_response_list", rmc);
+						}
+		 			})
+		 		.endChoice()
 
-			.end()
+	 		.end()
 			
-//			.to("seda:savecbtable?exchangePattern=InOnly")
+			.to("seda:savecbtable?exchangePattern=InOnly")
 
 
 			.removeHeaders("cb_*")

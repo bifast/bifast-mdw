@@ -8,7 +8,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.corebank.pojo.CBDebitRequestPojo;
+import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
 import bifast.outbound.model.CorebankTransaction;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -24,26 +24,30 @@ public class SaveCBTableProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		Object objCbRequest = exchange.getMessage().getHeader("cb_request", Object.class);
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		
-		String requestClassName = objCbRequest.getClass().getSimpleName();
+		Object oCbRequest = rmw.getCorebankRequest();
+		String requestClassName = oCbRequest.getClass().getSimpleName();
 		
-		CBDebitInstructionResponsePojo debitResp = exchange.getMessage().getBody(CBDebitInstructionResponsePojo.class);
+		Object oCbResponse = exchange.getMessage().getBody(Object.class);
 
 		CorebankTransaction cb = new CorebankTransaction();
 
-		cb.setAddtInfo(debitResp.getAddtInfo());		
-		cb.setStatus(debitResp.getStatus());
+		cb.setChannelId(rmw.getChannelId());
+		cb.setChannelNoref(rmw.getRequestId());
+
+//		cb.setAddtInfo(debitResp.getAddtInfo());		
+//		cb.setStatus(debitResp.getStatus());
 		cb.setTrnsDt(LocalDateTime.now());
 		
 		cb.setKomiTrnsId(rmw.getKomiTrxId());
 
-		if (requestClassName.equals("CBDebitInstructionRequestPojo")) {
-			CBDebitRequestPojo debitReq = (CBDebitRequestPojo) objCbRequest;
-
+		if (requestClassName.equals("CBDebitRequestPojo")) {
+			CbDebitRequestPojo debitReq = (CbDebitRequestPojo) oCbRequest;
+			
+			cb.setTrxDate(debitReq.getOriginalDateTime());
+			
 			cb.setDebitAmount(new BigDecimal(debitReq.getAmount()));
-			cb.setChannelId(rmw.getChannelId());
 			cb.setCstmAccountName(debitReq.getDebtorName());
 			cb.setCstmAccountNo(debitReq.getDebtorAccountNumber());
 			cb.setCstmAccountType(debitReq.getDebtorAccountType());

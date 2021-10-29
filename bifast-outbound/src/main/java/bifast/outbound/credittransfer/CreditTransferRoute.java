@@ -54,6 +54,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.filter().simple("${header.hdr_request_list.merchantType} != '6010' ")
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
+				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] call Corebank: ${body}")
 				.to("seda:callcb")
 			.end()
 		
@@ -66,13 +67,12 @@ public class CreditTransferRoute extends RouteBuilder {
 				.otherwise()
 					.setHeader("ct_progress", constant("LANJUTCIHUB"))
 			.end()
-			.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] setelah corebank, ${header.ct_progress}.")
+			.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] setelah corebank, ${header.ct_progress}.")
 		
 			.filter().simple("${header.ct_progress} == 'LANJUTCIHUB'")
 
 				.process(crdtTransferProcessor)
 				.to("direct:call-cihub")
-				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] setelah call CIHUB")
 				.log("ReasonCode: ${body.reasonCode}")
 				
 			.end()
@@ -80,29 +80,31 @@ public class CreditTransferRoute extends RouteBuilder {
 			// periksa hasil call cihub
 			.choice()
 				.when().simple("${body.class} endsWith 'FaultPojo' && ${body.reasonCode} == 'K000'")
-					.setHeader("ct_progress", constant("SETTLEMENT"))
+					.setHeader("ct_progress", constant("TIMEOUT"))
 				.when().simple("${body.class} endsWith 'FlatPacs002Pojo' && ${body.reasonCode} == 'U900'")
-					.setHeader("ct_progress", constant("SETTLEMENT"))
+					.setHeader("ct_progress", constant("TIMEOUT"))
 				.when().simple("${body.class} endsWith 'FlatPacs002Pojo' && ${body.transactionStatus} == 'ACTC'")
 					.setHeader("ct_progress", constant("SUCCESS"))
-				.when().simple("${body.class} endsWith 'FlatPacs002Pojo' && ${body.transactionStatus} != 'ACTC'")
+				.otherwise()
 					.setHeader("ct_progress", constant("REJECT"))
 			.end()
 			
 			.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] hasil cihub, ${header.ct_progress}.")
 
 			// FILTER-C: jika timeout, check settlement dulu
-//			.filter().simple("${body.class} endsWith 'FaultPojo' && ${body.reasonCode} == 'K000'")
-			.filter().simple("${header.ct_progress} == 'SETTLEMENT'")
+			.filter().simple("${header.ct_progress} == 'TIMEOUT'")
 				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] akan cari Settlement.")
 				.to("seda:caristtl")
 			.end()
 			
-			//TODO jika ada settlmenet, progress SUCCESS
+			//cek hasil find settlement 
+			.filter().simple("${body.class} endsWith 'FlatPacs002Pojo' && ${body.bizSvc} == 'STTL'")
+				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] dapat Settlement.")
+				.setHeader("ct_progress", constant("SUCCESS"))
+			.end()
 
-			.log("4 ${header.ct_progress}")
 			.filter().simple("${header.ct_progress} == 'REJECT'")
-				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] akan reversal.")
+				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] akan Reversal.")
 				// TODO jika response RJCT, harus reversal ke corebanking
 			.end()
 
@@ -111,7 +113,6 @@ public class CreditTransferRoute extends RouteBuilder {
     		.end()
 		
     		.log("${header.ct_progress}")
-    		.log("${body}")
 			.process(crdtTransferResponseProcessor)
 			
 			.removeHeaders("ct_*")
@@ -119,8 +120,8 @@ public class CreditTransferRoute extends RouteBuilder {
 		;
 		
 
-		from("seda:caristtl")
-			.log("dicari settlement-nya")
+		from("seda:caristtl").routeId("komi.findsttl")
+			.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CT] sedang cari settlement.")
 			.setHeader("tmp_body", simple("${body}"))
 
 			.process(findingSettlementProcessor)
