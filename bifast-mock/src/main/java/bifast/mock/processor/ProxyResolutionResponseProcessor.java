@@ -136,7 +136,7 @@ public class ProxyResolutionResponseProcessor implements Processor{
 			}else {
 				System.out.println("ternyata disini");
 				seed.setStatus("RJCT");
-				seed.setReason("U811");
+				seed.setReason("U804");
 			}
 		}else if(msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getLkUpTp()  ==  ProxyLookUpType1Code.CHCK) {
 			if(accountProxy != null) {
@@ -152,7 +152,7 @@ public class ProxyResolutionResponseProcessor implements Processor{
 				}
 			}else {
 				seed.setStatus("RJCT");
-				seed.setReason("U811");
+				seed.setReason("U804");
 			}
 		}else if(msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getLkUpTp()  ==  ProxyLookUpType1Code.NMEQ) {
 			if(accountProxy != null) {
@@ -168,7 +168,7 @@ public class ProxyResolutionResponseProcessor implements Processor{
 				}
 			}else {
 				seed.setStatus("RJCT");
-				seed.setReason("U811");
+				seed.setReason("U804");
 			}
 		}
 		
