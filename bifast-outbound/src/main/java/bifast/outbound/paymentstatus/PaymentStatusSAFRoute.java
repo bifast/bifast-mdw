@@ -1,6 +1,8 @@
 package bifast.outbound.paymentstatus;
 
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 import org.apache.camel.Exchange;
@@ -12,10 +14,11 @@ import org.springframework.stereotype.Component;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.paymentstatus.processor.BuildPaymentStatusSAFRequestProcessor;
 import bifast.outbound.paymentstatus.processor.PaymentStatusResponseProcessor;
+import bifast.outbound.paymentstatus.processor.ProcessQuerySAFProcessor;
 import bifast.outbound.paymentstatus.processor.UpdateStatusSAFProcessor;
 import bifast.outbound.pojo.RequestMessageWrapper;
 
-//@Component
+@Component
 public class PaymentStatusSAFRoute extends RouteBuilder {
 	@Autowired
 	private BuildPaymentStatusSAFRequestProcessor buildPSRequest;;
@@ -23,6 +26,8 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 	private PaymentStatusResponseProcessor psResponseProcessor;
 	@Autowired
 	private UpdateStatusSAFProcessor updateStatusProcessor;
+	@Autowired
+	private ProcessQuerySAFProcessor processQueryProcessor;
 
 	@Override
 	public void configure() throws Exception {
@@ -35,36 +40,39 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.routeId("komi.ps.saf")
 						
 			// simpan dulu hasil query dan daftar requestmessagewrapper
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					@SuppressWarnings("unchecked")
-					HashMap<String, String> arr = exchange.getMessage().getBody(HashMap.class);
-					UndefinedCTPojo ct = new UndefinedCTPojo();
-					ct.setId(String.valueOf(arr.get("id")));
-					ct.setKomiTrnsId(arr.get("komi_id"));
-					ct.setRecipientBank(arr.get("recpt_bank"));
-					ct.setReqBizmsgid(arr.get("req_bizmsgid"));
-					ct.setChannelType(arr.get("channel_type"));
-					
-					System.out.println("orgnlDateTime " + arr.get("req_bizmsgid"));
-//					ct.setOrgnlDateTime(arr.get("request_time"));
-					exchange.getMessage().setHeader("ps_request", ct);
-					
-					RequestMessageWrapper rmw = new RequestMessageWrapper();
-					rmw.setChannelRequest(ct);
-					rmw.setKomiStart(Instant.now());
-					rmw.setMsgName("PaymentStsSAF");
-					exchange.getMessage().setHeader("hdr_request_list", rmw);
-
-				}
-			})
-			
+//			.process(new Processor() {
+//				public void process(Exchange exchange) throws Exception {
+//					@SuppressWarnings("unchecked")
+//					HashMap<String, Object> arr = exchange.getMessage().getBody(HashMap.class);
+//					UndefinedCTPojo ct = new UndefinedCTPojo();
+//					ct.setId(String.valueOf(arr.get("id")));
+//					ct.setKomiTrnsId((String)arr.get("komi_id"));
+//					ct.setRecipientBank((String)arr.get("recpt_bank"));
+//					ct.setReqBizmsgid((String)arr.get("req_bizmsgid"));
+//					ct.setChannelType((String)arr.get("channel_type"));
+//					
+//					String ldt = arr.get("request_time").getClass().getName();
+//					System.out.println("orgnlDateTime: " + ldt);
+//					
+////					ct.setOrgnlDateTime(arr.get("request_time"));
+//					exchange.getMessage().setHeader("ps_request", ct);
+//					
+//					RequestMessageWrapper rmw = new RequestMessageWrapper();
+//					rmw.setChannelRequest(ct);
+//					rmw.setKomiStart(Instant.now());
+//					rmw.setMsgName("PaymentStsSAF");
+//					exchange.getMessage().setHeader("hdr_request_list", rmw);
+//
+//				}
+//			})
+			.process(processQueryProcessor)
 			.process(buildPSRequest)
 			
 			.to("direct:call-cihub")
 			.process(psResponseProcessor)
 
 			.process(updateStatusProcessor)
+			.log("status: ${body.psStatus}")
 
 			.filter().simple("${body.psStatus} == 'REJECTED'")
 				.log("${body.reqBizmsgid} Rejected")

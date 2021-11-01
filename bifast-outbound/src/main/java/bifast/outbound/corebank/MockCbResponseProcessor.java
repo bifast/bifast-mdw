@@ -62,8 +62,8 @@ public class MockCbResponseProcessor implements Processor {
 					+ "\"merchantType\" : \"6000\",\n"
 					+ "\"terminalId\" : \"00000\",\n"
 					+ "\"noRef\" : \"KOM00000000\",\n"
-					+ "\"status\" : \"ACTC\",\n"
-					+ "\"reason\" : \"U000\",\n"
+					+ "\"status\" : \"RJCT\",\n"
+					+ "\"reason\" : \"U101\",\n"
 					+ "\"additionalInfo\" : \"ga ada\",\n"
 					+ "\"accountNumber\" : \"0000000\"\n"
 					+ "} " ; 
