@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.exception.DuplicateIdException;
-import bifast.outbound.exception.NoRefNullException;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.DomainCode;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -32,11 +31,7 @@ public class ValidateProcessor implements Processor  {
 		String noref = rmw.getRequestId();
 		String channelid = rmw.getChannelId(); 
 
-		//noRef tidak boleh kosong
-		if (null == noref) 
-			throw new NoRefNullException("Nomor RefId tidak ada.");
-
-		// noRef tidak boleh duplikat
+//		// noRef tidak boleh duplikat
 		List<ChannelTransaction> lChnlTrns = chnlTrnsRepo.findByChannelIdAndChannelRefId(channelid, noref); 
 		if (lChnlTrns.size()>0) 
 			throw new DuplicateIdException("Nomor RefId duplikat");
@@ -50,7 +45,6 @@ public class ValidateProcessor implements Processor  {
 		
 		Object objRequest = exchange.getIn().getBody(Object.class);
 		
-		Boolean validateChannel = false;
 		Boolean validateBank = false;
 		Boolean validatePurpose = false;
 
@@ -80,22 +74,11 @@ public class ValidateProcessor implements Processor  {
 //			validateChannel = true;
 		}
 
-		if (validateChannel) {
-			Method getChannel = objRequest.getClass().getMethod("getChannel");
-			String channel = (String) getChannel.invoke(objRequest);
-			DomainCode channelDC = domainCodeRepo.findByGrpAndValue("CHANNEL.TYPE", channel).orElseThrow();
-
-			Method setChannel = objRequest.getClass().getMethod("setChannel", String.class);
-			setChannel.invoke(objRequest, channelDC.getKey());
-		}
-
 		
 		if (validatePurpose) {
 			Method getPurpose = objRequest.getClass().getMethod("getCategoryPurpose");
-			Method setPurpose = objRequest.getClass().getMethod("setCategoryPurpose", String.class);
 			String purpose = (String) getPurpose.invoke(objRequest);
 			DomainCode channelDC = domainCodeRepo.findByGrpAndValue("CATEGORY.PURPOSE", purpose).orElseThrow();
-			setPurpose.invoke(objRequest, channelDC.getKey());
 		}
 		
 			

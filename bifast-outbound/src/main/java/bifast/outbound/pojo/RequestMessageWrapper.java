@@ -22,6 +22,7 @@ public class RequestMessageWrapper {
 	private String channelId;   // nomor id channel = clientId
 	private String channelType;
 	private String merchantType;
+	private String terminalId;
 //	private Long chnlTrnsIdTable;
 	private String senderAccountNumber;
 	private Instant komiStart;
@@ -72,6 +73,12 @@ public class RequestMessageWrapper {
 	}
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+	public String getTerminalId() {
+		return terminalId;
+	}
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
 	}
 	public String getMsgName() {
 		return msgName;

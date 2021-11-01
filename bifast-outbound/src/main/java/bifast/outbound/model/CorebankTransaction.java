@@ -22,20 +22,16 @@ public class CorebankTransaction {
 	private String komiTrnsId;
 	
 	@Column(length=8)
-	private String trxDate;
-	@Column(length=50)
-	private String dateTime;
+	private String trnsDate;
 	
-	@Column(length=10)
-	private String transactionType;   //  AE, DEB, CRD, REV, STTL
-
+	@Column(length=50)
+	private String komiNoref;     // jadi id ke core
+	@Column(length=50)
+	private String dateTime;  // untuk id ke core
+	
 	@Column(length=20)
-	private String channelId;
-	@Column(length=50)
-	private String channelNoref;
-	@Column(length=50)
-	private String komiNoref;
-
+	private String transactionType;   //  DebitAccount, DebitReversal, CreditAccount, Settlement, AccountEnquiry, AccountCustInfo
+	
 	private BigDecimal debitAmount;
 	private BigDecimal creditAmount;
 	private BigDecimal feeAmount;
@@ -47,147 +43,177 @@ public class CorebankTransaction {
 	@Column(length=140)
 	private String cstmAccountName;
 
-	@Column(length=10)
-	private String debtorBank;
-	@Column(length=10)
-	private String creditorBank;
-
-	private Integer orgnlChnlNoref;
+	private String orgnlChnlNoref;
 	@Column(length=50)
 	private String orgnlDateTime;
 
-	private LocalDateTime trnsDt;
 	@Column(length=20)
-	private String status;
-	@Column(length=140)
-	private String addtInfo;
+	private String response;
+	@Column(length=20)
+	private String reason;
+
+	private Integer retryCounter;
 	
+	private LocalDateTime updateTime;
+	
+	@Column(length=2000)
+	private String fullTextRequest;
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getKomiTrnsId() {
 		return komiTrnsId;
 	}
+
 	public void setKomiTrnsId(String komiTrnsId) {
 		this.komiTrnsId = komiTrnsId;
 	}
-	public String getTrxDate() {
-		return trxDate;
+
+	public String getTrnsDate() {
+		return trnsDate;
 	}
-	public void setTrxDate(String trxDate) {
-		this.trxDate = trxDate;
+
+	public void setTrnsDate(String trnsDate) {
+		this.trnsDate = trnsDate;
 	}
-	public String getDateTime() {
-		return dateTime;
-	}
-	public void setDateTime(String dateTime) {
-		this.dateTime = dateTime;
-	}
-	public String getTransactionType() {
-		return transactionType;
-	}
-	public void setTransactionType(String transactionType) {
-		this.transactionType = transactionType;
-	}
-	public String getChannelId() {
-		return channelId;
-	}
-	public void setChannelId(String channelId) {
-		this.channelId = channelId;
-	}
-	public String getChannelNoref() {
-		return channelNoref;
-	}
-	public void setChannelNoref(String channelNoref) {
-		this.channelNoref = channelNoref;
-	}
+
 	public String getKomiNoref() {
 		return komiNoref;
 	}
+
 	public void setKomiNoref(String komiNoref) {
 		this.komiNoref = komiNoref;
 	}
+
+	public String getDateTime() {
+		return dateTime;
+	}
+
+	public void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
+	}
+
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
+	}
+
 	public BigDecimal getDebitAmount() {
 		return debitAmount;
 	}
+
 	public void setDebitAmount(BigDecimal debitAmount) {
 		this.debitAmount = debitAmount;
 	}
+
 	public BigDecimal getCreditAmount() {
 		return creditAmount;
 	}
+
 	public void setCreditAmount(BigDecimal creditAmount) {
 		this.creditAmount = creditAmount;
 	}
+
 	public BigDecimal getFeeAmount() {
 		return feeAmount;
 	}
+
 	public void setFeeAmount(BigDecimal feeAmount) {
 		this.feeAmount = feeAmount;
 	}
+
 	public String getCstmAccountNo() {
 		return cstmAccountNo;
 	}
+
 	public void setCstmAccountNo(String cstmAccountNo) {
 		this.cstmAccountNo = cstmAccountNo;
 	}
+
 	public String getCstmAccountType() {
 		return cstmAccountType;
 	}
+
 	public void setCstmAccountType(String cstmAccountType) {
 		this.cstmAccountType = cstmAccountType;
 	}
+
 	public String getCstmAccountName() {
 		return cstmAccountName;
 	}
+
 	public void setCstmAccountName(String cstmAccountName) {
 		this.cstmAccountName = cstmAccountName;
 	}
-	public String getDebtorBank() {
-		return debtorBank;
-	}
-	public void setDebtorBank(String debtorBank) {
-		this.debtorBank = debtorBank;
-	}
-	public String getCreditorBank() {
-		return creditorBank;
-	}
-	public void setCreditorBank(String creditorBank) {
-		this.creditorBank = creditorBank;
-	}
-	public Integer getOrgnlChnlNoref() {
+
+	public String getOrgnlChnlNoref() {
 		return orgnlChnlNoref;
 	}
-	public void setOrgnlChnlNoref(Integer orgnlChnlNoref) {
+
+	public void setOrgnlChnlNoref(String orgnlChnlNoref) {
 		this.orgnlChnlNoref = orgnlChnlNoref;
 	}
+
 	public String getOrgnlDateTime() {
 		return orgnlDateTime;
 	}
+
 	public void setOrgnlDateTime(String orgnlDateTime) {
 		this.orgnlDateTime = orgnlDateTime;
 	}
-	public LocalDateTime getTrnsDt() {
-		return trnsDt;
+
+	public String getResponse() {
+		return response;
 	}
-	public void setTrnsDt(LocalDateTime trnsDt) {
-		this.trnsDt = trnsDt;
+
+	public void setResponse(String response) {
+		this.response = response;
 	}
-	public String getStatus() {
-		return status;
+
+	public String getFullTextRequest() {
+		return fullTextRequest;
 	}
-	public void setStatus(String status) {
-		this.status = status;
+
+	public void setFullTextRequest(String fullTextRequest) {
+		this.fullTextRequest = fullTextRequest;
 	}
-	public String getAddtInfo() {
-		return addtInfo;
+
+	public String getReason() {
+		return reason;
 	}
-	public void setAddtInfo(String addtInfo) {
-		this.addtInfo = addtInfo;
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
+
+	public Integer getRetryCounter() {
+		return retryCounter;
+	}
+
+	public void setRetryCounter(Integer retryCounter) {
+		this.retryCounter = retryCounter;
+	}
+
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
+	}
+
+
+
 	
+
 	
 }

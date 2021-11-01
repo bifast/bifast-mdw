@@ -1,6 +1,6 @@
 package bifast.outbound.corebank.pojo;
 
-public class CBDebitResponsePojo {
+public class CbDebitResponsePojo {
 
 	private String transactionId;
 	private String dateTime;

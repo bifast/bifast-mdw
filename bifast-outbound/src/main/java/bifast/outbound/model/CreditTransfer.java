@@ -70,7 +70,7 @@ public class CreditTransfer {
 	@Column(length=400)
 	private String errorMessage;
 	
-	private Integer ps_counter;
+	private Integer psCounter;
 		
 	@Column(length=10)
 	private String reversal;
@@ -211,11 +211,11 @@ public class CreditTransfer {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
-	public Integer getPs_counter() {
-		return ps_counter;
+	public Integer getPsCounter() {
+		return psCounter;
 	}
-	public void setPs_counter(Integer ps_counter) {
-		this.ps_counter = ps_counter;
+	public void setPsCounter(Integer psCounter) {
+		this.psCounter = psCounter;
 	}
 	public String getReversal() {
 		return reversal;

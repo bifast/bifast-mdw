@@ -8,8 +8,10 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.corebank.pojo.CbAccountCustomerInfoRequestPojo;
+import bifast.outbound.corebank.pojo.CbAccountCustomerInfoResponsePojo;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
-import bifast.outbound.corebank.pojo.CBDebitResponsePojo;
+import bifast.outbound.corebank.pojo.CbDebitResponsePojo;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
@@ -22,14 +24,21 @@ public class CorebankRoute extends RouteBuilder{
 	private SaveCBTableProcessor saveCBTableProcessor;
 	@Autowired
 	private JacksonDataFormatService jdfService;
+	@Autowired
+	private MockCbResponseProcessor mockResponse;
 
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat chnlDebitRequestJDF = jdfService.basic(CbDebitRequestPojo.class);
-		JacksonDataFormat chnlDebitResponseJDF = jdfService.basic(CBDebitResponsePojo.class);
+		JacksonDataFormat chnlDebitResponseJDF = jdfService.basic(CbDebitResponsePojo.class);
 				
+		JacksonDataFormat accountCustomerInfoRequestJDF = jdfService.basic(CbAccountCustomerInfoRequestPojo.class);
+		JacksonDataFormat accountCustomerInfoResponseJDF = jdfService.basic(CbAccountCustomerInfoResponsePojo.class);
+
+		// ROUTE CALLCB 
 		from("seda:callcb").routeId("komi.cb.corebank")
-			.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] call Corebank")
+		
+			.log("[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] call Corebank")
 
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
@@ -41,12 +50,21 @@ public class CorebankRoute extends RouteBuilder{
 			})
 			
 			.log("${body}")
+			
 			.choice()
 				.when().simple("${body.class} endsWith 'CbDebitRequestPojo'")
+					.setHeader("cb_requestName", constant("debit-account"))
+					.marshal(chnlDebitRequestJDF)
+				.when().simple("${body.class} endsWith 'CbAccountCustomerInfoRequestPojo'")
+					.setHeader("cb_requestName", constant("account-cust-info"))
+					.marshal(accountCustomerInfoRequestJDF)
+				.when().simple("${body.class} endsWith 'CbDebitReversalPojo'")
+					.setHeader("cb_requestName", constant("debit-reversal"))
 					.marshal(chnlDebitRequestJDF)
 			.end()
 			
-	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}][CT] CB Request: ${body}")
+	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
+	 														+ "[${header.hdr_request_list.msgName}] CB Request: ${body}")
 			.setHeader("HttpMethod", constant("POST"))
 //			.enrich("http:{{komi.cb-url}}?"
 //					+ "bridgeEndpoint=true",
@@ -54,34 +72,33 @@ public class CorebankRoute extends RouteBuilder{
 //			.convertBodyTo(String.class)
 //	 		.log(LoggingLevel.DEBUG, "bifast.outbound.corebank", "[ChRefId:${header.hdr_chnlRefId}] CB Response: ${body}")
 			
-			.setBody(constant("{\n"
-					+ "\"transactionId\" : \"000000\",\n"
-					+ "\"dateTime\" : \"2021-10-26T08:45:20.201\",\n"
-					+ "\"merchantType\" : \"6000\",\n"
-					+ "\"terminalId\" : \"00000\",\n"
-					+ "\"noRef\" : \"KOM00000000\",\n"
-					+ "\"status\" : \"ACTC\",\n"
-					+ "\"reason\" : \"U000\",\n"
-					+ "\"additionalInfo\" : \"ga ada\",\n"
-					+ "\"accountNumber\" : \"0000000\"\n"
-					+ "}\n"))
+			.process(mockResponse)
+			
+	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
+	 														+ "[${header.hdr_request_list.msgName}] CB Response: ${body}")
 
-	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}][CT] CB Response: ${body}")
-
-	 		.unmarshal(chnlDebitResponseJDF)
-	 		
-	 		.log("corebank status: ${body.status}")
+	 		.log("${header.cb_requestName}")
+			.choice()
+				.when().simple("${header.cb_requestName} == 'debit-account'")
+					.unmarshal(chnlDebitResponseJDF)
+				.when().simple("${header.cb_requestName} ==  'account-cust-info'")
+					.unmarshal(accountCustomerInfoResponseJDF)
+				.when().simple("${header.cb_requestName} ==  'debit-reversal'")
+					.unmarshal(chnlDebitResponseJDF)
+			.end()
+				
+			.log("hah : ${body}")
 			.choice()
 				.when().simple("${body.status} == 'RJCT'")
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
-							CBDebitResponsePojo response = exchange.getMessage().getBody(CBDebitResponsePojo.class);
+							CbDebitResponsePojo response = exchange.getMessage().getBody(CbDebitResponsePojo.class);
 							ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
 							FaultPojo fault = new FaultPojo();
 							fault.setCallStatus("REJECT-CB");
 							fault.setResponseCode(response.getStatus());
 							fault.setReasonCode(response.getReason());
-							rmc.setDebitResponse(fault);
+							rmc.setCorebankResponse(fault);
 							rmc.setFault(fault);
 							exchange.getMessage().setHeader("hdr_response_list", rmc);
 							exchange.getMessage().setBody(fault);
@@ -90,14 +107,14 @@ public class CorebankRoute extends RouteBuilder{
 		 		.endChoice()
 		 		
 		 		.otherwise()
-		 		.process(new Processor() {
-					public void process(Exchange exchange) throws Exception {
-						CBDebitResponsePojo response = exchange.getMessage().getBody(CBDebitResponsePojo.class);
-						ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
-						// TODO ngapain ya
-						exchange.getMessage().setHeader("hdr_response_list", rmc);
-						}
-		 			})
+			 		.process(new Processor() {
+						public void process(Exchange exchange) throws Exception {
+							Object response = exchange.getMessage().getBody(Object.class);
+							ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+							rmc.setCorebankResponse(response);
+							exchange.getMessage().setHeader("hdr_response_list", rmc);
+							}
+			 			})
 		 		.endChoice()
 
 	 		.end()

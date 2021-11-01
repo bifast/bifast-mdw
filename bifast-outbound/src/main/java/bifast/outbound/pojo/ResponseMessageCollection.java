@@ -1,7 +1,6 @@
 package bifast.outbound.pojo;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.corebank.pojo.CBDebitResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChnlAccountEnquiryResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
 import bifast.outbound.pojo.chnlresponse.ChnlProxyRegistrationResponsePojo;
@@ -23,7 +22,7 @@ public class ResponseMessageCollection {
 	private ChnlProxyRegistrationResponsePojo chnlProxyRegistrationResponse;
 	private ChnlProxyResolutionResponsePojo chnlProxyResolutionResponse;
 	
-	private Object debitResponse;
+	private Object corebankResponse;
 	
 	private BusinessMessage accountEnquiryResponse;
 	private FlatPacs002Pojo creditTransferResponse;
@@ -68,11 +67,11 @@ public class ResponseMessageCollection {
 	public void setCbResponse(String cbResponse) {
 		this.cbResponse = cbResponse;
 	}
-	public Object getDebitResponse() {
-		return debitResponse;
+	public Object getCorebankResponse() {
+		return corebankResponse;
 	}
-	public void setDebitResponse(Object debitResponse) {
-		this.debitResponse = debitResponse;
+	public void setCorebankResponse(Object corebankResponse) {
+		this.corebankResponse = corebankResponse;
 	}
 	public ChnlAccountEnquiryResponsePojo getChnlAccountEnquiryResponse() {
 		return chnlAccountEnquiryResponse;

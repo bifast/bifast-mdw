@@ -38,7 +38,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	private FlattenIsoMessageService flattenIsoMessage;
 	@Autowired
 	private JacksonDataFormatService jdfService;
-
+	
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
     
@@ -50,7 +50,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			.setHeader("ct_progress", constant("Start"))
 			
-			// FILTER-A debit-account dulu donk untuk e-Channel
+			// FILTER-A debit-account corebank dulu donk untuk e-Channel
 			.filter().simple("${header.hdr_request_list.merchantType} != '6010' ")
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
@@ -70,17 +70,18 @@ public class CreditTransferRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] setelah corebank, ${header.ct_progress}.")
 		
 			.filter().simple("${header.ct_progress} == 'LANJUTCIHUB'")
-
 				.process(crdtTransferProcessor)
 				.to("direct:call-cihub")
-				.log("ReasonCode: ${body.reasonCode}")
-				
+				.process(saveCrdtTrnsProcessor)
+
 			.end()
 
 			// periksa hasil call cihub
 			.choice()
 				.when().simple("${body.class} endsWith 'FaultPojo' && ${body.reasonCode} == 'K000'")
 					.setHeader("ct_progress", constant("TIMEOUT"))
+				.when().simple("${body.class} endsWith 'FaultPojo' && ${body.reasonCode} != 'K000'")
+					.setHeader("ct_progress", constant("ERROR"))
 				.when().simple("${body.class} endsWith 'FlatPacs002Pojo' && ${body.reasonCode} == 'U900'")
 					.setHeader("ct_progress", constant("TIMEOUT"))
 				.when().simple("${body.class} endsWith 'FlatPacs002Pojo' && ${body.transactionStatus} == 'ACTC'")
@@ -89,30 +90,28 @@ public class CreditTransferRoute extends RouteBuilder {
 					.setHeader("ct_progress", constant("REJECT"))
 			.end()
 			
-			.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] hasil cihub, ${header.ct_progress}.")
+			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] hasil cihub, ${header.ct_progress}.")
 
 			// FILTER-C: jika timeout, check settlement dulu
 			.filter().simple("${header.ct_progress} == 'TIMEOUT'")
-				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] akan cari Settlement.")
+				.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] cari Settlement.")
 				.to("seda:caristtl")
 			.end()
 			
 			//cek hasil find settlement 
 			.filter().simple("${body.class} endsWith 'FlatPacs002Pojo' && ${body.bizSvc} == 'STTL'")
-				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] dapat Settlement.")
+				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] dapat Settlement.")
 				.setHeader("ct_progress", constant("SUCCESS"))
 			.end()
 
-			.filter().simple("${header.ct_progress} == 'REJECT'")
-				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CT] akan Reversal.")
-				// TODO jika response RJCT, harus reversal ke corebanking
-			.end()
+			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] B, ${header.ct_progress}.")
 
-			.filter().simple("${header.hdr_request_list.creditTransferRequest} != null")
-				.process(saveCrdtTrnsProcessor)
-    		.end()
-		
-    		.log("${header.ct_progress}")
+			// jika response RJCT/ERROR, harus reversal ke corebanking
+			.filter().simple("${header.ct_progress} in 'REJECT,ERROR'")
+				.log("akan reversal")
+				.to("seda:debitreversal")
+			.end()
+	
 			.process(crdtTransferResponseProcessor)
 			
 			.removeHeaders("ct_*")
@@ -121,7 +120,7 @@ public class CreditTransferRoute extends RouteBuilder {
 		
 
 		from("seda:caristtl").routeId("komi.findsttl")
-			.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CT] sedang cari settlement.")
+			.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] sedang cari settlement.")
 			.setHeader("tmp_body", simple("${body}"))
 
 			.process(findingSettlementProcessor)

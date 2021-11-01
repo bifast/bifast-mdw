@@ -1,45 +1,10 @@
 package bifast.outbound.pojo.chnlrequest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PaymentStatusRequestSAFPojo {
 
-	private String recptBank;
-	
-	@JsonProperty("NoRef")
-	private String noRef;
-	
-	@JsonProperty("OriginalNoRef")
-	private String orgnlRefId;
-	
 	private String orgnlEndToEndId;
 	
-	private String creditorAccountNumber;
-
-	public String getRecptBank() {
-		return recptBank;
-	}
-
-	public void setRecptBank(String recptBank) {
-		this.recptBank = recptBank;
-	}
-
-	public String getNoRef() {
-		return noRef;
-	}
-
-	public void setNoRef(String noRef) {
-		this.noRef = noRef;
-	}
-
-	public String getOrgnlRefId() {
-		return orgnlRefId;
-	}
-
-	public void setOrgnlRefId(String orgnlRefId) {
-		this.orgnlRefId = orgnlRefId;
-	}
-
 	public String getOrgnlEndToEndId() {
 		return orgnlEndToEndId;
 	}
@@ -48,13 +13,6 @@ public class PaymentStatusRequestSAFPojo {
 		this.orgnlEndToEndId = orgnlEndToEndId;
 	}
 
-	public String getCreditorAccountNumber() {
-		return creditorAccountNumber;
-	}
-
-	public void setCreditorAccountNumber(String creditorAccountNumber) {
-		this.creditorAccountNumber = creditorAccountNumber;
-	}
 	
 	
 }

@@ -1,5 +1,7 @@
 package bifast.outbound.pojo.chnlrequest;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -36,6 +38,9 @@ public class ChnlCreditTransferRequestPojo {
 	
 	@JsonProperty("NoRef")
 	private String channelRefId;
+	
+	private LocalDateTime dateTime;
+	
 	@JsonProperty("TerminalId")
 	private String terminalId; 
 	@JsonProperty("CategoryPurpose")
@@ -145,6 +150,14 @@ public class ChnlCreditTransferRequestPojo {
 
 	public void setChannelRefId(String channelRefId) {
 		this.channelRefId = channelRefId;
+	}
+
+	public LocalDateTime getDateTime() {
+		return dateTime;
+	}
+
+	public void setDateTime(LocalDateTime dateTime) {
+		this.dateTime = dateTime;
 	}
 
 	public String getTerminalId() {

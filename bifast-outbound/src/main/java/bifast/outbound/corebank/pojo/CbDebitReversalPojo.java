@@ -1,25 +1,22 @@
 package bifast.outbound.corebank.pojo;
 
-public class DebitAccountResponsePojo {
+public class CbDebitReversalPojo extends CbRequestBase{
 
-	private String transactionId;
-	private String dateTime;
-	private String merchantType;
-	private String terminalId;
-	private String noRef;
-	private String originalNoRef;
-	private String originalDateTime;
 	private String categoryPurpose;
+	
 	private String debtorName;
 	private String debtorType;
 	private String debtorId;
-	private String debtorAccountNumber;
+	private String debtorAccountNumber;	
 	private String debtorAccountType;
 	private String debtorResidentStatus;
 	private String debtorTownName;
+	
 	private String amount;
 	private String feeTransfer;
+
 	private String recipientBank;
+	
 	private String creditorName;
 	private String creditorType;
 	private String creditorId;
@@ -27,66 +24,11 @@ public class DebitAccountResponsePojo {
 	private String creditorAccountType;
 	private String creditorResidentStatus;
 	private String creditorTownName;
+
 	private String creditorProxyId;
 	private String creditorProxyType;
-	
-	private String paymentInfo;
 
-	public String getTransactionId() {
-		return transactionId;
-	}
-
-	public void setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-	}
-
-	public String getDateTime() {
-		return dateTime;
-	}
-
-	public void setDateTime(String dateTime) {
-		this.dateTime = dateTime;
-	}
-
-	public String getMerchantType() {
-		return merchantType;
-	}
-
-	public void setMerchantType(String merchantType) {
-		this.merchantType = merchantType;
-	}
-
-	public String getTerminalId() {
-		return terminalId;
-	}
-
-	public void setTerminalId(String terminalId) {
-		this.terminalId = terminalId;
-	}
-
-	public String getNoRef() {
-		return noRef;
-	}
-
-	public void setNoRef(String noRef) {
-		this.noRef = noRef;
-	}
-
-	public String getOriginalNoRef() {
-		return originalNoRef;
-	}
-
-	public void setOriginalNoRef(String originalNoRef) {
-		this.originalNoRef = originalNoRef;
-	}
-
-	public String getOriginalDateTime() {
-		return originalDateTime;
-	}
-
-	public void setOriginalDateTime(String originalDateTime) {
-		this.originalDateTime = originalDateTime;
-	}
+	private String paymentInformation;
 
 	public String getCategoryPurpose() {
 		return categoryPurpose;
@@ -248,12 +190,12 @@ public class DebitAccountResponsePojo {
 		this.creditorProxyType = creditorProxyType;
 	}
 
-	public String getPaymentInfo() {
-		return paymentInfo;
+	public String getPaymentInformation() {
+		return paymentInformation;
 	}
 
-	public void setPaymentInfo(String paymentInfo) {
-		this.paymentInfo = paymentInfo;
+	public void setPaymentInformation(String paymentInformation) {
+		this.paymentInformation = paymentInformation;
 	}
 	
 	

@@ -31,7 +31,7 @@ public class InitRequestMessageWrapperProcessor implements Processor {
 		
 		rmw.setChannelId(channel.getChannelId());
 		rmw.setChannelType(channel.getChannelType());
-		
+
 		rmw.setMerchantType(channel.getMerchantCode());
 		rmw.setKomiTrxId(komiTrnsId);
 		rmw.setKomiStart(Instant.now());

@@ -3,6 +3,7 @@ package bifast.inbound.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,33 +18,42 @@ public class CorebankTransaction {
 	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
 	private Long id;
 
+	@Column(length=50)
 	private String komiTrnsId;
 	
-	private Integer cbTrnsId;
-	private String dateTime;
+	@Column(length=8)
+	private String trnsDate;
 	
-	private String transactionType;   //  AE, DEB, CRD, REV, PRX, STTL
-
-	private String channelId;
+	@Column(length=50)
+	private String komiNoref;     // jadi id ke core
+	@Column(length=50)
+	private String dateTime;  // untuk id ke core
+	
+	@Column(length=20)
+	private String transactionType;   //  DebitAccount, DebitReversal, CreditAccount, Settlement, AccountEnquiry, AccountCustInfo
 	
 	private BigDecimal debitAmount;
 	private BigDecimal creditAmount;
 	private BigDecimal feeAmount;
 	
+	@Column(length=50)
 	private String cstmAccountNo;
+	@Column(length=10)
 	private String cstmAccountType;
+	@Column(length=140)
 	private String cstmAccountName;
 
-	private String debtorBank;
-	private String creditorBank;
-
-	private Integer orgnlCbTrnsId;
+	private String orgnlChnlNoref;
+	@Column(length=50)
 	private String orgnlDateTime;
 
-	private LocalDateTime trnsDt;
+	@Column(length=20)
 	private String status;
-	private String addtInfo;
 	
+	private Integer retry;
+	
+	private LocalDateTime updateTime;
+
 	public Long getId() {
 		return id;
 	}
@@ -60,12 +70,20 @@ public class CorebankTransaction {
 		this.komiTrnsId = komiTrnsId;
 	}
 
-	public Integer getCbTrnsId() {
-		return cbTrnsId;
+	public String getTrnsDate() {
+		return trnsDate;
 	}
 
-	public void setCbTrnsId(Integer cbTrnsId) {
-		this.cbTrnsId = cbTrnsId;
+	public void setTrnsDate(String trnsDate) {
+		this.trnsDate = trnsDate;
+	}
+
+	public String getKomiNoref() {
+		return komiNoref;
+	}
+
+	public void setKomiNoref(String komiNoref) {
+		this.komiNoref = komiNoref;
 	}
 
 	public String getDateTime() {
@@ -84,12 +102,12 @@ public class CorebankTransaction {
 		this.transactionType = transactionType;
 	}
 
-	public String getChannelId() {
-		return channelId;
+	public String getCstmAccountNo() {
+		return cstmAccountNo;
 	}
 
-	public void setChannelId(String channelId) {
-		this.channelId = channelId;
+	public void setCstmAccountNo(String cstmAccountNo) {
+		this.cstmAccountNo = cstmAccountNo;
 	}
 
 	public BigDecimal getDebitAmount() {
@@ -116,14 +134,6 @@ public class CorebankTransaction {
 		this.feeAmount = feeAmount;
 	}
 
-	public String getCstmAccountNo() {
-		return cstmAccountNo;
-	}
-
-	public void setCstmAccountNo(String cstmAccountNo) {
-		this.cstmAccountNo = cstmAccountNo;
-	}
-
 	public String getCstmAccountType() {
 		return cstmAccountType;
 	}
@@ -140,28 +150,12 @@ public class CorebankTransaction {
 		this.cstmAccountName = cstmAccountName;
 	}
 
-	public String getDebtorBank() {
-		return debtorBank;
+	public String getOrgnlChnlNoref() {
+		return orgnlChnlNoref;
 	}
 
-	public void setDebtorBank(String debtorBank) {
-		this.debtorBank = debtorBank;
-	}
-
-	public String getCreditorBank() {
-		return creditorBank;
-	}
-
-	public void setCreditorBank(String creditorBank) {
-		this.creditorBank = creditorBank;
-	}
-
-	public Integer getOrgnlCbTrnsId() {
-		return orgnlCbTrnsId;
-	}
-
-	public void setOrgnlCbTrnsId(Integer orgnlCbTrnsId) {
-		this.orgnlCbTrnsId = orgnlCbTrnsId;
+	public void setOrgnlChnlNoref(String orgnlChnlNoref) {
+		this.orgnlChnlNoref = orgnlChnlNoref;
 	}
 
 	public String getOrgnlDateTime() {
@@ -172,14 +166,6 @@ public class CorebankTransaction {
 		this.orgnlDateTime = orgnlDateTime;
 	}
 
-	public LocalDateTime getTrnsDt() {
-		return trnsDt;
-	}
-
-	public void setTrnsDt(LocalDateTime trnsDt) {
-		this.trnsDt = trnsDt;
-	}
-
 	public String getStatus() {
 		return status;
 	}
@@ -188,14 +174,24 @@ public class CorebankTransaction {
 		this.status = status;
 	}
 
-	public String getAddtInfo() {
-		return addtInfo;
+	public Integer getRetry() {
+		return retry;
 	}
 
-	public void setAddtInfo(String addtInfo) {
-		this.addtInfo = addtInfo;
+	public void setRetry(Integer retry) {
+		this.retry = retry;
 	}
 
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
+	}
+
+
+	
 
 	
 }
