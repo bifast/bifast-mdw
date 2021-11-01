@@ -1,5 +1,37 @@
 package bifast.outbound.corebank.pojo;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({
+	"transactionId"
+	,"dateTime"
+	,"merchantType"
+	,"terminalId"
+	,"komiNoRef"
+	,"originalNoRef"
+	,"originalDateTime"
+	,"categoryPurpose"
+	,"debtorName"
+	,"debtorType"
+	,"debtorId"
+	,"debtorAccountNumber"
+	,"debtorAccountType"
+	,"debtorResidentStatus"
+	,"debtorTownName"
+	,"amount"
+	,"feeTransfer"
+	,"recipientBank"
+	,"creditorName"
+	,"creditorType"
+	,"creditorId"
+	,"creditorAccountNumber"
+	,"creditorAccountType"
+	,"creditorResidentStatus"
+	,"creditorTownName"
+	,"creditorProxyId"
+	,"creditorProxyType"
+	,"paymentInformation"
+	})
 public class CbDebitRequestPojo extends CbRequestBase{
 
 	private String categoryPurpose;

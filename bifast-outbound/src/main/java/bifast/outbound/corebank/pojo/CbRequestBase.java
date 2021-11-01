@@ -1,13 +1,26 @@
 package bifast.outbound.corebank.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({
+	"transactionId"
+	,"dateTime"
+	,"merchantType"
+	,"terminalId"
+	,"komiNoRef"
+	,"originalNoRef"
+	,"originalDateTime"
+	})
 public class CbRequestBase {
 
 	private String transactionId;
-	private String trnsDt;
 	private String dateTime;
 	private String merchantType;
 	private String terminalId;
-	private String noRef;
+	
+	@JsonProperty("noRef")
+	private String komiNoRef;
 	private String originalNoRef;
 	private String originalDateTime;
 	
@@ -35,17 +48,11 @@ public class CbRequestBase {
 	public void setTerminalId(String terminalId) {
 		this.terminalId = terminalId;
 	}
-	public String getNoRef() {
-		return noRef;
+	public String getKomiNoRef() {
+		return komiNoRef;
 	}
-	public void setNoRef(String noRef) {
-		this.noRef = noRef;
-	}
-	public String getTrnsDt() {
-		return trnsDt;
-	}
-	public void setTrnsDt(String trnsDt) {
-		this.trnsDt = trnsDt;
+	public void setKomiNoRef(String komiNoRef) {
+		this.komiNoRef = komiNoRef;
 	}
 	public String getOriginalNoRef() {
 		return originalNoRef;
@@ -59,6 +66,8 @@ public class CbRequestBase {
 	public void setOriginalDateTime(String originalDateTime) {
 		this.originalDateTime = originalDateTime;
 	}
+	
+
 
 	
 }

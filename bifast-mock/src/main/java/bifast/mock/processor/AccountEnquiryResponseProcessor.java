@@ -46,7 +46,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		if (acctNo.startsWith("9")) {
 		// if (posbl4 == 0) {
 			seed.setStatus("RJCT");
-			seed.setReason("U001");
+			seed.setReason("U102");
 		}
 		else {
 			seed.setStatus("ACTC");

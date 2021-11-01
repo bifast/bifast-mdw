@@ -38,7 +38,7 @@ public class PaymentStatusRoute extends RouteBuilder {
 
 		
 		from("direct:pschnl").routeId("komi.ps.chnl")
-			.log("Payment_status channel")
+			.log("PaymentStatus inquiry")
 			
 			//find CT
 			.process(checkSAFResult)

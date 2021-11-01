@@ -1,11 +1,16 @@
 package bifast.outbound.processor;
 
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlRequestWrapper;
 
 @Component
@@ -17,6 +22,8 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		
 //		RequestMessageWrapper req = exchange.getIn().getBody(RequestMessageWrapper.class);
 		ChnlRequestWrapper req = exchange.getIn().getBody(ChnlRequestWrapper.class);
+		
+		LocalDateTime ldt = LocalDateTime.ofInstant(rmw.getKomiStart(), ZoneOffset.systemDefault());
 
 		if (!(null == req.getChnlAccountEnquiryRequest())) {
 			rmw.setChnlAccountEnquiryRequest(req.getChnlAccountEnquiryRequest());
@@ -29,8 +36,11 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		}
 
 		else if (!(null == req.getChnlCreditTransferRequest())) {
-			rmw.setChnlCreditTransferRequest(req.getChnlCreditTransferRequest());
+			ChnlCreditTransferRequestPojo ctReq = req.getChnlCreditTransferRequest();
+			ctReq.setDateTime(ldt);
+			rmw.setChnlCreditTransferRequest(ctReq);
 			rmw.setChannelRequest(req.getChnlCreditTransferRequest());
+			rmw.setTerminalId(req.getChnlCreditTransferRequest().getTerminalId());
 			rmw.setMsgName("CTReq");
 			exchange.getMessage().setHeader("hdr_msgType", "CTReq");
 			exchange.getMessage().setBody(req.getChnlCreditTransferRequest());

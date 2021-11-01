@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.corebank.pojo.CBDebitInstructionResponsePojo;
 import bifast.outbound.proxyregistration.ChnlProxyResolutionResponse;
 
 @JsonPropertyOrder({
@@ -33,9 +32,6 @@ public class ChannelResponseWrapper {
 	private String time;
 	@JsonProperty("Content")
 	private List<Object> responses;
-
-	@JsonProperty("DebitResponse")
-	private CBDebitInstructionResponsePojo cbDebitInstructionResponse;
 
 	private ChnlAccountEnquiryResponsePojo accountEnquiryResponse;
 	
@@ -109,13 +105,6 @@ public class ChannelResponseWrapper {
 		this.responses = responses;
 	}
 
-	public CBDebitInstructionResponsePojo getCbDebitInstructionResponse() {
-		return cbDebitInstructionResponse;
-	}
-
-	public void setCbDebitInstructionResponse(CBDebitInstructionResponsePojo cbDebitInstructionResponse) {
-		this.cbDebitInstructionResponse = cbDebitInstructionResponse;
-	}
 
 	public ChnlAccountEnquiryResponsePojo getAccountEnquiryResponse() {
 		return accountEnquiryResponse;

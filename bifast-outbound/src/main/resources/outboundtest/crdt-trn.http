@@ -3,7 +3,6 @@
 # orignRefId 9.. akan reject by CB
 # jika norek 8xx akan response timeout, get sttl
 # jika norek 88x timeout ct, no settlement, ps 
-# jika norek 888x timeout ct, no sttl, timeout ps
 # norek 5xx akan response reject
 # positif test refId bukan 9 dan norek bukan 77-8-9
 
@@ -16,23 +15,23 @@ Authorization: Basic CMS:password
 
 {
   "CreditTransferRequest" : {
-    "NoRef" : "31122",   
+    "NoRef" : "6214332",   
     "TerminalId" : "B0434",
     "CategoryPurpose" : "01",
-    "DebtorName" : "ANTON",
+    "DebtorName" : "JONI",
     "DebtorId" : "6055",
     "DebtorType" : "01",
-    "DebtorAccountNumber" : "511154",
+    "DebtorAccountNumber" : "517214",
     "DebtorAccountType" : "CACC",
     "DebtorResidentialStatus": "01",
     "DebtorTownName": "0300",
-    "Amount" : "46705400",
+    "Amount" : "120500.50",
     "FeeTransfer" : "4000.00",
     "RecipientBank" : "BMNDIDJA",
     "CreditorName" : "JONI N",
     "CreditorId" : "C12103",
     "CreditorType" : "01",
-    "CreditorAccountNumber" : "15896",
+    "CreditorAccountNumber" : "5222896",
     "CreditorAccountType" : "SVGS",
     "CreditorResidentialStatus": "01",
     "CreditorTownName": "0300",

@@ -25,7 +25,7 @@ public class ExceptionToFaultProcessor implements Processor {
 		Object objException = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Object.class);
 		String exceptionClassName = objException.getClass().getName();
 		Optional<FaultClass> oFaultClass = faultClassRepo.findByExceptionClass(exceptionClassName);
-		
+			
 		FaultPojo fault = new FaultPojo();
 	
 		ResponseMessageCollection responseCol = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
