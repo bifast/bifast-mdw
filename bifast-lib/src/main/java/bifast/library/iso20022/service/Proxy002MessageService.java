@@ -1,6 +1,8 @@
 package bifast.library.iso20022.service;
 
+import java.time.ZoneId;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -12,6 +14,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy002.BIAddtlCstmrInf;
 import bifast.library.iso20022.prxy002.BISupplementaryData1;
 import bifast.library.iso20022.prxy002.BISupplementaryDataEnvelope1;
+import bifast.library.iso20022.prxy002.BISupplementaryDataEnvelopeDetail;
 import bifast.library.iso20022.prxy002.ProxyRegistrationAccount1;
 import bifast.library.iso20022.prxy002.BranchAndFinancialInstitutionIdentification5;
 import bifast.library.iso20022.prxy002.FinancialInstitutionIdentification8;
@@ -35,90 +38,92 @@ public class Proxy002MessageService {
 		
 		
 		ProxyRegistrationResponseV01 proxy002 = new ProxyRegistrationResponseV01();
-//		String msgId = utilService.genMessageId("710");
 		
 		// GrpHdr
-		GroupHeader60 grpHdr = new GroupHeader60();
-		grpHdr.setMsgId(seed.getMsgId());
+		proxy002.setGrpHdr(new GroupHeader60());
+		proxy002.getGrpHdr().setMsgId(seed.getMsgId());
 		
 		GregorianCalendar gcal = new GregorianCalendar();
+		gcal.setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		grpHdr.setCreDtTm(xcal);
+		proxy002.getGrpHdr().setCreDtTm(xcal);
 		
-		proxy002.setGrpHdr(grpHdr);
+		// GrpHdr/msgRcpt
+		proxy002.getGrpHdr().setMsgRcpt(new Party12Choice());
+		proxy002.getGrpHdr().getMsgRcpt().setAgt(new BranchAndFinancialInstitutionIdentification5());
+		proxy002.getGrpHdr().getMsgRcpt().getAgt().setFinInstnId(new FinancialInstitutionIdentification8());
+		proxy002.getGrpHdr().getMsgRcpt().getAgt().getFinInstnId().setOthr(new GenericFinancialIdentification1());
+		proxy002.getGrpHdr().getMsgRcpt().getAgt().getFinInstnId().getOthr().setId(seed.getMsgRcptAgtId());
+				
+		// OrgnlGrpInf
+		proxy002.setOrgnlGrpInf(new OriginalGroupInformation3());
+		proxy002.getOrgnlGrpInf().setOrgnlMsgId(orgnlMessage.getAppHdr().getBizMsgIdr());
+		
+		proxy002.getOrgnlGrpInf().setOrgnlMsgNmId(orgnlMessage.getAppHdr().getMsgDefIdr());
+		
+		proxy002.getOrgnlGrpInf().setOrgnlCreDtTm(orgnlMessage.getDocument().getPrxyRegn().getGrpHdr().getCreDtTm());
+		
+		// RegnRspn
+		proxy002.setRegnRspn(new ProxyRegistrationResponse1());
+		
+		if(seed.getStatus().equals("ACTC")) 
+			proxy002.getRegnRspn().setPrxRspnSts(ProxyStatusCode.ACTC);
+		else 
+			proxy002.getRegnRspn().setPrxRspnSts(ProxyStatusCode.RJCT);
+		
+		proxy002.getRegnRspn().setStsRsnInf(new ProxyStatusChoice());
+		proxy002.getRegnRspn().getStsRsnInf().setPrtry(seed.getReason());
+				
+		// RegnRspn / OrgnlRegnTp
+		if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("NEWR"))
+			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.NEWR);
 
-		///msgRcpt
-		Party12Choice msgRcpt = new Party12Choice();
+		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("AMND"))
+			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.AMND);
+
+		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("DEAC"))
+			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.DEAC);
+
+		// RegnRspn / PrxyRegn
+		proxy002.getRegnRspn().getPrxyRegn().add(new ProxyRegistrationAccount1());
+		proxy002.getRegnRspn().getPrxyRegn().get(0).setRegnId(seed.getRegnId());
 		
-		GenericFinancialIdentification1 othrGrp = new GenericFinancialIdentification1();
-		othrGrp.setId(seed.getMsgRcptAgtId());
+		// RegnRspn / PrxyRegn / Agt
+		proxy002.getRegnRspn().getPrxyRegn().get(0).setAgt(new BranchAndFinancialInstitutionIdentification5());
+		proxy002.getRegnRspn().getPrxyRegn().get(0).getAgt().setFinInstnId(new FinancialInstitutionIdentification8());
+		proxy002.getRegnRspn().getPrxyRegn().get(0).getAgt().getFinInstnId().setOthr(new GenericFinancialIdentification1());
+		proxy002.getRegnRspn().getPrxyRegn().get(0).getAgt().getFinInstnId().getOthr().setId(seed.getAgtId());
+
+		// RegnRspn / PrxyRegn /+++SplmtryData
+		Boolean splmntExists = false;
 		
-		FinancialInstitutionIdentification8 finInstnIdGrp = new FinancialInstitutionIdentification8();
-		finInstnIdGrp.setOthr(othrGrp);
-		
-		BranchAndFinancialInstitutionIdentification5 agtGrp = new BranchAndFinancialInstitutionIdentification5();
-		agtGrp.setFinInstnId(finInstnIdGrp);
-		msgRcpt.setAgt(agtGrp);
-		grpHdr.setMsgRcpt(msgRcpt);
-		
-		///orgnlGrpInf
-		OriginalGroupInformation3 orgnlGrpInf = new OriginalGroupInformation3();
-		orgnlGrpInf.setOrgnlMsgId(orgnlMessage.getAppHdr().getBizMsgIdr());
-		orgnlGrpInf.setOrgnlMsgNmId(orgnlMessage.getAppHdr().getMsgDefIdr());
-//		orgnlGrpInf.setOrgnlCreDtTm(orgnlMessage.getAppHdr().getCreDt());
-		
-		
-		/// Registration Response
-		ProxyRegistrationResponse1 regnRspn = new ProxyRegistrationResponse1();
-		if(seed.getStatus().equals("ACTC")) {
-			regnRspn.setPrxRspnSts(ProxyStatusCode.ACTC);
-		}else {
-			regnRspn.setPrxRspnSts(ProxyStatusCode.RJCT);
-		}
+		if ((null != seed.getCstmrTp()) ||
+		    (null != seed.getCstmrId()) ||
+		    (null != seed.getCstmrRsdntSts()) ||
+		    (null != seed.getCstmrTwnNm())) {
 			
-		ProxyStatusChoice StsRsnInf = new ProxyStatusChoice();
-		StsRsnInf.setPrtry(seed.getReason());
-		regnRspn.setStsRsnInf(StsRsnInf);
-		
-		//regnRspn.setOrgnlRegnTp(ProxyRegistrationType1Code.NEWR);
-		
-		ProxyRegistrationAccount1 prxyRegn = new ProxyRegistrationAccount1();
-		
-		prxyRegn.setRegnId(seed.getRegnId());
+			splmntExists = true;
+		}
 
-		///
-		BIAddtlCstmrInf bIAddtlCstmrInf = new BIAddtlCstmrInf();
-		bIAddtlCstmrInf.setId(seed.getCstmrId());
-		bIAddtlCstmrInf.setTp(seed.getCstmrTp());
-		bIAddtlCstmrInf.setTwnNm(seed.getCstmrTwnNm());
-		bIAddtlCstmrInf.setRsdntSts(seed.getCstmrRsdntSts());
-		///
-		BISupplementaryDataEnvelope1 biSupplementaryDataEnvelope1 =  new BISupplementaryDataEnvelope1();
-		biSupplementaryDataEnvelope1.setCstmr(bIAddtlCstmrInf);
-		
-		///
-		BISupplementaryData1 biSupplementaryData1 = new BISupplementaryData1();
-		biSupplementaryData1.setEnvlp(biSupplementaryDataEnvelope1);
-		
-		///
-		prxyRegn.getSplmtryData().add(biSupplementaryData1);
-		
-		
-		GenericFinancialIdentification1 othrRegnRspn = new GenericFinancialIdentification1();
-		othrRegnRspn.setId(seed.getAgtId());
-		
-		FinancialInstitutionIdentification8 finInstnIdRegnRspn = new FinancialInstitutionIdentification8();
-		finInstnIdRegnRspn.setOthr(othrRegnRspn);
-		
-		BranchAndFinancialInstitutionIdentification5 agtRegnRspn = new BranchAndFinancialInstitutionIdentification5();
-		agtRegnRspn.setFinInstnId(finInstnIdRegnRspn);
-		prxyRegn.setAgt(agtRegnRspn);
-		
-		regnRspn.getPrxyRegn().add(prxyRegn);
-		
-		proxy002.setGrpHdr(grpHdr);
-		proxy002.setOrgnlGrpInf(orgnlGrpInf);
-		proxy002.setRegnRspn(regnRspn);
+		if (splmntExists) {
+			proxy002.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().add(new BISupplementaryData1());
+			proxy002.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).setEnvlp(new BISupplementaryDataEnvelopeDetail());
+			proxy002.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().setDtl(new BISupplementaryDataEnvelope1());
+			
+			BIAddtlCstmrInf addtlCstmrInf = new BIAddtlCstmrInf();
+
+			if (null != seed.getCstmrId())
+				addtlCstmrInf.setId(seed.getCstmrId());
+			if (null != seed.getCstmrTp())
+				addtlCstmrInf.setTp(seed.getCstmrTp());
+			if (null != seed.getCstmrTwnNm())
+				addtlCstmrInf.setTwnNm(seed.getCstmrTwnNm());
+			if (null != seed.getCstmrRsdntSts())
+				addtlCstmrInf.setRsdntSts(seed.getCstmrRsdntSts());
+			
+			proxy002.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().setCstmr(addtlCstmrInf);
+			
+		}			
 		
 		return proxy002;
 	}

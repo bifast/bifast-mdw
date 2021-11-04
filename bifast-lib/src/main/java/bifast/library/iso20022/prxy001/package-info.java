@@ -7,7 +7,7 @@
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "urn:iso:std:iso:20022:tech:xsd:prxy.001.001.01", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 @XmlJavaTypeAdapters({
-    @XmlJavaTypeAdapter(value=GregorianCalendarXMLAdapterExclMillis.class, type=XMLGregorianCalendar.class),
+    @XmlJavaTypeAdapter(value=GregorianCalendarXMLAdapter.class, type=XMLGregorianCalendar.class),
     @XmlJavaTypeAdapter(value=BigDecimalXMLAdapter.class, type=BigDecimal.class)
 })
 package bifast.library.iso20022.prxy001;
@@ -19,4 +19,4 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import bifast.library.adapter.BigDecimalXMLAdapter;
-import bifast.library.adapter.GregorianCalendarXMLAdapterExclMillis;
+import bifast.library.adapter.GregorianCalendarXMLAdapter;

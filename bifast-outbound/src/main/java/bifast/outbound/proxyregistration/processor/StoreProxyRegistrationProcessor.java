@@ -38,8 +38,8 @@ public class StoreProxyRegistrationProcessor implements Processor{
 		proxyMessage.setKomiTrnsId(rmw.getKomiTrxId());
 		proxyMessage.setChnlNoRef(rmw.getRequestId());
 
-		proxyMessage.setCustomerId(regRequest.getSplmtryData().get(0).getEnvlp().getCstmr().getId());
-		proxyMessage.setCustomerType(regRequest.getSplmtryData().get(0).getEnvlp().getCstmr().getTp());
+		proxyMessage.setCustomerId(regRequest.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
+		proxyMessage.setCustomerType(regRequest.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
 		
 		proxyMessage.setFullRequestMesg(rmw.getCihubEncriptedRequest());
 		if (null != rmw.getCihubEncriptedResponse()) {

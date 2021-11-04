@@ -71,6 +71,8 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		if (null != chnReq.getTownName())
 			seedProxyRegis.setTownName(chnReq.getTownName());
 		
+		seedProxyRegis.setSenderAccountNumber(chnReq.getAccountNumber());
+		
 		Document doc = new Document();
 		doc.setPrxyRegn(proxy001MessageService.proxyRegistrationRequest(seedProxyRegis));
 

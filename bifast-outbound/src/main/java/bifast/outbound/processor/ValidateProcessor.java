@@ -75,7 +75,7 @@ public class ValidateProcessor implements Processor  {
 //			validateChannel = true;
 		}
 		
-		else if (msgType.equals("PrxRegnReq")) {
+		else if (rmw.getChannelRequest().getClass().getSimpleName().equals("ChnlProxyRegistrationRequest")) {
 //			validateChannel = true;
 		}
 

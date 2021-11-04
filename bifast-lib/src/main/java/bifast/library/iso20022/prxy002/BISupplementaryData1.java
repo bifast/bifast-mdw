@@ -44,7 +44,7 @@ public class BISupplementaryData1 {
     @XmlElement(name = "PlcAndNm")
     protected String plcAndNm;
     @XmlElement(name = "Envlp", required = true)
-    protected BISupplementaryDataEnvelope1 envlp;
+    protected BISupplementaryDataEnvelopeDetail envlp;
 
     /**
      * Gets the value of the plcAndNm property.
@@ -78,7 +78,7 @@ public class BISupplementaryData1 {
      *     {@link BISupplementaryDataEnvelope1 }
      *     
      */
-    public BISupplementaryDataEnvelope1 getEnvlp() {
+    public BISupplementaryDataEnvelopeDetail getEnvlp() {
         return envlp;
     }
 
@@ -90,7 +90,7 @@ public class BISupplementaryData1 {
      *     {@link BISupplementaryDataEnvelope1 }
      *     
      */
-    public void setEnvlp(BISupplementaryDataEnvelope1 value) {
+    public void setEnvlp(BISupplementaryDataEnvelopeDetail value) {
         this.envlp = value;
     }
 

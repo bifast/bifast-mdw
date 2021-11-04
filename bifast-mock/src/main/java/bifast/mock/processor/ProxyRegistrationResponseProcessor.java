@@ -37,7 +37,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 	public void process(Exchange exchange) throws Exception {
 		
 		String bizMsgId = utilService.genRfiBusMsgId("710", "01", "INDOIDJA");
-		String ap = utilService.genMessageId("710", "INDOIDJA");
+		String msgId = utilService.genMessageId("710", "INDOIDJA");
 
 		Random rand = new Random();
 		Proxy002Seed seed = new Proxy002Seed();
@@ -54,8 +54,8 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
 		
-		BISupplementaryDataEnvelope1 enlp = msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp();
-		
+		BISupplementaryDataEnvelope1 enlp = msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getDtl();
+		seed.setMsgId(msgId);
 		seed.setAdditionalInfo("Terimakasih atas perhaitiannya");
 		seed.setCstmrId(enlp.getCstmr().getId());
 		seed.setCstmrTp(enlp.getCstmr().getTp());
@@ -321,10 +321,10 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		accountProxy.setAccountStatus("ACTV");
 		accountProxy.setScndIdTp(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getScndId().getTp());
 		accountProxy.setScndIdVal(msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getScndId().getVal());
-		accountProxy.setCstmrId(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getCstmr().getId());
-		accountProxy.setCstmrRsdntSts(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts());
-		accountProxy.setCstmrTp(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getCstmr().getTp());
-		accountProxy.setCstmrTwnNm(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
+		accountProxy.setCstmrId(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
+		accountProxy.setCstmrRsdntSts(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
+		accountProxy.setCstmrTp(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
+		accountProxy.setCstmrTwnNm(msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
 		accountProxyRepository.save(accountProxy);
 	}
 	
