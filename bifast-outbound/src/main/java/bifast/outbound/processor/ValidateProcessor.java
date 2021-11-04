@@ -12,8 +12,10 @@ import bifast.outbound.exception.DuplicateIdException;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.DomainCode;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.DomainCodeRepository;
+import bifast.outbound.service.ValidationService;
 
 @Component
 public class ValidateProcessor implements Processor  {
@@ -22,6 +24,8 @@ public class ValidateProcessor implements Processor  {
 	private DomainCodeRepository domainCodeRepo;
 	@Autowired
 	private ChannelTransactionRepository chnlTrnsRepo;
+	@Autowired
+	private ValidationService validationService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -40,7 +44,9 @@ public class ValidateProcessor implements Processor  {
 		//TODO nilai transaksi harian
 		//TODO frekuensi transaksi harian
 		//TODO kombinasi optional input parameter
+		
 		//TODO format data input
+		
 		//TODO sesuai domaincode, daftar bank
 		
 		Object objRequest = exchange.getIn().getBody(Object.class);
@@ -50,7 +56,10 @@ public class ValidateProcessor implements Processor  {
 
 		String msgType = rmw.getMsgName();
 		
-		if (msgType.equals("AEReq")) {
+//		if (msgType.equals("AEReq")) {
+		if (rmw.getChannelRequest().getClass().getSimpleName().equals("ChnlAccountEnquiryRequestPojo")) {
+			ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
+			validationService.validateAccountEnquiryRequest(aeReq);
 //			validateChannel = true;
 //			validateBank = true;
 //			validatePurpose = true;

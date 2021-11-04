@@ -27,6 +27,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 
 		if (!(null == req.getChnlAccountEnquiryRequest())) {
 			rmw.setChnlAccountEnquiryRequest(req.getChnlAccountEnquiryRequest());
+			rmw.setChannelRequest(req.getChnlAccountEnquiryRequest());
 			rmw.setMsgName("AEReq");
 			exchange.getMessage().setHeader("hdr_msgType", "AEReq");
 			exchange.getMessage().setBody(req.getChnlAccountEnquiryRequest());

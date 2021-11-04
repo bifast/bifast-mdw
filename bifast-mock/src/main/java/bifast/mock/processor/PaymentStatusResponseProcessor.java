@@ -1,7 +1,5 @@
 package bifast.mock.processor;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -51,34 +49,23 @@ public class PaymentStatusResponseProcessor implements Processor{
 		map.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
 		map.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-		// List<MockPacs002> listPacs002 = mockPacs002Repo.findByOrgnlEndToEndId(reqEndToEndId);
-		Optional<MockPacs002> optPacs002 = mockPacs002Repo.findByTrxTypeAndOrgnlEndToEndId("CreditConfirmation", reqEndToEndId);
+		// cari settlement dulu
+
+		Optional<MockPacs002> optPacs002 = mockPacs002Repo.findByTrxTypeAndOrgnlEndToEndId("STTL", reqEndToEndId);
+		if (optPacs002.isEmpty())
+			optPacs002 = mockPacs002Repo.findByTrxTypeAndOrgnlEndToEndId("CLEAR", reqEndToEndId);		
+		
 		if (optPacs002.isPresent()) {
 			MockPacs002 pacs002 = optPacs002.get();
-
 			BusinessMessage bm = map.readValue(pacs002.getFullMessage(), BusinessMessage.class);
-
 			exchange.getMessage().setBody(bm);
 		}
 
-		else  {
-			optPacs002 = mockPacs002Repo.findByTrxTypeAndOrgnlEndToEndId("SettlementConfirmation", reqEndToEndId);
-			if (optPacs002.isPresent()) {
-				MockPacs002 pacs002 = optPacs002.get();
-				String str = pacs002.getFullMessage();
-				
-				BusinessMessage bm = map.readValue(str, BusinessMessage.class);
-
-				exchange.getMessage().setBody(bm);
-			
-			}	
-			else
-				// exchange.getMessage().setBody(null);
+		else  { // nggak ketemu juga 
 				System.out.println("ga nemu ah");
-				exchange.getMessage().setBody(null);
+				BusinessMessage bm = notFoundCTResponse(psRequest);
+				exchange.getMessage().setBody(bm);
 		}
-		
-		
 		
 	}
 	
@@ -101,7 +88,7 @@ public class PaymentStatusResponseProcessor implements Processor{
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(psRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"pacs.002.001.10", bizMsgId);
-		hdr.setBizSvc("CTRESPONSE");
+		hdr.setBizSvc("CLEAR");
 		
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);

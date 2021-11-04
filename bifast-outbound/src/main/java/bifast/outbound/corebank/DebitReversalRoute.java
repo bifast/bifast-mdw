@@ -1,7 +1,5 @@
 package bifast.outbound.corebank;
 
-import java.time.LocalDateTime;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -40,11 +38,16 @@ public class DebitReversalRoute extends RouteBuilder{
 			//submit reversal
 			.to("seda:callcb")
 			
+			.filter().simple("${body} is 'bifast.outbound.pojo.FaultPojo'")
+				.log("Fault!")
+			.end()
+
 			// jika gagal reversal return as Fault, otherwise DebitResponse
 			.choice()
 				.when().simple("${body.class} endsWith 'CbDebitResponsePojo'")
 					.setBody(simple("${header.ct_tmpbody}"))
 				.endChoice()
+				
 				
 				.when().simple("${body.class} endsWith 'FaultPojo'")
 					.process(new Processor() {

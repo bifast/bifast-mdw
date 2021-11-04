@@ -85,7 +85,6 @@ public class CiHubRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.log("Terima di mock")
 			.log("${body}")
-			.log("Json Format")
 			.unmarshal(jsonBusinessMessageDataFormat)
 			.setHeader("objRequest", simple("${body}"))
 			

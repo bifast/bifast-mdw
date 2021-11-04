@@ -1,52 +1,33 @@
 package bifast.inbound.route;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
 import bifast.inbound.accountenquiry.SaveAccountEnquiryProcessor;
-import bifast.inbound.credittransfer.CreditTransferProcessor;
 import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
+import bifast.inbound.processor.CheckRequestMsgProcessor;
 import bifast.inbound.processor.SaveSettlementMessageProcessor;
 import bifast.inbound.processor.SettlementProcessor;
+import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 
 @Component
 public class InboundRoute extends RouteBuilder {
 
-	@Autowired
-	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
-	@Autowired
-	private SaveCreditTransferProcessor saveCreditTransferProcessor;
-	@Autowired
-	private SaveSettlementMessageProcessor saveSettlementMessageProcessor;
-	@Autowired
-	private CreditTransferProcessor creditTransferProcessor;
-	@Autowired
-	private SettlementProcessor settlementProcessor;
+	@Autowired private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
+	@Autowired private SaveCreditTransferProcessor saveCreditTransferProcessor;
+	@Autowired private SaveSettlementMessageProcessor saveSettlementMessageProcessor;
+	@Autowired private CheckRequestMsgProcessor checkRequestMsgProcessor;
+	@Autowired private SettlementProcessor settlementProcessor;
+	@Autowired private JacksonDataFormatService jdfService;
 	
-	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
-	private void configureJson() {
-		jsonBusinessMessageDataFormat.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		jsonBusinessMessageDataFormat.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-		jsonBusinessMessageDataFormat.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		jsonBusinessMessageDataFormat.setInclude("NON_NULL");
-		jsonBusinessMessageDataFormat.setInclude("NON_EMPTY");
-	}
-	
 	@Override
 	public void configure() throws Exception {
-		configureJson();
+		JacksonDataFormat jsonBusinessMessageDataFormat = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 		
 		restConfiguration()
 			.component("servlet")
@@ -68,23 +49,15 @@ public class InboundRoute extends RouteBuilder {
 			.marshal().base64()
 			.setHeader("hdr_frBI_jsonzip", simple("${body}"))
 			.setBody(simple("${header.hdr_tmp}")).id("process_encr_request")
-
+			
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
 			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
 
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					BusinessMessage inputMsg = exchange.getMessage().getBody(BusinessMessage.class);
-					String trnType = inputMsg.getAppHdr().getBizMsgIdr().substring(16,19);
-					if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) 
-						trnType = "SETTLEMENT";
-					else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901"))
-						trnType = "PROXYNOTIF";
-					exchange.getMessage().setHeader("hdr_msgType", trnType);
-				} }).id("process1")
+			.process(checkRequestMsgProcessor) 
+			.id("process1")
 			
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] received.")
-
+		
 			.choice().id("forward_msgtype")
 
 				.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
@@ -96,11 +69,10 @@ public class InboundRoute extends RouteBuilder {
 
 				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
 					.to("direct:accountenq")
-					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '010'")    // terima credit transfer
 					.to("direct:crdttransfer")
-					.setHeader("hdr_toBIobj", simple("${body}"))
+//					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '110'")    // terima credit transfer with proxy
 					.to("direct:crdttransfer")
@@ -136,11 +108,9 @@ public class InboundRoute extends RouteBuilder {
 			
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
 			.removeHeaders("hdr_*")
-			.removeHeaders("req_*")
 			.removeHeaders("resp_*")
 			.removeHeader("HttpMethod")
 		
-			
 		;
 
 		from("seda:reversal")

@@ -5,7 +5,7 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
-import bifast.inbound.corebank.pojo.CBAccountEnquiryResponsePojo;
+import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
 
 
 @Component
@@ -14,17 +14,15 @@ public class BuildCBResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		CBAccountEnquiryResponsePojo response = new CBAccountEnquiryResponsePojo();
+		CbAccountEnquiryResponsePojo response = new CbAccountEnquiryResponsePojo();
 		
 		CbAccountEnquiryRequestPojo request = exchange.getMessage().getBody(CbAccountEnquiryRequestPojo.class);
 		
 		if (request.getAccountNumber().startsWith("11")) {
 			response.setAccountNumber(request.getAccountNumber());
 			response.setAccountType("CACC");
-			response.setAdditionInfo("Rekening bermasalah");
 			response.setCreditorId("22222");
 			response.setCreditorName("Johansyah");
-			response.setCreditorStatus("NOTVALID");
 			response.setCreditorType("01");
 	//		response.setErrorMessage(null);
 //			response.setRequestStatus("SUCCESS");
@@ -40,7 +38,6 @@ public class BuildCBResponseProcessor implements Processor {
 //			response.setAdditionInfo("Rekening bermasalah");
 			response.setCreditorId("22222");
 			response.setCreditorName("Antonio");
-			response.setCreditorStatus("VALID");
 			response.setCreditorType("01");
 	//		response.setErrorMessage(null);
 //			response.setRequestStatus("SUCCESS");

@@ -64,7 +64,7 @@ public class CorebankRoute extends RouteBuilder{
 			.end()
 			
 	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
-	 														+ "[${header.hdr_request_list.msgName}] CB Request: ${body}")
+	 														+ " CB Request: ${body}")
 			.setHeader("HttpMethod", constant("POST"))
 //			.enrich("http:{{komi.cb-url}}?"
 //					+ "bridgeEndpoint=true",
@@ -75,7 +75,7 @@ public class CorebankRoute extends RouteBuilder{
 			.process(mockResponse)
 			
 	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
-	 														+ "[${header.hdr_request_list.msgName}] CB Response: ${body}")
+	 														+ " CB Response: ${body}")
 
 	 		.log("${header.cb_requestName}")
 			.choice()
@@ -87,7 +87,6 @@ public class CorebankRoute extends RouteBuilder{
 					.unmarshal(chnlDebitResponseJDF)
 			.end()
 				
-			.log("hah : ${body}")
 			.choice()
 				.when().simple("${body.status} == 'RJCT'")
 			 		.process(new Processor() {

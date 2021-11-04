@@ -104,7 +104,7 @@ public class CreditTransferRoute extends RouteBuilder {
 				.setHeader("ct_progress", constant("SUCCESS"))
 			.end()
 
-			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] B, ${header.ct_progress}.")
+			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] ${body.class}, ${header.ct_progress}.")
 
 			// jika response RJCT/ERROR, harus reversal ke corebanking
 			.filter().simple("${header.ct_progress} in 'REJECT,ERROR'")

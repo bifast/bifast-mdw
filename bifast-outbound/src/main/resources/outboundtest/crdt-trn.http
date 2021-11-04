@@ -1,9 +1,9 @@
 # Credit Transfer Request from channel on generic endpoint
 
 # orignRefId 9.. akan reject by CB
-# jika norek 8xx akan response timeout, get sttl
-# jika norek 88x timeout ct, no settlement, ps 
-# norek 5xx akan response reject
+# norekDebitur 5xx akan response reject
+# jika norekCreditor 8xx timeout, get settlement
+# jika norekCreditor 88x timeout ct, no settlement 
 # positif test refId bukan 9 dan norek bukan 77-8-9
 
 #localhost:9002/komi-outbound/routing/
@@ -15,13 +15,13 @@ Authorization: Basic CMS:password
 
 {
   "CreditTransferRequest" : {
-    "NoRef" : "6214332",   
+    "NoRef" : "3452578",   
     "TerminalId" : "B0434",
     "CategoryPurpose" : "01",
     "DebtorName" : "JONI",
     "DebtorId" : "6055",
     "DebtorType" : "01",
-    "DebtorAccountNumber" : "517214",
+    "DebtorAccountNumber" : "444214",
     "DebtorAccountType" : "CACC",
     "DebtorResidentialStatus": "01",
     "DebtorTownName": "0300",
@@ -31,7 +31,7 @@ Authorization: Basic CMS:password
     "CreditorName" : "JONI N",
     "CreditorId" : "C12103",
     "CreditorType" : "01",
-    "CreditorAccountNumber" : "5222896",
+    "CreditorAccountNumber" : "244296",
     "CreditorAccountType" : "SVGS",
     "CreditorResidentialStatus": "01",
     "CreditorTownName": "0300",

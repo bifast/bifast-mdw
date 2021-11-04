@@ -65,7 +65,7 @@ public class Proxy002MessageService {
 		OriginalGroupInformation3 orgnlGrpInf = new OriginalGroupInformation3();
 		orgnlGrpInf.setOrgnlMsgId(orgnlMessage.getAppHdr().getBizMsgIdr());
 		orgnlGrpInf.setOrgnlMsgNmId(orgnlMessage.getAppHdr().getMsgDefIdr());
-		orgnlGrpInf.setOrgnlCreDtTm(orgnlMessage.getAppHdr().getCreDt());
+//		orgnlGrpInf.setOrgnlCreDtTm(orgnlMessage.getAppHdr().getCreDt());
 		
 		
 		/// Registration Response

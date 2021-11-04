@@ -8,6 +8,8 @@
 
 package bifast.library.iso20022.head001;
 
+import java.time.LocalDateTime;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -77,6 +79,7 @@ public class BusinessApplicationHeaderV01 {
     protected String bizSvc;
     @XmlElement(name = "CreDt", required = true)
     @XmlSchemaType(name = "dateTime")
+//    protected LocalDateTime creDt;
     protected XMLGregorianCalendar creDt;
     @XmlElement(name = "CpyDplct")
     @XmlSchemaType(name = "string")

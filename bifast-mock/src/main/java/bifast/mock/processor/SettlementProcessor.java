@@ -2,11 +2,14 @@ package bifast.mock.processor;
 
 import java.util.HashMap;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
@@ -37,56 +40,48 @@ public class SettlementProcessor implements Processor {
 //		BusinessMessage in = exchange.getMessage().getHeader("hdr_ctResponseObj", BusinessMessage.class);
 		HashMap<String, String> frTable = exchange.getMessage().getHeader("sttl_tableqry", HashMap.class);
 		
+		
 		String bizMsgId = "";
 		String msgId = "";
 		String msgName = frTable.get("ORGNL_MSG_NAME");
 		
-		String orgnlMsgId = exchange.getMessage().getHeader("sttl_orgnlmsgid", String.class);
+//		String orgnlMsgId = exchange.getMessage().getHeader("sttl_orgnlmsgid", String.class);
 
-		if (msgName.startsWith("pacs.008")) {
-			bizMsgId = utilService.genRfiBusMsgId("010", "02", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
-			msgId = utilService.genMessageId("010", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+		bizMsgId = utilService.genRfiBusMsgId("010", "02", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+		msgId = utilService.genMessageId("010", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 
-		} else {
-			bizMsgId = utilService.genRfiBusMsgId("019", "02", 
-							in.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-			msgId = utilService.genMessageId("019",
-							in.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-		}
 		
-		if (msgName.startsWith("pacs.008")) {
-
-			String cdtrAcct = frTable.get("cdtr_acct");
-		
-			CashAccount38 cdtrAcctT = new CashAccount38();
-			cdtrAcctT.setId(new AccountIdentification4Choice());
-			cdtrAcctT.getId().setOthr(new GenericAccountIdentification1());
-			cdtrAcctT.getId().getOthr().setId(cdtrAcct);
-
-			cdtrAcctT.setTp(new CashAccountType2Choice());
-			cdtrAcctT.getTp().setPrtry("CACC");
-
-			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setCdtrAcct(cdtrAcctT);
-
-			String dbtrAcct = frTable.get("dbtr_acct"); 
-
-			CashAccount38 dbtrAcctT = new CashAccount38();
-			dbtrAcctT.setId(new AccountIdentification4Choice());
-			dbtrAcctT.getId().setOthr(new GenericAccountIdentification1());
-			dbtrAcctT.getId().getOthr().setId(dbtrAcct);
-			
-			dbtrAcctT.setTp(new CashAccountType2Choice());
-			dbtrAcctT.getTp().setPrtry("CACC");
-			
-			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setDbtrAcct(dbtrAcctT);
-
-		}
-
+		String cdtrAcct = frTable.get("CDTR_ACCT");
 	
-		in.getAppHdr().setBizMsgIdr(bizMsgId);
-		in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().setMsgId(msgId);
-		in.getAppHdr().setBizSvc("STTL");
+		CashAccount38 cdtrAcctT = new CashAccount38();
+		cdtrAcctT.setId(new AccountIdentification4Choice());
+		cdtrAcctT.getId().setOthr(new GenericAccountIdentification1());
+		cdtrAcctT.getId().getOthr().setId(cdtrAcct);
+
+		cdtrAcctT.setTp(new CashAccountType2Choice());
+		cdtrAcctT.getTp().setPrtry("CACC");
+
+		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setCdtrAcct(cdtrAcctT);
+
+		String dbtrAcct = frTable.get("DBTR_ACCT"); 
 		
+		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setDbtrAcct(new CashAccount38());
+		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().setId(new AccountIdentification4Choice());
+		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().setOthr(new GenericAccountIdentification1());
+		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().getOthr().setId(dbtrAcct);
+		
+		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().setTp(new CashAccountType2Choice());
+		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getTp().setPrtry("CACC");
+		
+
+		in.getAppHdr().setBizMsgIdr(bizMsgId);
+		in.getAppHdr().setBizSvc("STTL");
+
+		in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().setMsgId(msgId);
+		
+		XMLGregorianCalendar orgnlDateTime = in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm();
+		in.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).setOrgnlCreDtTm(orgnlDateTime);
+
 		GenericAccountIdentification1 dbtrAgtAcctIdOth = new GenericAccountIdentification1();
 		dbtrAgtAcctIdOth.setId("123456");
 		AccountIdentification4Choice dbtrAgtAcctId = new AccountIdentification4Choice();
@@ -102,32 +97,36 @@ public class SettlementProcessor implements Processor {
 		cdtrAgtAcct.setId(cdtrAgtAcctId);
 		
 		
-		if (in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().size() == 0 ) {
+//		if (in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().size() == 0 ) {
+//		
+//			BISupplementaryData1 supplData = new BISupplementaryData1();
+//			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().add(supplData);
+//			
+//			BISupplementaryDataEnvelope1 dataEnvl = new BISupplementaryDataEnvelope1();
+//			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).setEnvlp(dataEnvl);
+//		}
 		
-			BISupplementaryData1 supplData = new BISupplementaryData1();
-			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().add(supplData);
-			
-			BISupplementaryDataEnvelope1 dataEnvl = new BISupplementaryDataEnvelope1();
-			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).setEnvlp(dataEnvl);
-		}
-		
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setCdtrAgtAcct(cdtrAgtAcct);
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setDbtrAgtAcct(dbtrAgtAcct);
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setCdtrAgtAcct(cdtrAgtAcct);
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setDbtrAgtAcct(dbtrAgtAcct);
 
 		
 		ObjectMapper map = new ObjectMapper();
 		map.registerModule(new JaxbAnnotationModule());
 		map.enable(SerializationFeature.WRAP_ROOT_VALUE);
+	    map.setSerializationInclusion(Include.NON_NULL);
 
 		String strSttl = map.writeValueAsString(in);
+		
+		System.out.println("Akan save settlement");
 		
 		MockPacs002 pacs002 = new MockPacs002();
 		pacs002.setBizMsgIdr(bizMsgId);
 		pacs002.setFullMessage(strSttl);
-		pacs002.setOrgnlEndToEndId(frTable.get("orgnl_end_to_end_id"));
-		pacs002.setOrgnlMsgId(orgnlMsgId);
+		pacs002.setOrgnlEndToEndId(frTable.get("ORGNL_END_TO_END_ID"));
+		pacs002.setOrgnlMsgId(frTable.get("ORGNL_MSG_ID"));
 		pacs002.setOrgnlMsgName(msgName);
 		pacs002.setSttl("DONE");
+		pacs002.setResult("ACTC");
 
 		pacs002.setTrxType("STTL");
 		mockPacs002Repo.save(pacs002);

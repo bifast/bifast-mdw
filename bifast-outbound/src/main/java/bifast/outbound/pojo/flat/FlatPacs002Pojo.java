@@ -31,9 +31,9 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	private String cdtrTwnNm;
 
 	private String dbtrAgtFinInstnId;
-	private String dbtrAgtAcctId;
+//	private String dbtrAgtAcctId;
 	private String cdtrAgtFinInstnId;
-	private String cdtrAgtAcctId;
+//	private String cdtrAgtAcctId;
 	
 	public String getMsgId() {
 		return msgId;
@@ -191,24 +191,24 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	public void setDbtrAgtFinInstnId(String dbtrAgtFinInstnId) {
 		this.dbtrAgtFinInstnId = dbtrAgtFinInstnId;
 	}
-	public String getDbtrAgtAcctId() {
-		return dbtrAgtAcctId;
-	}
-	public void setDbtrAgtAcctId(String dbtrAgtAcctId) {
-		this.dbtrAgtAcctId = dbtrAgtAcctId;
-	}
+//	public String getDbtrAgtAcctId() {
+//		return dbtrAgtAcctId;
+//	}
+//	public void setDbtrAgtAcctId(String dbtrAgtAcctId) {
+//		this.dbtrAgtAcctId = dbtrAgtAcctId;
+//	}
 	public String getCdtrAgtFinInstnId() {
 		return cdtrAgtFinInstnId;
 	}
 	public void setCdtrAgtFinInstnId(String cdtrAgtFinInstnId) {
 		this.cdtrAgtFinInstnId = cdtrAgtFinInstnId;
 	}
-	public String getCdtrAgtAcctId() {
-		return cdtrAgtAcctId;
-	}
-	public void setCdtrAgtAcctId(String cdtrAgtAcctId) {
-		this.cdtrAgtAcctId = cdtrAgtAcctId;
-	}
+//	public String getCdtrAgtAcctId() {
+//		return cdtrAgtAcctId;
+//	}
+//	public void setCdtrAgtAcctId(String cdtrAgtAcctId) {
+//		this.cdtrAgtAcctId = cdtrAgtAcctId;
+//	}
 	
 
 	

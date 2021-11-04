@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.config.Config;
-import bifast.inbound.corebank.pojo.CBCreditInstructionResponsePojo;
+import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
@@ -43,7 +43,7 @@ public class ReverseCTProcessor implements Processor {
 		//TODO kirim transaksi credit-reversal ke CB.
 		
 
-		CBCreditInstructionResponsePojo cbResponse = exchange.getMessage().getBody(CBCreditInstructionResponsePojo.class);		
+		CbCreditResponsePojo cbResponse = exchange.getMessage().getBody(CbCreditResponsePojo.class);		
 		
 		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("hdr_frBIobj", BusinessMessage.class);
 		CreditTransferTransaction39 biReq =  reqBusMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);

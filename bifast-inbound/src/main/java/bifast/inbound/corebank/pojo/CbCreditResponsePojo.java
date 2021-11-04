@@ -2,11 +2,12 @@ package bifast.inbound.corebank.pojo;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonRootName("DebitInstructionResponse")
-public class CBDebitInstructionResponsePojo {
+@JsonRootName("CreditInstructionResponse")
+public class CbCreditResponsePojo {
 
 	private String transactionId;
 	private String status;
+	private String reason;
 	private String accountNumber;
 	private String amount;
 	private String addtInfo;
@@ -23,6 +24,12 @@ public class CBDebitInstructionResponsePojo {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 	public String getAccountNumber() {
 		return accountNumber;
@@ -48,6 +55,6 @@ public class CBDebitInstructionResponsePojo {
 	public void setResponseTime(String responseTime) {
 		this.responseTime = responseTime;
 	}
-
+	
 	
 }

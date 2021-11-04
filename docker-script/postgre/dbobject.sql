@@ -26,17 +26,26 @@ CREATE SEQUENCE public.hibernate_sequence
 
 -- public.corebank_sequence definition
 
--- DROP SEQUENCE public.komi_sequence;
+-- DROP SEQUENCE public.kc_outboundseq;
 
-CREATE SEQUENCE public.komi_sequence
+CREATE SEQUENCE public.kc_outboundseq
 	INCREMENT BY 1
 	MINVALUE 1
-	MAXVALUE 9999999
+	MAXVALUE 99999999
 	START 1
 	CACHE 1
 	CYCLE;
 	
-	
+-- DROP SEQUENCE public.kc_inboundseq;
+
+CREATE SEQUENCE public.kc_inboundseq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 99999999
+	START 1
+	CACHE 1
+	CYCLE;
+
 -- public.table_seq_generator definition
 
 -- DROP SEQUENCE public.table_seq_generator;
@@ -149,6 +158,7 @@ CREATE TABLE public.kc_corebank_transaction (
 	transaction_type varchar(20) NULL,
 	trns_date varchar(8) NULL,
 	update_time timestamp NULL,
+	full_text_request varchar(2000) NULL,
 	CONSTRAINT kc_corebank_transaction_pkey PRIMARY KEY (id)
 );
 
@@ -386,4 +396,3 @@ CREATE TABLE public.kc_status_reason (
 	status_code varchar(20) NULL,
 	CONSTRAINT kc_status_reason_pkey PRIMARY KEY (status_reason_code)
 );
-

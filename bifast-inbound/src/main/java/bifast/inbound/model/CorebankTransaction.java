@@ -48,11 +48,16 @@ public class CorebankTransaction {
 	private String orgnlDateTime;
 
 	@Column(length=20)
-	private String status;
-	
-	private Integer retry;
+	private String response;
+	@Column(length=20)
+	private String reason;
+
+	private Integer retryCounter;
 	
 	private LocalDateTime updateTime;
+	
+	@Column(length=2000)
+	private String fullTextRequest;
 
 	public Long getId() {
 		return id;
@@ -102,14 +107,6 @@ public class CorebankTransaction {
 		this.transactionType = transactionType;
 	}
 
-	public String getCstmAccountNo() {
-		return cstmAccountNo;
-	}
-
-	public void setCstmAccountNo(String cstmAccountNo) {
-		this.cstmAccountNo = cstmAccountNo;
-	}
-
 	public BigDecimal getDebitAmount() {
 		return debitAmount;
 	}
@@ -132,6 +129,14 @@ public class CorebankTransaction {
 
 	public void setFeeAmount(BigDecimal feeAmount) {
 		this.feeAmount = feeAmount;
+	}
+
+	public String getCstmAccountNo() {
+		return cstmAccountNo;
+	}
+
+	public void setCstmAccountNo(String cstmAccountNo) {
+		this.cstmAccountNo = cstmAccountNo;
 	}
 
 	public String getCstmAccountType() {
@@ -166,20 +171,36 @@ public class CorebankTransaction {
 		this.orgnlDateTime = orgnlDateTime;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getResponse() {
+		return response;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setResponse(String response) {
+		this.response = response;
 	}
 
-	public Integer getRetry() {
-		return retry;
+	public String getFullTextRequest() {
+		return fullTextRequest;
 	}
 
-	public void setRetry(Integer retry) {
-		this.retry = retry;
+	public void setFullTextRequest(String fullTextRequest) {
+		this.fullTextRequest = fullTextRequest;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public Integer getRetryCounter() {
+		return retryCounter;
+	}
+
+	public void setRetryCounter(Integer retryCounter) {
+		this.retryCounter = retryCounter;
 	}
 
 	public LocalDateTime getUpdateTime() {
@@ -189,6 +210,7 @@ public class CorebankTransaction {
 	public void setUpdateTime(LocalDateTime updateTime) {
 		this.updateTime = updateTime;
 	}
+
 
 
 	

@@ -40,10 +40,7 @@ public class CreditResponseStoreProcessor implements Processor {
 	        pacs002.setCdtrAcct(objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 	        pacs002.setDbtrAcct(objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
 	        
-            if (orgnlMsgName.startsWith("pacs.008"))
-                pacs002.setTrxType("CreditConfirmation");
-            else
-                pacs002.setTrxType("FICreditConfirmation");
+            pacs002.setTrxType("CLEAR");
 
 	        mockPacs002Repo.save(pacs002);
         

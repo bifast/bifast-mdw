@@ -12,7 +12,6 @@ import bifast.outbound.accountenquiry.processor.AEProxyEnrichmentProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
 import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
-import bifast.outbound.accountenquiry.processor.ValidateAEProcessor;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
@@ -35,8 +34,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	@Autowired
 	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
 	@Autowired
-	private ValidateAEProcessor validateAEProcessor;
-	@Autowired
 	private ExceptionProcessor exceptionProcessor;
 	@Autowired
 	private JacksonDataFormatService jdfService;
@@ -55,7 +52,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 
 
 		from("direct:acctenqr").routeId("komi.acctenq")
-			.process(validateAEProcessor)
 			
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {

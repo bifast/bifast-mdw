@@ -4,7 +4,7 @@ services:
     komidb:
       build: docker-script/postgre
       container_name: komidb
-      image: fransmzh/komi-db:1.6
+      image: fransmzh/komi-db:1.7
       restart: always
       environment:
         - POSTGRES_USER=postgres
@@ -25,7 +25,7 @@ services:
 
     inbound:
       build: bifast-inbound
-      image: fransmzh/komi-inbound:1.6
+      image: fransmzh/komi-inbound:1.7
       container_name: komi-inbound
       restart: always
       depends_on: 
@@ -42,6 +42,7 @@ services:
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.COREBANK-URL=localhost:9003/services/cb
+        - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs
       networks: 
@@ -49,7 +50,7 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:1.6
+      image: fransmzh/komi-outbound:1.7
       container_name: komi-outbound
       restart: always
       depends_on: 
@@ -70,6 +71,7 @@ services:
         - SPRING.DATASOURCE.PASSWORD=postgres 
         - SPRING.MAIN.BANNER-MODE=OFF 
         - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+        - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/outbound:/home/logs
       networks: 
@@ -78,7 +80,7 @@ services:
     mock:
       build: bifast-mock
       container_name: komi-mock
-      image: fransmzh/komi-mock:1.6
+      image: fransmzh/komi-mock:1.7
       restart: always
       depends_on: 
         - komidb
@@ -90,6 +92,7 @@ services:
         - LOGGING.FILE.NAME=/home/logs/komi-mock.log
         - BIFAST.INBOUND-LOG-FOLDER=/home/logs
         - KOMI.INBOUND-URL=komi-inbound:9001/services/api
+        - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/mock:/home/logs
       networks: 

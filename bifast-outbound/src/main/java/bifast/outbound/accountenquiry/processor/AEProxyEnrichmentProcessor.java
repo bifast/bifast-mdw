@@ -39,6 +39,8 @@ public class AEProxyEnrichmentProcessor implements Processor{
 			rmc.setResponseCode(prx004.getResponseCode());
 			rmc.setReasonCode(prx004.getReasonCode());
 			rmc.setProxyResolutionResponse(prx004);
+			
+			System.out.println(prx004.getRegisterBank());
 			exchange.getMessage().setHeader("hdr_response_list", rmc);
 
 			RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);

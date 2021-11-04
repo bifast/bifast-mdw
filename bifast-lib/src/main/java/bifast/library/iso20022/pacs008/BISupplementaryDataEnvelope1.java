@@ -47,8 +47,8 @@ public class BISupplementaryDataEnvelope1 {
     protected BIAddtlCstmrInf dbtr;
     @XmlElement(name = "Cdtr")
     protected BIAddtlCstmrInf cdtr;
-    @XmlElement(name = "OrgnlEndtoEndId")
-    protected String orgnlEndtoEndId;
+    @XmlElement(name = "RltdEndToEndId")
+    protected String rltdEndToEndId;
 
     /**
      * Gets the value of the dbtr property.
@@ -106,8 +106,8 @@ public class BISupplementaryDataEnvelope1 {
      *     {@link String }
      *     
      */
-    public String getOrgnlEndtoEndId() {
-        return orgnlEndtoEndId;
+    public String getRltdEndToEndId() {
+        return rltdEndToEndId;
     }
 
     /**
@@ -118,8 +118,8 @@ public class BISupplementaryDataEnvelope1 {
      *     {@link String }
      *     
      */
-    public void setOrgnlEndtoEndId(String value) {
-        this.orgnlEndtoEndId = value;
+    public void setRltdEndToEndId(String value) {
+        this.rltdEndToEndId = value;
     }
 
 }

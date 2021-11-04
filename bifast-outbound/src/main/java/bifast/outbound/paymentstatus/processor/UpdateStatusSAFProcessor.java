@@ -36,7 +36,7 @@ public class UpdateStatusSAFProcessor implements Processor{
 
 			ct.setResponseCode(psReq.getResponseCode());
 			ct.setReasonCode(psReq.getReasonCode());
-			
+
 			ch.setCallStatus("SUCCESS");
 			ch.setResponseCode(psReq.getResponseCode());
 
@@ -60,14 +60,13 @@ public class UpdateStatusSAFProcessor implements Processor{
 			ch.setCallStatus("NOTFOUND");
 			ch.setResponseCode(psReq.getResponseCode());
 		}
-		
-		else {
-			Integer cnt = ct.getPsCounter();
-			if (null == cnt) cnt = 0;
-			ct.setPsCounter(cnt + 1);
-			ct.setLastUpdateDt(LocalDateTime.now());
-		}
 			
+		Integer cnt = ct.getPsCounter();
+		if (null == cnt) cnt = 0;
+		ct.setPsCounter(cnt + 1);
+
+		ct.setLastUpdateDt(LocalDateTime.now());
+		
 		ctRepo.save(ct);
 		chnlTrnsRepo.save(ch);
 	}

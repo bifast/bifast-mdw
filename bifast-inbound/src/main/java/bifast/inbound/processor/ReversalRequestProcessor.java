@@ -45,8 +45,8 @@ public class ReversalRequestProcessor implements Processor {
 			reversalReq.setCrdtIdType("02");
 		}
 		
-		if (!(null== ctReq.getSplmtryData().get(0).getEnvlp().getDbtr()))
-			reversalReq.setCrdtIdType(ctReq.getSplmtryData().get(0).getEnvlp().getDbtr().getTp());
+		if (!(null== ctReq.getSplmtryData().get(0).getEnvlp().getDtl().getDbtr()))
+			reversalReq.setCrdtIdType(ctReq.getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
 		
 		reversalReq.setCrdtName(ctReq.getDbtr().getNm());
 			
@@ -62,8 +62,8 @@ public class ReversalRequestProcessor implements Processor {
 			reversalReq.setDbtrIdType("02");
 		}
 		
-		if (!(null== ctReq.getSplmtryData().get(0).getEnvlp().getCdtr()))
-			reversalReq.setDbtrIdType(ctReq.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
+		if (!(null== ctReq.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr()))
+			reversalReq.setDbtrIdType(ctReq.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
 
 		reversalReq.setDbtrName(ctReq.getCdtr().getNm());
 		

@@ -3,10 +3,15 @@ package bifast.inbound.corebank.pojo;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("AccountEnquiryResponse")
-public class CBAccountEnquiryResponsePojo {
+public class CbAccountEnquiryResponsePojo {
 	
 	private String transactionId;
-	private String creditorStatus;
+	private String dateTime;
+	private String merchantType;
+	private String terminalId;
+	private String noRef;
+	private String status;
+	private String reason;
 	private String accountNumber;
 	private String accountType;
 	private String creditorName;
@@ -14,10 +19,6 @@ public class CBAccountEnquiryResponsePojo {
 	private String creditorType;
 	private String residentStatus;
 	private String townName;
-	private String additionInfo;
-	
-	private String requestStatus;
-	private String errorMessage;
 	
 	public String getTransactionId() {
 		return transactionId;
@@ -25,11 +26,41 @@ public class CBAccountEnquiryResponsePojo {
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
 	}
-	public String getCreditorStatus() {
-		return creditorStatus;
+	public String getDateTime() {
+		return dateTime;
 	}
-	public void setCreditorStatus(String creditorStatus) {
-		this.creditorStatus = creditorStatus;
+	public void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
+	}
+	public String getMerchantType() {
+		return merchantType;
+	}
+	public void setMerchantType(String merchantType) {
+		this.merchantType = merchantType;
+	}
+	public String getTerminalId() {
+		return terminalId;
+	}
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
+	}
+	public String getNoRef() {
+		return noRef;
+	}
+	public void setNoRef(String noRef) {
+		this.noRef = noRef;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 	public String getAccountNumber() {
 		return accountNumber;
@@ -73,24 +104,7 @@ public class CBAccountEnquiryResponsePojo {
 	public void setTownName(String townName) {
 		this.townName = townName;
 	}
-	public String getAdditionInfo() {
-		return additionInfo;
-	}
-	public void setAdditionInfo(String additionInfo) {
-		this.additionInfo = additionInfo;
-	}
-	public String getRequestStatus() {
-		return requestStatus;
-	}
-	public void setRequestStatus(String requestStatus) {
-		this.requestStatus = requestStatus;
-	}
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
+	
 
 
 

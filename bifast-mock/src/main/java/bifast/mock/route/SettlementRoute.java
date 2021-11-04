@@ -35,33 +35,35 @@ public class SettlementRoute extends RouteBuilder {
 		configureJson();
 		
 	
-		from("sql:select * from mock_pacs002 where sttl is null")
+		from("sql:select * from mock_pacs002 where result = 'ACTC' and sttl is null")
 			.routeId("settlement")
+
 			
-			.setHeader("sttl_timount", constant("NO"))
-			
-			.filter().simple("${body[cdtr_acct]} startsWith '88' ")
+			.filter().simple("${body[CDTR_ACCT]} startsWith '88' ")
 				.setHeader("sttl_delay", constant("YES"))
 			.end()
 			.delay(1000)
 			
 			.setHeader("sttl_tableqry", simple("${body}"))
-			.setHeader("sttl_id", simple("${body[id]}"))
+			.setHeader("sttl_id", simple("${body[ID]}"))
 
-			.filter().simple("${header.sttl_tableqry[result]} == 'ACTC'")
-
-				.filter().simple("${header.sttl_delay} == null")
-					.setBody(simple("${body[full_message]}"))
-					.unmarshal(jsonBusinessMessageDataFormat)
+			.log("${header.sttl_tableqry[RESULT]}")
+			
+			.filter().simple("${header.sttl_tableqry[RESULT]} == 'ACTC'")
+	
+				.setBody(simple("${body[FULL_MESSAGE]}"))
+				.unmarshal(jsonBusinessMessageDataFormat)
+			
+				.process(settlementProcessor)
 				
-					.process(settlementProcessor)
+				.filter().simple("${header.sttl_delay} != 'YES'")
+					.log("stty_delay null ya disini")
 					.marshal(jsonBusinessMessageDataFormat)
 					.log("Submit settlement: ${body}")
 	
 					.to("rest:post:inbound?host={{komi.inbound-url}}&"
 							+ "exchangePattern=InOnly&"
 							+ "bridgeEndpoint=true")
-				
 				.end()
 				
 			.end()

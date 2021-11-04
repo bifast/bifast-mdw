@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import bifast.inbound.corebank.pojo.CBCreditInstructionRequestPojo;
-import bifast.inbound.corebank.pojo.CBCreditInstructionResponsePojo;
+import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
+import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.credittransfer.CTCorebankRequestProcessor;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -27,8 +27,8 @@ public class ReverseCTRoute extends RouteBuilder {
 	private EnrichmentAggregator enrichmentAggregator;
 
 	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
-	JacksonDataFormat cbCreditTransferRequestJDF = new JacksonDataFormat(CBCreditInstructionRequestPojo.class);
-	JacksonDataFormat cbCreditTransferResponseJDF = new JacksonDataFormat(CBCreditInstructionResponsePojo.class);
+	JacksonDataFormat cbCreditTransferRequestJDF = new JacksonDataFormat(CbCreditRequestPojo.class);
+	JacksonDataFormat cbCreditTransferResponseJDF = new JacksonDataFormat(CbCreditResponsePojo.class);
 
 	private void configureJson() {
 		businessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)

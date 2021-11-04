@@ -32,10 +32,10 @@ public class Settlement {
 	@Column(length=35)
 	private String dbtrAccountNo;
 	
-	@Column(length=35)
-	private String crdtBankAccountNo;
-	@Column(length=35)
-	private String dbtrBankAccountNo;
+//	@Column(length=35)
+//	private String crdtBankAccountNo;
+//	@Column(length=35)
+//	private String dbtrBankAccountNo;
 	
 	private LocalDateTime receiveDate;
 	
@@ -100,21 +100,21 @@ public class Settlement {
 		this.dbtrAccountNo = dbtrAccountNo;
 	}
 
-	public String getCrdtBankAccountNo() {
-		return crdtBankAccountNo;
-	}
-
-	public void setCrdtBankAccountNo(String crdtBankAccountNo) {
-		this.crdtBankAccountNo = crdtBankAccountNo;
-	}
-
-	public String getDbtrBankAccountNo() {
-		return dbtrBankAccountNo;
-	}
-
-	public void setDbtrBankAccountNo(String dbtrBankAccountNo) {
-		this.dbtrBankAccountNo = dbtrBankAccountNo;
-	}
+//	public String getCrdtBankAccountNo() {
+//		return crdtBankAccountNo;
+//	}
+//
+//	public void setCrdtBankAccountNo(String crdtBankAccountNo) {
+//		this.crdtBankAccountNo = crdtBankAccountNo;
+//	}
+//
+//	public String getDbtrBankAccountNo() {
+//		return dbtrBankAccountNo;
+//	}
+//
+//	public void setDbtrBankAccountNo(String dbtrBankAccountNo) {
+//		this.dbtrBankAccountNo = dbtrBankAccountNo;
+//	}
 
 	public LocalDateTime getReceiveDate() {
 		return receiveDate;

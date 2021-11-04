@@ -1,6 +1,10 @@
 package bifast.inbound.credittransfer;
 
+import java.util.Optional;
+
+import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,53 +14,69 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import bifast.inbound.corebank.pojo.CBCreditInstructionRequestPojo;
-import bifast.inbound.corebank.pojo.CBCreditInstructionResponsePojo;
+import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
+import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
+import bifast.inbound.model.CreditTransfer;
+import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.processor.EnrichmentAggregator;
+import bifast.inbound.repository.CreditTransferRepository;
+import bifast.inbound.service.FlattenIsoMessageService;
+import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
 public class CreditTransferRoute extends RouteBuilder {
-
-	@Autowired
-	private CreditTransferProcessor creditTransferProcessor;
-	@Autowired
-	private CTCorebankRequestProcessor ctCorebankRequestProcessor;
-	@Autowired
-	private EnrichmentAggregator enrichmentAggregator;
-
-	JacksonDataFormat businessMessageJDF = new JacksonDataFormat(BusinessMessage.class);
-	JacksonDataFormat cbCreditTransferRequestJDF = new JacksonDataFormat(CBCreditInstructionRequestPojo.class);
-	JacksonDataFormat cbCreditTransferResponseJDF = new JacksonDataFormat(CBCreditInstructionResponsePojo.class);
-
-	private void configureJson() {
-		businessMessageJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		businessMessageJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-		businessMessageJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		businessMessageJDF.setInclude("NON_NULL");
-		businessMessageJDF.setInclude("NON_EMPTY");
-
-		cbCreditTransferRequestJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		cbCreditTransferRequestJDF.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
-		cbCreditTransferRequestJDF.setInclude("NON_NULL");
-		cbCreditTransferRequestJDF.setInclude("NON_EMPTY");
-
-		cbCreditTransferResponseJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		cbCreditTransferResponseJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
-		cbCreditTransferResponseJDF.setInclude("NON_NULL");
-		cbCreditTransferResponseJDF.setInclude("NON_EMPTY");
-
-	}
+	@Autowired private FlattenIsoMessageService flatteningIsoMessageService;
+	@Autowired private CreditTransferRepository ctRepo;
+	@Autowired private CreditTransferProcessor creditTransferProcessor;
+	@Autowired private CTCorebankRequestProcessor ctCorebankRequestProcessor;
+	@Autowired private EnrichmentAggregator enrichmentAggregator;
+	@Autowired private JacksonDataFormatService jdfService;
 
 	@Override
 	public void configure() throws Exception {
-		configureJson();
-		
+		//		jdfService.wrapUnwrapRoot(BusinessMessage.class);
+		JacksonDataFormat cbCreditTransferRequestJDF = jdfService.wrapRoot(CbCreditRequestPojo.class);
+		JacksonDataFormat cbCreditTransferResponseJDF = jdfService.unwrapRoot(CbCreditResponsePojo.class);
+
 		from("direct:crdttransfer").routeId("crdttransfer")
 			
 			.log("CT: ${body}")
-			// prepare untuk request ke corebank
-//			.unmarshal(businessMessageJDF)
+			
+			// cek apakah SAF atau bukan
+			//flattening and check saf
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					BusinessMessage inboundMessage = exchange.getMessage().getBody(BusinessMessage.class);
+					FlatPacs008Pojo flat = flatteningIsoMessageService.flatteningPacs008(inboundMessage);
+					exchange.getMessage().setBody(flat);
+					
+					String saf = "NO";
+					if (null != flat.getCpyDplct())
+						if (flat.getCpyDplct().equals("DUPL"))
+							saf =  "YES";
+					
+					if (saf.equals("YES")) {
+						Optional<CreditTransfer> oCt = ctRepo.findByCrdtTrnRequestBizMsgIdr(flat.getBizMsgIdr());
+						if (oCt.isPresent()) {
+							CreditTransfer ct = oCt.get();
+							if (ct.getResponseCode().equals("U000"))
+								saf = "ACTC";
+							else 
+								saf = "RJCT";
+						}
+						else
+							saf = "NEW";
+					}
+					exchange.getMessage().setHeader("ct_saf", saf);
+				}
+			})
+			
+			.log("status saf: ${header.ct_saf}")
+			
+			.removeHeaders("*")
+			.stop()
+			
 			.process(ctCorebankRequestProcessor)
 			.setHeader("ct_cbrequest", simple("${body}"))
 			.marshal(cbCreditTransferRequestJDF)

@@ -58,11 +58,11 @@ public class SaveSettlementMessageProcessor implements Processor {
 //		sttl.setDbtrIdType(orglBizMsgId);
 //		sttl.setDbtrName(orglBizMsgId);
 		
-		sttl.setCrdtBankAccountNo(
-				settlBody.getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct().getId().getOthr().getId());
-		
-		sttl.setDbtrBankAccountNo(
-				settlBody.getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct().getId().getOthr().getId());
+//		sttl.setCrdtBankAccountNo(
+//				settlBody.getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct().getId().getOthr().getId());
+//		
+//		sttl.setDbtrBankAccountNo(
+//				settlBody.getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct().getId().getOthr().getId());
 
 		sttl.setReceiveDate(LocalDateTime.now());
 		sttl.setFullMessage(fullReqMsg);

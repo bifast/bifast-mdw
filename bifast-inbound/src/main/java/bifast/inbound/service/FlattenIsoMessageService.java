@@ -127,31 +127,31 @@ public class FlattenIsoMessageService {
 		
 		if (!(null == txInfAndSts.getSplmtryData())) {
 			
-			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr())) {
+			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getDbtr())) {
 			
-				flatMsg.setDbtrTp(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr().getTp());
-				flatMsg.setDbtrId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr().getId());
-				flatMsg.setDbtrRsdntSts(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr().getRsdntSts());
-				flatMsg.setDbtrTwnNm(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtr().getTwnNm());
+				flatMsg.setDbtrTp(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
+				flatMsg.setDbtrId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getId());
+				flatMsg.setDbtrRsdntSts(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getRsdntSts());
+				flatMsg.setDbtrTwnNm(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTwnNm());
 
 			}					
 
-			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr())) {
+			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr())) {
 				
-				flatMsg.setCdtrTp(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
-				flatMsg.setCdtrId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr().getId());
-				flatMsg.setCdtrRsdntSts(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());
-				flatMsg.setCdtrTwnNm(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
+				flatMsg.setCdtrTp(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
+				flatMsg.setCdtrId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getId());
+				flatMsg.setCdtrRsdntSts(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getRsdntSts());
+				flatMsg.setCdtrTwnNm(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
 				
 			}
 
-			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct())) {
-				flatMsg.setDbtrAgtAcctId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct().getId().getOthr().getId());
-			}
-			
-			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct())) {
-				flatMsg.setCdtrAgtAcctId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct().getId().getOthr().getId());
-			}
+//			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct())) {
+//				flatMsg.setDbtrAgtAcctId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct().getId().getOthr().getId());
+//			}
+//			
+//			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct())) {
+//				flatMsg.setCdtrAgtAcctId(txInfAndSts.getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct().getId().getOthr().getId());
+//			}
 			
 		}
 		
@@ -275,28 +275,28 @@ public class FlattenIsoMessageService {
 
 		if (ct.getCdtTrfTxInf().get(0).getSplmtryData().size() > 0) {
 			
-			if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr())) {
+			if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr())) {
 				
-				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getTp() )) 
-					flatMsg.setDebtorType(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getTp());
+				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp() )) 
+					flatMsg.setDebtorType(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
 			
-				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getRsdntSts() )) 
-					flatMsg.setDebtorResidentialStatus(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getRsdntSts());
+				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getRsdntSts() )) 
+					flatMsg.setDebtorResidentialStatus(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getRsdntSts());
 
-				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getTwnNm() )) 
-					flatMsg.setDebtorTownName(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getTwnNm());
+				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTwnNm() )) 
+					flatMsg.setDebtorTownName(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTwnNm());
 			}
 			
-			if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr())) {
+			if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr())) {
 				
-				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTp() )) 
-					flatMsg.setCreditorType(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
+				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp() )) 
+					flatMsg.setCreditorType(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
 			
-				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts() )) 
-					flatMsg.setCreditorResidentialStatus(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getRsdntSts());;
+				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getRsdntSts() )) 
+					flatMsg.setCreditorResidentialStatus(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getRsdntSts());;
 
-				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm() )) 
-					flatMsg.setCreditorTownName(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
+				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm() )) 
+					flatMsg.setCreditorTownName(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
 			}
 
 		}

@@ -10,9 +10,8 @@ package bifast.library.iso20022.pacs002;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import org.w3c.dom.Element;
 
 
 /**
@@ -40,33 +39,16 @@ import org.w3c.dom.Element;
 })
 public class SupplementaryDataEnvelope1 {
 
-    @XmlAnyElement(lax = true)
-    protected Object any;
+    @XmlElement(name = "Dtl")
+    protected BISupplementaryDataEnvelope1 dtl;
 
-    /**
-     * Gets the value of the any property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Element }
-     *     {@link Object }
-     *     
-     */
-    public Object getAny() {
-        return any;
-    }
+	public BISupplementaryDataEnvelope1 getDtl() {
+		return dtl;
+	}
 
-    /**
-     * Sets the value of the any property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Element }
-     *     {@link Object }
-     *     
-     */
-    public void setAny(Object value) {
-        this.any = value;
-    }
+	public void setDtl(BISupplementaryDataEnvelope1 dtl) {
+		this.dtl = dtl;
+	}
+
 
 }

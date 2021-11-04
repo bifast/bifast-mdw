@@ -1,5 +1,10 @@
 package bifast.mock.processor;
 
+import java.util.GregorianCalendar;
+
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +36,7 @@ public class CreditTransferResponseProcessor implements Processor{
 		String bizMsgId = utilService.genRfiBusMsgId("010", "02", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		String msgId = utilService.genMessageId("010", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 
-
+		String norekDebitur = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId();
 		String norek = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
 		exchange.getMessage().setHeader("hdr_account_no", norek);
 
@@ -45,14 +50,14 @@ public class CreditTransferResponseProcessor implements Processor{
 			seed.setCreditorName(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
 
 		seed.setCreditorType("01");
-		seed.setCreditorId("KTP-2004384");
+		seed.setCreditorId(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
 		seed.setCreditorResidentialStatus("01");
-		seed.setCreditorTown(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTwnNm());
+		seed.setCreditorTown(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
 
         // int posbl4 = rand.nextInt(4);
-		if (norek.startsWith("5")) {
+		if (norekDebitur.startsWith("5")) {
 			seed.setStatus("RJCT");
-			seed.setReason("U901");
+			seed.setReason("U110");
 			seed.setAdditionalInfo("Additional Info abbc lsdjf 46");
 		}
 		else {
@@ -66,19 +71,21 @@ public class CreditTransferResponseProcessor implements Processor{
 		else
 			exchange.getMessage().setHeader("hdr_ctRespondStatus", "RJCT");
 			
-		System.out.println("creditor Name:  " + seed.getCreditorName());
-		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, msg);
 
-		System.out.println(response.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtr().getPty().getNm());
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		System.out.println("from Bank: " + msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"pacs.002.001.10", bizMsgId);
 		hdr.setBizSvc("CLEAR");
 		hdr.getFr().getFIId().getFinInstnId().getOthr().setId(msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		
+		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, msg);
+		
+		GregorianCalendar gcal = new GregorianCalendar();
+		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+		response.getTxInfAndSts().get(0).getOrgnlTxRef().setIntrBkSttlmDt(xcal);
+			
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);
 		BusinessMessage busMesg = new BusinessMessage();

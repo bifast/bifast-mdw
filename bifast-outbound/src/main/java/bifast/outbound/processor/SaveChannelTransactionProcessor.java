@@ -50,6 +50,7 @@ public class SaveChannelTransactionProcessor implements Processor{
 		long timeElapsed = Duration.between(rmw.getKomiStart(), finish).toMillis();
 		chnlTrns.setElapsedTime(timeElapsed);
 
+	
 		if (rmw.getMsgName().equals("AEReq")) {
 
 			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();

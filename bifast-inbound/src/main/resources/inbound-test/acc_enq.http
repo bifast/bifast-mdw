@@ -3,74 +3,81 @@ POST http://localhost:9001/services/api/inbound HTTP/1.1
 Content-Type: application/json
 
 {
-  "BusMsg" : {
-    "AppHdr" : {
-      "Fr" : {
-        "Fiid" : {
-          "FinInstnId" : {
-            "Othr" : {
-              "Id" : "MNDRIDJA"
+  "BusMsg": {
+    "AppHdr": {
+      "Fr": {
+        "Fiid": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "CITYIDJA"
             }
           }
         }
       },
-      "To" : {
-        "Fiid" : {
-          "FinInstnId" : {
-            "Othr" : {
-              "Id" : "SIHBIDJ1"
+      "To": {
+        "Fiid": {
+          "FinInstnId": {
+            "Othr": {
+              "Id": "SIHBIDJ1"
             }
           }
         }
       },
-      "BizMsgIdr" : "20210926MNDRIDJA510ORB000004",
-      "MsgDefIdr" : "pacs.008.001.08",
-      "CreDt" : "2021-09-25T09:00:00"
+      "BizMsgIdr": "20211103CITYIDJA510O0100000023",
+      "MsgDefIdr": "pacs.008.001.08",
+      "CreDt": "2021-11-03T08:43:33Z"
     },
-    "Document" : {
-      "FitoFICstmrCdtTrf" : {
-        "GrpHdr" : {
-          "MsgId" : "20210926MNDRIDJA51000000004",
-          "CreDtTm" : "2021-03-01T19:00:00",
-          "NbOfTxs" : "1",
-          "SttlmInf" : {
-            "SttlmMtd" : "CLRG"
+    "Document": {
+      "FitoFICstmrCdtTrf": {
+        "GrpHdr": {
+          "MsgId": "20211103CITYIDJA51000000007",
+          "CreDtTm": "2021-11-03T12:43:33.361",
+          "NbOfTxs": "1",
+          "SttlmInf": {
+            "SttlmMtd": "CLRG"
           }
         },
-        "CdtTrfTxInf" : [ {
-          "PmtId" : {
-            "EndToEndId" : "20210926MNDRIDJA510ORB000004",
-            "TxId" : "20210926MNDRIDJA51000000004"
-          },
-          "IntrBkSttlmAmt" : {
-            "Value" : "4222200.00",
-            "Ccy" : "IDR"
-          },
-          "ChrgBr" : "DEBT",
-          "Dbtr" : { },
-          "DbtrAgt" : {
-            "FinInstnId" : {
-              "Othr" : {
-                "Id" : "MNDRIDJA"
+        "CdtTrfTxInf": [
+          {
+            "PmtId": {
+              "EndToEndId": "20211103CITYIDJA510O0100000023",
+              "TxId": "20211103CITYIDJA51000000007"
+            },
+            "PmtTpInf": {
+              "CtgyPurp": {
+                "Prtry": "51001"
               }
-            }
-          },
-          "CdtrAgt" : {
-            "FinInstnId" : {
-              "Othr" : {
-                "Id" : "SIHBIDJ1"
+            },
+            "IntrBkSttlmAmt": {
+              "Value": "24520064.00",
+              "Ccy": "IDR"
+            },
+            "ChrgBr": "DEBT",
+            "Dbtr": {},
+            "DbtrAgt": {
+              "FinInstnId": {
+                "Othr": {
+                  "Id": "CITYIDJA"
+                }
               }
-            }
-          },
-          "Cdtr" : { },
-          "CdtrAcct" : {
-            "Id" : {
-              "Othr" : {
-                "Id" : "77556444"
+            },
+            "CdtrAgt": {
+              "FinInstnId": {
+                "Othr": {
+                  "Id": "SIHBIDJ1"
+                }
+              }
+            },
+            "Cdtr": {},
+            "CdtrAcct": {
+              "Id": {
+                "Othr": {
+                  "Id": "256189"
+                }
               }
             }
           }
-        } ]
+        ]
       }
     }
   }

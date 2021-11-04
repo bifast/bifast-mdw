@@ -16,10 +16,16 @@ public class ValidateAEProcessor implements Processor{
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 		
-		if (null == aeReq.getCreditorAccountNumber())
+		if (null == aeReq.getCreditorAccountNumber()) {
 			if (null == aeReq.getProxyId())
-				throw new InputValidationException("CreditorAccountNumber atau ProxyId tidak boleh kosong.");
+				throw new InputValidationException("CreditorAccountNumber atau ProxyId/ProxyType tidak boleh kosong.");
+			if (null == aeReq.getProxyType())
+				throw new InputValidationException("CreditorAccountNumber atau ProxyId/ProxyType tidak boleh kosong.");
+		}
 		
+		if ((null != aeReq.getCreditorAccountNumber()) && (null == aeReq.getRecptBank())) 
+			throw new InputValidationException("RecipientBank tidak boleh kosong.");
+
 	}
 
 }

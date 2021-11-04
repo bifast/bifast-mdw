@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonPropertyOrder({"orignReffId"
 					,"creditorAccountNumber"
 					,"creditorAccountType"
+					,"recipientBank"
 					,"proxyId"
 					,"prixyType"
 					,"creditorName"
@@ -23,6 +24,9 @@ public class ChnlAccountEnquiryResponsePojo {
 
 	@JsonProperty("AccountNumber")
 	private String creditorAccountNumber;
+	
+	@JsonProperty("RecipientBank")
+	private String recipientBank;
 	
 	@JsonProperty("ProxyId")
 	private String proxyId; 
@@ -61,6 +65,14 @@ public class ChnlAccountEnquiryResponsePojo {
 
 	public void setCreditorAccountNumber(String creditorAccountNumber) {
 		this.creditorAccountNumber = creditorAccountNumber;
+	}
+
+	public String getRecipientBank() {
+		return recipientBank;
+	}
+
+	public void setRecipientBank(String recipientBank) {
+		this.recipientBank = recipientBank;
 	}
 
 	public String getProxyId() {

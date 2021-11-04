@@ -1,6 +1,9 @@
 package bifast.library.iso20022.service;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -25,6 +28,7 @@ import bifast.library.iso20022.pacs002.PartyIdentification135;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.pacs002.StatusReason6Choice;
 import bifast.library.iso20022.pacs002.StatusReasonInformation12;
+import bifast.library.iso20022.pacs002.SupplementaryDataEnvelope1;
 import bifast.library.iso20022.pacs009.CreditTransferTransaction44;
 import bifast.library.iso20022.pacs002.AccountIdentification4Choice;
 import bifast.library.iso20022.pacs002.BIAddtlCstmrInf;
@@ -34,92 +38,81 @@ import bifast.library.iso20022.pacs002.BISupplementaryDataEnvelope1;
 @Service
 public class Pacs002MessageService {
 
-//	@Autowired
-//	private UtilService utilService;
-
 	public FIToFIPaymentStatusReportV10 accountEnquiryResponse (Pacs002Seed seed, 
 				BusinessMessage orgnlMessage) throws DatatypeConfigurationException {
 		
 		FIToFIPaymentStatusReportV10 pacs002 = new FIToFIPaymentStatusReportV10();
 
 		// GrpHdr
-		GroupHeader91 grpHdr = new GroupHeader91();
-		grpHdr.setMsgId(seed.getMsgId());  // 510 transaction_type untuk Account ENquiry
+		pacs002.setGrpHdr(new GroupHeader91());
+		
+		pacs002.getGrpHdr().setMsgId(seed.getMsgId());  // 510 transaction_type untuk Account ENquiry
 		
 		GregorianCalendar gcal = new GregorianCalendar();
+		gcal.setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		grpHdr.setCreDtTm(xcal);
+		pacs002.getGrpHdr().setCreDtTm(xcal);
 		
-		pacs002.setGrpHdr(grpHdr);
-
 		// TxInfAndSts
-		
 		PaymentTransaction110 txInfAndSts = new PaymentTransaction110();
 
 		txInfAndSts.setOrgnlEndToEndId( orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getEndToEndId() );
 		txInfAndSts.setOrgnlTxId(orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getPmtId().getTxId() );
+		
 		txInfAndSts.setTxSts(seed.getStatus());
 		
 		// TxInfAndSts / StsRsnInf
-		
-		StatusReason6Choice rsn = new StatusReason6Choice();
-		rsn.setPrtry(seed.getReason());
-		StatusReasonInformation12 stsRsnInf = new StatusReasonInformation12();
-		stsRsnInf.setRsn(rsn);
-		
-		txInfAndSts.getStsRsnInf().add(stsRsnInf);
+		txInfAndSts.getStsRsnInf().add(new StatusReasonInformation12());
+		txInfAndSts.getStsRsnInf().get(0).setRsn(new StatusReason6Choice());
+
+		txInfAndSts.getStsRsnInf().get(0).getRsn().setPrtry(seed.getReason());	
 		
 		// TxInfAndSts / OrgnlTxRef
-		OriginalTransactionReference28 orgnlTxRef = new OriginalTransactionReference28();
-		
-		orgnlTxRef.setIntrBkSttlmDt(orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmDt() );
+		txInfAndSts.setOrgnlTxRef(new OriginalTransactionReference28());		
+		txInfAndSts.getOrgnlTxRef().setIntrBkSttlmDt(orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getIntrBkSttlmDt() );
 	
 		// TxInfAndSts / OrgnlTxRef / Cdtr
 		
 		if (!(null == seed.getCreditorName())) {
-			PartyIdentification135 ptyName = new PartyIdentification135();
-			ptyName.setNm(seed.getCreditorName());
-			Party40Choice cdtr = new Party40Choice();
-			cdtr.setPty(ptyName);  
-			orgnlTxRef.setCdtr(cdtr);
+			txInfAndSts.getOrgnlTxRef().setCdtr(new Party40Choice());
+			txInfAndSts.getOrgnlTxRef().getCdtr().setPty(new PartyIdentification135());
+			txInfAndSts.getOrgnlTxRef().getCdtr().getPty().setNm(seed.getCreditorName());
 		}
 		
 		// TxInfAndSts / OrgnlTxRef / CdtrAcct
-
-		GenericAccountIdentification1 acctNo = new GenericAccountIdentification1();
-		acctNo.setId(seed.getCreditorAccountNo());
-		AccountIdentification4Choice crdtAcctNo = new AccountIdentification4Choice();
-		crdtAcctNo.setOthr(acctNo);
-		CashAccount38 cdtrAcct = new CashAccount38();
-		cdtrAcct.setId(crdtAcctNo);
-	
-		CashAccountType2Choice accTp = new CashAccountType2Choice();
-		accTp.setPrtry(seed.getCreditorAccountIdType());
-		cdtrAcct.setTp(accTp);
+		txInfAndSts.getOrgnlTxRef().setCdtrAcct(new CashAccount38());
 		
-		orgnlTxRef.setCdtrAcct(cdtrAcct);
+		txInfAndSts.getOrgnlTxRef().getCdtrAcct().setId(new AccountIdentification4Choice());
+		txInfAndSts.getOrgnlTxRef().getCdtrAcct().getId().setOthr(new GenericAccountIdentification1());
+		txInfAndSts.getOrgnlTxRef().getCdtrAcct().getId().getOthr().setId(seed.getCreditorAccountNo());
 		
-		txInfAndSts.setOrgnlTxRef(orgnlTxRef);
-		
+		txInfAndSts.getOrgnlTxRef().getCdtrAcct().setTp(new CashAccountType2Choice());
+		txInfAndSts.getOrgnlTxRef().getCdtrAcct().getTp().setPrtry(seed.getCreditorAccountIdType());
+				
 		// TxInfAndSts / SplmtryData
-
-		BIAddtlCstmrInf supCdtr = new BIAddtlCstmrInf();
-		supCdtr.setTp(seed.getCreditorType());
-		supCdtr.setId(seed.getCreditorId());
-		supCdtr.setRsdntSts(seed.getCreditorResidentialStatus());
-		supCdtr.setTwnNm(seed.getCreditorTown());
-		BISupplementaryDataEnvelope1 supplEnv = new BISupplementaryDataEnvelope1();
-		supplEnv.setCdtr(supCdtr);
+		txInfAndSts.getSplmtryData().add(new BISupplementaryData1());
+		txInfAndSts.getSplmtryData().get(0).setEnvlp(new SupplementaryDataEnvelope1());
+		txInfAndSts.getSplmtryData().get(0).getEnvlp().setDtl(new BISupplementaryDataEnvelope1());
 
 		if ((!(null==seed.getCreditorType())) ||
 			(!(null==seed.getCreditorId())) ||
 			(!(null==seed.getCreditorResidentialStatus())) ||
 			(!(null==seed.getCreditorTown())) ) {
-			
-			BISupplementaryData1 splmtryData = new BISupplementaryData1();
-			splmtryData.setEnvlp(supplEnv);
+					
+			txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().setCdtr(new BIAddtlCstmrInf());
 	
-			txInfAndSts.getSplmtryData().add(splmtryData);
+			if (null != seed.getCreditorType())
+				txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().setTp(seed.getCreditorType());
+
+			if (null != seed.getCreditorId())
+				txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().setId(seed.getCreditorId());
+
+			if (null != seed.getCreditorResidentialStatus())
+				txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().setRsdntSts(seed.getCreditorResidentialStatus());
+			
+			if (null != seed.getCreditorTown())
+				txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().setTwnNm(seed.getCreditorTown());
+
 		}
 		
 		pacs002.getTxInfAndSts().add(txInfAndSts);
@@ -138,6 +131,7 @@ public class Pacs002MessageService {
 		grpHdr.setMsgId(seed.getMsgId());  // 010 Transaction-Type untuk CSTMRCRDTTRN
 		
 		GregorianCalendar gcal = new GregorianCalendar();
+		gcal.setTimeZone(TimeZone.getTimeZone(ZoneOffset.systemDefault()));
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
 		grpHdr.setCreDtTm(xcal);
 		
@@ -186,22 +180,21 @@ public class Pacs002MessageService {
 		txInfAndSts.setOrgnlTxRef(orgnlTxRef);
 		
 		// TxInfAndSts / SplmtryData
+		BISupplementaryData1 splmtryData = new BISupplementaryData1();
+		splmtryData.setEnvlp(new SupplementaryDataEnvelope1());
+		splmtryData.getEnvlp().setDtl(new BISupplementaryDataEnvelope1());
 
 		if ((!(null==seed.getCreditorType())) ||
 				(!(null==seed.getCreditorId())) ||
 				(!(null==seed.getCreditorResidentialStatus())) ||
 				(!(null==seed.getCreditorTown())) ) {
 				
-			BIAddtlCstmrInf supCdtr = new BIAddtlCstmrInf();
-			supCdtr.setTp(seed.getCreditorType());
-			supCdtr.setId(seed.getCreditorId());
-			supCdtr.setRsdntSts(seed.getCreditorResidentialStatus());
-			supCdtr.setTwnNm(seed.getCreditorTown());
-
-			BISupplementaryDataEnvelope1 supplEnv = new BISupplementaryDataEnvelope1();
-			supplEnv.setCdtr(supCdtr);
-			BISupplementaryData1 splmtryData = new BISupplementaryData1();
-			splmtryData.setEnvlp(supplEnv);
+			splmtryData.getEnvlp().getDtl().setCdtr(new BIAddtlCstmrInf());
+			
+			splmtryData.getEnvlp().getDtl().getCdtr().setTp(seed.getCreditorType());
+			splmtryData.getEnvlp().getDtl().getCdtr().setId(seed.getCreditorId());
+			splmtryData.getEnvlp().getDtl().getCdtr().setRsdntSts(seed.getCreditorResidentialStatus());
+			splmtryData.getEnvlp().getDtl().getCdtr().setTwnNm(seed.getCreditorTown());
 
 			txInfAndSts.getSplmtryData().add(splmtryData);
 		}
@@ -233,7 +226,7 @@ public class Pacs002MessageService {
 		OriginalGroupHeader17 orgnlGrpInfAndSts = new OriginalGroupHeader17();
 		orgnlGrpInfAndSts.setOrgnlMsgId(orgnlMessage.getDocument().getFiCdtTrf().getGrpHdr().getMsgId());
 		orgnlGrpInfAndSts.setOrgnlMsgNmId( orgnlMessage.getAppHdr().getMsgDefIdr() );
-		orgnlGrpInfAndSts.setOrgnlCreDtTm(orgnlMessage.getAppHdr().getCreDt());
+//		orgnlGrpInfAndSts.setOrgnlCreDtTm(orgnlMessage.getAppHdr().getCreDt());
 		
 		pacs002.getOrgnlGrpInfAndSts().add(orgnlGrpInfAndSts);
 		

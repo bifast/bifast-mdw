@@ -38,8 +38,8 @@ public class AccountEnquiryRequestProcessor implements Processor {
 		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
 		
 		String msgType = "510";
-		String bizMsgId = utilService.genOfiBusMsgId(msgType, rmw.getChannelType());
-		String msgId = utilService.genMsgId(msgType, rmw.getKomiTrxId());
+		String bizMsgId = utilService.genBusMsgId(msgType, rmw);
+		String msgId = utilService.genMessageId(msgType, rmw);
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 

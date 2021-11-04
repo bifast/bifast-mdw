@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.repository.CreditTransferRepository;
-import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
@@ -21,8 +20,6 @@ public class SaveCreditTransferProcessor implements Processor {
 
 	@Autowired
 	private CreditTransferRepository creditTrnRepo;
-	@Autowired
-	private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -30,7 +27,7 @@ public class SaveCreditTransferProcessor implements Processor {
 		@SuppressWarnings("unchecked")
 		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
 
-		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");
+//		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");
 
 		BusinessMessage rcvBi = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
 		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
@@ -55,9 +52,8 @@ public class SaveCreditTransferProcessor implements Processor {
 			
 		}
 		
-		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
-//		ct.setCihubResponseDT(utilService.getTimestampFromMessageHistory(listHistory, "end_route"));
-		ct.setCihubElapsedTime(routeElapsed);
+//		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+//		ct.setCihubElapsedTime(routeElapsed);
 		
 		String reversal = exchange.getMessage().getHeader("resp_reversal",String.class);
 
@@ -78,8 +74,8 @@ public class SaveCreditTransferProcessor implements Processor {
 		// jika node splmtryData ada, ambil data custType dari sini; jika tidak maka cek apakah ada di prvtId atau orgId
 		
 		if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0) {	
-			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr()))
-				ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getCdtr().getTp());
+			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr()))
+				ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
 		}
 		
 		else if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr())) {
@@ -106,8 +102,8 @@ public class SaveCreditTransferProcessor implements Processor {
 		
 		// tentukan debtorType: Personal atau bukan
 		if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0) {	
-			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr()))
-				ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDbtr().getTp());
+			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr()))
+				ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
 		}
 		else if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId())) 
 				ct.setDebtorType("01");

@@ -1,7 +1,5 @@
 package bifast.outbound.pojo.flat;
 
-import java.time.LocalDateTime;
-
 public class FlatPrxy006AliasPojo extends FlatMessageBase{
 	
 	private String proxyType;

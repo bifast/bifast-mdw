@@ -12,7 +12,7 @@ public class GregorianCalendarXMLAdapterExclMillis extends XmlAdapter<String, XM
 	@Override
 	public XMLGregorianCalendar unmarshal(String v) throws Exception {
 		GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(v));
+        cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(v));
         XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar( cal);
 		return calendar;
 	}
@@ -20,7 +20,7 @@ public class GregorianCalendarXMLAdapterExclMillis extends XmlAdapter<String, XM
 	@Override
 	public String marshal(XMLGregorianCalendar v) throws Exception {
 		
-		String strTime = String.format("%04d-%02d-%02dT%02d:%02d:%02d", 
+		String strTime = String.format("%04d-%02d-%02dT%02d:%02d:%02dZ", 
 				v.getYear(),v.getMonth(), v.getDay(),
 				v.getHour(), v.getMinute(), v.getSecond());
 

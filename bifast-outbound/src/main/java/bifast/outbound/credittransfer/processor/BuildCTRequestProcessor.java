@@ -46,9 +46,9 @@ public class BuildCTRequestProcessor implements Processor {
 			
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
-		String bizMsgId = utilService.genOfiBusMsgId(msgType, rmw.getChannelType());
+		String bizMsgId = utilService.genBusMsgId(msgType, rmw);
 		
-		String msgId = utilService.genMessageId(msgType);
+		String msgId = utilService.genMessageId(msgType, rmw);
 
 		seedCreditTrn.setMsgId(msgId);
 		seedCreditTrn.setAmount(new BigDecimal(chnReq.getAmount()));
