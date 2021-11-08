@@ -31,7 +31,8 @@ public class SaveChannelTransactionProcessor implements Processor{
 		ResponseMessageCollection respColl = exchange.getMessage().getHeader("hdr_response_list",ResponseMessageCollection.class );
 		ChannelResponseWrapper responseWr = exchange.getMessage().getBody(ChannelResponseWrapper.class);
 
-		Optional<ChannelTransaction> optChannel = channelTransactionRepo.findByKomiTrnsId(rmw.getKomiTrxId());
+//		Optional<ChannelTransaction> optChannel = channelTransactionRepo.findByKomiTrnsId(rmw.getKomiTrxId());
+		Optional<ChannelTransaction> optChannel = channelTransactionRepo.findById(rmw.getKomiTrxId());
 		ChannelTransaction chnlTrns = optChannel.get();
 		
 		FaultPojo fault = null;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonRootName("ProxyResolutionRequest")
+@JsonRootName("ProxyRegistrationInquiry")
 public class ChnlProxyRegistrationInquiryRequestPojo {
 
 	private String channelRefId;

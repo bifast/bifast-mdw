@@ -307,7 +307,7 @@ public class Pacs008MessageService {
 			pacs008.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().setDbtr(new BIAddtlCstmrInf());
 			
 			if (!(null==seed.getDbtrType())) 
-				pacs008.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().setTp(seed.getCrdtType());
+				pacs008.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().setTp(seed.getDbtrType());
 			if (!(null==seed.getDbtrResidentStatus())) 
 				pacs008.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().setRsdntSts(seed.getDbtrResidentStatus());
 			if (!(null==seed.getDbtrTownName())) 

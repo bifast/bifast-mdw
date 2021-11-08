@@ -1,6 +1,6 @@
 # Credit Transfer Request from channel on generic endpoint
 
-# orignRefId 9.. akan reject by CB
+# terminal B.. akan reject by CB
 # norekDebitur 5xx akan response reject
 # jika norekCreditor 8xx timeout, get settlement
 # jika norekCreditor 88x timeout ct, no settlement 
@@ -14,14 +14,43 @@ Content-Type: application/json
 Authorization: Basic CMS:password
 
 {
+	"CreditTransferRequest": {
+		"RecipientBank": "BSMDIDJA",
+		"CategoryPurpose": "02",
+		"CreditorTownName": "0300",
+		"FeeTransfer": 0.0,
+		"DebtorId": "88777555444443333",
+		"Amount": "1000000.00",
+		"CreditorType": "01",
+		"CreditorProxyType": "",
+		"CreditorName": "Suseno Susilo",
+		"CreditorAccountNumber": "1234567890",
+		"CreditorResidentialStatus": "01",
+		"CreditorAccountType": "CACC",
+		"NoRef": "MOB211108110620201",
+		"CreditorId": "KTP-205772715",
+		"DebtorAccountType": "SVGS",
+		"DebtorAccountNumber": "2012104794259",
+		"DebtorResidentialStatus": "01",
+		"DebtorType": "CORP",
+		"CreditorProxyId": "",
+		"PaymentInformation": "",
+		"TerminalId": "GATEUSER",
+		"DebtorTownName": "0300",
+		"DebtorName": "Purnama Erwin"
+	}
+}
+
+###
+{
   "CreditTransferRequest" : {
-    "NoRef" : "3452578",   
-    "TerminalId" : "B0434",
+    "NoRef" : "27621",   
+    "TerminalId" : "40434",
     "CategoryPurpose" : "01",
     "DebtorName" : "JONI",
     "DebtorId" : "6055",
     "DebtorType" : "01",
-    "DebtorAccountNumber" : "444214",
+    "DebtorAccountNumber" : "2524214",
     "DebtorAccountType" : "CACC",
     "DebtorResidentialStatus": "01",
     "DebtorTownName": "0300",
@@ -31,7 +60,7 @@ Authorization: Basic CMS:password
     "CreditorName" : "JONI N",
     "CreditorId" : "C12103",
     "CreditorType" : "01",
-    "CreditorAccountNumber" : "244296",
+    "CreditorAccountNumber" : "742896",
     "CreditorAccountType" : "SVGS",
     "CreditorResidentialStatus": "01",
     "CreditorTownName": "0300",

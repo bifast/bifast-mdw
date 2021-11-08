@@ -17,6 +17,9 @@ public class ProcessDataPojo {
 	
 	private BusinessMessage biRequestMsg;
 	private BusinessMessage biResponseMsg;
+	
+	private Object corebankRequest;
+	private Object corebankResponse;
 
 	public Long getKomiCounter() {
 		return komiCounter;
@@ -80,6 +83,22 @@ public class ProcessDataPojo {
 
 	public void setBiResponseMsg(BusinessMessage biResponseMsg) {
 		this.biResponseMsg = biResponseMsg;
+	}
+
+	public Object getCorebankRequest() {
+		return corebankRequest;
+	}
+
+	public void setCorebankRequest(Object corebankRequest) {
+		this.corebankRequest = corebankRequest;
+	}
+
+	public Object getCorebankResponse() {
+		return corebankResponse;
+	}
+
+	public void setCorebankResponse(Object corebankResponse) {
+		this.corebankResponse = corebankResponse;
 	}
 
 	

@@ -71,7 +71,7 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setDbtrAccountType(chnReq.getDbtrAccountType());
 		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
 		seedCreditTrn.setDbtrId(chnReq.getDbtrId());
-		seedCreditTrn.setDbtrType(chnReq.getDbtrType());
+		seedCreditTrn.setDbtrType(chnReq.getDbtrType()); 
 		seedCreditTrn.setDbtrResidentStatus(chnReq.getDbtrResidentialStatus());
 		seedCreditTrn.setDbtrTownName(chnReq.getDbtrTownName());
 

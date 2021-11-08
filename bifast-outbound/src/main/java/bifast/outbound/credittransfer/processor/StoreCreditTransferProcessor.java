@@ -50,10 +50,11 @@ public class StoreCreditTransferProcessor implements Processor {
 
 		ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
 
-		if (ct.getCreditorType().equals("01"))
-			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
-		else
-			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
+//		String crdtType = creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getgetId().getCreditorType();
+//		if (creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getCreditorType().equals("01"))
+//			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+//		else
+//			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
 
 		ct.setCreateDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
 		ct.setLastUpdateDt(LocalDateTime.now());

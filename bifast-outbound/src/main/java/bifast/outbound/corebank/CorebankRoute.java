@@ -15,6 +15,7 @@ import bifast.outbound.corebank.pojo.CbDebitResponsePojo;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
+import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
@@ -24,13 +25,12 @@ public class CorebankRoute extends RouteBuilder{
 	private SaveCBTableProcessor saveCBTableProcessor;
 	@Autowired
 	private JacksonDataFormatService jdfService;
-	@Autowired
-	private MockCbResponseProcessor mockResponse;
+	@Autowired private EnrichmentAggregator enrichmentAggregator;
 
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat chnlDebitRequestJDF = jdfService.basic(CbDebitRequestPojo.class);
-		JacksonDataFormat chnlDebitResponseJDF = jdfService.basic(CbDebitResponsePojo.class);
+		JacksonDataFormat debitResponseJDF = jdfService.basic(CbDebitResponsePojo.class);
 				
 		JacksonDataFormat accountCustomerInfoRequestJDF = jdfService.basic(CbAccountCustomerInfoRequestPojo.class);
 		JacksonDataFormat accountCustomerInfoResponseJDF = jdfService.basic(CbAccountCustomerInfoResponsePojo.class);
@@ -48,43 +48,43 @@ public class CorebankRoute extends RouteBuilder{
 					exchange.getMessage().setHeader("hdr_request_list", rmw);
 				}
 			})
-			
-			.log("${body}")
-			
+					
 			.choice()
 				.when().simple("${body.class} endsWith 'CbDebitRequestPojo'")
-					.setHeader("cb_requestName", constant("debit-account"))
+					.setHeader("cb_requestName", constant("debit"))
 					.marshal(chnlDebitRequestJDF)
 				.when().simple("${body.class} endsWith 'CbAccountCustomerInfoRequestPojo'")
-					.setHeader("cb_requestName", constant("account-cust-info"))
+					.setHeader("cb_requestName", constant("emailphonelist"))
 					.marshal(accountCustomerInfoRequestJDF)
 				.when().simple("${body.class} endsWith 'CbDebitReversalPojo'")
-					.setHeader("cb_requestName", constant("debit-reversal"))
+					.setHeader("cb_requestName", constant("debitreversal"))
 					.marshal(chnlDebitRequestJDF)
 			.end()
 			
 	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
 	 														+ " CB Request: ${body}")
+
 			.setHeader("HttpMethod", constant("POST"))
-//			.enrich("http:{{komi.cb-url}}?"
-//					+ "bridgeEndpoint=true",
-//					enrichmentAggregator)
-//			.convertBodyTo(String.class)
-//	 		.log(LoggingLevel.DEBUG, "bifast.outbound.corebank", "[ChRefId:${header.hdr_chnlRefId}] CB Response: ${body}")
+			.enrich()
+				.simple("http://{{komi.url.corebank}}/${header.cb_requestName}?"
+					+ "socketTimeout=5000&" 
+					+ "bridgeEndpoint=true")
+				.aggregationStrategy(enrichmentAggregator)
+
+			.convertBodyTo(String.class)
 			
-			.process(mockResponse)
-			
+//			.process(mockResponse)
 	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
 	 														+ " CB Response: ${body}")
 
 	 		.log("${header.cb_requestName}")
 			.choice()
-				.when().simple("${header.cb_requestName} == 'debit-account'")
-					.unmarshal(chnlDebitResponseJDF)
-				.when().simple("${header.cb_requestName} ==  'account-cust-info'")
+				.when().simple("${header.cb_requestName} == 'debit'")
+					.unmarshal(debitResponseJDF)
+				.when().simple("${header.cb_requestName} ==  'emailphonelist'")
 					.unmarshal(accountCustomerInfoResponseJDF)
-				.when().simple("${header.cb_requestName} ==  'debit-reversal'")
-					.unmarshal(chnlDebitResponseJDF)
+				.when().simple("${header.cb_requestName} ==  'debitreversal'")
+					.unmarshal(debitResponseJDF)
 			.end()
 				
 			.choice()

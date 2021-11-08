@@ -54,7 +54,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.filter().simple("${header.hdr_request_list.merchantType} != '6010' ")
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
-				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] call Corebank: ${body}")
+				.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] call Corebank")
 				.to("seda:callcb")
 			.end()
 		
@@ -62,8 +62,8 @@ public class CreditTransferRoute extends RouteBuilder {
 			.choice()
 				.when().simple("${header.ct_progress} == 'CB' && ${body.class} endsWith 'FaultPojo' ")
 					.setHeader("ct_progress", constant("STOP"))
-				.when().simple("${header.ct_progress} == 'CB' && ${body.class} endsWith 'CBDebitResponsePojo' ")
-					.setHeader("ct_progress", constant("LANJUTCIHUB"))
+//				.when().simple("${header.ct_progress} == 'CB' && ${body.class} endsWith 'CBDebitResponsePojo' ")
+//					.setHeader("ct_progress", constant("LANJUTCIHUB"))
 				.otherwise()
 					.setHeader("ct_progress", constant("LANJUTCIHUB"))
 			.end()
@@ -72,7 +72,9 @@ public class CreditTransferRoute extends RouteBuilder {
 			.filter().simple("${header.ct_progress} == 'LANJUTCIHUB'")
 				.process(crdtTransferProcessor)
 				.to("direct:call-cihub")
-				.process(saveCrdtTrnsProcessor)
+//				.process(saveCrdtTrnsProcessor)
+//				.setExchangePattern(ExchangePattern.InOnly)
+				.to("seda:savecredittransfer?exchangePattern=InOnly")
 
 			.end()
 
@@ -148,6 +150,10 @@ public class CreditTransferRoute extends RouteBuilder {
 			.end()
 			
 			.removeHeader("tmp_body")
+		;
+		
+		from("seda:savecredittransfer")
+			.process(saveCrdtTrnsProcessor)
 		;
 		
 	}

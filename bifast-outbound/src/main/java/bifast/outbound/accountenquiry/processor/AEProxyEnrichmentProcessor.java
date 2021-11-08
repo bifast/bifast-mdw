@@ -47,6 +47,7 @@ public class AEProxyEnrichmentProcessor implements Processor{
 			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 			if (prx004.getResponseCode().equals("ACTC")) {
 				aeReq.setCreditorAccountNumber(prx004.getAccountNumber());
+				aeReq.setRecptBank(prx004.getRegisterBank());
 			}
 
 			rmw.setChnlAccountEnquiryRequest(aeReq);

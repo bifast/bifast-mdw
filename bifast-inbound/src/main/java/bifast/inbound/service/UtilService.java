@@ -94,19 +94,25 @@ public class UtilService {
 		String code = bizMsgIdr.substring(16,19);
 		
 		if (bizDefIdr.startsWith("pacs.002")) {
-			if (code.equals("010"))
-				msgType = "CTResp";
 			if (code.equals("510"))
 				msgType = "AEResp";
+			if (code.equals("010"))
+				msgType = "CTResp";
+			if (code.equals("110"))
+				msgType = "CTResp";
+			else if (code.equals("011"))
+				msgType = "RevCTResp";
 		}
 		
 		else if (bizDefIdr.startsWith("pacs.008")) {
 			if (code.equals("510"))
 				msgType = "AEReq";
-			if (code.equals("010"))
+			else if (code.equals("010"))
 				msgType = "CTReq";
-			if (code.equals("110"))
+			else if (code.equals("110"))
 				msgType = "CTReq";
+			else if (code.equals("011"))
+				msgType = "RevCTReq";
 		}
 			
 		else if (bizDefIdr.startsWith("pacs.028"))   

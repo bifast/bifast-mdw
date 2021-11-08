@@ -1,6 +1,6 @@
 package bifast.inbound.credittransfer;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -10,14 +10,11 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
 import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
+import bifast.inbound.processor.DuplicateTransactionValidation;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.service.FlattenIsoMessageService;
@@ -32,16 +29,32 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private CTCorebankRequestProcessor ctCorebankRequestProcessor;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
+	@Autowired private DuplicateTransactionValidation duplicationTrnsValidation;
 
 	@Override
 	public void configure() throws Exception {
-		//		jdfService.wrapUnwrapRoot(BusinessMessage.class);
 		JacksonDataFormat cbCreditTransferRequestJDF = jdfService.wrapRoot(CbCreditRequestPojo.class);
 		JacksonDataFormat cbCreditTransferResponseJDF = jdfService.unwrapRoot(CbCreditResponsePojo.class);
+		JacksonDataFormat businessMessageJDF = jdfService.wrapRoot(BusinessMessage.class);
 
+		onException(Exception.class)
+//			.maximumRedeliveries(5).delay(1000)
+			.log("Route level onException")
+			.marshal(businessMessageJDF)
+			.setHeader("hdr_tmp", simple("${body}"))
+			.marshal().zipDeflater()
+			.marshal().base64()
+			.setHeader("hdr_toBI_jsonzip", simple("${body}"))
+			.setBody(simple("${header.hdr_tmp}"))
+			.log("${body}")
+			.handled(true)
+			.to("seda:logandsave?exchangePattern=InOnly")
+			.removeHeaders("*")
+		;
+		
 		from("direct:crdttransfer").routeId("crdttransfer")
-			
 			.log("CT: ${body}")
+			.process(duplicationTrnsValidation)
 			
 			// cek apakah SAF atau bukan
 			//flattening and check saf
@@ -52,21 +65,23 @@ public class CreditTransferRoute extends RouteBuilder {
 					exchange.getMessage().setBody(flat);
 					
 					String saf = "NO";
-					if (null != flat.getCpyDplct())
-						if (flat.getCpyDplct().equals("DUPL"))
-							saf =  "YES";
+					if ((null != flat.getCpyDplct()) && (flat.getCpyDplct().equals("DUPL")))
+						saf =  "YES";
 					
 					if (saf.equals("YES")) {
-						Optional<CreditTransfer> oCt = ctRepo.findByCrdtTrnRequestBizMsgIdr(flat.getBizMsgIdr());
-						if (oCt.isPresent()) {
-							CreditTransfer ct = oCt.get();
-							if (ct.getResponseCode().equals("U000"))
+						List<CreditTransfer> lCT = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flat.getBizMsgIdr());
+						saf = "NEW";
+						for (CreditTransfer ct : lCT) {
+							if (ct.getReasonCode().equals("U149"))
+								continue;
+							
+							if (ct.getResponseCode().equals("ACTC")) {
 								saf = "ACTC";
+								break;
+							}
 							else 
 								saf = "RJCT";
 						}
-						else
-							saf = "NEW";
 					}
 					exchange.getMessage().setHeader("ct_saf", saf);
 				}
@@ -85,7 +100,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			// send ke corebank
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{komi.corebank-url}}?"
+				.enrich("http:{{komi.url.corebank}}?"
 //						+ "socketTimeout={{komi.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)

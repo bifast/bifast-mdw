@@ -2,7 +2,6 @@ package bifast.outbound.processor;
 
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import org.apache.camel.Exchange;
@@ -52,6 +51,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 	
 		else if (null != req.getChnlPaymentStatusRequest()) {
 			rmw.setChnlPaymentStatusRequest(req.getChnlPaymentStatusRequest());
+			rmw.setChannelRequest(req.getChnlPaymentStatusRequest());
 			rmw.setMsgName("PSReq");
 			rmw.setRequestId(req.getChnlPaymentStatusRequest().getChannelRefId());
 		}

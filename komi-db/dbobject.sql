@@ -24,7 +24,20 @@ CREATE SEQUENCE public.hibernate_sequence
 	NO CYCLE;
 
 
--- public.corebank_sequence definition
+-- public.kc_inboundseq definition
+
+-- DROP SEQUENCE public.kc_inboundseq;
+
+CREATE SEQUENCE public.kc_inboundseq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 99999999
+	START 1
+	CACHE 1
+	CYCLE;
+
+
+-- public.kc_outboundseq definition
 
 -- DROP SEQUENCE public.kc_outboundseq;
 
@@ -35,16 +48,20 @@ CREATE SEQUENCE public.kc_outboundseq
 	START 1
 	CACHE 1
 	CYCLE;
-	
--- DROP SEQUENCE public.kc_inboundseq;
 
-CREATE SEQUENCE public.kc_inboundseq
+
+-- public.komi_sequence definition
+
+-- DROP SEQUENCE public.komi_sequence;
+
+CREATE SEQUENCE public.komi_sequence
 	INCREMENT BY 1
 	MINVALUE 1
 	MAXVALUE 99999999
 	START 1
 	CACHE 1
 	CYCLE;
+
 
 -- public.table_seq_generator definition
 
@@ -58,12 +75,12 @@ CREATE SEQUENCE public.table_seq_generator
 	CACHE 1
 	NO CYCLE;
 
--- ------------------
+------------------
 
 
 -- public.kc_account_enquiry definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_account_enquiry;
 
@@ -91,7 +108,7 @@ CREATE TABLE public.kc_account_enquiry (
 
 -- public.kc_channel definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_channel;
 
@@ -111,31 +128,30 @@ CREATE TABLE public.kc_channel (
 
 -- public.kc_channel_transaction definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_channel_transaction;
 
 CREATE TABLE public.kc_channel_transaction (
-	id int8 NOT NULL,
+	komi_trns_id varchar(20) NOT NULL,
 	amount numeric(19, 2) NULL,
 	call_status varchar(15) NULL,
 	channel_id varchar(15) NULL,
 	channel_ref_id varchar(20) NULL,
 	elapsed_time int8 NULL,
 	error_msg varchar(250) NULL,
-	komi_trns_id varchar(20) NULL,
 	msg_name varchar(100) NULL,
 	recpt_bank varchar(8) NULL,
 	request_time timestamp NULL,
 	response_code varchar(255) NULL,
 	text_message varchar(1000) NULL,
-	CONSTRAINT kc_channel_transaction_pkey PRIMARY KEY (id)
+	CONSTRAINT kc_channel_transaction_pkey PRIMARY KEY (komi_trns_id)
 );
 
 
 -- public.kc_corebank_transaction definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_corebank_transaction;
 
@@ -165,7 +181,7 @@ CREATE TABLE public.kc_corebank_transaction (
 
 -- public.kc_credit_transfer definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_credit_transfer;
 
@@ -204,7 +220,7 @@ CREATE TABLE public.kc_credit_transfer (
 
 -- public.kc_domain_code definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_domain_code;
 
@@ -219,7 +235,7 @@ CREATE TABLE public.kc_domain_code (
 
 -- public.kc_fault_class definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_fault_class;
 
@@ -233,7 +249,7 @@ CREATE TABLE public.kc_fault_class (
 
 -- public.kc_inbound_counter definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_inbound_counter;
 
@@ -246,7 +262,7 @@ CREATE TABLE public.kc_inbound_counter (
 
 -- public.kc_message_counter definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_message_counter;
 
@@ -259,7 +275,7 @@ CREATE TABLE public.kc_message_counter (
 
 -- public.kc_notification_pool definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_notification_pool;
 
@@ -287,7 +303,7 @@ CREATE TABLE public.kc_notification_pool (
 
 -- public.kc_parameter definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_parameter;
 
@@ -303,7 +319,7 @@ CREATE TABLE public.kc_parameter (
 
 -- public.kc_payment_status definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_payment_status;
 
@@ -329,7 +345,7 @@ CREATE TABLE public.kc_payment_status (
 
 -- public.kc_proxy_mgmt definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_proxy_mgmt;
 
@@ -363,7 +379,7 @@ CREATE TABLE public.kc_proxy_mgmt (
 
 -- public.kc_settlement definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_settlement;
 
@@ -386,7 +402,7 @@ CREATE TABLE public.kc_settlement (
 
 -- public.kc_status_reason definition
 
--- Drop table
+-- DROP table
 
 -- DROP TABLE public.kc_status_reason;
 

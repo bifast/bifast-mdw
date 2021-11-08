@@ -29,7 +29,7 @@ public class UpdateStatusSAFProcessor implements Processor{
 		
 		CreditTransfer ct = ctRepo.findById(Long.parseLong(psReq.getId())).orElse(new CreditTransfer());
 		
-		ChannelTransaction ch = chnlTrnsRepo.findByKomiTrnsId(psReq.getKomiTrnsId()).orElse(new ChannelTransaction());
+		ChannelTransaction ch = chnlTrnsRepo.findById(psReq.getKomiTrnsId()).orElse(new ChannelTransaction());
 		
 		if (psReq.getPsStatus().equals("ACCEPTED")) {
 			ct.setCallStatus("SUCCESS");

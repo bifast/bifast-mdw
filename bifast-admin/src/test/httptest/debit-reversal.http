@@ -1,0 +1,32 @@
+
+POST http://localhost:9003/komi/api/v1/adapter/debitreversal HTTP/1.1
+Content-Type: application/json
+
+{
+    "transactionId":"000000",
+    "dateTime":"2021-11-06T09:06:41.767",
+    "merchantType":"5001",
+    "terminalId":"B0434",
+    "noRef":"KOM21110609064100024",
+    "originalNoRef":"567721",
+    "originalDateTime":"2021-11-06T09:06:41.763",
+    "categoryPurpose":"01",
+    "debtorName":"JONI",
+    "debtorType":"01",
+    "debtorId":"6055",
+    "debtorAccountNumber":"5564214",
+    "debtorAccountType":"CACC",
+    "debtorResidentStatus":"01",
+    "debtorTownName":"0300",
+    "amount":"120500.50",
+    "feeTransfer":"4000.00",
+    "recipientBank":"SIHBIDJ1",
+    "creditorName":"JONI N",
+    "creditorType":"01",
+    "creditorId":"C12103",
+    "creditorAccountNumber":"674296",
+    "creditorAccountType":"SVGS",
+    "creditorResidentStatus":"01",
+    "creditorTownName":"0300",
+    "paymentInformation":"bayaran"
+}

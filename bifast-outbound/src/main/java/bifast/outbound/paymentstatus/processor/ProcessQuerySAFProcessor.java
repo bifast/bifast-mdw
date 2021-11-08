@@ -49,7 +49,7 @@ public class ProcessQuerySAFProcessor implements Processor{
 		
 		exchange.getMessage().setHeader("ps_request", ct);
 		
-		ChannelTransaction chnlTrns = channelTrnsRepo.findByKomiTrnsId(ct.getKomiTrnsId()).orElse(new ChannelTransaction());
+		ChannelTransaction chnlTrns = channelTrnsRepo.findById(ct.getKomiTrnsId()).orElse(new ChannelTransaction());
 		Channel channel = channelRepo.findById(chnlTrns.getChannelId()).orElse(new Channel());
 		CreditTransfer creditTransfer = creditTransferRepo.findByKomiTrnsId(ct.getKomiTrnsId()).orElse(new CreditTransfer());
 		

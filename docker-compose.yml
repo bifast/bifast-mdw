@@ -2,14 +2,15 @@
 version: '3.7'
 services:
     komidb:
-      build: docker-script/postgre
-      container_name: komidb
+      build: komi-db
       image: fransmzh/komi-db:1.7
+      container_name: komi-db
       restart: always
       environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
         - POSTGRES_DB=komidb
+        - TZ=Asia/Jakarta
       expose: 
         - "5432"
       logging:
@@ -41,7 +42,7 @@ services:
         - SPRING_JPA_HIBERNATE_DDL_AUTO=none
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
-        - KOMI.COREBANK-URL=localhost:9003/services/cb
+        - KOMI.URL.COREBANK=localhost:9003/komi/api/v1/adapter
         - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs
@@ -64,6 +65,7 @@ services:
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.BICODE=INDOIDJA
         - KOMI.INBOUND-URL=komi-inbound:9001/services/api/enquiry
+        - KOMI.URL.COREBANK=172.23.0.1:9003/komi/api/v1/adapter
         - LOGGING.FILE.NAME=/home/logs/komi-outbound.log
         - LOGGING.LEVEL.BIFAST.OUTBOUND=DEBUG
         - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 

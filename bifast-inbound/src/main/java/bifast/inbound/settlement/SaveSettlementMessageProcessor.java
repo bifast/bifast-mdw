@@ -1,4 +1,4 @@
-package bifast.inbound.processor;
+package bifast.inbound.settlement;
 
 import java.time.LocalDateTime;
 

@@ -51,13 +51,13 @@ public class EnquiryProcessor implements Processor{
 			
 			System.out.println("Cari bizMsgIdr = " + messageRequest.getBizMsgIdr());
 
-			Optional<CreditTransfer> listCT = creditTransferRepository.findByCrdtTrnRequestBizMsgIdr(messageRequest.getBizMsgIdr());
-			if (listCT.isPresent()) {
-				String fullMessage = listCT.get().getFullRequestMessage();
+			List<CreditTransfer> listCT = creditTransferRepository.findAllByCrdtTrnRequestBizMsgIdr(messageRequest.getBizMsgIdr());
+			if (listCT.size()>0) {
+				String fullMessage = listCT.get(0).getFullRequestMessage();
 				if (null==fullMessage) {}
 				else if (fullMessage.isEmpty()) {}
 				else
-					response = listCT.get().getFullRequestMessage();
+					response = listCT.get(0).getFullRequestMessage();
 			}
 		}
 

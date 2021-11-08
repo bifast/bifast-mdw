@@ -5,8 +5,8 @@ Authorization: Basic CMS:password
 
 {
     "PaymentStatusRequest" : {
-      "NoRef" : "214444",
-      "OriginalNoRef" : "2256165"
+      "NoRef" : "212454",
+      "OriginalNoRef" : "275211"
     }
 }
 

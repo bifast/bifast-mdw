@@ -107,7 +107,6 @@ public class ProxyRoute extends RouteBuilder {
 			.process(proxyRegistrationInquiryRequestProcessor)
 	
 			.to("direct:call-cihub")
-			.log(LoggingLevel.DEBUG, "komi.PrxyRegisInquiry", "Done")
 			.process(proxyRegistrationInquiryResponseProcessor)
 			
 	//		.process(storeProxyResolutionProcessor)

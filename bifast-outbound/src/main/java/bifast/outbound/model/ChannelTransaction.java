@@ -5,19 +5,16 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.Id;	
 
 @Entity(name="KC_CHANNEL_TRANSACTION")
 public class ChannelTransaction {
 
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
+//	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
+//	private Long id;
+//
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_generator")
-	@SequenceGenerator(name="seq_generator", sequenceName = "table_seq_generator", allocationSize=1)
-	private Long id;
-
 	@Column(length=20)
 	private String komiTrnsId;
 
@@ -54,12 +51,12 @@ public class ChannelTransaction {
 	@Column(length=1000)
 	private String textMessage;
 	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+//	public Long getId() {
+//		return id;
+//	}
+//	public void setId(Long id) {
+//		this.id = id;
+//	}
 	public String getKomiTrnsId() {
 		return komiTrnsId;
 	}

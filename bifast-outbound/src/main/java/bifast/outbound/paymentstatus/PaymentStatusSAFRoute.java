@@ -17,7 +17,7 @@ import bifast.outbound.paymentstatus.processor.UpdateStatusSAFProcessor;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.service.JacksonDataFormatService;
 
-//@Component
+@Component
 public class PaymentStatusSAFRoute extends RouteBuilder {
 	@Autowired
 	private BuildPaymentStatusSAFRequestProcessor buildPSRequest;;
@@ -63,7 +63,6 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.to("seda:caristtl")
 			// selesai check settlement
 			
-
 			.process(buildPSRequest)
 			
 			.to("direct:call-cihub")

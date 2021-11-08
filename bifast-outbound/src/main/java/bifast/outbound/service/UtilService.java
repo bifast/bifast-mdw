@@ -4,46 +4,24 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.outbound.config.Config;
-import bifast.outbound.model.MessageCounter;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.ChannelTransactionRepository;
-import bifast.outbound.repository.MessageCounterRepository;
-
 
 @Service
 public class UtilService {
 
 	@Autowired
 	private Config config;
-	@Autowired
-	private MessageCounterRepository messageCounterRepo;
 	@Autowired private ChannelTransactionRepository channelTrnsRepo;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 	DecimalFormat df = new DecimalFormat("00000000");
 
-	public Integer getOutboundCounter () {
-        Integer intNow = Integer.valueOf(LocalDateTime.now().format(formatter));
-        
-		Optional<MessageCounter> optCnt = messageCounterRepo.findById(intNow); 
-		if (optCnt.isPresent()) {
-			MessageCounter msgCnt = optCnt.get();
-			msgCnt.setLastNumber(msgCnt.getLastNumber()+1);
-			messageCounterRepo.save(msgCnt);
-			return (msgCnt.getLastNumber());
-		}
-		else {
-			MessageCounter msgCnt = new MessageCounter(intNow, 1);
-			messageCounterRepo.save(msgCnt);
-			return (1);
-		}
-	}
 
 	public String genKomiTrnsId () {
 		String strToday = LocalDate.now().format(formatter);
@@ -59,43 +37,14 @@ public class UtilService {
 
 	public String genMessageId (String trxType, RequestMessageWrapper rmw) {
 		String strToday = LocalDateTime.now().format(formatter);
-		DecimalFormat df = new DecimalFormat("00000000");
-		String strCounter = df.format(getOutboundCounter());
-		String msgId = strToday + config.getBankcode() + trxType + strCounter;
+		String komiNumber = rmw.getKomiTrxId().substring(9);
+
+		String msgId = strToday + config.getBankcode() + trxType + komiNumber;
 		return msgId;
 	}
-	
-	
-//	public String genKomiTrnsId () {
-//		int doy = LocalDate.now().getDayOfYear();
-//		DecimalFormat doyDf = new DecimalFormat("000");
-//		DecimalFormat df = new DecimalFormat("00000");
-//		
-//		Integer counter = getOutboundCounter();
-//		if (counter > 99999) {
-//			counter = counter - 100000;
-//			doy = 400 + doy;
-//		}
-//		String strCounter = doyDf.format(doy) + df.format(getOutboundCounter());
-//		return strCounter;
-//	}
 
-//	public String genOfiBusMsgId (String trxType, String channel ) {
-//		String strToday = LocalDateTime.now().format(formatter);
-////		DecimalFormat df = new DecimalFormat("00000000");
-////		String strCounter = df.format(getOutboundCounter());
-//		String msgId = strToday + config.getBankcode() + trxType + "O" + channel + genKomiTrnsId();
-//		return msgId;
-//	}
-
-//	public String genMsgId (String trxType, String intrnRefId) {
-//		String strToday = LocalDateTime.now().format(formatter);
-//		String leading = "00000000".concat(intrnRefId);
-//		int l = leading.length();
-//		String msgId = strToday + config.getBankcode() + trxType + leading.substring(l-8);
-//		return msgId;
-//	}
 	
+
 //	public long getElapsedFromMessageHistory (List<MessageHistory> list, String nodeId) {
 //		long elapsed = -1;
 //		for (MessageHistory msg : list) {

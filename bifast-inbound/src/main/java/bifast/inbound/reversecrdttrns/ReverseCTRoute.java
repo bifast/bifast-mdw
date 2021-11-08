@@ -70,7 +70,7 @@ public class ReverseCTRoute extends RouteBuilder {
 			// send ke corebank
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{komi.corebank-url}}?"
+				.enrich("http:{{komi.url.corebank}}?"
 //						+ "socketTimeout={{komi.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)

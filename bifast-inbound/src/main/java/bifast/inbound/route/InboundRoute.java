@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 import bifast.inbound.accountenquiry.SaveAccountEnquiryProcessor;
 import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
 import bifast.inbound.processor.CheckRequestMsgProcessor;
-import bifast.inbound.processor.SaveSettlementMessageProcessor;
-import bifast.inbound.processor.SettlementProcessor;
 import bifast.inbound.service.JacksonDataFormatService;
+import bifast.inbound.settlement.SaveSettlementMessageProcessor;
+import bifast.inbound.settlement.SettlementProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 
@@ -61,7 +61,7 @@ public class InboundRoute extends RouteBuilder {
 			.choice().id("forward_msgtype")
 
 				.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
-					.process(settlementProcessor)
+					.to("direct:settlement")
 					.setBody(constant(null))
 
 				.when().simple("${header.hdr_msgType} == 'PROXYNOTIF'")   // terima settlement

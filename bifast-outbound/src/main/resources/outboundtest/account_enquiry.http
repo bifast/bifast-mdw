@@ -7,7 +7,7 @@ Authorization: Basic CMS:password
 
 {
   "AccountEnquiryRequest" : {
-    "NoRef" : "36457",
+    "NoRef" : "366457",
     "SenderAccountNumber": "5230",
     "RecipientBank" : "CITYIDJA",
     "Amount" : "24520064.00",
@@ -24,12 +24,12 @@ Authorization: Basic CMS:password
 
 {
   "AccountEnquiryRequest" : {
-    "NoRef" : "5535",
+    "NoRef" : "5557367",
     "SenderAccountNumber": "54130",
-    "Amount" : "245000",
+    "Amount" : "245000.00",
     "CategoryPurpose" : "01",
     "ProxyType" : "01",
-    "ProxyId" : "2233002"
+    "ProxyId" : "22330021"
  }
 }
 

@@ -1,15 +1,14 @@
 package bifast.inbound.credittransfer;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.MessageHistory;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.model.CreditTransfer;
+import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
@@ -24,15 +23,12 @@ public class SaveCreditTransferProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		 
-		@SuppressWarnings("unchecked")
-		List<MessageHistory> listHistory = exchange.getProperty(Exchange.MESSAGE_HISTORY, List.class);
-
-//		long routeElapsed = utilService.getRouteElapsed(listHistory, "Inbound");
 
 		BusinessMessage rcvBi = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
 		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
 
-
+		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		
 		CreditTransfer ct = new CreditTransfer();
 
 		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
@@ -41,35 +37,31 @@ public class SaveCreditTransferProcessor implements Processor {
 		ct.setFullRequestMessage(fullReqMsg);
 		ct.setFullResponseMsg(fullRespMsg);
 		
-//		if (!(null==hdr.getCpyDplct()))
-//				inboundMsg.setCopyDupl(hdr.getCpyDplct().name());
-
 		if (!(null == exchange.getMessage().getHeader("hdr_toBIobj"))) {
 			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj",BusinessMessage.class);
 
 			ct.setResponseCode(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
 			ct.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
+			ct.setReasonCode(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry());
+			ct.setCallStatus("SUCCESS");
 			
 		}
 		
-//		ct.setCihubRequestDT(utilService.getTimestampFromMessageHistory(listHistory, "start_route"));
+		ct.setCihubRequestDT(processData.getReceivedDt());
+		ct.setLastUpdateDt(LocalDateTime.now());
 //		ct.setCihubElapsedTime(routeElapsed);
 		
 		String reversal = exchange.getMessage().getHeader("resp_reversal",String.class);
 
 		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
-
 		
 		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 		ct.setCrdtTrnRequestBizMsgIdr(hdr.getBizMsgIdr());
-		
-	
+			
 		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
-		
 
 		if (!(null == creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp()))
 			ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
-		
 
 		// jika node splmtryData ada, ambil data custType dari sini; jika tidak maka cek apakah ada di prvtId atau orgId
 		
@@ -117,7 +109,7 @@ public class SaveCreditTransferProcessor implements Processor {
 
 		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 
-		if (msgType.equals("010"))
+		if ((msgType.equals("010")) || (msgType.equals("110")))
 			ct.setMsgType("Credit Transfer");
 		else
 			ct.setMsgType("Reverse CT");
@@ -127,7 +119,7 @@ public class SaveCreditTransferProcessor implements Processor {
 
 		ct.setOriginatingBank(orgnBank);
 		ct.setRecipientBank(recptBank);
-		
+			
 		ct.setReversal(reversal);
 		
 		creditTrnRepo.save(ct);

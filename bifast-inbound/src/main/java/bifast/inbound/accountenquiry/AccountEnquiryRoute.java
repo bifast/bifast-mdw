@@ -3,27 +3,19 @@ package bifast.inbound.accountenquiry;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.service.FlattenIsoMessageService;
-import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
 public class AccountEnquiryRoute extends RouteBuilder {
 
-	@Autowired
-	private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
-	@Autowired
-	private FlattenIsoMessageService flatteningIsoMessageService;
-	@Autowired
-	private JacksonDataFormatService jdfService;
-	@Autowired
-	private AccountEnquiryResponseProcessor aeResponseProcessor;
+	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
+	@Autowired private FlattenIsoMessageService flatteningIsoMessageService;
+	@Autowired private AccountEnquiryResponseProcessor aeResponseProcessor;
 
 	@Override
 	public void configure() throws Exception {
@@ -35,11 +27,9 @@ public class AccountEnquiryRoute extends RouteBuilder {
 //		;
 		
 //		JacksonDataFormat flatJDF = jdfService.basic(FlatPacs008Pojo.class);
-		JacksonDataFormat aecbReqJDF = jdfService.basic(CbAccountEnquiryRequestPojo.class);
 
 		
 		from("direct:accountenq").routeId("komi.accountenq")
-			.log("Start AE process")
 
 			.setHeader("ae_obj_birequest", simple("${body}"))
 			
@@ -52,15 +42,17 @@ public class AccountEnquiryRoute extends RouteBuilder {
 				}
 			})
 					
+			//TODO validate apakah pernah dikirim sebelumnya ?
+			
 			// prepare untuk request ke corebank
 			.process(buildAccountEnquiryRequestProcessor)
-			.marshal(aecbReqJDF)
-			.unmarshal(aecbReqJDF)
+
+	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan call AE corebank")
 
 			//TODO call corebank Account Enquiry
 			.to("seda:callcb")
 
-			.log("iya ${header.hdr_process_data}")
+	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai call AE corebank")
 			.process(aeResponseProcessor)
 						
 			.removeHeaders("ae_*")
