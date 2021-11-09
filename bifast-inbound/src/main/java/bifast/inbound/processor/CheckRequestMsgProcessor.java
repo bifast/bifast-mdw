@@ -42,7 +42,6 @@ public class CheckRequestMsgProcessor implements Processor {
 //		processData.setTextDataReceived(null);
 
 		if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.008")) {
-			System.out.println("jenis msg " + inputMsg.getAppHdr().getMsgDefIdr());
 			FlatPacs008Pojo flat008 = flatMsgService.flatteningPacs008(inputMsg); 
 			processData.setBiRequestFlat(flat008);
 		}

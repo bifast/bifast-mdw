@@ -1,7 +1,5 @@
 package bifast.inbound.credittransfer;
 
-import java.time.format.DateTimeFormatter;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
@@ -20,22 +18,48 @@ public class CTCorebankRequestProcessor implements Processor {
 		FlatPacs008Pojo biReq = (FlatPacs008Pojo) processData.getBiRequestFlat();
 		
 		CbCreditRequestPojo cbRequest = new CbCreditRequestPojo();
-	
-		cbRequest.setTransactionId(biReq.getBizMsgIdr());
+		
+		cbRequest.setAmount(biReq.getAmount());
+		cbRequest.setCategoryPurpose(biReq.getCategoryPurpose());
 		cbRequest.setCreditorAccountNumber(biReq.getCreditorAccountNo());
 		cbRequest.setCreditorAccountType(biReq.getCreditorAccountType());
+
+		if (null != biReq.getCreditorPrvId())
+			cbRequest.setCreditorId(biReq.getCreditorPrvId());
+		else 
+			cbRequest.setCreditorId(biReq.getCreditorOrgId());
+			
+		cbRequest.setCreditorName(biReq.getCreditorName());
 		
-//		DecimalFormat df = new DecimalFormat("#############.00");
-		cbRequest.setAmount(biReq.getAmount());
+		if (null != biReq.getCreditorAccountProxyId()) {
+			cbRequest.setCreditorProxyId(biReq.getCreditorAccountProxyId());
+			cbRequest.setCreditorProxyType(biReq.getCreditorAccountProxyType());
+		}
 		
+		cbRequest.setCreditorResidentStatus(biReq.getCreditorResidentialStatus());
+		cbRequest.setCreditorTownName(biReq.getCreditorTownName());
+		cbRequest.setCreditorType(biReq.getCreditorType());
+		
+		cbRequest.setDebtorAccountNumber(biReq.getDebtorAccountNo());
+		cbRequest.setDebtorAccountType(biReq.getDebtorAccountType());
+		if (null != biReq.getDebtorPrvId())
+			cbRequest.setDebtorId(biReq.getDebtorPrvId());
+		else
+			cbRequest.setDebtorId(biReq.getDebtorOrgId());
+			
 		cbRequest.setDebtorName(biReq.getDebtorName());
+		cbRequest.setDebtorResidentStatus(biReq.getDebtorResidentialStatus());
+		cbRequest.setDebtorTownName(biReq.getDebtorTownName());
+		cbRequest.setDebtorType(biReq.getDebtorType());
+		
+		cbRequest.setFeeTransfer("0.00");
+		cbRequest.setKomiTrnsId(processData.getKomiTrnsId());
+		cbRequest.setRecipientBank(biReq.getToBic());
+
 		
 		if (!(null == biReq.getPaymentInfo()))
 			cbRequest.setPaymentInformation(biReq.getPaymentInfo());
-		
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//		cbRequest.setRequestTime(LocalDateTime.now().format(dtf));
-		
+				
 		exchange.getMessage().setBody(cbRequest);
 	}
 

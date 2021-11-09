@@ -12,13 +12,10 @@ public class SettlementProcessor implements Processor{
 
 		CbSettlementRequestPojo settlement = exchange.getMessage().getBody(CbSettlementRequestPojo.class);
 		
-		//TODO send ke corebank
-		
-		//TODO save history table
-		
 		CbSettlementResponsePojo settlementResponse = new CbSettlementResponsePojo();
 		settlementResponse.setKomiTrnsId(settlement.getKomiTrnsId());
-		//TODO build response message
+		settlementResponse.setOrgnlKomiTrnsId(settlement.getOrgnlKomiTrnsId());
+		settlementResponse.setStatus("ACTC");
 		
 		exchange.getMessage().setBody(settlementResponse);
 	

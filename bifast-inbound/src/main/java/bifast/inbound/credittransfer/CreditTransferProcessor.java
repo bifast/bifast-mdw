@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.config.Config;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
+import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -38,7 +39,17 @@ public class CreditTransferProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		CbCreditResponsePojo cbResponse = exchange.getMessage().getBody(CbCreditResponsePojo.class);
+		Object oResp = exchange.getMessage().getBody(Object.class);
+		String saf = exchange.getMessage().getHeader("ct_saf", String.class);
+
+		CbCreditResponsePojo cbResponse = new CbCreditResponsePojo();
+		FaultPojo fault = new FaultPojo();
+
+		if (oResp.getClass().getSimpleName().equals("CbCreditResponsePojo"))
+			cbResponse = (CbCreditResponsePojo) oResp;
+		else if (oResp.getClass().getSimpleName().equals("FaultPojo"))
+			fault = (FaultPojo) oResp;
+
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 		FlatPacs008Pojo flatRequest = (FlatPacs008Pojo) processData.getBiRequestFlat();
 		
@@ -51,8 +62,26 @@ public class CreditTransferProcessor implements Processor {
 		
 		Pacs002Seed resp = new Pacs002Seed();
 		resp.setMsgId(msgId);
+		
+		
+		//SAF = NO --> reply as-is
+		//if SAF = OLD/NEW --> reply ok
+		if (saf.equals("NO")) {
+			
+			if (oResp.getClass().getSimpleName().equals("CbCreditResponsePojo")) {
+				resp.setStatus(cbResponse.getStatus());
+				resp.setReason(cbResponse.getReason());				
+				resp.setAdditionalInfo(cbResponse.getAdditionalInfo());
+			} else {
+				resp.setStatus(fault.getResponseCode());
+				resp.setReason(fault.getReasonCode());	
+			}
+		}
+		else {
+			resp.setStatus("ACTC");
+			resp.setReason("U000");
+		}
 
-		resp.setAdditionalInfo(cbResponse.getAdditionalInfo());
 		resp.setCreditorResidentialStatus(flatRequest.getCreditorResidentialStatus());  // 01 RESIDENT
 		resp.setCreditorTown(flatRequest.getCreditorTownName());  
 		resp.setCreditorType(flatRequest.getCreditorType());
@@ -63,22 +92,7 @@ public class CreditTransferProcessor implements Processor {
 			
 		if (!(null == biReq.getCdtr().getNm())) 
 			resp.setCreditorName(biReq.getCdtr().getNm());
-
-		//SAF = NO --> reply as-is
-		//if SAF = OLD/NEW --> reply ok
-		String saf = exchange.getMessage().getHeader("ct_saf", String.class);
 		
-		if (saf.equals("NO")) {
-			resp.setStatus(cbResponse.getStatus());
-			resp.setReason(cbResponse.getReason());
-		}
-		
-		else {
-			resp.setStatus("ACTC");
-			resp.setReason("U000");
-		}
-			
-
 		FIToFIPaymentStatusReportV10 respMsg = pacs002Service.creditTransferRequestResponse(resp, reqBusMesg);
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(respMsg);
@@ -91,6 +105,8 @@ public class CreditTransferProcessor implements Processor {
 		respBusMesg.setAppHdr(appHdr);
 		respBusMesg.setDocument(doc);
 		
+		processData.setBiResponseMsg(respBusMesg);
+		exchange.getMessage().setHeader("hdr_process_data", processData);
 		exchange.getIn().setBody(respBusMesg);
 
 	}

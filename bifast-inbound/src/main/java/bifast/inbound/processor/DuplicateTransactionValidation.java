@@ -37,10 +37,10 @@ public class DuplicateTransactionValidation implements Processor{
 		BusinessMessage bmRequest = exchange.getMessage().getBody(BusinessMessage.class);
 
 		FlatPacs008Pojo flat008 = flatService.flatteningPacs008(bmRequest);
-
+		
 		List<CreditTransfer> lCreditTransfer = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flat008.getBizMsgIdr());
 		
-		if (lCreditTransfer.size()>0) {
+		if ((lCreditTransfer.size()>0) && (!(flat008.getCpyDplct().equals("DUPL")))) {
 			BusinessMessage response = ctResponse (bmRequest, processData.getKomiTrnsId());
 			exchange.getMessage().setBody(response);
 

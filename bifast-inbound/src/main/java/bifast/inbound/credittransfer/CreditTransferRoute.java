@@ -26,13 +26,12 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private CreditTransferRepository ctRepo;
 	@Autowired private CreditTransferProcessor creditTransferProcessor;
 	@Autowired private CTCorebankRequestProcessor ctCorebankRequestProcessor;
-	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private DuplicateTransactionValidation duplicationTrnsValidation;
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat cbCreditTransferRequestJDF = jdfService.unwrapRoot(CbCreditRequestPojo.class);
+		JacksonDataFormat cbCreditRequestJDF = jdfService.wrapRoot(CbCreditRequestPojo.class);
 		JacksonDataFormat cbCreditTransferResponseJDF = jdfService.basic(CbCreditResponsePojo.class);
 		JacksonDataFormat businessMessageJDF = jdfService.wrapRoot(BusinessMessage.class);
 
@@ -55,7 +54,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.process(duplicationTrnsValidation)
 			
 			// cek apakah SAF atau bukan
-			//flattening and check saf
+			// check saf
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
@@ -74,55 +73,57 @@ public class CreditTransferRoute extends RouteBuilder {
 								continue;
 							if (ct.getResponseCode().equals("ACTC")) {
 								cbSts = "ACTC";
+								saf = "OLD";
 								break;
 							}
-							else 
+							else {
 								cbSts = "RJCT";
+								saf = "OLD";
+							}
 						}
-					}
+					}				
 					exchange.getMessage().setHeader("ct_saf", saf);
 					exchange.getMessage().setHeader("ct_cbsts", cbSts);
 					exchange.getMessage().setBody(flat);
 				}
 			})
 			
-			.log("status saf: ${header.ct_saf}")
+			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Status SAF: ${header.ct_saf}")
 			
-			
-			//TODO if SAF = NO/NEW --> call CB, set CBSTS = ACTC/RJCT
+			// if SAF = NO/NEW --> call CB, set CBSTS = ACTC/RJCT
 			.filter().simple("${header.ct_saf} in 'NO,NEW'")
 				.log("akan call cb")
 				.process(ctCorebankRequestProcessor)
 				.setHeader("ct_cbrequest", simple("${body}"))
-				.marshal(cbCreditTransferRequestJDF)
-				.log("CB CT: ${body}")
 				// send ke corebank
-				.doTry()
-					.setHeader("HttpMethod", constant("POST"))
-					.enrich("http:{{komi.url.corebank}}/credit?"
-//							+ "socketTimeout={{komi.timeout}}&" 
-							+ "bridgeEndpoint=true",
-							enrichmentAggregator)
-					.convertBodyTo(String.class)
-					.log("cb response ${body}")
-					.unmarshal(cbCreditTransferResponseJDF)
-					.setHeader("ct_cbsts", simple("${body.status}"))
-				.doCatch(Exception.class)
-					.log("Gagal ke corebank")
-			    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-					.setHeader("ct_cbsts", constant("ERROR"))
-					.setBody(constant(null))
+				.to("seda:callcb")
+				
+				.choice()
+					.when().simple("${body.class} endsWith 'FaultPojo'")
+						.setHeader("ct_cbsts", constant("ERROR"))
+					.endChoice()
+					.otherwise()
+						.setHeader("ct_cbsts", simple("${body.status}"))
+					.endChoice()
 				.end()
 			.end()
-
-			.log("cbsts: ${header.ct_cbsts}")		
-								
+					
 			.process(creditTransferProcessor)
+			//TODO jika saf dan corebank error, ct proses harus diulang
 
+			.log("saf ${header.ct_saf}, cb_sts ${header.ct_cbsts}")
 			//TODO if SAF=old/new and CBSTS=RJCT --> reversal
-			.filter().simple("${header.ct_saf} != 'NO' && ${header.ct_cbsts} == 'RJCT'")
-				.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Harus CT Reversal.")
-				.setHeader("hdr_reversal", constant("YES"))
+			.filter().simple("${header.ct_saf} != 'NO'")
+				.choice()
+					.when().simple("${header.ct_cbsts} == 'RJCT'")
+						.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Harus CT Reversal.")
+						.setHeader("hdr_reversal", constant("YES"))
+					.endChoice()
+					.when().simple("${header.ct_cbsts} == 'ERROR'")
+						.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Apakah CT Reversal?")
+						.setHeader("hdr_reversal", constant("UNDEFINED"))
+					.endChoice()
+				.end()
 			.end()
 	
 			.removeHeaders("ct_*")

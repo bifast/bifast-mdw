@@ -50,8 +50,8 @@ public class CorebankRoute extends RouteBuilder{
 
 		restConfiguration().component("servlet");
 		
-		rest("/")
-			.post("/corebank")
+		rest("/v1")
+			.post("/adapter")
 				.consumes("application/json")
 				.to("direct:cbservice")
 		;
@@ -107,6 +107,7 @@ public class CorebankRoute extends RouteBuilder{
 					.marshal(settlementResponseJDF)
 			.end()
 					
+			.removeHeaders("*")
 		;
 
 		

@@ -1,5 +1,7 @@
 package bifast.inbound.credittransfer;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import org.apache.camel.Exchange;
@@ -31,14 +33,16 @@ public class SaveCreditTransferProcessor implements Processor {
 		
 		CreditTransfer ct = new CreditTransfer();
 
+		ct.setKomiTrnsId(processData.getKomiTrnsId());
+		
 		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
 		String fullRespMsg = exchange.getMessage().getHeader("hdr_toBI_jsonzip",String.class);
 		
 		ct.setFullRequestMessage(fullReqMsg);
 		ct.setFullResponseMsg(fullRespMsg);
 		
-		if (!(null == exchange.getMessage().getHeader("hdr_toBIobj"))) {
-			BusinessMessage respBi = exchange.getMessage().getHeader("hdr_toBIobj",BusinessMessage.class);
+		if (null != processData.getBiResponseMsg()) {
+			BusinessMessage respBi = processData.getBiResponseMsg();
 
 			ct.setResponseCode(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
 			ct.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
@@ -49,8 +53,9 @@ public class SaveCreditTransferProcessor implements Processor {
 		
 		ct.setCihubRequestDT(processData.getReceivedDt());
 		ct.setLastUpdateDt(LocalDateTime.now());
-//		ct.setCihubElapsedTime(routeElapsed);
-		
+		long timeElapsed = Duration.between(processData.getStartTime(), Instant.now()).toMillis();
+		ct.setCihubElapsedTime(timeElapsed);
+
 		String reversal = exchange.getMessage().getHeader("hdr_reversal",String.class);
 
 		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
@@ -119,7 +124,7 @@ public class SaveCreditTransferProcessor implements Processor {
 
 		ct.setOriginatingBank(orgnBank);
 		ct.setRecipientBank(recptBank);
-			
+
 		ct.setReversal(reversal);
 		
 		creditTrnRepo.save(ct);

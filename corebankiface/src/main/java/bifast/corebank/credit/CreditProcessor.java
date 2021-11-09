@@ -13,11 +13,13 @@ public class CreditProcessor implements Processor{
 
 		CbCreditRequestPojo creditRequest = exchange.getMessage().getBody(CbCreditRequestPojo.class);
 
-		//TODO process Account Balance
-		
-		
 		CbCreditResponsePojo creditResponse = new CbCreditResponsePojo();
 		creditResponse.setKomiTrnsId(creditRequest.getKomiTrnsId());
+		
+		creditResponse.setAccountNumber(creditRequest.getCreditorAccountNumber());
+		creditResponse.setAdditionalInfo("");
+		creditResponse.setReason("ACTC");
+		creditResponse.setStatus("U000");
 		
 		exchange.getMessage().setBody(creditResponse);
 

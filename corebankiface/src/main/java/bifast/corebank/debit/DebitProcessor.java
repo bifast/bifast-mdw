@@ -12,13 +12,18 @@ public class DebitProcessor implements Processor{
 
 		CbDebitRequestPojo debitRequest = exchange.getMessage().getBody(CbDebitRequestPojo.class);
 		
-		//TODO send ke corebank
-		
-		//TODO save history table
-		
 		CbDebitResponsePojo debitResponse = new CbDebitResponsePojo();
+		
 		debitResponse.setKomiTrnsId(debitRequest.getKomiTrnsId());
-		//TODO build response message
+
+		debitResponse.setAccountNumber(debitRequest.getCreditorAccountNumber());
+		debitResponse.setAdditionalInfo(debitRequest.getPaymentInformation());
+		
+		debitResponse.setMerchantType(debitRequest.getMerchantType());
+		debitResponse.setNoRef(debitRequest.getNoRef());
+		debitResponse.setReason("U000");
+		debitResponse.setStatus("ACTC");
+		debitResponse.setTerminalId(debitRequest.getTerminalId());
 		
 		exchange.getMessage().setBody(debitResponse);
 	

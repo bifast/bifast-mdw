@@ -1,54 +1,26 @@
 package bifast.inbound.corebank.pojo;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
-
-@JsonRootName("AccountEnquiryResponse")
 public class CbAccountEnquiryResponsePojo {
-	
-	private String transactionId;
-	private String dateTime;
-	private String merchantType;
-	private String terminalId;
-	private String noRef;
+
+	private String komiTrnsId;
 	private String status;
 	private String reason;
-	private String accountNumber;
+
+	private String categoryPurpose;
+	
+	private String accountNumber;	
 	private String accountType;
 	private String creditorName;
-	private String creditorId;
 	private String creditorType;
+	private String creditorId;
 	private String residentStatus;
 	private String townName;
 	
-	public String getTransactionId() {
-		return transactionId;
+	public String getKomiTrnsId() {
+		return komiTrnsId;
 	}
-	public void setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-	}
-	public String getDateTime() {
-		return dateTime;
-	}
-	public void setDateTime(String dateTime) {
-		this.dateTime = dateTime;
-	}
-	public String getMerchantType() {
-		return merchantType;
-	}
-	public void setMerchantType(String merchantType) {
-		this.merchantType = merchantType;
-	}
-	public String getTerminalId() {
-		return terminalId;
-	}
-	public void setTerminalId(String terminalId) {
-		this.terminalId = terminalId;
-	}
-	public String getNoRef() {
-		return noRef;
-	}
-	public void setNoRef(String noRef) {
-		this.noRef = noRef;
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
 	}
 	public String getStatus() {
 		return status;
@@ -61,6 +33,12 @@ public class CbAccountEnquiryResponsePojo {
 	}
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+	public String getCategoryPurpose() {
+		return categoryPurpose;
+	}
+	public void setCategoryPurpose(String categoryPurpose) {
+		this.categoryPurpose = categoryPurpose;
 	}
 	public String getAccountNumber() {
 		return accountNumber;
@@ -80,17 +58,17 @@ public class CbAccountEnquiryResponsePojo {
 	public void setCreditorName(String creditorName) {
 		this.creditorName = creditorName;
 	}
-	public String getCreditorId() {
-		return creditorId;
-	}
-	public void setCreditorId(String creditorId) {
-		this.creditorId = creditorId;
-	}
 	public String getCreditorType() {
 		return creditorType;
 	}
 	public void setCreditorType(String creditorType) {
 		this.creditorType = creditorType;
+	}
+	public String getCreditorId() {
+		return creditorId;
+	}
+	public void setCreditorId(String creditorId) {
+		this.creditorId = creditorId;
 	}
 	public String getResidentStatus() {
 		return residentStatus;
@@ -104,8 +82,6 @@ public class CbAccountEnquiryResponsePojo {
 	public void setTownName(String townName) {
 		this.townName = townName;
 	}
-	
-
 
 
 }

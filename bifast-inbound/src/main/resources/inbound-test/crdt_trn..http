@@ -23,7 +23,7 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20211111BMNDIDJA010O0100000026",
+      "BizMsgIdr": "20211109BMNDIDJA010O0100000038",
       "MsgDefIdr": "pacs.008.001.08",
       "CreDt": "2021-11-03T14:50:22Z",
       "CpyDplct": "DUPL"
@@ -31,7 +31,7 @@ Content-Type: application/json
     "Document": {
       "FitoFICstmrCdtTrf": {
         "GrpHdr": {
-          "MsgId": "20211111BMNDIDJA01000000010",
+          "MsgId": "20211109BMNDIDJA01000000032",
           "CreDtTm": "2021-11-11T21:50:22.960",
           "NbOfTxs": "1",
           "SttlmInf": {

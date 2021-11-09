@@ -1,10 +1,12 @@
-package bifast.inbound.settlement;
+package bifast.inbound.corebank.pojo;
 
-public class CbSettlementResponsePojo {
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+@JsonRootName("SettlementConfirmation")
+public class CbSettlementRequestPojo {
 
 	private String komiTrnsId;
 	private String orgnlKomiTrnsId;
-	private String status;
 	
 	public String getKomiTrnsId() {
 		return komiTrnsId;
@@ -18,12 +20,6 @@ public class CbSettlementResponsePojo {
 	public void setOrgnlKomiTrnsId(String orgnlKomiTrnsId) {
 		this.orgnlKomiTrnsId = orgnlKomiTrnsId;
 	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
 	
+
 }

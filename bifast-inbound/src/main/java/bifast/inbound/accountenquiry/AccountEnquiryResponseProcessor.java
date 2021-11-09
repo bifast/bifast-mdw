@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
+import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -28,36 +29,44 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		CbAccountEnquiryResponsePojo aeResp = exchange.getMessage().getBody(CbAccountEnquiryResponsePojo.class);
-//		BusinessMessage msg = exchange.getMessage().getHeader("ae_obj_birequest", BusinessMessage.class);
-
+		Object oResp = exchange.getMessage().getBody(Object.class);
+		
+		CbAccountEnquiryResponsePojo aeResp = new CbAccountEnquiryResponsePojo();
+		FaultPojo fault = new FaultPojo();
+		
+		if (oResp.getClass().getSimpleName().equals("CbAccountEnquiryResponsePojo"))
+			aeResp = (CbAccountEnquiryResponsePojo) oResp;
+		else
+			fault = (FaultPojo) oResp;
+		
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 
+		String msgId = utilService.genMsgId("510", processData.getKomiTrnsId());
 		BusinessMessage msg = processData.getBiRequestMsg();
 
-//		String komiTrnsId = utilService.genKomiTrnsId();
-//		exchange.getMessage().setHeader("hdr_komiId", komiTrnsId);
-//		System.out.println("generate komiId : " + komiTrnsId);
-		
-		String bizMsgId = utilService.genRfiBusMsgId("510", processData.getKomiTrnsId());
-		String msgId = utilService.genMsgId("510", processData.getKomiTrnsId());
-
 		Pacs002Seed seed = new Pacs002Seed();
-		
-		seed.setStatus(aeResp.getStatus());
-		seed.setReason(aeResp.getReason());
-
 		seed.setMsgId(msgId);
-		
-		seed.setCreditorName(aeResp.getCreditorName());
-		seed.setCreditorAccountNo(aeResp.getAccountNumber());
-		seed.setCreditorAccountIdType(aeResp.getAccountType());
-		seed.setCreditorType(aeResp.getCreditorType());
-		seed.setCreditorId(aeResp.getCreditorId());
-		seed.setCreditorTown(aeResp.getTownName());
-		seed.setCreditorResidentialStatus(aeResp.getResidentStatus());
+		seed.setCreditorAccountNo(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 
+		if (oResp.getClass().getSimpleName().equals("CbAccountEnquiryResponsePojo")) {
+			seed.setStatus(aeResp.getStatus());
+			seed.setReason(aeResp.getReason());
+			
+			seed.setCreditorName(aeResp.getCreditorName());
+			seed.setCreditorAccountIdType(aeResp.getAccountType());
+			seed.setCreditorType(aeResp.getCreditorType());
+			seed.setCreditorId(aeResp.getCreditorId());
+			seed.setCreditorTown(aeResp.getTownName());
+			seed.setCreditorResidentialStatus(aeResp.getResidentStatus());
+		}
+		else {
+			seed.setStatus(fault.getResponseCode());
+			seed.setReason(fault.getReasonCode());	
+		}
+			
+		String bizMsgId = utilService.genRfiBusMsgId("510", processData.getKomiTrnsId());
 		
+
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"pacs.002.001.10", bizMsgId);

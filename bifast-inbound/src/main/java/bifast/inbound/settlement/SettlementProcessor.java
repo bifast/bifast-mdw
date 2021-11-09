@@ -7,6 +7,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.corebank.pojo.CbSettlementRequestPojo;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;

@@ -7,7 +7,6 @@ import bifast.library.iso20022.custom.BusinessMessage;
 
 public class ProcessDataPojo {
 
-	private Long komiCounter;
 	private String komiTrnsId;
 	private String inbMesgType;
 	private LocalDateTime receivedDt;
@@ -21,14 +20,6 @@ public class ProcessDataPojo {
 	
 	private Object corebankRequest;
 	private Object corebankResponse;
-
-	public Long getKomiCounter() {
-		return komiCounter;
-	}
-
-	public void setKomiCounter(Long komiCounter) {
-		this.komiCounter = komiCounter;
-	}
 
 	public String getKomiTrnsId() {
 		return komiTrnsId;

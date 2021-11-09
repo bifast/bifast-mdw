@@ -10,7 +10,6 @@ import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
 import bifast.inbound.processor.CheckRequestMsgProcessor;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.inbound.settlement.SaveSettlementMessageProcessor;
-import bifast.inbound.settlement.SettlementProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 
@@ -21,7 +20,6 @@ public class InboundRoute extends RouteBuilder {
 	@Autowired private SaveCreditTransferProcessor saveCreditTransferProcessor;
 	@Autowired private SaveSettlementMessageProcessor saveSettlementMessageProcessor;
 	@Autowired private CheckRequestMsgProcessor checkRequestMsgProcessor;
-	@Autowired private SettlementProcessor settlementProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
 	
 
@@ -40,7 +38,7 @@ public class InboundRoute extends RouteBuilder {
 				.to("direct:receive")
 		;	
 		
-		from("direct:receive").routeId("komi.inboundEndpoint").messageHistory()
+		from("direct:receive").routeId("komi.inboundEndpoint")
 			.convertBodyTo(String.class).id("start_route")
 			
 			// simpan msg inbound compressed
@@ -101,10 +99,10 @@ public class InboundRoute extends RouteBuilder {
 			.id("end_route")
 
 			// jika CT yang mesti reversal
-			.choice()
-				.when().simple("${header.resp_reversal} == 'PENDING'")
-					.to("seda:reversal?exchangePattern=InOnly")
-			.end()
+//			.choice()
+//				.when().simple("${header.hdr_reversal} == 'PENDING'")
+//					.to("seda:reversal?exchangePattern=InOnly")
+//			.end()
 			
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
 			.removeHeaders("*")
@@ -124,7 +122,6 @@ public class InboundRoute extends RouteBuilder {
 			.when().simple("${header.hdr_msgType} == '510'")  // account enquiry
 				.process(saveAccountEnquiryProcessor)
 			.otherwise()
-				.log("${header.hdr_msgType}")
 				.process(saveCreditTransferProcessor)
 			.end()
 		;

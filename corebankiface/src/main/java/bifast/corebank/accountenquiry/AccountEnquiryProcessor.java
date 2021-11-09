@@ -15,10 +15,21 @@ public class AccountEnquiryProcessor implements Processor {
 		//TODO process A-E
 		
 		
-		CbAccountEnquiryResponsePojo aeResponse = new CbAccountEnquiryResponsePojo();
-		aeResponse.setKomiTrnsId(aeRequest.getKomiTrnsId());
+		CbAccountEnquiryResponsePojo response = new CbAccountEnquiryResponsePojo();
+		response.setKomiTrnsId(aeRequest.getKomiTrnsId());
+		response.setCategoryPurpose(aeRequest.getCategoryPurpose());
+		response.setAccountNumber(aeRequest.getAccountNumber());
+		response.setAccountType("CACC");
+		response.setCreditorId("995955858");
+		response.setCreditorName("Bambang");
+		response.setCreditorType("01");
 		
-		exchange.getMessage().setBody(aeResponse);
+		response.setReason("U000");
+		response.setResidentStatus("01");
+		response.setStatus("ACTC");
+		response.setTownName("0300");
+
+		exchange.getMessage().setBody(response);
 	
 	}
 
