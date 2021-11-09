@@ -10,12 +10,12 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferResponsePojo;
 import bifast.outbound.model.StatusReason;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
-import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
-import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.repository.StatusReasonRepository;
 

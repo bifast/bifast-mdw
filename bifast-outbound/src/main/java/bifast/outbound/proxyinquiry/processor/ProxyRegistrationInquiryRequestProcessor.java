@@ -1,4 +1,4 @@
-package bifast.outbound.proxyregistration.processor;
+package bifast.outbound.proxyinquiry.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -8,24 +8,23 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.prxy003.ProxyLookUpType1Code;
 import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Proxy003MessageService;
-import bifast.library.iso20022.service.Proxy003Seed;
+import bifast.library.iso20022.service.Proxy005MessageService;
+import bifast.library.iso20022.service.Proxy005Seed;
 import bifast.outbound.config.Config;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationInquiryRequestPojo;
 import bifast.outbound.service.UtilService;
 
 @Component
-public class ProxyResolutionRequestProcessor implements Processor {
+public class ProxyRegistrationInquiryRequestProcessor implements Processor {
 
 	@Autowired
 	private Config config;
 	@Autowired
 	private AppHeaderService appHeaderService;
 	@Autowired
-	private Proxy003MessageService proxy003MessageService;
+	private Proxy005MessageService proxy005MessageService;
 	@Autowired
 	private UtilService utilService;
 
@@ -33,7 +32,7 @@ public class ProxyResolutionRequestProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-		ChnlProxyResolutionRequestPojo chnReq = rmw.getChnlProxyResolutionRequest();
+		ChnlProxyRegistrationInquiryRequestPojo chnReq = rmw.getChnlProxyRegistrationInquiryRequest();
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
@@ -41,23 +40,18 @@ public class ProxyResolutionRequestProcessor implements Processor {
 		String bizMsgId = utilService.genBusMsgId(trxType, rmw);
 		String msgId = utilService.genMessageId(trxType, rmw);
 		
-		hdr = appHeaderService.getAppHdr(config.getBicode(), "prxy.003.001.01", bizMsgId);
+		hdr = appHeaderService.getAppHdr(config.getBicode(), "prxy.005.001.01", bizMsgId);
 		
-		Proxy003Seed seedProxyResolution = new Proxy003Seed();
+		Proxy005Seed seedProxyResolution = new Proxy005Seed();
 		
 		seedProxyResolution.setMsgId(msgId);
 		seedProxyResolution.setTrnType(trxType);
 		
-//		if (chnReq.getLookupType().equals("PXRS")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
-//		else if (chnReq.getLookupType().equals("CHCK")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.CHCK);
-//		else if (chnReq.getLookupType().equals("NMEQ")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.NMEQ);
-		seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
-		
-		seedProxyResolution.setProxyType(chnReq.getProxyType());
-		seedProxyResolution.setProxyValue(chnReq.getProxyValue());
+		seedProxyResolution.setScndIdType(chnReq.getScndIdType());
+		seedProxyResolution.setScndIdValue(chnReq.getScndIdValue());
 		
 		Document doc = new Document();
-		doc.setPrxyLookUp(proxy003MessageService.proxyResolutionRequest(seedProxyResolution));
+		doc.setPrxyNqryReq(proxy005MessageService.proxyRegistrationInquiryRequest(seedProxyResolution));
 
 		BusinessMessage busMsg = new BusinessMessage();
 		busMsg.setAppHdr(hdr);

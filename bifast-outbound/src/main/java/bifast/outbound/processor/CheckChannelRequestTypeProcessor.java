@@ -8,9 +8,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
+import bifast.outbound.pojo.ChnlRequestWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlRequestWrapper;
 
 @Component
 public class CheckChannelRequestTypeProcessor implements Processor {

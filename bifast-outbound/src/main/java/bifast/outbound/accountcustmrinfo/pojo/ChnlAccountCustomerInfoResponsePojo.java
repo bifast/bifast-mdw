@@ -1,4 +1,4 @@
-package bifast.outbound.pojo.chnlresponse;
+package bifast.outbound.accountcustmrinfo.pojo;
 
 import java.util.List;
 

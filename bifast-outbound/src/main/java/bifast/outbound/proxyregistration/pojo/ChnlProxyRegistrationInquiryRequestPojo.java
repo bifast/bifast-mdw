@@ -1,4 +1,4 @@
-package bifast.outbound.pojo.chnlrequest;
+package bifast.outbound.proxyregistration.pojo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.CreditTransfer;
+import bifast.outbound.paymentstatus.pojo.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
-import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.CreditTransferRepository;
 

@@ -1,4 +1,4 @@
-package bifast.outbound.pojo.chnlresponse;
+package bifast.outbound.accountenquiry.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

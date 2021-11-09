@@ -5,8 +5,8 @@ import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 
 @Component
 public class ProxyEnrichmentAggregator implements AggregationStrategy {

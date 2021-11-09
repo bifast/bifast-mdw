@@ -1,4 +1,4 @@
-package bifast.outbound.proxyregistration.processor;
+package bifast.outbound.proxyinquiry.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

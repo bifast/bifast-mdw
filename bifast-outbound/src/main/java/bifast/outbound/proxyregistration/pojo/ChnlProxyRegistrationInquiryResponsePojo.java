@@ -1,4 +1,4 @@
-package bifast.outbound.pojo.chnlresponse;
+package bifast.outbound.proxyregistration.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -11,15 +11,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	,"displayName"
 	,"registerBank"
 	,"displayName"
+	,"proxyStatus"
 	,"accountNumber"
 	,"accountType"
 	,"accountName"
+	,"scndIdType"
+	,"scndIdValue"
 	,"customerType"
 	,"customerId"
 	,"residentialStatus"
 	,"townName"
 	})
-public class ChnlProxyResolutionResponsePojo  {
+public class ChnlProxyRegistrationInquiryResponsePojo  {
 
 	@JsonProperty("NoRef")
 	private String noRef;
@@ -31,6 +34,8 @@ public class ChnlProxyResolutionResponsePojo  {
 	private String registrationId;
 	@JsonProperty("DisplayName")
 	private String displayName;
+	@JsonProperty("ProxyStatus")
+	private String proxyStatus;
 	@JsonProperty("RegisterBank")
 	private String registerBank;
 	
@@ -40,6 +45,12 @@ public class ChnlProxyResolutionResponsePojo  {
 	private String accountType;
 	@JsonProperty("AccountName")
 	private String accountName;
+	
+	@JsonProperty("ScndIdType")
+	private String scndIdType;
+	@JsonProperty("ScndIdValue")
+	private String scndIdValue;
+	
 	@JsonProperty("CustomerType")
 	private String customerType;
 	@JsonProperty("CustomerId")
@@ -127,7 +138,23 @@ public class ChnlProxyResolutionResponsePojo  {
 	public void setTownName(String townName) {
 		this.townName = townName;
 	}
-	
-	
+	public String getScndIdType() {
+		return scndIdType;
+	}
+	public void setScndIdType(String scndIdType) {
+		this.scndIdType = scndIdType;
+	}
+	public String getScndIdValue() {
+		return scndIdValue;
+	}
+	public void setScndIdValue(String scndIdValue) {
+		this.scndIdValue = scndIdValue;
+	}
+	public String getProxyStatus() {
+		return proxyStatus;
+	}
+	public void setProxyStatus(String proxyStatus) {
+		this.proxyStatus = proxyStatus;
+	}
 	
 }

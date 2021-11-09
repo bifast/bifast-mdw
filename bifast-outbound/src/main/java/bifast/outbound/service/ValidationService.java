@@ -2,9 +2,9 @@ package bifast.outbound.service;
 
 import org.springframework.stereotype.Service;
 
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.exception.InputValidationException;
-import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 
 @Service
 public class ValidationService {

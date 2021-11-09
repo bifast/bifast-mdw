@@ -8,20 +8,17 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
-import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
-import bifast.outbound.proxyregistration.processor.ProxyRegistrationInquiryRequestProcessor;
-import bifast.outbound.proxyregistration.processor.ProxyRegistrationInquiryResponseProcessor;
+import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.proxyinquiry.processor.ProxyResolutionRequestProcessor;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.proxyregistration.processor.ProxyRegistrationRequestProcessor;
 import bifast.outbound.proxyregistration.processor.ProxyRegistrationResponseProcessor;
-import bifast.outbound.proxyregistration.processor.ProxyResolutionRequestProcessor;
-import bifast.outbound.proxyregistration.processor.ProxyResolutionResponseProcessor;
 import bifast.outbound.proxyregistration.processor.StoreProxyRegistrationProcessor;
 
 @Component
-public class ProxyRoute extends RouteBuilder {
+public class ProxyRegistrationRoute extends RouteBuilder {
 
 	@Autowired
 	private ProxyRegistrationRequestProcessor proxyRegistrationRequestProcessor;
@@ -29,15 +26,6 @@ public class ProxyRoute extends RouteBuilder {
 	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
 	@Autowired
 	private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
-	@Autowired
-	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
-	
-	@Autowired
-	private ProxyRegistrationInquiryRequestProcessor proxyRegistrationInquiryRequestProcessor;
-	
-	@Autowired
-	private ProxyRegistrationInquiryResponseProcessor proxyRegistrationInquiryResponseProcessor;
-	
 	@Autowired
 	private StoreProxyRegistrationProcessor saveProxyRegnProc;
 
@@ -87,32 +75,6 @@ public class ProxyRoute extends RouteBuilder {
 		
 		;
         
-		
-		from("direct:proxyresolution").routeId("komi.prxyrslt")
-		
-			.log(LoggingLevel.DEBUG, "komi.prxyrslt", "[ChRefId:${header.hdr_chnlRefId}] Proxy started.")
-			.process(proxyResolutionRequestProcessor)
-	
-			.to("direct:call-cihub")
-			
-			.process(proxyResolutionResponseProcessor)
-			
-//			.process(storeProxyResolutionProcessor)
-			
-		;
-
-		from("direct:prxyrgstinquiry").routeId("komi.prxyrgstinquiry")
-		
-			.log(LoggingLevel.DEBUG, "komi.prxyrgstinquiry", "[ChRefId:${header.hdr_chnlRefId}] Proxy started.")
-			.process(proxyRegistrationInquiryRequestProcessor)
-	
-			.to("direct:call-cihub")
-			.process(proxyRegistrationInquiryResponseProcessor)
-			
-	//		.process(storeProxyResolutionProcessor)
-			
-		;
-
 	}
 }
 

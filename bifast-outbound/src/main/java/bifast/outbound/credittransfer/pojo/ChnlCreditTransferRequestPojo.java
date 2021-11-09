@@ -1,4 +1,4 @@
-package bifast.outbound.pojo.chnlrequest;
+package bifast.outbound.credittransfer.pojo;
 
 import java.time.LocalDateTime;
 

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.config.Config;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 import bifast.outbound.service.CorebankService;
 
 @Component

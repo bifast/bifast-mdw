@@ -10,13 +10,13 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
 import bifast.outbound.model.StatusReason;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
-import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
-import bifast.outbound.pojo.chnlresponse.ChnlAccountEnquiryResponsePojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
 import bifast.outbound.repository.StatusReasonRepository;

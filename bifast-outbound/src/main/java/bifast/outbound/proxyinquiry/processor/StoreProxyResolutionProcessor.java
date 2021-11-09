@@ -1,4 +1,4 @@
-package bifast.outbound.proxyregistration.processor;
+package bifast.outbound.proxyinquiry.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -9,7 +9,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
 import bifast.outbound.model.ProxyMessage;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.repository.ProxyMessageRepository;
 
 @Component

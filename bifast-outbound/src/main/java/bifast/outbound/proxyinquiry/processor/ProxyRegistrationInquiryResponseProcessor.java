@@ -1,4 +1,4 @@
-package bifast.outbound.proxyregistration.processor;
+package bifast.outbound.proxyinquiry.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.StatusReason;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
+import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationInquiryRequestPojo;
-import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
-import bifast.outbound.pojo.chnlresponse.ChnlProxyRegistrationInquiryResponsePojo;
 import bifast.outbound.pojo.flat.FlatPrxy006AliasPojo;
 import bifast.outbound.pojo.flat.FlatPrxy006Pojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationInquiryRequestPojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationInquiryResponsePojo;
 import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
@@ -44,9 +44,9 @@ public class ProxyRegistrationInquiryResponseProcessor implements Processor {
 		
 
 		Object objBody = exchange.getMessage().getBody(Object.class);
-		if (objBody.getClass().getSimpleName().equals("ChnlFailureResponsePojo")) {
+		if (objBody.getClass().getSimpleName().equals("FaultPojo")) {
 
-			ChnlFailureResponsePojo fault = (ChnlFailureResponsePojo)objBody;
+			FaultPojo fault = (FaultPojo)objBody;
 
 			channelResponseWr.setResponseCode(fault.getResponseCode());
 			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());

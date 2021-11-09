@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import bifast.outbound.corebank.pojo.CbAccountCustomerInfoRequestPojo;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.corebank.pojo.CbDebitReversalPojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 import bifast.outbound.repository.CorebankTransactionRepository;
 
 @Service

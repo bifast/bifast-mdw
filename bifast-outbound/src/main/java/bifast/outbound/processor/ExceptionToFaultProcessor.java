@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.FaultClass;
-import bifast.outbound.pojo.ChnlFailureResponsePojo;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.FaultClassRepository;
@@ -76,7 +75,7 @@ public class ExceptionToFaultProcessor implements Processor {
 		responseCol.setLastError(description);
 		exchange.getMessage().setHeader("hdr_response_list", responseCol);
 
-		exchange.getMessage().setBody(fault, ChnlFailureResponsePojo.class);
+		exchange.getMessage().setBody(fault, FaultPojo.class);
 	}
 
 }

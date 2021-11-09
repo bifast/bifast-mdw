@@ -1,6 +1,14 @@
-package bifast.outbound.pojo.chnlrequest;
+package bifast.outbound.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import bifast.outbound.accountcustmrinfo.pojo.ChnlAccountCustomerInfoRequestPojo;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
+import bifast.outbound.paymentstatus.pojo.ChnlPaymentStatusRequestPojo;
+import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationInquiryRequestPojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 
 
 public class ChnlRequestWrapper {

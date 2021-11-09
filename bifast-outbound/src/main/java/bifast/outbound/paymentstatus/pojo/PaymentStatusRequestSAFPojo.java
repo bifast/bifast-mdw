@@ -1,4 +1,4 @@
-package bifast.outbound.pojo.chnlrequest;
+package bifast.outbound.paymentstatus.pojo;
 
 
 public class PaymentStatusRequestSAFPojo {

@@ -1,4 +1,4 @@
-package bifast.outbound.pojo.chnlrequest;
+package bifast.outbound.proxyregistration.pojo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -38,7 +38,8 @@ public class ChnlProxyRegistrationRequestPojo {
 		@JsonProperty(value="CustomerId") String customerId,
 		@JsonProperty(value="CustomerType") String customerType,
 		@JsonProperty(value="ResidentialStatus") String residentialStatus,
-		@JsonProperty(value="TownName") String townName )
+		@JsonProperty(value="TownName") String townName,
+		@JsonProperty(value="RegistrationId") String registrationId )
 	{
 		this.channelRefId = channelRefId;
 		this.registrationType = registrationType;
@@ -54,6 +55,7 @@ public class ChnlProxyRegistrationRequestPojo {
 		this.customerType = customerType;
 		this.residentialStatus = residentialStatus;
 		this.townName = townName;
+		this.registrationId = registrationId;
 	}
 
 	public String getChannelRefId() {

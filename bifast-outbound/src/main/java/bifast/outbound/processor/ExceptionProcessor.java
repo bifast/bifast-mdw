@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.FaultClass;
 import bifast.outbound.model.StatusReason;
-import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.repository.FaultClassRepository;
 import bifast.outbound.repository.StatusReasonRepository;
 

@@ -1,4 +1,4 @@
-package bifast.outbound.proxyregistration.processor;
+package bifast.outbound.proxyinquiry.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.StatusReason;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
-import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
-import bifast.outbound.pojo.chnlresponse.ChnlProxyResolutionResponsePojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
+import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionResponsePojo;
 import bifast.outbound.repository.StatusReasonRepository;
 
 @Component

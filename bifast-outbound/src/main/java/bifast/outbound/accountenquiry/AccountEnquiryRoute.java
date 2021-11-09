@@ -8,16 +8,16 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.accountenquiry.processor.AEProxyEnrichmentProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
 import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
-import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
 import bifast.outbound.processor.ExceptionProcessor;
-import bifast.outbound.proxyregistration.processor.ProxyResolutionRequestProcessor;
+import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.proxyinquiry.processor.ProxyResolutionRequestProcessor;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component

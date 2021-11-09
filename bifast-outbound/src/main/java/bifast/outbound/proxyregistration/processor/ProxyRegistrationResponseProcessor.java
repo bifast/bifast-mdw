@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.StatusReason;
+import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
-import bifast.outbound.pojo.chnlresponse.ChannelResponseWrapper;
-import bifast.outbound.pojo.chnlresponse.ChnlProxyRegistrationResponsePojo;
 import bifast.outbound.pojo.flat.FlatPrxy002Pojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationResponsePojo;
 import bifast.outbound.repository.StatusReasonRepository;
 
 @Component

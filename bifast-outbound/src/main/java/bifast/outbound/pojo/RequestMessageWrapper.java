@@ -5,15 +5,15 @@ import java.time.Instant;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.corebank.pojo.CbAccountCustomerInfoRequestPojo;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlPaymentStatusRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationInquiryRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyRegistrationRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlProxyResolutionRequestPojo;
-import bifast.outbound.pojo.chnlrequest.PaymentStatusRequestSAFPojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
+import bifast.outbound.paymentstatus.pojo.ChnlPaymentStatusRequestPojo;
+import bifast.outbound.paymentstatus.pojo.PaymentStatusRequestSAFPojo;
+import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationInquiryRequestPojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 
 public class RequestMessageWrapper {
 

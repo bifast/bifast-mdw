@@ -1,4 +1,4 @@
-package bifast.outbound.pojo.chnlresponse;
+package bifast.outbound.pojo;
 
 import java.util.List;
 
@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.proxyregistration.ChnlProxyResolutionResponse;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferResponsePojo;
+import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionResponsePojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationResponsePojo;
 
 @JsonPropertyOrder({
 	"responseCode"
@@ -46,7 +49,7 @@ public class ChannelResponseWrapper {
 	private ChnlProxyRegistrationResponsePojo proxyRegistrationResponse;
 	
 	@JsonProperty("ProxyResolutionRequest")
-	private ChnlProxyResolutionResponse proxyResolutionResponse;
+	private ChnlProxyResolutionResponsePojo proxyResolutionResponse;
 
 
 	public String getReasonCode() {
@@ -154,16 +157,13 @@ public class ChannelResponseWrapper {
 		this.proxyRegistrationResponse = proxyRegistrationResponse;
 	}
 
-	public ChnlProxyResolutionResponse getProxyResolutionResponse() {
+	public ChnlProxyResolutionResponsePojo getProxyResolutionResponse() {
 		return proxyResolutionResponse;
 	}
 
-	public void setProxyResolutionResponse(ChnlProxyResolutionResponse proxyResolutionResponse) {
+	public void setProxyResolutionResponse(ChnlProxyResolutionResponsePojo proxyResolutionResponse) {
 		this.proxyResolutionResponse = proxyResolutionResponse;
 	}
-
-
-
 
 
 }

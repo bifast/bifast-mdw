@@ -9,14 +9,14 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.exception.DuplicateIdException;
 import bifast.outbound.exception.InputValidationException;
 import bifast.outbound.exception.NoRefNullException;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.DomainCode;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.chnlrequest.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.pojo.chnlrequest.ChnlCreditTransferRequestPojo;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.DomainCodeRepository;
 import bifast.outbound.service.ValidationService;

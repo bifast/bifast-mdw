@@ -1,12 +1,12 @@
 package bifast.outbound.pojo;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.pojo.chnlresponse.ChnlAccountEnquiryResponsePojo;
-import bifast.outbound.pojo.chnlresponse.ChnlCreditTransferResponsePojo;
-import bifast.outbound.pojo.chnlresponse.ChnlProxyRegistrationResponsePojo;
-import bifast.outbound.pojo.chnlresponse.ChnlProxyResolutionResponsePojo;
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryResponsePojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferResponsePojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
+import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionResponsePojo;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationResponsePojo;
 
 public class ResponseMessageCollection {
 
