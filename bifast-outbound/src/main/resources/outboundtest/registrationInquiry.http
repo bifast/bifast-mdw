@@ -5,21 +5,11 @@ Content-Type: application/json
 Authorization: Basic CMS:password
 
 {
-    "ProxyRegistrationRequest" : {
-        "NoRef" : "6621",
-        "RegistrationType" : "NEWR",
-        "ProxyType" : "02",
-        "ProxyValue" : "fran52@yahoo",
-        "DisplayName" : "Frans Mazhawr",
-        "AccountNumber" : "22522",
-        "AccountType" : "CACC",
-        "AccountName" : "JOHN SMITH ",
-        "SecondaryIdType" : "01",
-        "SecondaryIdValue" : "KT1020",
-        "CustomerType" : "01",
-        "CustomerId" : "KTP-222044020",
-        "ResidentialStatus" : "01",
-        "TownName" : "0300"
+    "ProxyRegistrationInquiry" : {
+        "NoRef" : "66442",
+        "SenderAccountNumber" : "7732004021",
+        "ScndIdType" : "01",
+        "ScndIdValue" : "1020304050607080"
     }
 }
 

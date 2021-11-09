@@ -1,0 +1,14 @@
+POST http://localhost:9007/api/corebank HTTP/1.1
+Content-Type: application/json
+
+{
+  "CustomerInfoRequest" : {
+    "komiTrnsId" : "47169",
+    "noRef" : "CMS2021101020040502",
+    "merchantType" : "MM40",
+    "terminalId": "GATEUSER",
+    "accountNumber" : "7723004444"
+  }
+}
+
+###

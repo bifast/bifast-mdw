@@ -1,0 +1,13 @@
+POST http://localhost:9007/api/corebank HTTP/1.1
+Content-Type: application/json
+
+{
+  "DebitReversalRequest" : {
+    "komiTrnsId" : "47169",
+    "orgnlKomiTrnsId" : "49050",
+	  "orgnlAccountNumber" : "04040502",
+	  "paymentInformation" : "Ini dulu"
+  }
+}
+
+###

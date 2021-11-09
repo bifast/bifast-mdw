@@ -2,11 +2,9 @@ POST http://localhost:9007/api/corebank HTTP/1.1
 Content-Type: application/json
 
 {
-  "AccountEnquiryRequest" : {
+  "SettlementConfirmation" : {
     "komiTrnsId" : "47169",
-    "categoryPurpose" : "01",
-    "accountNumber" : "7723004444",
-    "amount" : "137400"
+    "orgnlKomiTrnsId" : "49050"
   }
 }
 

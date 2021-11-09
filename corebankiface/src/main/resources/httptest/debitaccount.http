@@ -1,0 +1,33 @@
+POST http://localhost:9007/api/corebank HTTP/1.1
+Content-Type: application/json
+
+{
+  "DebitRequest" : {
+    "komiTrnsId" : "47169",
+    "merchantType" : "MM40",
+    "terminalId": "GATEUSER",
+		"noRef": "MOB211108110620201",
+    "categoryPurpose" : "01",
+		"debtorName": "Purnama Erwin",
+		"debtorType": "01",
+		"debtorId": "88777555444443333",
+		"debtorAccountType": "SVGS",
+		"debtorAccountNumber": "2012104794259",
+		"debtorTownName": "0300",
+		"debtorResidentStatus": "01",
+    "amount" : "137400.00",
+		"feeTransfer": "0.00",
+		"creditorName": "Suseno Susilo",
+		"creditorType": "01",
+		"creditorId": "KTP-205772715",
+		"creditorAccountNumber": "1234567890",
+		"creditorAccountType": "CACC",
+		"creditorResidentStatus": "01",
+		"creditorTownName": "0300",
+		"creditorProxyId": "",
+		"creditorProxyType": "",
+		"paymentInformation": ""
+  }
+}
+
+###
