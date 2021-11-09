@@ -12,8 +12,16 @@ public class SettlementRoute extends RouteBuilder {
 	public void configure() throws Exception {
 
 		from("direct:settlement")
-			.process(settlementProcessor)
 			
+			// prepare untuk request ke corebank
+			.process(settlementProcessor)
+
+	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan submit Settlement ke corebank")
+
+			.to("seda:callcb")
+
+	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai call AE corebank")
+//			.process(aeResponseProcessor)
 		;
 
 	}

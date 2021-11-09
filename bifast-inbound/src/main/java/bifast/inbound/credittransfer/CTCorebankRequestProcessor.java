@@ -1,8 +1,5 @@
 package bifast.inbound.credittransfer;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
@@ -10,33 +7,31 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
-import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
+import bifast.inbound.pojo.ProcessDataPojo;
+import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 
 @Component
 public class CTCorebankRequestProcessor implements Processor {
 
-
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		BusinessMessage inboundMessage = exchange.getMessage().getBody(BusinessMessage.class);
+		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		FlatPacs008Pojo biReq = (FlatPacs008Pojo) processData.getBiRequestFlat();
+		
 		CbCreditRequestPojo cbRequest = new CbCreditRequestPojo();
+	
+		cbRequest.setTransactionId(biReq.getBizMsgIdr());
+		cbRequest.setCreditorAccountNumber(biReq.getCreditorAccountNo());
+		cbRequest.setCreditorAccountType(biReq.getCreditorAccountType());
 		
-		CreditTransferTransaction39 biReq = inboundMessage.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
+//		DecimalFormat df = new DecimalFormat("#############.00");
+		cbRequest.setAmount(biReq.getAmount());
 		
-		cbRequest.setTransactionId(inboundMessage.getAppHdr().getBizMsgIdr());
-		cbRequest.setCreditorAccountNumber(biReq.getCdtrAcct().getId().getOthr().getId());
-		cbRequest.setCreditorAccountType(biReq.getCdtrAcct().getTp().getPrtry());
+		cbRequest.setDebtorName(biReq.getDebtorName());
 		
-		DecimalFormat df = new DecimalFormat("#############.00");
-		BigDecimal amount = biReq.getIntrBkSttlmAmt().getValue();
-		cbRequest.setAmount(df.format(amount));
-		
-		cbRequest.setDebtorName(biReq.getCdtr().getNm());
-		
-		if (!(null == biReq.getRmtInf()))
-			cbRequest.setPaymentInformation(biReq.getRmtInf().getUstrd().get(0));
+		if (!(null == biReq.getPaymentInfo()))
+			cbRequest.setPaymentInformation(biReq.getPaymentInfo());
 		
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 //		cbRequest.setRequestTime(LocalDateTime.now().format(dtf));

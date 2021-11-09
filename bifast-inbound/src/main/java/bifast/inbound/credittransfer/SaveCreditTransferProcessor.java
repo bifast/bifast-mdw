@@ -51,7 +51,7 @@ public class SaveCreditTransferProcessor implements Processor {
 		ct.setLastUpdateDt(LocalDateTime.now());
 //		ct.setCihubElapsedTime(routeElapsed);
 		
-		String reversal = exchange.getMessage().getHeader("resp_reversal",String.class);
+		String reversal = exchange.getMessage().getHeader("hdr_reversal",String.class);
 
 		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
 		

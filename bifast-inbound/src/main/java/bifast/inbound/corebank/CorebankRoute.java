@@ -1,7 +1,5 @@
 package bifast.inbound.corebank;
 
-import java.util.Optional;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -12,39 +10,43 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
 import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
-import bifast.inbound.model.CreditTransfer;
+import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
+import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.pojo.ProcessDataPojo;
-import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.processor.EnrichmentAggregator;
-import bifast.inbound.repository.CreditTransferRepository;
-import bifast.inbound.service.FlattenIsoMessageService;
 import bifast.inbound.service.JacksonDataFormatService;
-import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.inbound.settlement.CbSettlementRequestPojo;
 
 
 @Component
 public class CorebankRoute extends RouteBuilder{
-	@Autowired private CbMockResponse cbMock;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private SaveCorebankTransactionProcessor saveCbProcessor;
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat chnlAccountEnquiryJDF = jdfService.basic(CbAccountEnquiryRequestPojo.class);
-		JacksonDataFormat cbAccountEnquiryResponseJDF = jdfService.basic(CbAccountEnquiryResponsePojo.class);
-//		JacksonDataFormat chnlDebitResponseJDF = jdfService.basic(CbDebitResponsePojo.class)
-//		JacksonDataFormat accountCustomerInfoRequestJDF = jdfService.basic(CbAccountCustomerInfoRequestPojo.class);
-//		JacksonDataFormat accountCustomerInfoResponseJDF = jdfService.basic(CbAccountCustomerInfoResponsePojo.class);
+		JacksonDataFormat accountEnquiryJDF = jdfService.basic(CbAccountEnquiryRequestPojo.class);
+		JacksonDataFormat accountEnquiryResponseJDF = jdfService.basic(CbAccountEnquiryResponsePojo.class);
+		JacksonDataFormat creditJDF = jdfService.basic(CbCreditRequestPojo.class);
+		JacksonDataFormat creditResponseJDF = jdfService.basic(CbCreditResponsePojo.class);
+		JacksonDataFormat settlementJDF = jdfService.basic(CbSettlementRequestPojo.class);
 
 		// ROUTE CALLCB 
 		from("seda:callcb").routeId("komi.cb.corebank")
 		
-
 			.choice()
 				.when().simple("${body.class} endsWith 'CbAccountEnquiryRequestPojo'")
 					.setHeader("cb_requestName", constant("accountinquiry"))
-					.marshal(chnlAccountEnquiryJDF)
+					.marshal(accountEnquiryJDF)
+
+				.when().simple("${body.class} endsWith 'CbCreditRequestPojo'")
+					.setHeader("cb_requestName", constant("credit"))
+					.marshal(creditJDF)
+
+				.when().simple("${body.class} endsWith 'CbSettlementRequestPojo'")
+					.setHeader("cb_requestName", constant("settlement"))
+					.marshal(settlementJDF)
 			.end()
 			
 	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
@@ -61,7 +63,7 @@ public class CorebankRoute extends RouteBuilder{
 	 		
 	 		.choice()
 	 			.when().simple("${header.cb_requestName} == 'accountinquiry'")
-	 				.unmarshal(cbAccountEnquiryResponseJDF)
+	 				.unmarshal(accountEnquiryResponseJDF)
 	 				.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
 							CbAccountEnquiryResponsePojo cbResponse = exchange.getMessage().getBody(CbAccountEnquiryResponsePojo.class);
@@ -71,6 +73,11 @@ public class CorebankRoute extends RouteBuilder{
 						}
 	 				})
 	 			.endChoice()
+
+	 			.when().simple("${header.cb_requestName} == 'credit'")
+ 					.unmarshal(creditResponseJDF)
+	 			.endChoice()
+
 	 		.end()
 	 		
 	 		.to("seda:savecb")

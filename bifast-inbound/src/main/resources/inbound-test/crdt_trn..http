@@ -23,7 +23,7 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20211103BMNDIDJA010O0100000036",
+      "BizMsgIdr": "20211111BMNDIDJA010O0100000026",
       "MsgDefIdr": "pacs.008.001.08",
       "CreDt": "2021-11-03T14:50:22Z",
       "CpyDplct": "DUPL"
@@ -31,8 +31,8 @@ Content-Type: application/json
     "Document": {
       "FitoFICstmrCdtTrf": {
         "GrpHdr": {
-          "MsgId": "20211103BMNDIDJA01000000019",
-          "CreDtTm": "2021-11-03T21:50:22.960",
+          "MsgId": "20211111BMNDIDJA01000000010",
+          "CreDtTm": "2021-11-11T21:50:22.960",
           "NbOfTxs": "1",
           "SttlmInf": {
             "SttlmMtd": "CLRG"
@@ -41,8 +41,8 @@ Content-Type: application/json
         "CdtTrfTxInf": [
           {
             "PmtId": {
-              "EndToEndId": "20211103BMNDIDJA010O0100000036",
-              "TxId": "20211103BMNDIDJA01000000019"
+              "EndToEndId": "20211111BMNDIDJA010O0100000036",
+              "TxId": "20211111BMNDIDJA01000000010"
             },
             "PmtTpInf": {
               "LclInstrm": {
@@ -56,7 +56,7 @@ Content-Type: application/json
               "Value": "120500.50",
               "Ccy": "IDR"
             },
-            "IntrBkSttlmDt": "2021-11-03",
+            "IntrBkSttlmDt": "2021-11-01",
             "ChrgBr": "DEBT",
             "Dbtr": {
               "Nm": "JONI",

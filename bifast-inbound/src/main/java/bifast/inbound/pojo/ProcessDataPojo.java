@@ -15,6 +15,7 @@ public class ProcessDataPojo {
 	
 	private String textDataReceived;
 	
+	private Object biRequestFlat;
 	private BusinessMessage biRequestMsg;
 	private BusinessMessage biResponseMsg;
 	
@@ -91,6 +92,14 @@ public class ProcessDataPojo {
 
 	public void setCorebankRequest(Object corebankRequest) {
 		this.corebankRequest = corebankRequest;
+	}
+
+	public Object getBiRequestFlat() {
+		return biRequestFlat;
+	}
+
+	public void setBiRequestFlat(Object biRequestFlat) {
+		this.biRequestFlat = biRequestFlat;
 	}
 
 	public Object getCorebankResponse() {

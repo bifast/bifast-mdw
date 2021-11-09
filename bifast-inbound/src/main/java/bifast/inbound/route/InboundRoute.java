@@ -64,7 +64,7 @@ public class InboundRoute extends RouteBuilder {
 					.to("direct:settlement")
 					.setBody(constant(null))
 
-				.when().simple("${header.hdr_msgType} == 'PROXYNOTIF'")   // terima settlement
+				.when().simple("${header.hdr_msgType} == 'PROXYNOTIF'")  
 					.setBody(constant(null))
 
 				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
@@ -107,9 +107,7 @@ public class InboundRoute extends RouteBuilder {
 			.end()
 			
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
-			.removeHeaders("hdr_*")
-			.removeHeaders("resp_*")
-			.removeHeader("HttpMethod")
+			.removeHeaders("*")
 		
 		;
 

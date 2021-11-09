@@ -1,0 +1,12 @@
+
+POST http://localhost:9003/komi/api/v1/adapter/credit HTTP/1.1
+Content-Type: application/json
+
+{
+    "transactionId":"20211111BMNDIDJA010O0100000019",
+    "debtorName":"JONI",
+    "amount":"120500.50",
+    "creditorAccountNumber":"244296",
+    "creditorAccountType":"SVGS",
+    "paymentInformation":"bayaran"
+}

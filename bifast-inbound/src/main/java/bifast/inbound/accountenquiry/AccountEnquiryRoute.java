@@ -1,20 +1,13 @@
 package bifast.inbound.accountenquiry;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import bifast.inbound.pojo.flat.FlatPacs008Pojo;
-import bifast.inbound.service.FlattenIsoMessageService;
-import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
 public class AccountEnquiryRoute extends RouteBuilder {
 
 	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
-	@Autowired private FlattenIsoMessageService flatteningIsoMessageService;
 	@Autowired private AccountEnquiryResponseProcessor aeResponseProcessor;
 
 	@Override
@@ -32,18 +25,7 @@ public class AccountEnquiryRoute extends RouteBuilder {
 		from("direct:accountenq").routeId("komi.accountenq")
 
 			.setHeader("ae_obj_birequest", simple("${body}"))
-			
-			//flattening disini
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					BusinessMessage inboundMessage = exchange.getMessage().getBody(BusinessMessage.class);
-					FlatPacs008Pojo flat = flatteningIsoMessageService.flatteningPacs008(inboundMessage);
-					exchange.getMessage().setBody(flat);
-				}
-			})
-					
-			//TODO validate apakah pernah dikirim sebelumnya ?
-			
+										
 			// prepare untuk request ke corebank
 			.process(buildAccountEnquiryRequestProcessor)
 

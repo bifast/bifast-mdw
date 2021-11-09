@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
+import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.repository.CorebankTransactionRepository;
 
@@ -20,7 +21,8 @@ public class BuildAERequestForCbProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		FlatPacs008Pojo biReq = exchange.getMessage().getBody(FlatPacs008Pojo.class);
+		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		FlatPacs008Pojo biReq = (FlatPacs008Pojo) processData.getBiRequestFlat();
 		
 		CbAccountEnquiryRequestPojo cbRequest = new CbAccountEnquiryRequestPojo();
 

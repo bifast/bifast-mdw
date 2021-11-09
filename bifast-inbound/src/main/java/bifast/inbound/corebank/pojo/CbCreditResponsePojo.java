@@ -6,18 +6,38 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 public class CbCreditResponsePojo {
 
 	private String transactionId;
+	private String dateTime;
+	private String merchantType;
+	private String terminalId;
 	private String status;
 	private String reason;
 	private String accountNumber;
-	private String amount;
-	private String addtInfo;
-	private String responseTime;
+	private String additionalInfo;
+
 	
 	public String getTransactionId() {
 		return transactionId;
 	}
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
+	}
+	public String getDateTime() {
+		return dateTime;
+	}
+	public void setDateTime(String dateTime) {
+		this.dateTime = dateTime;
+	}
+	public String getMerchantType() {
+		return merchantType;
+	}
+	public void setMerchantType(String merchantType) {
+		this.merchantType = merchantType;
+	}
+	public String getTerminalId() {
+		return terminalId;
+	}
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
 	}
 	public String getStatus() {
 		return status;
@@ -37,24 +57,13 @@ public class CbCreditResponsePojo {
 	public void setAccountNumber(String accountNumber) {
 		this.accountNumber = accountNumber;
 	}
-	public String getAmount() {
-		return amount;
+	public String getAdditionalInfo() {
+		return additionalInfo;
 	}
-	public void setAmount(String amount) {
-		this.amount = amount;
+	public void setAdditionalInfo(String additionalInfo) {
+		this.additionalInfo = additionalInfo;
 	}
-	public String getAddtInfo() {
-		return addtInfo;
-	}
-	public void setAddtInfo(String addtInfo) {
-		this.addtInfo = addtInfo;
-	}
-	public String getResponseTime() {
-		return responseTime;
-	}
-	public void setResponseTime(String responseTime) {
-		this.responseTime = responseTime;
-	}
+	
 	
 	
 }

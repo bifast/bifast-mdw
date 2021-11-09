@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.config.Config;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
-import bifast.inbound.service.UtilService;
+import bifast.inbound.pojo.ProcessDataPojo;
+import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
@@ -31,112 +32,52 @@ public class CreditTransferProcessor implements Processor {
 	private AppHeaderService appHdrService;
 	@Autowired
 	private Pacs002MessageService pacs002Service;
-	@Autowired
-	private UtilService utilService;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		CbCreditResponsePojo cbResponse = exchange.getMessage().getBody(CbCreditResponsePojo.class);		
+		CbCreditResponsePojo cbResponse = exchange.getMessage().getBody(CbCreditResponsePojo.class);
+		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		FlatPacs008Pojo flatRequest = (FlatPacs008Pojo) processData.getBiRequestFlat();
 		
 		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("hdr_frBIobj", BusinessMessage.class);
 		CreditTransferTransaction39 biReq =  reqBusMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
 
-		Boolean isCopyDupl = false;
-		if ( (!(null==reqBusMesg.getAppHdr().getCpyDplct())) &&
-				 (reqBusMesg.getAppHdr().getCpyDplct().name().equals("DUPL")) ) {
-			isCopyDupl = true;
-		}
-
 		String strToday = LocalDate.now().format(formatter);
-
-		String inboundResponseId = utilService.genKomiTrnsId();
+		String bizMsgId = strToday + config.getBankcode() + "510R99" + processData.getKomiTrnsId();
+		String msgId = strToday + config.getBankcode() + "510" + processData.getKomiTrnsId();
 		
-		String bizMsgId = strToday + config.getBankcode() + "510R99" + inboundResponseId;
-
-		String msgId = strToday + config.getBankcode() + "510" + inboundResponseId;
-
-
 		Pacs002Seed resp = new Pacs002Seed();
 		resp.setMsgId(msgId);
 
+		resp.setAdditionalInfo(cbResponse.getAdditionalInfo());
+		resp.setCreditorResidentialStatus(flatRequest.getCreditorResidentialStatus());  // 01 RESIDENT
+		resp.setCreditorTown(flatRequest.getCreditorTownName());  
+		resp.setCreditorType(flatRequest.getCreditorType());
+		if (null != flatRequest.getCreditorPrvId())
+			resp.setCreditorId(flatRequest.getCreditorPrvId());
+		else
+			resp.setCreditorId(flatRequest.getCreditorOrgId());
+			
 		if (!(null == biReq.getCdtr().getNm())) 
 			resp.setCreditorName(biReq.getCdtr().getNm());
 
-		if ((null==cbResponse) && isCopyDupl ){
-			//harus ACTC - plus reversal
-			resp.setStatus("ACTC"); 
-			resp.setReason("U002");     
-//			resp.setAdditionalInfo("Ini informasi tambahan aja.");
-//			resp.setCreditorResidentialStatus("01");  // 01 RESIDENT
-//			resp.setCreditorTown("0300");  
-//			resp.setCreditorType("01");
-//			resp.setCreditorId("234433");
-
-			exchange.getMessage().setHeader("resp_reversal", "PENDING");
-
+		//SAF = NO --> reply as-is
+		//if SAF = OLD/NEW --> reply ok
+		String saf = exchange.getMessage().getHeader("ct_saf", String.class);
+		
+		if (saf.equals("NO")) {
+			resp.setStatus(cbResponse.getStatus());
+			resp.setReason(cbResponse.getReason());
 		}
 		
-		else if ((null==cbResponse) && !isCopyDupl ){
-		
-			// harus RJCT
+		else {
+			resp.setStatus("ACTC");
+			resp.setReason("U000");
+		}
 			
-			resp.setStatus("RJCT"); 
-			resp.setReason("U003");     
-//			resp.setAdditionalInfo("Ini informasi tambahan aja.");
-//			resp.setCreditorResidentialStatus("01");  // 01 RESIDENT
-//			resp.setCreditorTown("0300");  
-//			resp.setCreditorType("01");
-//			resp.setCreditorId("234433");
-
-			exchange.getMessage().setHeader("resp_reversal", "");
-
-		}
-
-		else if ((cbResponse.getStatus().equals("FAILED")) && isCopyDupl) {  // perlu reversal
-			// harus ACCT plus reversal
-			resp.setStatus("ACTC"); 
-			resp.setReason("U002");     
-//			resp.setAdditionalInfo("Ini informasi tambahan aja.");
-//			resp.setCreditorResidentialStatus("01");  // 01 RESIDENT
-//			resp.setCreditorTown("0300");  
-//			resp.setCreditorType("01");
-//			resp.setCreditorId("234433");
-
-			exchange.getMessage().setHeader("resp_reversal", "PENDING");
-
-		}
-
-		else if ((cbResponse.getStatus().equals("FAILED")) && !isCopyDupl) {
-			// harus RJCT
-			resp.setStatus("RJCT"); 
-			resp.setReason("U003");     
-//			resp.setAdditionalInfo("Ini informasi tambahan aja.");
-//			resp.setCreditorResidentialStatus("01");  // 01 RESIDENT
-//			resp.setCreditorTown("0300");  
-//			resp.setCreditorType("01");
-//			resp.setCreditorId("234433");
-
-			
-			exchange.getMessage().setHeader("resp_reversal", "");
-
-		}
-
-		else if (cbResponse.getStatus().equals("SUCCESS"))  {
-			resp.setStatus("ACTC"); 
-			resp.setReason("U002");     
-//			resp.setAdditionalInfo("Ini informasi tambahan aja.");
-//			resp.setCreditorResidentialStatus("01");  // 01 RESIDENT
-//			resp.setCreditorTown("0300");  
-//			resp.setCreditorType("01");
-//			resp.setCreditorId("234433");
-			
-			exchange.getMessage().setHeader("resp_reversal", "");
-
-		}
-
 
 		FIToFIPaymentStatusReportV10 respMsg = pacs002Service.creditTransferRequestResponse(resp, reqBusMesg);
 		Document doc = new Document();
