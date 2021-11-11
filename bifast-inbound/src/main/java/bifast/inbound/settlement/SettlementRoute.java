@@ -14,14 +14,16 @@ public class SettlementRoute extends RouteBuilder {
 		from("direct:settlement")
 			
 			// prepare untuk request ke corebank
+			.log("Terima settlement ${body}")
 			.process(settlementProcessor)
 
 	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan submit Settlement ke corebank")
 
-			.to("seda:callcb")
+	 		.filter().simple("${body.orgnlKomiTrnsId} != null")
+				.to("seda:callcb")
+			.end()
 
-	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai call AE corebank")
-//			.process(aeResponseProcessor)
+	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai proses Settlement ")
 		;
 
 	}

@@ -1,38 +1,14 @@
 package bifast.outbound.corebank.pojo;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonPropertyOrder({
-	"transactionId"
-	,"dateTime"
-	,"merchantType"
-	,"terminalId"
-	,"komiNoRef"
-	,"originalNoRef"
-	,"originalDateTime"
-	,"categoryPurpose"
-	,"debtorName"
-	,"debtorType"
-	,"debtorId"
-	,"debtorAccountNumber"
-	,"debtorAccountType"
-	,"debtorResidentStatus"
-	,"debtorTownName"
-	,"amount"
-	,"feeTransfer"
-	,"recipientBank"
-	,"creditorName"
-	,"creditorType"
-	,"creditorId"
-	,"creditorAccountNumber"
-	,"creditorAccountType"
-	,"creditorResidentStatus"
-	,"creditorTownName"
-	,"creditorProxyId"
-	,"creditorProxyType"
-	,"paymentInformation"
-	})
-public class CbDebitRequestPojo extends CbRequestBase{
+@JsonRootName("DebitRequest")
+public class CbDebitRequestPojo {
+
+	private String komiTrnsId;
+	private String merchantType;
+	private String terminalId;
+	private String noRef;
 
 	private String categoryPurpose;
 	
@@ -61,6 +37,38 @@ public class CbDebitRequestPojo extends CbRequestBase{
 	private String creditorProxyType;
 
 	private String paymentInformation;
+
+	public String getKomiTrnsId() {
+		return komiTrnsId;
+	}
+
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
+	}
+
+	public String getMerchantType() {
+		return merchantType;
+	}
+
+	public void setMerchantType(String merchantType) {
+		this.merchantType = merchantType;
+	}
+
+	public String getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
+	}
+
+	public String getNoRef() {
+		return noRef;
+	}
+
+	public void setNoRef(String noRef) {
+		this.noRef = noRef;
+	}
 
 	public String getCategoryPurpose() {
 		return categoryPurpose;
@@ -229,6 +237,5 @@ public class CbDebitRequestPojo extends CbRequestBase{
 	public void setPaymentInformation(String paymentInformation) {
 		this.paymentInformation = paymentInformation;
 	}
-	
-	
+
 }

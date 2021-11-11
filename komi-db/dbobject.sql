@@ -80,9 +80,9 @@ CREATE SEQUENCE public.table_seq_generator
 
 -- public.kc_account_enquiry definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_account_enquiry;
+Drop TABLE public.kc_account_enquiry;
 
 CREATE TABLE public.kc_account_enquiry (
 	id int8 NOT NULL,
@@ -108,9 +108,9 @@ CREATE TABLE public.kc_account_enquiry (
 
 -- public.kc_channel definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_channel;
+Drop TABLE public.kc_channel;
 
 CREATE TABLE public.kc_channel (
 	channel_id varchar(15) NOT NULL,
@@ -128,9 +128,9 @@ CREATE TABLE public.kc_channel (
 
 -- public.kc_channel_transaction definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_channel_transaction;
+Drop TABLE public.kc_channel_transaction;
 
 CREATE TABLE public.kc_channel_transaction (
 	komi_trns_id varchar(20) NOT NULL,
@@ -151,9 +151,9 @@ CREATE TABLE public.kc_channel_transaction (
 
 -- public.kc_corebank_transaction definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_corebank_transaction;
+Drop TABLE public.kc_corebank_transaction;
 
 CREATE TABLE public.kc_corebank_transaction (
 	id int8 NOT NULL,
@@ -181,48 +181,49 @@ CREATE TABLE public.kc_corebank_transaction (
 
 -- public.kc_credit_transfer definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_credit_transfer;
+Drop TABLE public.kc_credit_transfer;
 
 CREATE TABLE public.kc_credit_transfer (
 	id int8 NOT NULL,
-	amount numeric(19, 2) NULL,
+	komi_trns_id varchar(50) NULL,
+	msg_type varchar(50) NULL,
 	call_status varchar(20) NULL,
-	cihub_elapsed_time int8 NULL,
+	response_code varchar(20) NULL,
+	reason_code varchar(20) NULL,
 	cihub_req_time timestamp NULL,
+	cihub_elapsed_time int8 NULL,
 	req_bizmsgid varchar(50) NULL,
 	resp_bizmsgid varchar(50) NULL,
-	create_dt timestamp NULL,
+	reversal varchar(10) NULL,
+	cpydplct varchar(10) NULL,
 	creditor_acct_no varchar(50) NULL,
 	creditor_acct_type varchar(10) NULL,
 	creditor_id varchar(50) NULL,
 	creditor_type varchar(10) NULL,
+	amount numeric(19, 2) NULL,
 	debtor_acct_no varchar(50) NULL,
 	debtor_acct_type varchar(10) NULL,
 	debtor_id varchar(50) NULL,
 	debtor_type varchar(10) NULL,
 	error_message varchar(400) NULL,
+	create_dt timestamp NULL,
+	last_update_dt timestamp NULL,
+	orign_bank varchar(10) NULL,
+	recpt_bank varchar(10) NULL,
+	ps_counter int4 NULL,
 	full_request_msg varchar(4000) NULL,
 	full_response_msg varchar(4000) NULL,
-	komi_trns_id varchar(50) NULL,
-	last_update_dt timestamp NULL,
-	msg_type varchar(50) NULL,
-	orign_bank varchar(10) NULL,
-	ps_counter int4 NULL,
-	reason_code varchar(20) NULL,
-	recpt_bank varchar(10) NULL,
-	response_code varchar(20) NULL,
-	reversal varchar(10) NULL,
 	CONSTRAINT kc_credit_transfer_pkey PRIMARY KEY (id)
 );
 
 
 -- public.kc_domain_code definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_domain_code;
+Drop TABLE public.kc_domain_code;
 
 CREATE TABLE public.kc_domain_code (
 	id int8 NOT NULL,
@@ -235,9 +236,9 @@ CREATE TABLE public.kc_domain_code (
 
 -- public.kc_fault_class definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_fault_class;
+Drop TABLE public.kc_fault_class;
 
 CREATE TABLE public.kc_fault_class (
 	id int8 NOT NULL,
@@ -247,24 +248,11 @@ CREATE TABLE public.kc_fault_class (
 );
 
 
--- public.kc_inbound_counter definition
-
--- DROP table
-
--- DROP TABLE public.kc_inbound_counter;
-
-CREATE TABLE public.kc_inbound_counter (
-	tanggal int4 NOT NULL,
-	last_number int4 NULL,
-	CONSTRAINT kc_inbound_counter_pkey PRIMARY KEY (tanggal)
-);
-
-
 -- public.kc_message_counter definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_message_counter;
+Drop TABLE public.kc_message_counter;
 
 CREATE TABLE public.kc_message_counter (
 	tanggal int4 NOT NULL,
@@ -275,9 +263,9 @@ CREATE TABLE public.kc_message_counter (
 
 -- public.kc_notification_pool definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_notification_pool;
+Drop TABLE public.kc_notification_pool;
 
 CREATE TABLE public.kc_notification_pool (
 	id int8 NOT NULL,
@@ -303,9 +291,9 @@ CREATE TABLE public.kc_notification_pool (
 
 -- public.kc_parameter definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_parameter;
+Drop TABLE public.kc_parameter;
 
 CREATE TABLE public.kc_parameter (
 	id int4 NOT NULL,
@@ -319,9 +307,9 @@ CREATE TABLE public.kc_parameter (
 
 -- public.kc_payment_status definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_payment_status;
+Drop TABLE public.kc_payment_status;
 
 CREATE TABLE public.kc_payment_status (
 	id int8 NOT NULL,
@@ -345,9 +333,9 @@ CREATE TABLE public.kc_payment_status (
 
 -- public.kc_proxy_mgmt definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_proxy_mgmt;
+Drop TABLE public.kc_proxy_mgmt;
 
 CREATE TABLE public.kc_proxy_mgmt (
 	id int8 NOT NULL,
@@ -379,9 +367,9 @@ CREATE TABLE public.kc_proxy_mgmt (
 
 -- public.kc_settlement definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_settlement;
+Drop TABLE public.kc_settlement;
 
 CREATE TABLE public.kc_settlement (
 	id int8 NOT NULL,
@@ -402,9 +390,9 @@ CREATE TABLE public.kc_settlement (
 
 -- public.kc_status_reason definition
 
--- DROP table
+-- Drop table
 
--- DROP TABLE public.kc_status_reason;
+Drop TABLE public.kc_status_reason;
 
 CREATE TABLE public.kc_status_reason (
 	status_reason_code varchar(20) NOT NULL,

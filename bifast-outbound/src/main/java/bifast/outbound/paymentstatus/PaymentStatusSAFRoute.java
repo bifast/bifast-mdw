@@ -2,6 +2,7 @@ package bifast.outbound.paymentstatus;
 
 
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -49,7 +50,9 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.process(processQueryProcessor)
 			.unmarshal().base64()
 			.unmarshal().zipDeflater()
-			.log("hasil decrypt: ${body}")
+			
+			.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${body[channel_ref_id]}] ${body}")
+
 			.unmarshal(businessMessageJDF)
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
@@ -69,7 +72,8 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.process(psResponseProcessor)
 
 			.process(updateStatusProcessor)
-			.log("status: ${body.psStatus}")
+			
+			.log("[ChnlReq:${body[channel_ref_id]}] PymtStsSAF result: ${body.psStatus}")
 
 			.filter().simple("${body.psStatus} == 'REJECTED'")
 				.log("${body.reqBizmsgid} Rejected")

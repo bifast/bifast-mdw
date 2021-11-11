@@ -32,7 +32,9 @@ public class SettlementProcessor implements Processor {
 		
 		CbSettlementRequestPojo sttl = new CbSettlementRequestPojo();
 		sttl.setKomiTrnsId(processData.getKomiTrnsId());
-		sttl.setOrgnlKomiTrnsId(orgnlCT.getKomiTrnsId());
+		
+		if (null!=orgnlCT)
+			sttl.setOrgnlKomiTrnsId(orgnlCT.getKomiTrnsId());
 		
 		exchange.getMessage().setBody(sttl);
 				

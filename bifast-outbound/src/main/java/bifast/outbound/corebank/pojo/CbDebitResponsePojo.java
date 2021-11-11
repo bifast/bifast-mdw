@@ -2,8 +2,7 @@ package bifast.outbound.corebank.pojo;
 
 public class CbDebitResponsePojo {
 
-	private String transactionId;
-	private String dateTime;
+	private String komiTrnsId;
 	private String merchantType;
 	private String terminalId;
 	private String noRef;
@@ -12,17 +11,11 @@ public class CbDebitResponsePojo {
 	private String additionalInfo;
 	private String accountNumber;
 	
-	public String getTransactionId() {
-		return transactionId;
+	public String getKomiTrnsId() {
+		return komiTrnsId;
 	}
-	public void setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-	}
-	public String getDateTime() {
-		return dateTime;
-	}
-	public void setDateTime(String dateTime) {
-		this.dateTime = dateTime;
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
 	}
 	public String getMerchantType() {
 		return merchantType;
@@ -66,7 +59,4 @@ public class CbDebitResponsePojo {
 	public void setAccountNumber(String accountNumber) {
 		this.accountNumber = accountNumber;
 	}
-
-	
-	
 }

@@ -9,12 +9,9 @@ import bifast.outbound.config.Config;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.service.CorebankService;
 
 @Component
 public class BuildCBDebitRequestProcessor implements Processor{
-	@Autowired
-	private CorebankService cbService;
 	@Autowired
 	private Config config;
 	
@@ -23,7 +20,11 @@ public class BuildCBDebitRequestProcessor implements Processor{
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
 		
-		CbDebitRequestPojo debitReq = cbService.initDebitRequest(rmw, chnReq);	
+		CbDebitRequestPojo debitReq = new CbDebitRequestPojo();	
+
+		debitReq.setMerchantType(rmw.getMerchantType());
+		
+		debitReq.setTerminalId(chnReq.getTerminalId());
 
 		debitReq.setCategoryPurpose(chnReq.getCategoryPurpose());
 		

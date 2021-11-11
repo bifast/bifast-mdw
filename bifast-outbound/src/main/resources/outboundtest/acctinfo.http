@@ -5,7 +5,7 @@ Authorization: Basic CMS:password
 
 {
   "AccountCustomerInfo" : {
-    "NoRef" : "",   
+    "NoRef" : "202565",   
     "AccountNumber" : "2012104794259"
   }
 }

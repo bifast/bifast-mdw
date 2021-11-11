@@ -3,7 +3,7 @@ version: '3.7'
 services:
     komidb:
       build: komi-db
-      image: fransmzh/komi-db:1.7
+      image: fransmzh/komi-db:1.8
       container_name: komi-db
       restart: always
       environment:
@@ -26,7 +26,7 @@ services:
 
     inbound:
       build: bifast-inbound
-      image: fransmzh/komi-inbound:1.7
+      image: fransmzh/komi-inbound:1.8
       container_name: komi-inbound
       restart: always
       depends_on: 
@@ -42,7 +42,7 @@ services:
         - SPRING_JPA_HIBERNATE_DDL_AUTO=none
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
-        - KOMI.URL.COREBANK=localhost:9003/komi/api/v1/adapter
+        - KOMI.URL.COREBANK=mock-cb:9010/komi/mock/corebank
         - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs
@@ -51,7 +51,7 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:1.7
+      image: fransmzh/komi-outbound:1.8
       container_name: komi-outbound
       restart: always
       depends_on: 
@@ -65,7 +65,7 @@ services:
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.BICODE=INDOIDJA
         - KOMI.INBOUND-URL=komi-inbound:9001/services/api/enquiry
-        - KOMI.URL.COREBANK=172.23.0.1:9003/komi/api/v1/adapter
+        - KOMI.URL.COREBANK=mock-cb:9010/komi/mock/corebank
         - LOGGING.FILE.NAME=/home/logs/komi-outbound.log
         - LOGGING.LEVEL.BIFAST.OUTBOUND=DEBUG
         - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
@@ -82,7 +82,7 @@ services:
     mock:
       build: bifast-mock
       container_name: komi-mock
-      image: fransmzh/komi-mock:1.7
+      image: fransmzh/komi-mock:1.8
       restart: always
       depends_on: 
         - komidb
@@ -100,6 +100,20 @@ services:
       networks: 
         - docnet
     
+    mock-cb:
+      build: corebankiface
+      container_name: mock-cb
+      image: fransmzh/mock-cb:1.0
+      restart: always
+      expose: 
+        - "9010"
+      ports: 
+        - "9010:9010"
+      environment: 
+        - TZ=Asia/Jakarta
+      networks: 
+        - docnet
+
 volumes:
   komidb: {}
 

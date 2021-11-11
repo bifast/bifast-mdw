@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.mock.processor.ProxyRegistrationInquiryProcessor;
 import bifast.mock.processor.ProxyRegistrationResponseProcessor;
-import bifast.mock.processor.ProxyResolutionResponseProcessor;
+import bifast.mock.processor.ProxyResolutionResponseProc;
 
 @Component
 public class ProxyRoute extends RouteBuilder {
@@ -20,7 +20,7 @@ public class ProxyRoute extends RouteBuilder {
     @Autowired
 	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
 	@Autowired
-	private ProxyResolutionResponseProcessor proxyResolutionResponseProcessor;
+	private ProxyResolutionResponseProc proxyResolutionResponseProcessor;
 	@Autowired
 	private ProxyRegistrationInquiryProcessor proxyRegistrationInquiryProcessor;
 	

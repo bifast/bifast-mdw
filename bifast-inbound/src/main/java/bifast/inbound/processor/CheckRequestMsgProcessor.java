@@ -24,15 +24,36 @@ public class CheckRequestMsgProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		BusinessMessage inputMsg = exchange.getMessage().getBody(BusinessMessage.class);
 
-		String trnType = inputMsg.getAppHdr().getBizMsgIdr().substring(16,19);
-		if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) 
-			trnType = "SETTLEMENT";
-		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901"))
-			trnType = "PROXYNOTIF";
-		exchange.getMessage().setHeader("hdr_msgType", trnType);
-		
 		ProcessDataPojo processData = new ProcessDataPojo();
 
+		String trnType = inputMsg.getAppHdr().getBizMsgIdr().substring(16,19);
+
+		if ((inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) &&
+			(inputMsg.getAppHdr().getBizSvc().equals("STTL"))	) {
+			
+			trnType = "SETTLEMENT";
+			FlatPacs002Pojo flat002 = flatMsgService.flatteningPacs002(inputMsg); 
+			processData.setBiRequestFlat(flat002);
+		}
+
+		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) {
+			FlatPacs002Pojo flat002 = flatMsgService.flatteningPacs002(inputMsg); 
+			processData.setBiRequestFlat(flat002);
+		}
+
+		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901"))
+			trnType = "PROXYNOTIF";
+
+		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.008")) {
+			FlatPacs008Pojo flat008 = flatMsgService.flatteningPacs008(inputMsg); 
+			processData.setBiRequestFlat(flat008);
+		}
+
+		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901")) {
+			System.out.println("jenis msg ProxyNotificatio");
+		}
+
+		exchange.getMessage().setHeader("hdr_msgType", trnType);
 		processData.setBiRequestMsg(inputMsg);
 		processData.setStartTime(Instant.now());
 		processData.setInbMesgType(trnType);
@@ -41,20 +62,6 @@ public class CheckRequestMsgProcessor implements Processor {
 		processData.setReceivedDt(LocalDateTime.now());
 //		processData.setTextDataReceived(null);
 
-		if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.008")) {
-			FlatPacs008Pojo flat008 = flatMsgService.flatteningPacs008(inputMsg); 
-			processData.setBiRequestFlat(flat008);
-		}
-		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) {
-			System.out.println("jenis msg " + inputMsg.getAppHdr().getMsgDefIdr());
-			FlatPacs002Pojo flat002 = flatMsgService.flatteningPacs002(inputMsg); 
-			processData.setBiRequestFlat(flat002);
-
-		}
-		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901")) {
-			System.out.println("jenis msg ProxyNotificatio");
-
-		}
 
 		exchange.getMessage().setHeader("hdr_process_data", processData);
 

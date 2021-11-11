@@ -2,10 +2,9 @@ package bifast.outbound.corebank.pojo;
 
 import java.util.List;
 
-public class CbAccountCustomerInfoResponsePojo {
-	
-	private String transactionId;
-	private String dateTime;
+public class CbCustomerInfoResponsePojo {
+
+	private String komiTrnsId;
 	private String merchantType;
 	private String terminalId;
 	private String noRef;
@@ -23,17 +22,12 @@ public class CbAccountCustomerInfoResponsePojo {
 	public String customerIdType;
 	public String residentStatus;
 	public String townName;
-	public String getTransactionId() {
-		return transactionId;
+	
+	public String getKomiTrnsId() {
+		return komiTrnsId;
 	}
-	public void setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-	}
-	public String getDateTime() {
-		return dateTime;
-	}
-	public void setDateTime(String dateTime) {
-		this.dateTime = dateTime;
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
 	}
 	public String getMerchantType() {
 		return merchantType;
@@ -126,6 +120,4 @@ public class CbAccountCustomerInfoResponsePojo {
 		this.townName = townName;
 	}
 	
-	
-
 }

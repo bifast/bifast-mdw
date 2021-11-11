@@ -1,6 +1,8 @@
 package bifast.inbound.corebank;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.corebank.pojo.CbSettlementRequestPojo;
 import bifast.inbound.corebank.pojo.CbSettlementResponsePojo;
+import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.service.JacksonDataFormatService;
 
@@ -32,7 +35,7 @@ public class CorebankRoute extends RouteBuilder{
 		JacksonDataFormat settlementResponseJDF = jdfService.basic(CbSettlementResponsePojo.class);
 
 		// ROUTE CALLCB 
-		from("seda:callcb").routeId("komi.cb.corebank")
+		from("seda:callcb").routeId("komi.corebank")
 
 			.choice()
 				.when().simple("${body.class} endsWith 'CbAccountEnquiryRequestPojo'")
@@ -48,7 +51,7 @@ public class CorebankRoute extends RouteBuilder{
 					.marshal(settlementJDF)
 			.end()
 					
-	 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}]"
+	 		.log(LoggingLevel.DEBUG, "komi.corebank", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}]"
 	 														+ " CB Request: ${body}")
 			.doTry()
 
@@ -59,30 +62,36 @@ public class CorebankRoute extends RouteBuilder{
 						+ "bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)
 				.convertBodyTo(String.class)
-		 		.log(LoggingLevel.DEBUG, "komi.cb.corebank", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] CB Response: ${body}")
+		 		.log(LoggingLevel.DEBUG, "komi.corebank", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] CB Response: ${body}")
 
 		    	.choice()
 		 			.when().simple("${header.cb_requestName} == 'accountinquiry'")
-		 				.log("accountinquiry")
 		 				.unmarshal(accountEnquiryResponseJDF)
 	 				.endChoice()
 		 			.when().simple("${header.cb_requestName} == 'credit'")
-		 				.log("credit")
 	 					.unmarshal(creditResponseJDF)
 	 				.endChoice()
 		 			.when().simple("${header.cb_requestName} == 'settlement'")
-	 					.log("settlement")
 	 					.unmarshal(settlementResponseJDF)
 	 				.endChoice()
 		 		.end()
 
 	 		.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Call CI-HUB Error.")
+				.log(LoggingLevel.ERROR, "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Call CB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(cbFaultProcessor)
 	    	.end()
 
+	    	.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+					Object oBody = exchange.getMessage().getBody(Object.class);
+					processData.setCorebankResponse(oBody);
+					exchange.getMessage().setHeader("hdr_process_data", processData);
+				}
+	    		
+	    	})
 			.removeHeaders("cb_*")
 		;
 		

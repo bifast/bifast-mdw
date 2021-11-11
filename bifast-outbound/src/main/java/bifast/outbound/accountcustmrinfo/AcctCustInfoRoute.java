@@ -7,21 +7,17 @@ import java.util.ArrayList;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountcustmrinfo.pojo.ChnlAccountCustomerInfoRequestPojo;
 import bifast.outbound.accountcustmrinfo.pojo.ChnlAccountCustomerInfoResponsePojo;
-import bifast.outbound.corebank.pojo.CbAccountCustomerInfoRequestPojo;
-import bifast.outbound.corebank.pojo.CbAccountCustomerInfoResponsePojo;
+import bifast.outbound.corebank.pojo.CbCustomerInfoRequestPojo;
+import bifast.outbound.corebank.pojo.CbCustomerInfoResponsePojo;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.service.CorebankService;
 
 @Component
 public class AcctCustInfoRoute extends RouteBuilder{
-	@Autowired
-	private CorebankService cbService;
 	
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
@@ -36,9 +32,13 @@ public class AcctCustInfoRoute extends RouteBuilder{
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-					CbAccountCustomerInfoRequestPojo aciReq = cbService.initAccountCustInfoRequest(rmw);
 					ChnlAccountCustomerInfoRequestPojo chnlReq = (ChnlAccountCustomerInfoRequestPojo) rmw.getChannelRequest();
+					CbCustomerInfoRequestPojo aciReq = new CbCustomerInfoRequestPojo();
 					aciReq.setAccountNumber(chnlReq.getAccountNumber());
+					aciReq.setKomiTrnsId(rmw.getKomiTrxId());
+					aciReq.setMerchantType(rmw.getMerchantType());
+					aciReq.setNoRef(chnlReq.getNoRef());
+					aciReq.setTerminalId("000000");
 					exchange.getMessage().setBody(aciReq);
 				}
 			})
@@ -54,7 +54,7 @@ public class AcctCustInfoRoute extends RouteBuilder{
 					channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 					channelResponseWr.setResponses(new ArrayList<>());
 
-					CbAccountCustomerInfoResponsePojo cbResp = exchange.getMessage().getBody(CbAccountCustomerInfoResponsePojo.class);
+					CbCustomerInfoResponsePojo cbResp = exchange.getMessage().getBody(CbCustomerInfoResponsePojo.class);
 					ChnlAccountCustomerInfoResponsePojo chnlResp = new ChnlAccountCustomerInfoResponsePojo();
 					
 					channelResponseWr.setResponseCode(cbResp.getStatus());

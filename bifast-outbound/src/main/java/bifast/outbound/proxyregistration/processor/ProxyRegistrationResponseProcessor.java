@@ -39,7 +39,6 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 
 		Object objResponse = exchange.getMessage().getBody(Object.class);
 		String bodyClass = objResponse.getClass().getSimpleName();
-		System.out.println("body class " + bodyClass);
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class);
 		ChnlProxyRegistrationRequestPojo chnRequest = rmw.getChnlProxyRegistrationRequest();

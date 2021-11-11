@@ -59,7 +59,6 @@ public class ValidateProcessor implements Processor  {
 		
 		Object objRequest = exchange.getIn().getBody(Object.class);
 		
-		Boolean validateBank = false;
 		Boolean validatePurpose = false;
 
 		String msgType = rmw.getMsgName();
@@ -76,6 +75,7 @@ public class ValidateProcessor implements Processor  {
 		else if (msgType.equals("CTReq")) {
 			ChnlCreditTransferRequestPojo req = rmw.getChnlCreditTransferRequest();
 			try {
+				@SuppressWarnings("unused")
 				DomainCode dm = domainCodeRepo.findByGrpAndKey("CUSTOMER.TYPE", req.getCrdtType()).orElseThrow();
 				dm = domainCodeRepo.findByGrpAndKey("CUSTOMER.TYPE", req.getDbtrType()).orElseThrow();
 			}
@@ -100,6 +100,7 @@ public class ValidateProcessor implements Processor  {
 		if (validatePurpose) {
 			Method getPurpose = objRequest.getClass().getMethod("getCategoryPurpose");
 			String purpose = (String) getPurpose.invoke(objRequest);
+			@SuppressWarnings("unused")
 			DomainCode channelDC = domainCodeRepo.findByGrpAndValue("CATEGORY.PURPOSE", purpose).orElseThrow();
 		}
 		

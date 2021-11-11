@@ -16,7 +16,7 @@ public class FlatPrxy001Pojo {
 	
 	private String displayName;
 	
-	private String proxyRegistrationAgentBicId;
+	private String registrationBicId;
 	private String accountNumber;
 	private String accountType;
 
@@ -79,11 +79,11 @@ public class FlatPrxy001Pojo {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
-	public String getProxyRegistrationAgentBicId() {
-		return proxyRegistrationAgentBicId;
+	public String getRegistrationAgentBicId() {
+		return registrationBicId;
 	}
-	public void setProxyRegistrationAgentBicId(String proxyRegistrationAgentBicId) {
-		this.proxyRegistrationAgentBicId = proxyRegistrationAgentBicId;
+	public void setRegistrationAgentBicId(String registrationBicId) {
+		this.registrationBicId = registrationBicId;
 	}
 	public String getAccountNumber() {
 		return accountNumber;

@@ -6,20 +6,14 @@ Authorization: Basic CMS:password
 
 {
     "ProxyRegistrationRequest" : {
-        "NoRef" : "6621",
-        "RegistrationType" : "NEWR",
+        "NoRef" : "6624444",
+        "RegistrationType" : "DEAC",
         "ProxyType" : "02",
-        "ProxyValue" : "fran52@yahoo",
-        "DisplayName" : "Frans Mazhawr",
+        "ProxyValue" : "yogi@gmail.com",
         "AccountNumber" : "22522",
         "AccountType" : "CACC",
-        "AccountName" : "JOHN SMITH ",
         "SecondaryIdType" : "01",
-        "SecondaryIdValue" : "KT1020",
-        "CustomerType" : "01",
-        "CustomerId" : "KTP-222044020",
-        "ResidentialStatus" : "01",
-        "TownName" : "0300"
+        "SecondaryIdValue" : "KT1020"
     }
 }
 

@@ -7,7 +7,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName("AccountCustomerInfo")
 public class ChnlAccountCustomerInfoRequestPojo {
 
+	@JsonProperty("NoRef")
 	public String noRef;
+	@JsonProperty("AccountNumber")
 	public String accountNumber;
 	
 	@JsonCreator

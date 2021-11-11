@@ -114,5 +114,6 @@
 	    <module>bifast-outbound</module>
 	    <module>bifast-inbound</module>
  	    <module>bifast-mock</module>
+ 	    <module>corebankiface</module>
   </modules>
 </project>

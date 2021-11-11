@@ -10,13 +10,10 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
-import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.processor.DuplicateTransactionValidation;
-import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -31,8 +28,6 @@ public class CreditTransferRoute extends RouteBuilder {
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat cbCreditRequestJDF = jdfService.wrapRoot(CbCreditRequestPojo.class);
-		JacksonDataFormat cbCreditTransferResponseJDF = jdfService.basic(CbCreditResponsePojo.class);
 		JacksonDataFormat businessMessageJDF = jdfService.wrapRoot(BusinessMessage.class);
 
 		onException(Exception.class)
@@ -50,9 +45,11 @@ public class CreditTransferRoute extends RouteBuilder {
 			.removeHeaders("*")
 		;
 		
-		from("direct:crdttransfer").routeId("crdttransfer")
+		from("direct:crdttransfer").routeId("komi.ct")
 			.process(duplicationTrnsValidation)
 			
+			.log("KOMI_ID : ${header.hdr_process_data.komiTrnsId}")
+
 			// cek apakah SAF atau bukan
 			// check saf
 			.process(new Processor() {
@@ -109,10 +106,11 @@ public class CreditTransferRoute extends RouteBuilder {
 			.end()
 					
 			.process(creditTransferProcessor)
-			//TODO jika saf dan corebank error, ct proses harus diulang
+			
 
 			.log("saf ${header.ct_saf}, cb_sts ${header.ct_cbsts}")
-			//TODO if SAF=old/new and CBSTS=RJCT --> reversal
+			//if SAF=old/new and CBSTS=RJCT --> reversal
+			//jika saf dan corebank error, ct proses harus diulang: reversal = UNDEFINED
 			.filter().simple("${header.ct_saf} != 'NO'")
 				.choice()
 					.when().simple("${header.ct_cbsts} == 'RJCT'")

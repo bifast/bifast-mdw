@@ -6,20 +6,22 @@ public class Proxy002Seed {
 	private String creDtTm;
 	
 	private String msgRcptAgtId;
-	
-    protected String prtry;
-    protected String regnId;
-    
-    protected String agtId;
-    
-    private String status; 
+
+	private String status; 
 	private String reason;
-	private String additionalInfo;
+
+    protected String regnId;
+
+    protected String agtId;
+
+//    protected String prtry;
+//	private String additionalInfo;
 	
     protected String cstmrId;
     protected String cstmrTp;
     protected String cstmrRsdntSts;
     protected String cstmrTwnNm;
+    
 	public String getMsgId() {
 		return msgId;
 	}
@@ -38,12 +40,12 @@ public class Proxy002Seed {
 	public void setMsgRcptAgtId(String msgRcptAgtId) {
 		this.msgRcptAgtId = msgRcptAgtId;
 	}
-	public String getPrtry() {
-		return prtry;
-	}
-	public void setPrtry(String prtry) {
-		this.prtry = prtry;
-	}
+//	public String getPrtry() {
+//		return prtry;
+//	}
+//	public void setPrtry(String prtry) {
+//		this.prtry = prtry;
+//	}
 	public String getRegnId() {
 		return regnId;
 	}
@@ -68,12 +70,12 @@ public class Proxy002Seed {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
-	public String getAdditionalInfo() {
-		return additionalInfo;
-	}
-	public void setAdditionalInfo(String additionalInfo) {
-		this.additionalInfo = additionalInfo;
-	}
+//	public String getAdditionalInfo() {
+//		return additionalInfo;
+//	}
+//	public void setAdditionalInfo(String additionalInfo) {
+//		this.additionalInfo = additionalInfo;
+//	}
 	public String getCstmrId() {
 		return cstmrId;
 	}

@@ -1,6 +1,7 @@
 package bifast.inbound.processor;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -26,7 +27,6 @@ import bifast.library.iso20022.service.Pacs002Seed;
 public class DuplicateTransactionValidation implements Processor{
 	@Autowired private CreditTransferRepository ctRepo;
 	@Autowired private AppHeaderService hdrService;
-	@Autowired private FlattenIsoMessageService flatService;
 	@Autowired private Pacs002MessageService pacs002Service;
 	@Autowired private UtilService utilService;
 
@@ -34,27 +34,31 @@ public class DuplicateTransactionValidation implements Processor{
 	public void process(Exchange exchange) throws Exception {
 
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
-		BusinessMessage bmRequest = exchange.getMessage().getBody(BusinessMessage.class);
 
-		FlatPacs008Pojo flat008 = flatService.flatteningPacs008(bmRequest);
+		FlatPacs008Pojo flat008 = (FlatPacs008Pojo)processData.getBiRequestFlat();
 		
-		List<CreditTransfer> lCreditTransfer = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flat008.getBizMsgIdr());
-		
-		if ((lCreditTransfer.size()>0) && (!(flat008.getCpyDplct().equals("DUPL")))) {
-			BusinessMessage response = ctResponse (bmRequest, processData.getKomiTrnsId());
-			exchange.getMessage().setBody(response);
+		List<CreditTransfer> lCreditTransfer = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flat008.getBizMsgIdr());	
 
-			exchange.getMessage().setBody(response);
-			exchange.getMessage().setHeader("hdr_toBIobj", response);
+		String saf = Optional.ofNullable(flat008.getCpyDplct()).orElse("");
 
-			throw new DuplicateTransactionException("Nomor BizMsgIdr duplikat");
-
-		}
+			if ((lCreditTransfer.size()>0) && (!(saf.equals("DUPL")))) {
+				BusinessMessage response = ctResponse (processData);
+				exchange.getMessage().setBody(response);
+	
+				exchange.getMessage().setBody(response);
+	
+				processData.setBiResponseMsg(response);
+				exchange.getMessage().setHeader("hdr_process_data", processData);
+				throw new DuplicateTransactionException("Nomor BizMsgIdr duplikat");
+			}
 	}
 	
-	private BusinessMessage ctResponse (BusinessMessage bmRequest, String komiTrnsId) throws Exception {
-		FlatPacs008Pojo request = flatService.flatteningPacs008(bmRequest);
+	private BusinessMessage ctResponse (ProcessDataPojo processData) throws Exception {
+		FlatPacs008Pojo request = (FlatPacs008Pojo) processData.getBiRequestFlat();
 
+		BusinessMessage bmRequest = processData.getBiRequestMsg();
+		String komiTrnsId = processData.getKomiTrnsId();
+		
 		String msgType = request.getBizMsgIdr().substring(16, 19);
 		String bizMsgId = utilService.genRfiBusMsgId(msgType, komiTrnsId);
 		String msgId = utilService.genMsgId(msgType, komiTrnsId);

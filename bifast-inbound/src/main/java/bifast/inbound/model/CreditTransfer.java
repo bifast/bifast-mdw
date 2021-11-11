@@ -71,6 +71,9 @@ public class CreditTransfer {
 	private String errorMessage;
 	
 	private Integer psCounter;
+	
+	@Column(name="CPYDPLCT", length=10)
+	private String cpyDplct;
 		
 	@Column(length=10)
 	private String reversal;
@@ -186,6 +189,12 @@ public class CreditTransfer {
 	}
 	public void setCihubRequestDT(LocalDateTime cihubRequestDT) {
 		this.cihubRequestDT = cihubRequestDT;
+	}
+	public String getCpyDplct() {
+		return cpyDplct;
+	}
+	public void setCpyDplct(String cpyDplct) {
+		this.cpyDplct = cpyDplct;
 	}
 	public Long getCihubElapsedTime() {
 		return cihubElapsedTime;

@@ -3,24 +3,20 @@ package bifast.outbound.corebank;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.corebank.pojo.CbDebitReversalPojo;
+import bifast.outbound.corebank.pojo.CbDebitReversalRequestPojo;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.service.CorebankService;
 
 @Component
 public class DebitReversalRoute extends RouteBuilder{
-	@Autowired
-	private CorebankService cbService;
-
+	
 	@Override
 	public void configure() throws Exception {
 		
-		from("seda:debitreversal").routeId("komi.cb.reversal")
+		from("seda:debitreversal").routeId("komi.reverse_ct")
 			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] akan Reversal.")
 			.setHeader("ct_progress", constant("REVERSAL"))
 			.setHeader("ct_tmpbody", simple("${body}"))
@@ -30,7 +26,11 @@ public class DebitReversalRoute extends RouteBuilder{
 				public void process(Exchange exchange) throws Exception {
 					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 					ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
-					CbDebitReversalPojo reversalReq = cbService.initDebitReversal(chnReq, rmw.getMerchantType());
+					CbDebitReversalRequestPojo reversalReq = new CbDebitReversalRequestPojo();
+					reversalReq.setKomiTrnsId(rmw.getKomiTrxId());
+					reversalReq.setOrgnlAccountNumber(chnReq.getDbtrAccountNo());
+					reversalReq.setOrgnlKomiTrnsId(rmw.getKomiTrxId());
+					
 					exchange.getMessage().setBody(reversalReq);
 				}
 			})
@@ -38,13 +38,15 @@ public class DebitReversalRoute extends RouteBuilder{
 			//submit reversal
 			.to("seda:callcb")
 			
+			.log("${body.class}")
+			
 			.filter().simple("${body} is 'bifast.outbound.pojo.FaultPojo'")
 				.log("Fault!")
 			.end()
 
 			// jika gagal reversal return as Fault, otherwise DebitResponse
 			.choice()
-				.when().simple("${body.class} endsWith 'CbDebitResponsePojo'")
+				.when().simple("${body.class} endsWith 'CbDebitReversalResponsePojo'")
 					.setBody(simple("${header.ct_tmpbody}"))
 				.endChoice()
 				

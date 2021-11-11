@@ -72,8 +72,6 @@ public class CreditTransferRoute extends RouteBuilder {
 			.filter().simple("${header.ct_progress} == 'LANJUTCIHUB'")
 				.process(crdtTransferProcessor)
 				.to("direct:call-cihub")
-//				.process(saveCrdtTrnsProcessor)
-//				.setExchangePattern(ExchangePattern.InOnly)
 				.to("seda:savecredittransfer?exchangePattern=InOnly")
 
 			.end()
@@ -130,6 +128,8 @@ public class CreditTransferRoute extends RouteBuilder {
 			.filter().simple("${body} != null")
 				.unmarshal().base64()
 				.unmarshal().zipDeflater()
+				.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] Ketemu settlement: ${body}")
+
 				.unmarshal(businessMessageJDF)
 				
 				.process(new Processor() {
@@ -146,6 +146,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.end()
 			
 			.filter().simple("${body} == null")
+				.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] Tidak ketemu settlement.")
 				.setBody(simple("${header.tmp_body}"))
 			.end()
 			

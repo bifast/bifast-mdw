@@ -54,7 +54,7 @@ public class InboundRoute extends RouteBuilder {
 			.process(checkRequestMsgProcessor) 
 			.id("process1")
 			
-			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] received.")
+			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] ${header.hdr_msgType} received.")
 		
 			.choice().id("forward_msgtype")
 
@@ -94,10 +94,14 @@ public class InboundRoute extends RouteBuilder {
 				.setHeader("hdr_toBI_jsonzip", simple("${body}"))
 				.setBody(simple("${header.hdr_tmp}"))
 			.end()
-			
-			.to("seda:logandsave?exchangePattern=InOnly")
-			.id("end_route")
 
+//			.choice()
+//				.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
+//					.log("Selesai proses SETTLEMENT")
+//				.otherwise()
+					.to("seda:logandsave?exchangePattern=InOnly")
+//			.end()
+		
 			// jika CT yang mesti reversal
 //			.choice()
 //				.when().simple("${header.hdr_reversal} == 'PENDING'")
@@ -115,14 +119,15 @@ public class InboundRoute extends RouteBuilder {
 		;
 
 		from("seda:logandsave").routeId("savedb")
+			.log("Akan save ${header.hdr_msgType}")
 			.choice()
-			.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
-				.process(saveSettlementMessageProcessor)
-				
-			.when().simple("${header.hdr_msgType} == '510'")  // account enquiry
-				.process(saveAccountEnquiryProcessor)
-			.otherwise()
-				.process(saveCreditTransferProcessor)
+				.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
+					.process(saveSettlementMessageProcessor)
+					
+				.when().simple("${header.hdr_msgType} == '510'")  // account enquiry
+					.process(saveAccountEnquiryProcessor)
+				.otherwise()
+					.process(saveCreditTransferProcessor)
 			.end()
 		;
 

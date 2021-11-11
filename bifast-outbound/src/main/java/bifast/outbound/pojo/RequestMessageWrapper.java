@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.corebank.pojo.CbAccountCustomerInfoRequestPojo;
+import bifast.outbound.corebank.pojo.CbAccountEnquiryRequestPojo;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.paymentstatus.pojo.ChnlPaymentStatusRequestPojo;
@@ -66,7 +66,7 @@ public class RequestMessageWrapper {
 	private BusinessMessage proxyRegistrationRequest;
 	private BusinessMessage proxyResolutionRequest;
 	private BusinessMessage proxyRegistrationInquiry;
-	private CbAccountCustomerInfoRequestPojo accoutCustomerInfoRequest;
+	private CbAccountEnquiryRequestPojo accoutCustomerInfoRequest;
 	
 	public String getRequestId() {
 		return requestId;
@@ -237,10 +237,10 @@ public class RequestMessageWrapper {
 	public void setProxyRegistrationInquiry(BusinessMessage proxyRegistrationInquiry) {
 		this.proxyRegistrationInquiry = proxyRegistrationInquiry;
 	}
-	public CbAccountCustomerInfoRequestPojo getAccoutCustomerInfoRequest() {
+	public CbAccountEnquiryRequestPojo getAccoutCustomerInfoRequest() {
 		return accoutCustomerInfoRequest;
 	}
-	public void setAccoutCustomerInfoRequest(CbAccountCustomerInfoRequestPojo accoutCustomerInfoRequest) {
+	public void setAccoutCustomerInfoRequest(CbAccountEnquiryRequestPojo accoutCustomerInfoRequest) {
 		this.accoutCustomerInfoRequest = accoutCustomerInfoRequest;
 	}
 	

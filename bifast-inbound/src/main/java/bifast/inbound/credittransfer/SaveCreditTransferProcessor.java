@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.pojo.ProcessDataPojo;
+import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
@@ -19,8 +20,7 @@ import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 @Component
 public class SaveCreditTransferProcessor implements Processor {
 
-	@Autowired
-	private CreditTransferRepository creditTrnRepo;
+	@Autowired private CreditTransferRepository creditTrnRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -30,6 +30,7 @@ public class SaveCreditTransferProcessor implements Processor {
 		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
 
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		FlatPacs008Pojo flatReq = (FlatPacs008Pojo)processData.getBiRequestFlat();
 		
 		CreditTransfer ct = new CreditTransfer();
 
@@ -56,7 +57,6 @@ public class SaveCreditTransferProcessor implements Processor {
 		long timeElapsed = Duration.between(processData.getStartTime(), Instant.now()).toMillis();
 		ct.setCihubElapsedTime(timeElapsed);
 
-		String reversal = exchange.getMessage().getHeader("hdr_reversal",String.class);
 
 		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
 		
@@ -125,7 +125,11 @@ public class SaveCreditTransferProcessor implements Processor {
 		ct.setOriginatingBank(orgnBank);
 		ct.setRecipientBank(recptBank);
 
+		String reversal = exchange.getMessage().getHeader("hdr_reversal",String.class);
 		ct.setReversal(reversal);
+		
+		if (null != flatReq.getCpyDplct())
+			ct.setCpyDplct(flatReq.getCpyDplct());
 		
 		creditTrnRepo.save(ct);
 	}

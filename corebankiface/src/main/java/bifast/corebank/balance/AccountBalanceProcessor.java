@@ -16,8 +16,13 @@ public class AccountBalanceProcessor implements Processor{
 		//TODO process Account Balance
 		
 		
-		CbAccountBalanceResponsePojo aeResponse = new CbAccountBalanceResponsePojo();
-		exchange.getMessage().setBody(aeResponse);
+		CbAccountBalanceResponsePojo balanceResponse = new CbAccountBalanceResponsePojo();
+		balanceResponse.setBalance("999999999.99");
+		balanceResponse.setKomiTrnsId(balanceRequest.getKomiTrnsId());
+		balanceResponse.setReason("U000");
+		balanceResponse.setStatus("ACTC");
+		
+		exchange.getMessage().setBody(balanceResponse);
 
 	}
 

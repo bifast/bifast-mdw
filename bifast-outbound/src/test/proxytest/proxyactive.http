@@ -6,8 +6,8 @@ Authorization: Basic CMS:password
 
 {
     "ProxyRegistrationRequest" : {
-        "NoRef" : "66224",
-        "RegistrationType" : "SUSP",
+        "NoRef" : "66454",
+        "RegistrationType" : "ACTV",
         "ProxyType" : "02",
         "ProxyValue" : "fran52@yahoo",
         "AccountNumber" : "22522",

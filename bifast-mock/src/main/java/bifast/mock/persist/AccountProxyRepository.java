@@ -1,6 +1,7 @@
 package bifast.mock.persist;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +22,7 @@ public interface AccountProxyRepository extends JpaRepository<AccountProxy, Long
 	
 	@Query("SELECT accountProxy FROM AccountProxy accountProxy WHERE accountProxy.scndIdTp = :scndIdTp and accountProxy.scndIdVal = :scndIdVal")
 	List<AccountProxy> getListByScndIdTpAndByScndIdVal(@Param("scndIdTp") String scndIdTp,@Param("scndIdVal") String scndIdVal);
+
+	Optional<AccountProxy> findByProxyTypeAndProxyVal(String proxyType, String proxyVal);
+	
 }

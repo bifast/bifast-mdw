@@ -83,6 +83,15 @@ public class Proxy002MessageService {
 
 		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("DEAC"))
 			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.DEAC);
+		
+		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("SUSP"))
+			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.SUSP);
+
+		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("ACTV"))
+			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.ACTV);
+
+		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("PORT"))
+			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.PORT);
 
 		// RegnRspn / PrxyRegn
 		proxy002.getRegnRspn().getPrxyRegn().add(new ProxyRegistrationAccount1());

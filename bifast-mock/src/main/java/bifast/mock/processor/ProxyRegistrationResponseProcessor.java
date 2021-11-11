@@ -29,6 +29,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 	private Proxy002MessageService proxy002MessageService;
 	@Autowired
 	private UtilService utilService;
+	@Autowired ProxyRegistrationService proxyRegService;
 	
 	@Autowired
 	AccountProxyRepository accountProxyRepository;
@@ -56,7 +57,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		
 		BISupplementaryDataEnvelope1 enlp = msg.getDocument().getPrxyRegn().getSplmtryData().get(0).getEnvlp().getDtl();
 		seed.setMsgId(msgId);
-		seed.setAdditionalInfo("Terimakasih atas perhaitiannya");
+
 		seed.setCstmrId(enlp.getCstmr().getId());
 		seed.setCstmrTp(enlp.getCstmr().getTp());
 		seed.setCstmrTwnNm(enlp.getCstmr().getTwnNm());
@@ -85,14 +86,19 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		}else if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.AMND) {
 			code = bifast.library.iso20022.prxy002.ProxyRegistrationType1Code.AMND;
 			seed = this.processAmdn(msg, accountProxy, seed);
-		}else if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.PORT) {
+		}
+		else if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.PORT) {
 			code = bifast.library.iso20022.prxy002.ProxyRegistrationType1Code.PORT;
-			seed = this.processPort(msg, accountProxy, seed);
+//			seed = this.processPort(msg, accountProxy, seed);
+			seed = proxyRegService.proxyPort(msg);
+
 		}else if(msg.getDocument().getPrxyRegn().getRegn().getRegnTp() ==  ProxyRegistrationType1Code.ACTV) {
 			code = bifast.library.iso20022.prxy002.ProxyRegistrationType1Code.ACTV;
 			seed = this.processActv(msg, accountProxy, seed);
 		}
 		
+		seed.setMsgId(msgId);
+
 		ProxyRegistrationResponseV01 response = proxy002MessageService.proxyRegistrationResponse(seed, msg);
 		response.getRegnRspn().setOrgnlRegnTp(code);
 		
@@ -243,31 +249,38 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 	
 	public Proxy002Seed processPort(BusinessMessage msg,AccountProxy accountProxy,Proxy002Seed seed) {
 		
-		if(accountProxy != null) {
-			seed.setAgtId(accountProxy.getRegisterBank());
-			String regisrerBank = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
-			if(regisrerBank.equals(accountProxy.getRegisterBank())){
-				
-				seed.setStatus("RJCT");
-				seed.setReason("U810");
-			}else {
-
-				if(accountProxy.getAccountStatus().equals("ICTV")) {
-					seed.setStatus("RJCT");
-					seed.setReason("U804");
-				}else if(accountProxy.getAccountStatus().equals("SUSP")) {
-					seed.setStatus("RJCT");
-					seed.setReason("U805");
-				}else if(accountProxy.getAccountStatus().equals("SUSB")) {
-					seed.setStatus("RJCT");
-					seed.setReason("U811");
-				}else if(accountProxy.getAccountStatus().equals("ACTV")) {
-					
-				}
-			}
-		}else {
+		if(null == accountProxy ) {
 			seed.setStatus("RJCT");
 			seed.setReason("U804");
+
+		}
+		
+		else {
+
+			seed.setAgtId(accountProxy.getRegisterBank());
+			String regisrerBank = msg.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
+			System.out.println(regisrerBank + " dengan " + accountProxy.getRegisterBank());
+			System.out.println("account status: " + accountProxy.getAccountStatus());
+			if(regisrerBank.equals(accountProxy.getRegisterBank())){
+				seed.setStatus("RJCT");
+				seed.setReason("U810");
+			}
+			else if(accountProxy.getAccountStatus().equals("ICTV")) {
+					seed.setStatus("RJCT");
+					seed.setReason("U804");
+				}
+			else if(accountProxy.getAccountStatus().equals("SUSP")) {
+					seed.setStatus("RJCT");
+					seed.setReason("U805");
+				}
+			else if(accountProxy.getAccountStatus().equals("SUSB")) {
+					seed.setStatus("RJCT");
+					seed.setReason("U811");
+				}
+			else if(accountProxy.getAccountStatus().equals("ACTV")) {
+					seed.setStatus("ACTC");
+					seed.setReason("U000");
+			}
 		}
 		
 		return seed;

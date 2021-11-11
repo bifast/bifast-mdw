@@ -1,6 +1,5 @@
 package bifast.inbound.credittransfer;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
@@ -9,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.config.Config;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
+import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
@@ -27,39 +26,39 @@ import bifast.library.iso20022.service.Pacs002Seed;
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
 public class CreditTransferProcessor implements Processor {
 
-	@Autowired
-	private Config config;
-	@Autowired
-	private AppHeaderService appHdrService;
-	@Autowired
-	private Pacs002MessageService pacs002Service;
+	@Autowired private AppHeaderService appHdrService;
+	@Autowired private Pacs002MessageService pacs002Service;
+	@Autowired private UtilService utilService;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-
-		Object oResp = exchange.getMessage().getBody(Object.class);
-		String saf = exchange.getMessage().getHeader("ct_saf", String.class);
-
-		CbCreditResponsePojo cbResponse = new CbCreditResponsePojo();
-		FaultPojo fault = new FaultPojo();
-
-		if (oResp.getClass().getSimpleName().equals("CbCreditResponsePojo"))
-			cbResponse = (CbCreditResponsePojo) oResp;
-		else if (oResp.getClass().getSimpleName().equals("FaultPojo"))
-			fault = (FaultPojo) oResp;
-
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+
+		String saf = exchange.getMessage().getHeader("ct_saf", String.class);
+		
+		CbCreditResponsePojo cbResponse = null;
+		FaultPojo fault = null;
+
+		Object oCbResp = processData.getCorebankResponse();
+		if (null != oCbResp) {
+			if (oCbResp.getClass().getSimpleName().equals("CbCreditResponsePojo"))
+				cbResponse = (CbCreditResponsePojo) oCbResp;
+			else if (oCbResp.getClass().getSimpleName().equals("FaultPojo"))
+				fault = (FaultPojo) oCbResp;
+		}
+		
 		FlatPacs008Pojo flatRequest = (FlatPacs008Pojo) processData.getBiRequestFlat();
 		
 		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("hdr_frBIobj", BusinessMessage.class);
 		CreditTransferTransaction39 biReq =  reqBusMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
 
-		String strToday = LocalDate.now().format(formatter);
-		String bizMsgId = strToday + config.getBankcode() + "510R99" + processData.getKomiTrnsId();
-		String msgId = strToday + config.getBankcode() + "510" + processData.getKomiTrnsId();
-		
+		String msgType = processData.getBiRequestMsg().getAppHdr().getBizMsgIdr().substring(16, 19);
+
+		String bizMsgId = utilService.genRfiBusMsgId(msgType, processData.getKomiTrnsId());
+		String msgId = utilService.genMsgId(msgType, processData.getKomiTrnsId());
+
 		Pacs002Seed resp = new Pacs002Seed();
 		resp.setMsgId(msgId);
 		
@@ -68,7 +67,7 @@ public class CreditTransferProcessor implements Processor {
 		//if SAF = OLD/NEW --> reply ok
 		if (saf.equals("NO")) {
 			
-			if (oResp.getClass().getSimpleName().equals("CbCreditResponsePojo")) {
+			if (null != cbResponse) {
 				resp.setStatus(cbResponse.getStatus());
 				resp.setReason(cbResponse.getReason());				
 				resp.setAdditionalInfo(cbResponse.getAdditionalInfo());

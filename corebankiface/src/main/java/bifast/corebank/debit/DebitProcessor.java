@@ -21,8 +21,16 @@ public class DebitProcessor implements Processor{
 		
 		debitResponse.setMerchantType(debitRequest.getMerchantType());
 		debitResponse.setNoRef(debitRequest.getNoRef());
-		debitResponse.setReason("U000");
-		debitResponse.setStatus("ACTC");
+		
+		if (debitRequest.getCategoryPurpose().equals("02")) {
+			debitResponse.setStatus("RJCT");
+			debitResponse.setReason("U111");
+		} 
+		else {
+			debitResponse.setStatus("ACTC");
+			debitResponse.setReason("U000");
+		}
+
 		debitResponse.setTerminalId(debitRequest.getTerminalId());
 		
 		exchange.getMessage().setBody(debitResponse);

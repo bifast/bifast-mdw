@@ -22,6 +22,7 @@ public class ChnlProxyRegistrationRequestPojo {
 	private String residentialStatus;
 	private String townName;
 	private String registrationId;
+	private String registerBic;
 	
 	@JsonCreator
 	public ChnlProxyRegistrationRequestPojo (
@@ -39,7 +40,8 @@ public class ChnlProxyRegistrationRequestPojo {
 		@JsonProperty(value="CustomerType") String customerType,
 		@JsonProperty(value="ResidentialStatus") String residentialStatus,
 		@JsonProperty(value="TownName") String townName,
-		@JsonProperty(value="RegistrationId") String registrationId )
+		@JsonProperty(value="RegistrationId") String registrationId,
+		@JsonProperty(value="RegisterBic") String registerBic )
 	{
 		this.channelRefId = channelRefId;
 		this.registrationType = registrationType;
@@ -56,6 +58,7 @@ public class ChnlProxyRegistrationRequestPojo {
 		this.residentialStatus = residentialStatus;
 		this.townName = townName;
 		this.registrationId = registrationId;
+		this.registerBic = registerBic;
 	}
 
 	public String getChannelRefId() {
@@ -176,6 +179,14 @@ public class ChnlProxyRegistrationRequestPojo {
 
 	public void setRegistrationId(String registrationId) {
 		this.registrationId = registrationId;
+	}
+
+	public String getRegisterBic() {
+		return registerBic;
+	}
+
+	public void setRegisterBic(String registerBic) {
+		this.registerBic = registerBic;
 	}
 	
 

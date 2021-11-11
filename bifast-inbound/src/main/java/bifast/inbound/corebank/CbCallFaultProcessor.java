@@ -59,7 +59,6 @@ public class CbCallFaultProcessor implements Processor {
 
 		exchange.getMessage().setBody(fault, FaultPojo.class);
 			
-		
 	}
 
 }
