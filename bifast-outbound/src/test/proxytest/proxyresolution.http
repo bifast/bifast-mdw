@@ -5,9 +5,9 @@ Authorization: Basic CMS:password
 
 {
     "ProxyResolutionRequest": {
-        "NoRef": "51211",
+        "NoRef": "5462",
         "SenderAccountNumber" : "22341111",
-        "ProxyType" : "01",
-        "ProxyValue" : "2233002"
+        "ProxyType" : "02",
+        "ProxyValue" : "yogi@gmail.com"
     }
 }

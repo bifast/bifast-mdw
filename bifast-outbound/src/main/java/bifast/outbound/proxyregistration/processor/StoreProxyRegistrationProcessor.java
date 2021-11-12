@@ -10,8 +10,6 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.outbound.model.ProxyMessage;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -30,16 +28,18 @@ public class StoreProxyRegistrationProcessor implements Processor{
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		
-		BusinessMessage proxyRequest = rmw.getProxyRegistrationRequest();
-		ProxyRegistrationV01 regRequest = proxyRequest.getDocument().getPrxyRegn();
+		ChnlProxyRegistrationRequestPojo channelRequest = rmw.getChnlProxyRegistrationRequest();
+
+//		BusinessMessage proxyRequest = rmw.getProxyRegistrationRequest();
+//		ProxyRegistrationV01 regRequest = proxyRequest.getDocument().getPrxyRegn();
 		
 		ProxyMessage proxyMessage = new ProxyMessage();
 				
 		proxyMessage.setKomiTrnsId(rmw.getKomiTrxId());
 		proxyMessage.setChnlNoRef(rmw.getRequestId());
 
-		proxyMessage.setCustomerId(regRequest.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
-		proxyMessage.setCustomerType(regRequest.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
+		proxyMessage.setCustomerId(channelRequest.getSecondIdValue());
+		proxyMessage.setCustomerType(channelRequest.getSecondIdType());
 		
 		proxyMessage.setFullRequestMesg(rmw.getCihubEncriptedRequest());
 		if (null != rmw.getCihubEncriptedResponse()) {
@@ -50,8 +50,6 @@ public class StoreProxyRegistrationProcessor implements Processor{
 		proxyMessage.setRequestDt(LocalDateTime.ofInstant(rmw.getCihubStart(), ZoneId.systemDefault()));
 		proxyMessage.setCihubElapsedTime(timeElapsed);
 
-		ChnlProxyRegistrationRequestPojo channelRequest = rmw.getChnlProxyRegistrationRequest();
-		
 		proxyMessage.setOperationType(channelRequest.getRegistrationType());
 		proxyMessage.setProxyType(channelRequest.getProxyType());
 		proxyMessage.setProxyValue(channelRequest.getProxyValue());

@@ -56,8 +56,7 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		
 		seedProxyRegis.setRegisterDisplayName(chnReq.getDisplayName());
 	
-		if (null != chnReq.getRegisterBic())
-			seedProxyRegis.setRegisterAgentId(chnReq.getRegisterBic());
+		seedProxyRegis.setRegisterAgentId(config.getBankcode());
 		
 		seedProxyRegis.setRegisterAccountType(chnReq.getAccountType());
 		seedProxyRegis.setRegisterAccountName(chnReq.getAccountName());

@@ -18,32 +18,41 @@ public class ProxyEnrichmentAggregator implements AggregationStrategy {
 		
 		RequestMessageWrapper rmw = oldExchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		
-		ChnlProxyRegistrationRequestPojo regnReq = rmw.getChnlProxyRegistrationRequest();
+		if (newBody.getResponseCode().equals("RJCT")) {
+			oldExchange.getMessage().setBody(newBody);
+		}
 		
-		regnReq.setRegistrationId(newBody.getRegistrationId());
+		else {
+			
+			ChnlProxyRegistrationRequestPojo regnReq = rmw.getChnlProxyRegistrationRequest();
+			
+			regnReq.setRegistrationId(newBody.getRegistrationId());
+			
+			regnReq.setRegisterBic(newBody.getRegisterBank());
+			
+			if (null == regnReq.getDisplayName()) 
+				regnReq.setDisplayName(newBody.getDisplayName());
+
+			if (null == regnReq.getAccountName()) 
+				regnReq.setAccountName(newBody.getAccountName());
+
+			if (null == regnReq.getAccountName()) 
+				regnReq.setCustomerType(newBody.getCustomerType());
+
+			if (null == regnReq.getCustomerId()) 
+				regnReq.setCustomerId(newBody.getCustomerId());
+
+			if (null == regnReq.getResidentialStatus()) 
+				regnReq.setResidentialStatus(newBody.getResidentialStatus());
+
+			if (null == regnReq.getTownName()) 
+				regnReq.setTownName(newBody.getTownName());
+			
+			rmw.setChnlProxyRegistrationRequest(regnReq);
+			oldExchange.getMessage().setHeader("hdr_request_list", rmw);
+			oldExchange.getMessage().setBody(regnReq);
+		}
 		
-		regnReq.setRegisterBic(newBody.getRegisterBank());
-		
-		if (null == regnReq.getDisplayName()) 
-			regnReq.setDisplayName(newBody.getDisplayName());
-
-		if (null == regnReq.getAccountName()) 
-			regnReq.setAccountName(newBody.getAccountName());
-
-		if (null == regnReq.getAccountName()) 
-			regnReq.setCustomerType(newBody.getCustomerType());
-
-		if (null == regnReq.getCustomerId()) 
-			regnReq.setCustomerId(newBody.getCustomerId());
-
-		if (null == regnReq.getResidentialStatus()) 
-			regnReq.setResidentialStatus(newBody.getResidentialStatus());
-
-		if (null == regnReq.getTownName()) 
-			regnReq.setTownName(newBody.getTownName());
-		
-		rmw.setChnlProxyRegistrationRequest(regnReq);
-		oldExchange.getMessage().setHeader("hdr_request_list", rmw);
 		
 		return oldExchange;
 	}

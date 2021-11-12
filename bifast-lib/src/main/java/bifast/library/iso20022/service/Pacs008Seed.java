@@ -5,16 +5,15 @@ import java.math.BigDecimal;
 public class Pacs008Seed {
 
 	private String msgId;
-	private String trnType;   // AcctEnq & CrdtTrn
-	private String bizMsgId;  // AcctEnq CrdtTrn
+	private String trnType;   
+	private String bizMsgId; 
 	private String endToEndId;
 	
-	private BigDecimal amount; // AcctEnq CrdtTrn
-	private String orignBank; //  AcctEnq  CrdtTrn
-	private String recptBank; //  AcctEnq  CrdtTrn
-	private String channel; //    CrdtTrn
-	private String categoryPurpose; //  CrdtTrn
-	
+	private BigDecimal amount; 
+	private String orignBank; 
+	private String recptBank; 
+	private String channel; 
+	private String categoryPurpose;	
 	private String dbtrId;   
 	private String dbtrName;
 	private String dbtrType;  

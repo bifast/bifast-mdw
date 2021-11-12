@@ -24,5 +24,6 @@ public interface AccountProxyRepository extends JpaRepository<AccountProxy, Long
 	List<AccountProxy> getListByScndIdTpAndByScndIdVal(@Param("scndIdTp") String scndIdTp,@Param("scndIdVal") String scndIdVal);
 
 	Optional<AccountProxy> findByProxyTypeAndProxyVal(String proxyType, String proxyVal);
+	Optional<AccountProxy> findByReginId (String reginId);
 	
 }

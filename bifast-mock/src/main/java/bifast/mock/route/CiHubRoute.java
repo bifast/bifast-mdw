@@ -19,10 +19,7 @@ import bifast.mock.processor.CreditResponseStoreProcessor;
 import bifast.mock.processor.CreditTransferResponseProcessor;
 import bifast.mock.processor.OnRequestProcessor;
 import bifast.mock.processor.PaymentStatusResponseProcessor;
-import bifast.mock.processor.ProxyRegistrationResponseProcessor;
-import bifast.mock.processor.ProxyResolutionResponseProcessor;
 import bifast.mock.processor.RejectMessageProcessor;
-import bifast.mock.processor.SettlementProcessor;
 
 @Component
 public class CiHubRoute extends RouteBuilder {
@@ -35,8 +32,6 @@ public class CiHubRoute extends RouteBuilder {
 	private CreditTransferResponseProcessor creditTransferResponseProcessor;
 	@Autowired
 	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
-	@Autowired
-	private ProxyResolutionResponseProcessor proxyResolutionProc;
 	@Autowired
 	private CreditResponseStoreProcessor creditResponseStoreProcessor;
 	@Autowired

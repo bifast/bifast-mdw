@@ -48,6 +48,7 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 			
 			// jika bukan NEWR, siapkan data request unt Proxy Resolution
 			.filter().simple("${body.registrationType} != 'NEWR'")
+				.log(LoggingLevel.INFO, "komi.prxy.prxyrgst", "[ChRefId:${header.hdr_chnlRefId}] Proxy Resolution dulu.")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						RequestMessageWrapper rmw = exchange.getIn().getHeader("hdr_request_list", RequestMessageWrapper.class);
@@ -65,14 +66,16 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 				.enrich("direct:call-cihub", prxyAggrStrg)
 			.end()
 			
-			.process(proxyRegistrationRequestProcessor)
+			.log("${body}")
+			
+			.filter().simple("${body.class} endsWith 'ChnlProxyRegistrationRequestPojo'")
+				.process(proxyRegistrationRequestProcessor)
+				.to("direct:call-cihub")
+				.log(LoggingLevel.INFO, "komi.prxy.prxyrgst", "[ChRefId:${header.hdr_chnlRefId}] Dari call-cihub berupa ${body}")
+				.process(saveProxyRegnProc)
+			.end()
 
-			.to("direct:call-cihub")
-			
-			.process(saveProxyRegnProc)
-			
 			.process(proxyRegistrationResponseProcessor)
-		
 		;
         
 	}

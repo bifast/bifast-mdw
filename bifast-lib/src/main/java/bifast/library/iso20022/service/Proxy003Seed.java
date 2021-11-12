@@ -12,6 +12,7 @@ public class Proxy003Seed {
 	private String id;
 	private String proxyType;
 	private String proxyValue;
+	private String sndrAccountNumber;
 	
 	public String getMsgId() {
 		return msgId;
@@ -48,6 +49,12 @@ public class Proxy003Seed {
 	}
 	public void setProxyValue(String proxyValue) {
 		this.proxyValue = proxyValue;
+	}
+	public String getSndrAccountNumber() {
+		return sndrAccountNumber;
+	}
+	public void setSndrAccountNumber(String sndrAccountNumber) {
+		this.sndrAccountNumber = sndrAccountNumber;
 	}
 	
 

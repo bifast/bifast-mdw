@@ -40,21 +40,24 @@ public class ProxyResolutionRequestProcessor implements Processor {
 		String trxType = "610";
 		String bizMsgId = utilService.genBusMsgId(trxType, rmw);
 		String msgId = utilService.genMessageId(trxType, rmw);
+		String trxId = msgId.replace(trxType, "");
 		
 		hdr = appHeaderService.getAppHdr(config.getBicode(), "prxy.003.001.01", bizMsgId);
 		
 		Proxy003Seed seedProxyResolution = new Proxy003Seed();
 		
 		seedProxyResolution.setMsgId(msgId);
+		
+		seedProxyResolution.setId(trxId);
+		
 		seedProxyResolution.setTrnType(trxType);
 		
-//		if (chnReq.getLookupType().equals("PXRS")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
-//		else if (chnReq.getLookupType().equals("CHCK")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.CHCK);
-//		else if (chnReq.getLookupType().equals("NMEQ")) seedProxyResolution.setLookupType(ProxyLookUpType1Code.NMEQ);
 		seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
 		
 		seedProxyResolution.setProxyType(chnReq.getProxyType());
 		seedProxyResolution.setProxyValue(chnReq.getProxyValue());
+		
+		seedProxyResolution.setSndrAccountNumber(chnReq.getSenderAccountNumber());
 		
 		Document doc = new Document();
 		doc.setPrxyLookUp(proxy003MessageService.proxyResolutionRequest(seedProxyResolution));

@@ -15,6 +15,7 @@ import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.flat.FlatPrxy002Pojo;
+import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
 import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationResponsePojo;
 import bifast.outbound.repository.StatusReasonRepository;
@@ -35,23 +36,24 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 		chnlResponseWr.setResponseCode("U000");
 		chnlResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 		chnlResponseWr.setTime(LocalDateTime.now().format(timeformatter));
+				
 		chnlResponseWr.setResponses(new ArrayList<>());
 
 		Object objResponse = exchange.getMessage().getBody(Object.class);
-		String bodyClass = objResponse.getClass().getSimpleName();
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class);
 		ChnlProxyRegistrationRequestPojo chnRequest = rmw.getChnlProxyRegistrationRequest();
 
 		ChnlProxyRegistrationResponsePojo chnResponse = new ChnlProxyRegistrationResponsePojo();
 		chnResponse.setNoRef(chnRequest.getChannelRefId());
-
+		chnResponse.setRegistrationType(chnRequest.getRegistrationType());
 
 		if (objResponse.getClass().getSimpleName().equals("FaultPojo")) {
 			FaultPojo fault = (FaultPojo)objResponse;
 			
-			chnlResponseWr.setResponseCode("KSTS");
+			chnlResponseWr.setResponseCode(fault.getResponseCode());
 			chnlResponseWr.setReasonCode(fault.getReasonCode());
+
 			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 			if (oStatusReason.isPresent())
 				chnlResponseWr.setReasonMessage(oStatusReason.get().getDescription());
@@ -71,6 +73,18 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 
 		}
 		
+		else if (objResponse.getClass().getSimpleName().equals("FlatPrxy004Pojo")) {
+			FlatPrxy004Pojo resp = (FlatPrxy004Pojo) objResponse;
+			chnlResponseWr.setResponseCode(resp.getResponseCode());
+			chnlResponseWr.setReasonCode(resp.getReasonCode());
+			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(resp.getReasonCode());
+			if (optStatusReason.isPresent()) {
+				String desc = optStatusReason.get().getDescription();
+				chnlResponseWr.setReasonMessage(desc);;
+			}	
+
+		}
+
 		else {
 			FlatPrxy002Pojo biResp = (FlatPrxy002Pojo)objResponse;
 
@@ -82,8 +96,6 @@ public class ProxyRegistrationResponseProcessor implements Processor {
 				String desc = optStatusReason.get().getDescription();
 				chnlResponseWr.setReasonMessage(desc);;
 			}	
-
-			chnResponse.setRegistrationType(biResp.getOrgnlRegistrationType());
 
 			if (null != biResp.getRegistrationId()) 
 					chnResponse.setRegistrationId(biResp.getRegistrationId());

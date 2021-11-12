@@ -52,6 +52,12 @@ public class FaultPojo {
 		this.errorMessage = errorMessage;
 	}
 
+	@Override
+	public String toString() {
+		return "FaultPojo [callStatus=" + callStatus + ", responseCode=" + responseCode + ", reasonCode=" + reasonCode
+				+ ", reasonMessage=" + reasonMessage + "]";
+	}
+
 
 
 	

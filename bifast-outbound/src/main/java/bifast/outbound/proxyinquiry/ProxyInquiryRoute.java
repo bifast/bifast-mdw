@@ -52,6 +52,8 @@ public class ProxyInquiryRoute extends RouteBuilder {
 			.process(proxyRegistrationInquiryRequestProcessor)
 	
 			.to("direct:call-cihub")
+			
+			.log("${body}")
 			.process(proxyRegistrationInquiryResponseProcessor)
 			
 	//		.process(storeProxyResolutionProcessor)

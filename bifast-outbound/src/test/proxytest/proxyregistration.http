@@ -6,18 +6,18 @@ Authorization: Basic CMS:password
 
 {
     "ProxyRegistrationRequest" : {
-        "NoRef" : "6115",
+        "NoRef" : "652225",
         "RegistrationType" : "NEWR",
         "ProxyType" : "01",
-        "ProxyValue" : "0811144556",
-        "DisplayName" : "Frans Mazhar",
-        "AccountNumber" : "452150125",
+        "ProxyValue" : "08111555444",
+        "DisplayName" : "Andi B",
+        "AccountNumber" : "45570125",
         "AccountType" : "CACC",
-        "AccountName" : "Frans Mazhar ",
+        "AccountName" : "Aji Kurnia Amino ",
         "SecondaryIdType" : "01",
-        "SecondaryIdValue" : "KT1020",
+        "SecondaryIdValue" : "K16202",
         "CustomerType" : "01",
-        "CustomerId" : "KTP-222044020",
+        "CustomerId" : "KTP-24124020",
         "ResidentialStatus" : "01",
         "TownName" : "0300"
     }

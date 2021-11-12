@@ -3,7 +3,7 @@ package bifast.library.iso20022.service;
 public class Proxy002Seed {
 	
 	private String msgId; 
-	private String creDtTm;
+//	private String creDtTm;
 	
 	private String msgRcptAgtId;
 
@@ -28,12 +28,12 @@ public class Proxy002Seed {
 	public void setMsgId(String msgId) {
 		this.msgId = msgId;
 	}
-	public String getCreDtTm() {
-		return creDtTm;
-	}
-	public void setCreDtTm(String creDtTm) {
-		this.creDtTm = creDtTm;
-	}
+//	public String getCreDtTm() {
+//		return creDtTm;
+//	}
+//	public void setCreDtTm(String creDtTm) {
+//		this.creDtTm = creDtTm;
+//	}
 	public String getMsgRcptAgtId() {
 		return msgRcptAgtId;
 	}

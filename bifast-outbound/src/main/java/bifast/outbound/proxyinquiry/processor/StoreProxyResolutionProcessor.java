@@ -55,16 +55,15 @@ public class StoreProxyResolutionProcessor implements Processor{
 			proxyMessage.setAccountName(resolutionResponse.getLkUpRspn().getRegnRspn().getRegn().getAcct().getNm());
 			proxyMessage.setAccountNumber(resolutionResponse.getLkUpRspn().getRegnRspn().getRegn().getAcct().getId().getOthr().getId());
 			proxyMessage.setAccountType(resolutionResponse.getLkUpRspn().getRegnRspn().getRegn().getAcct().getTp().getPrtry());
-			proxyMessage.setCustomerId(resolutionResponse.getSplmtryData().get(0).getEnvlp().getCstmr().getId());
-			proxyMessage.setCustomerType(resolutionResponse.getSplmtryData().get(0).getEnvlp().getCstmr().getTp());
+			proxyMessage.setCustomerId(resolutionResponse.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
+			proxyMessage.setCustomerType(resolutionResponse.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
 	
 			proxyMessage.setDisplayName(resolutionResponse.getLkUpRspn().getRegnRspn().getRegn().getDsplNm());
-			proxyMessage.setResidentStatus(resolutionResponse.getSplmtryData().get(0).getEnvlp().getCstmr().getRsdntSts());
-			proxyMessage.setTownName(resolutionResponse.getSplmtryData().get(0).getEnvlp().getCstmr().getTwnNm());
+			proxyMessage.setResidentStatus(resolutionResponse.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
+			proxyMessage.setTownName(resolutionResponse.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
 
 			proxyMessage.setRespStatus(resolutionResponse.getLkUpRspn().getRegnRspn().getPrxRspnSts().value());
 		}
-		
 		
 		String errorStatus = exchange.getMessage().getHeader("hdr_error_status", String.class);
 		String errorMesg = exchange.getMessage().getHeader("hdr_error_mesg", String.class);
