@@ -1,11 +1,7 @@
 package bifast.mock.processor;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -15,14 +11,8 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.prxy001.BISupplementaryDataEnvelope1;
-import bifast.library.iso20022.prxy001.ProxyRegistrationType1Code;
-import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.library.iso20022.prxy006.ProxyEnquiryResponseV01;
 import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Proxy002MessageService;
-import bifast.library.iso20022.service.Proxy002Seed;
-import bifast.library.iso20022.service.Proxy004Seed;
 import bifast.library.iso20022.service.Proxy006MessageService;
 import bifast.library.iso20022.service.Proxy006Seed;
 import bifast.library.iso20022.service.Proxy006SeedAccount;
@@ -30,7 +20,6 @@ import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
 
 @Component
-//@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
 public class ProxyRegistrationInquiryProcessor implements Processor{
 
 	@Autowired
@@ -49,17 +38,7 @@ public class ProxyRegistrationInquiryProcessor implements Processor{
 		String bizMsgId = utilService.genRfiBusMsgId("610", "01", "INDOIDJA");
 		String ap = utilService.genMessageId("610", "INDOIDJA");
 		
-		Random rand = new Random();
 		Proxy006Seed seed = new Proxy006Seed();
-        int posbl = rand.nextInt(10);
-		if (posbl == 0) {
-			seed.setStatus("RJCT");
-			seed.setReason("U001");
-		}
-		else {
-			seed.setStatus("ACTC");
-			seed.setReason("U000");
-		}
 		
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
 	
@@ -75,9 +54,13 @@ public class ProxyRegistrationInquiryProcessor implements Processor{
 		accountProxylist = accountProxyRepository.getListByScndIdTpAndByScndIdVal(scndIdTp,scndIdVal);
 		
 		if(accountProxylist.size() > 0) {
+
+			seed.setStatus("ACTC");
+			seed.setReason("U000");
+
 			List<Proxy006SeedAccount> proxy006SeedAccountList = new ArrayList<Proxy006SeedAccount>();
 			for(AccountProxy data:accountProxylist) {
-				
+
 				Proxy006SeedAccount seedAcc =  new Proxy006SeedAccount();
 				seedAcc.setRegnId(data.getReginId());
 				seedAcc.setAccountName(data.getAccountName());

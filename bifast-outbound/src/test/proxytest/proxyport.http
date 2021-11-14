@@ -6,7 +6,7 @@ Authorization: Basic CMS:password
 
 {
     "ProxyRegistrationRequest" : {
-        "NoRef" : "851254",
+        "NoRef" : "8544",
         "RegistrationType" : "PORT",
         "ProxyType" : "02",
         "ProxyValue" : "yogi@gmail.com",

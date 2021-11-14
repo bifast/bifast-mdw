@@ -72,58 +72,67 @@ public class ProxyRegistrationInquiryResponseProcessor implements Processor {
 		else { 
 			
 			FlatPrxy006Pojo resp = (FlatPrxy006Pojo)objBody;
-			channelResponseWr.setResponseCode(resp.getResponseCode());
-			channelResponseWr.setReasonCode(resp.getReasonCode());
+			
+			if (resp.getResponseCode().equals("ACTC")) {
 
-			List<FlatPrxy006AliasPojo> aliasListFiltered = new ArrayList<>();
-
-			// filter hanya proxy yng terdaftar di bank asal yg ditampilkan
-			if(resp.getAlias() !=  null) {	
-				for(FlatPrxy006AliasPojo data:resp.getAlias()) {
-					if (data.getRegisterBank().equals(config.getBankcode())) 
-						aliasListFiltered.add(data);
+				List<FlatPrxy006AliasPojo> aliasListFiltered = new ArrayList<>();
+				// filter hanya proxy yng terdaftar di bank asal yg ditampilkan
+				if(resp.getAlias() !=  null) {	
+					for(FlatPrxy006AliasPojo data:resp.getAlias()) {
+						if (data.getRegisterBank().equals(config.getBankcode())) 
+							aliasListFiltered.add(data);
+					}
+				}
+				
+				if (aliasListFiltered.size() == 0) {
+					channelResponseWr.setResponseCode("RJCT");
+					channelResponseWr.setReasonCode("U804");
+					channelResponseWr.setReasonMessage("Alias Not Found Or Inactive");
+				}
+				
+				else {
+					channelResponseWr.setResponseCode(resp.getResponseCode());
+					channelResponseWr.setReasonCode(resp.getReasonCode());
+					Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getReasonCode());
+					if (optStatusReason.isPresent()) {
+						String desc = optStatusReason.get().getDescription();
+						channelResponseWr.setReasonMessage(desc);
+					}	
+					
+					for (FlatPrxy006AliasPojo data : aliasListFiltered) {
+						ChnlProxyRegistrationInquiryResponsePojo chnResponse = new ChnlProxyRegistrationInquiryResponsePojo();
+						chnResponse.setNoRef(chnRequest.getChannelRefId());
+		
+						chnResponse.setProxyType(data.getProxyType());
+						chnResponse.setProxyValue(data.getProxyValue());
+						chnResponse.setRegistrationId(data.getRegistrationId());
+						chnResponse.setDisplayName(data.getDisplayName());
+						chnResponse.setRegisterBank(data.getRegisterBank());
+						chnResponse.setAccountType(data.getAccountType());
+						chnResponse.setAccountNumber(data.getAccountNumber());
+						chnResponse.setProxyStatus(data.getProxySatus());
+							
+						if (null !=data.getAccountName())
+							chnResponse.setAccountName(data.getAccountName());
+		
+						if (null != data.getCustomerType())
+							chnResponse.setCustomerType(data.getCustomerType());
+										
+						if (null != data.getResidentialStatus());
+							chnResponse.setResidentStatus(data.getResidentialStatus());
+		
+						if (null != data.getTownName());
+							chnResponse.setTownName(data.getTownName());
+								
+						chnResponse.setScndIdType(chnRequest.getScndIdType());
+						chnResponse.setScndIdValue(chnRequest.getScndIdValue());
+							
+						channelResponseWr.getResponses().add(chnResponse);
+					}
 				}
 			}
-				
-			Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getReasonCode());
-			if (optStatusReason.isPresent()) {
-				String desc = optStatusReason.get().getDescription();
-				channelResponseWr.setReasonMessage(desc);
-			}	
-				
-			for (FlatPrxy006AliasPojo data : aliasListFiltered) {
-				ChnlProxyRegistrationInquiryResponsePojo chnResponse = new ChnlProxyRegistrationInquiryResponsePojo();
-				chnResponse.setNoRef(chnRequest.getChannelRefId());
-
-				chnResponse.setProxyType(data.getProxyType());
-				chnResponse.setProxyValue(data.getProxyValue());
-				chnResponse.setRegistrationId(data.getRegistrationId());
-				chnResponse.setDisplayName(data.getDisplayName());
-				chnResponse.setRegisterBank(data.getRegisterBank());
-				chnResponse.setAccountType(data.getAccountType());
-				chnResponse.setAccountNumber(data.getAccountNumber());
-				chnResponse.setProxyStatus(data.getProxySatus());
-					
-				if (null !=data.getAccountName())
-					chnResponse.setAccountName(data.getAccountName());
-
-				if (null != data.getCustomerType())
-					chnResponse.setCustomerType(data.getCustomerType());
-								
-				if (null != data.getResidentialStatus());
-					chnResponse.setResidentStatus(data.getResidentialStatus());
-
-				if (null != data.getTownName());
-					chnResponse.setTownName(data.getTownName());
-						
-				chnResponse.setScndIdType(chnRequest.getScndIdType());
-				chnResponse.setScndIdValue(chnRequest.getScndIdValue());
-					
-				channelResponseWr.getResponses().add(chnResponse);
-			}
-						
 		}
-
+		
 		exchange.getIn().setBody(channelResponseWr);
 	}
 }

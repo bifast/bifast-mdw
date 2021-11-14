@@ -288,38 +288,40 @@ public class ProxyRegistrationService {
 		Optional<AccountProxy> oAccountProxy = proxyRepo.findByReginId(regId);
 
 		if (oAccountProxy.isEmpty()) {
+			System.out.println("tidak ketemu");
 			seed.setStatus("RJCT");
 			seed.setReason("U804");
 		}
+
 		else {
+			System.out.println("ketemu");
 			AccountProxy proxy = oAccountProxy.get();
 			String orgnBank = bm.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
 
-			if ((proxy.getAccountStatus().equals("SUSP")) || 
-					(proxy.getAccountStatus().equals("SUSB"))) {
+			// beda bank
+			if (!(proxy.getRegisterBank().equals(orgnBank)) ) {
+				seed.setStatus("RJCT");
+				seed.setReason("U809");
+			}
+			
+			else if (proxy.getAccountStatus().equals("ACTV")) {
 				seed.setStatus("RJCT");
 				seed.setReason("U805");
 			}
 			
-			else if (proxy.getRegisterBank().equals(orgnBank)) {
+			else if (proxy.getAccountStatus().equals("SUSP")) {
+				
 				seed.setStatus("ACTC");
 				seed.setReason("U000");
-
 				proxy.setAccountStatus("ACTV");
 				proxyRepo.save(proxy);
 			}
-			else {
-				System.out.println("Ini beda bank");
-				seed.setStatus("RJCT");
-				seed.setReason("U809");
-			}
+					
 
 			seed.setRegnId(prxyRegn.getRegn().getPrxyRegn().getRegnId());
 			seed.setCstmrId(prxyRegn.getRegn().getPrxyRegn().getScndId().getVal());
-			seed.setCstmrRsdntSts(prxyRegn.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
-			seed.setCstmrTp(prxyRegn.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
-			seed.setCstmrTwnNm(prxyRegn.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
-
+			
+			
 			seed.setAgtId(proxy.getRegisterBank());
 			seed.setCstmrId(proxy.getCstmrId());
 			seed.setCstmrRsdntSts(proxy.getCstmrRsdntSts());

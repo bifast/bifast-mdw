@@ -60,7 +60,9 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		
 		seedProxyRegis.setRegisterAccountType(chnReq.getAccountType());
 		seedProxyRegis.setRegisterAccountName(chnReq.getAccountName());
+		
 		seedProxyRegis.setRegisterAccountNumber(chnReq.getAccountNumber());
+		
 		seedProxyRegis.setRegisterSecondIdType(chnReq.getSecondIdType());
 		seedProxyRegis.setRegisterSecondIdValue(chnReq.getSecondIdValue());
 		

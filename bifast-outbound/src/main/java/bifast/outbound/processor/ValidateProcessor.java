@@ -17,6 +17,7 @@ import bifast.outbound.exception.NoRefNullException;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.DomainCode;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.DomainCodeRepository;
 import bifast.outbound.service.ValidationService;
@@ -81,6 +82,17 @@ public class ValidateProcessor implements Processor  {
 			}
 			catch(NoSuchElementException ne) {
 					throw new InputValidationException ("Input value error");
+			}
+		}
+
+		else if (msgType.equals("PrxRegnReq")) {
+			ChnlProxyRegistrationRequestPojo proxyReq = rmw.getChnlProxyRegistrationRequest();
+			try {
+				@SuppressWarnings("unused")
+				DomainCode dm = domainCodeRepo.findByGrpAndKey("PRXYOPER.TYPE", proxyReq.getRegistrationType()).orElseThrow();
+			}
+			catch(NoSuchElementException ne) {
+					throw new InputValidationException ("Proxy Operation type error");
 			}
 		}
 

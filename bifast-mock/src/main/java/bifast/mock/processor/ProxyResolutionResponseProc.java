@@ -59,19 +59,20 @@ public class ProxyResolutionResponseProc implements Processor{
 		
 		else {
 			AccountProxy proxy = oAccountProxy.get();
-			
+
+			seed.setRegnId(proxy.getReginId());
+			seed.setPrxyRtrvlTp(proxy.getProxyType());
+			seed.setPrxyRtrvlVal(proxy.getProxyVal());
+			seed.setDisplayName(proxy.getDisplayName());
+			seed.setRegisterBank(proxy.getRegisterBank());
+			seed.setAccountNumber(proxy.getAccountNumber());
+			seed.setAccountType(proxy.getAccountType());
+
 			if (proxy.getAccountStatus().equals("ACTV")) {
 				seed.setStatus("ACTC");
 				seed.setReason("U000");
 				
-				seed.setRegnId(proxy.getReginId());
 				seed.setAccountName(proxy.getAccountName());
-				seed.setAccountNumber(proxy.getAccountNumber());
-				seed.setAccountType(proxy.getAccountType());
-				seed.setDisplayName(proxy.getDisplayName());
-				seed.setRegisterBank(proxy.getRegisterBank());
-				seed.setPrxyRtrvlTp(proxy.getProxyType());
-				seed.setPrxyRtrvlVal(proxy.getProxyVal());
 				seed.setCstmrId(proxy.getCstmrId());
 				seed.setCstmrTp(proxy.getCstmrTp());
 				seed.setCstmrRsdntSts(proxy.getCstmrRsdntSts());
@@ -80,8 +81,6 @@ public class ProxyResolutionResponseProc implements Processor{
 			else {
 				seed.setStatus("RJCT");
 				seed.setReason("U805");
-				seed.setPrxyRtrvlTp(proxy.getProxyType());
-				seed.setPrxyRtrvlVal(proxy.getProxyVal());
 			}
 
 		}

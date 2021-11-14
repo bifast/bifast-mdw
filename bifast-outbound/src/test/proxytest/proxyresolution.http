@@ -5,7 +5,22 @@ Authorization: Basic CMS:password
 
 {
     "ProxyResolutionRequest": {
-        "NoRef": "5462",
+        "NoRef": "1222347",
+        "SenderAccountNumber" : "223411112",
+        "ProxyType" : "01",
+        "ProxyValue" : "081115554444"
+    }
+}
+
+###
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+    "ProxyResolutionRequest": {
+        "NoRef": "1275",
         "SenderAccountNumber" : "22341111",
         "ProxyType" : "02",
         "ProxyValue" : "yogi@gmail.com"

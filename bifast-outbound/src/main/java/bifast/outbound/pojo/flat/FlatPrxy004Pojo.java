@@ -6,15 +6,18 @@ public class FlatPrxy004Pojo extends FlatMessageBase{
 	
 	private String msgId;
 	private LocalDateTime creDtTm;
+	
 	private String OrgnlMsgId;
 	private String OrgnlMsgNmId;
 	private LocalDateTime OrgnlCreDtTm;
-	
 	private String orgnlId;
+	
 	private String proxyType;
 	private String proxyValue;
+	
 	private String responseCode;
 	private String reasonCode;
+	
 	private String registrationId;
 	private String displayName;
 	private String registerBank;
