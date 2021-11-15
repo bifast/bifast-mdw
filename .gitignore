@@ -38,3 +38,4 @@ build/
 ### test docker ###
 docker
 corebankiface/src/main/resources/application.properties
+docker-compose.yml

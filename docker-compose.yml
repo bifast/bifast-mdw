@@ -104,13 +104,33 @@ services:
       build: corebankiface
       container_name: mock-cb
       image: fransmzh/mock-cb:1.0
-      restart: always
       expose: 
         - "9010"
       ports: 
         - "9010:9010"
       environment: 
         - TZ=Asia/Jakarta
+      networks: 
+        - docnet
+
+    cb-adam:
+      container_name: mock-cb
+      image: fransmzh/mock-cb:adam1
+      depends_on: 
+        - komidb
+      expose: 
+        - "9010"
+      ports: 
+        - "9010:9010"
+      environment: 
+        - LOGGING.FILE.NAME=/home/logs/komi-mock.log
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
+        - SPRING.DATASOURCE.USERNAME=postgres 
+        - SPRING.DATASOURCE.PASSWORD=postgres 
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+        - TZ=Asia/Jakarta
+      volumes: 
+        - /home/fransdm/workspace/bifast-log/mock:/home/logs
       networks: 
         - docnet
 
