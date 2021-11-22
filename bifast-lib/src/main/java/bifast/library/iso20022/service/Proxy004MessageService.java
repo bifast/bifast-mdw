@@ -8,10 +8,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import bifast.library.config.LibConfig;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy004.AccountIdentification4Choice;
 import bifast.library.iso20022.prxy004.CashAccount40;

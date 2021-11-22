@@ -66,8 +66,6 @@ public class ProxyRoute extends RouteBuilder {
         
 	        .log("Terima di mock")
 	        .log("${body}")
-	        .delay(500)
-	        .log("end-delay")
 	        .log("Run Processor Inquiry")
 	        .process(proxyRegistrationInquiryProcessor)
 	        .log("End Process")

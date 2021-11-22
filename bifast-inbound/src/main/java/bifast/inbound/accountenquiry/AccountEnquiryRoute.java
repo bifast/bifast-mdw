@@ -12,16 +12,7 @@ public class AccountEnquiryRoute extends RouteBuilder {
 
 	@Override
 	public void configure() throws Exception {
-//		onException(org.apache.http.conn.HttpHostConnectException.class)
-//			.maximumRedeliveries(5).delay(1000)
-//			.log("Route level onException")
-////			.handled(true)
-//			.setBody(constant(null))
-//		;
-		
-//		JacksonDataFormat flatJDF = jdfService.basic(FlatPacs008Pojo.class);
-
-		
+			
 		from("direct:accountenq").routeId("komi.accountenq")
 
 			.setHeader("ae_obj_birequest", simple("${body}"))

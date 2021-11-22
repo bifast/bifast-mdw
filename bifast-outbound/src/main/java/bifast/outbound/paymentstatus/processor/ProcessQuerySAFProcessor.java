@@ -37,12 +37,16 @@ public class ProcessQuerySAFProcessor implements Processor{
 	public void process(Exchange exchange) throws Exception {
 		@SuppressWarnings("unchecked")
 		HashMap<String, Object> arr = exchange.getMessage().getBody(HashMap.class);
+		
 		UndefinedCTPojo ct = new UndefinedCTPojo();
 		ct.setId(String.valueOf(arr.get("id")));
 		ct.setKomiTrnsId((String)arr.get("komi_id"));
 		ct.setRecipientBank((String)arr.get("recpt_bank"));
 		ct.setReqBizmsgid((String)arr.get("req_bizmsgid"));
 		ct.setChannelType((String)arr.get("channel_type"));
+		ct.setChannelNoref((String) arr.get("channel_ref_id"));
+		
+		System.out.println(ct.getChannelNoref());
 		
 		Timestamp ldt = (Timestamp) arr.get("request_time");	
 		ct.setOrgnlDateTime(ldt.toLocalDateTime());
@@ -69,6 +73,7 @@ public class ProcessQuerySAFProcessor implements Processor{
 		ObjectMapper map = new ObjectMapper();
 		map.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
 		
+	
 		String chnlRequestText = chnlTrns.getTextMessage();
 		
 		ChnlCreditTransferRequestPojo chnlCTReq = map.readValue(chnlRequestText, ChnlCreditTransferRequestPojo.class);
@@ -83,6 +88,7 @@ public class ProcessQuerySAFProcessor implements Processor{
 		
 		// request message asli untuk keperluan cari settlement harus di unzip dulu
 		exchange.getMessage().setBody(creditTransfer.getFullRequestMessage());
+
 
 	}
 

@@ -42,7 +42,7 @@ services:
         - SPRING_JPA_HIBERNATE_DDL_AUTO=none
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
-        - KOMI.URL.COREBANK=mock-cb:9010/komi/mock/corebank
+        - KOMI.URL.COREBANK=mock-cb:9007/api/corebank
         - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs
@@ -61,11 +61,11 @@ services:
       ports: 
         - "9002:9002"
       environment: 
-        - KOMI.CICONNECTOR-URL=komi-mock:9006/mock/cihub
+        - KOMI.URL.CICONNECTOR=komi-mock:9006/mock/cihub
+        - KOMI.URL.COREBANK=mock-cb:9007/api/corebank
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.BICODE=INDOIDJA
         - KOMI.INBOUND-URL=komi-inbound:9001/services/api/enquiry
-        - KOMI.URL.COREBANK=mock-cb:9010/komi/mock/corebank
         - LOGGING.FILE.NAME=/home/logs/komi-outbound.log
         - LOGGING.LEVEL.BIFAST.OUTBOUND=DEBUG
         - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
@@ -105,9 +105,9 @@ services:
       container_name: mock-cb
       image: fransmzh/mock-cb:1.0
       expose: 
-        - "9010"
+        - "9007"
       ports: 
-        - "9010:9010"
+        - "9007:9007"
       environment: 
         - TZ=Asia/Jakarta
       networks: 
@@ -119,9 +119,9 @@ services:
       depends_on: 
         - komidb
       expose: 
-        - "9010"
+        - "9007"
       ports: 
-        - "9010:9010"
+        - "9007:9007"
       environment: 
         - LOGGING.FILE.NAME=/home/logs/komi-mock.log
         - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 

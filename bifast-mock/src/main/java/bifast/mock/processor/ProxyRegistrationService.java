@@ -309,6 +309,11 @@ public class ProxyRegistrationService {
 				seed.setReason("U805");
 			}
 			
+			else if (proxy.getAccountStatus().equals("ICTV")) {
+				seed.setStatus("RJCT");
+				seed.setReason("U804");
+			}			
+
 			else if (proxy.getAccountStatus().equals("SUSP")) {
 				
 				seed.setStatus("ACTC");

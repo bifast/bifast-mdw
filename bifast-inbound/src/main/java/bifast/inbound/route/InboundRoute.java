@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.accountenquiry.SaveAccountEnquiryProcessor;
+import bifast.inbound.corebank.PendingCorebankProcessor;
 import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
 import bifast.inbound.processor.CheckRequestMsgProcessor;
 import bifast.inbound.service.JacksonDataFormatService;
@@ -16,11 +17,12 @@ import bifast.library.iso20022.custom.BusinessMessage;
 @Component
 public class InboundRoute extends RouteBuilder {
 
+	@Autowired private PendingCorebankProcessor pendingCorebankProcessor;
+	@Autowired private CheckRequestMsgProcessor checkRequestMsgProcessor;
+	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
 	@Autowired private SaveCreditTransferProcessor saveCreditTransferProcessor;
 	@Autowired private SaveSettlementMessageProcessor saveSettlementMessageProcessor;
-	@Autowired private CheckRequestMsgProcessor checkRequestMsgProcessor;
-	@Autowired private JacksonDataFormatService jdfService;
 	
 
 	@Override
@@ -36,8 +38,13 @@ public class InboundRoute extends RouteBuilder {
 				.description("REST listener untuk terima message")
 				.consumes("application/json")
 				.to("direct:receive")
+
+			.get("/timer")
+				.to("seda:timercontrol")
 		;	
-		
+
+	
+
 		from("direct:receive").routeId("komi.inboundEndpoint")
 			.convertBodyTo(String.class).id("start_route")
 			
@@ -63,6 +70,7 @@ public class InboundRoute extends RouteBuilder {
 					.setBody(constant(null))
 
 				.when().simple("${header.hdr_msgType} == 'PROXYNOTIF'")  
+					.to("direct:proxynotif")
 					.setBody(constant(null))
 
 				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
@@ -78,6 +86,10 @@ public class InboundRoute extends RouteBuilder {
 
 				.when().simple("${header.hdr_msgType} == '011'")     // reverse CT
 					.to("direct:reverct")
+					.setHeader("hdr_toBIobj", simple("${body}"))
+
+				.when().simple("${header.hdr_msgType} == 'EVENTNOTIF'")     // Event Notif
+					.to("direct:eventnotif")
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.otherwise()	
@@ -118,7 +130,7 @@ public class InboundRoute extends RouteBuilder {
 			.to("direct:reversal")
 		;
 
-		from("seda:logandsave").routeId("savedb")
+		from("seda:logandsave?concurrentConsumers=5").routeId("savedb")
 			.log("Akan save ${header.hdr_msgType}")
 			.choice()
 				.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
@@ -131,6 +143,10 @@ public class InboundRoute extends RouteBuilder {
 			.end()
 		;
 
+		from("seda:timercontrol")
+			.log("timer control")
+			.process(pendingCorebankProcessor)
+			;
 
 	}
 }

@@ -42,6 +42,8 @@ public class ProxyResolutionResponseProcessor implements Processor {
 
 		ChnlProxyResolutionResponsePojo chnResponse = new ChnlProxyResolutionResponsePojo();
 		chnResponse.setNoRef(chnRequest.getChannelRefId());
+		chnResponse.setProxyType(chnRequest.getProxyType());
+		chnResponse.setProxyValue(chnRequest.getProxyValue());
 
 		Object objBody = exchange.getMessage().getBody(Object.class);
 		if (objBody.getClass().getSimpleName().equals("FaultPojo")) {
@@ -66,7 +68,6 @@ public class ProxyResolutionResponseProcessor implements Processor {
 				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 			else
 				channelResponseWr.setResponseMessage("General Error");
-
 		}
 
 		else { 

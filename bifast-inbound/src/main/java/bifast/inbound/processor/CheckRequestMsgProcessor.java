@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.pojo.ProcessDataPojo;
+import bifast.inbound.pojo.flat.FlatAdmi004Pojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
+import bifast.inbound.pojo.flat.FlatPrxy901Pojo;
 import bifast.inbound.service.FlattenIsoMessageService;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -41,19 +43,26 @@ public class CheckRequestMsgProcessor implements Processor {
 			processData.setBiRequestFlat(flat002);
 		}
 
-		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901"))
+		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901")) {
 			trnType = "PROXYNOTIF";
-
+			FlatPrxy901Pojo flat = flatMsgService.flatteningPrxy901(inputMsg);
+			processData.setBiRequestFlat(flat);
+		}
+		
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.008")) {
 			FlatPacs008Pojo flat008 = flatMsgService.flatteningPacs008(inputMsg); 
 			processData.setBiRequestFlat(flat008);
 		}
 
-		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901")) {
-			System.out.println("jenis msg ProxyNotificatio");
+		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("admi.004")) {
+			System.out.println("jenis msg System Notification");
+			FlatAdmi004Pojo flat004 = flatMsgService.flatteningAdmi004(inputMsg);
+			processData.setBiRequestFlat(flat004);
+			trnType = "EVENTNOTIF";
 		}
 
 		exchange.getMessage().setHeader("hdr_msgType", trnType);
+		
 		processData.setBiRequestMsg(inputMsg);
 		processData.setStartTime(Instant.now());
 		processData.setInbMesgType(trnType);

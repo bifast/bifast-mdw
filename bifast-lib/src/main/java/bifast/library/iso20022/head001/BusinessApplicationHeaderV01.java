@@ -8,8 +8,6 @@
 
 package bifast.library.iso20022.head001;
 
-import java.time.LocalDateTime;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;

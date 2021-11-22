@@ -94,6 +94,7 @@ public class ValidateProcessor implements Processor  {
 			catch(NoSuchElementException ne) {
 					throw new InputValidationException ("Proxy Operation type error");
 			}
+			validationService.validateProxyRegistration(proxyReq);
 		}
 
 		else if (msgType.equals("PSReq")) {

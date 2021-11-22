@@ -291,5 +291,40 @@ public class Pacs002MessageService {
 	}
 
 
-	
+	public FIToFIPaymentStatusReportV10 notFoundPaymentStatusResponse (Pacs002Seed seed, BusinessMessage orgnlMsg) 
+			throws DatatypeConfigurationException {
+		
+		System.out.println("notfound PS");
+		
+		FIToFIPaymentStatusReportV10 pacs002 = new FIToFIPaymentStatusReportV10();
+		
+		// GrpHdr
+		pacs002.setGrpHdr(new GroupHeader91());
+		pacs002.getGrpHdr().setMsgId(seed.getMsgId()); 
+		
+		GregorianCalendar gcal = new GregorianCalendar();
+		gcal.setTimeZone(TimeZone.getTimeZone(ZoneOffset.systemDefault()));
+		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+		pacs002.getGrpHdr().setCreDtTm(xcal);;
+
+		// OrgnlGrpInfAndSts
+		pacs002.getOrgnlGrpInfAndSts().add(new OriginalGroupHeader17());
+		pacs002.getOrgnlGrpInfAndSts().get(0).setOrgnlMsgId(orgnlMsg.getDocument().getFiToFIPmtStsReq().getGrpHdr().getMsgId());
+		pacs002.getOrgnlGrpInfAndSts().get(0).setOrgnlMsgNmId(orgnlMsg.getAppHdr().getMsgDefIdr());
+		
+		// TxInfAndSts
+		pacs002.getTxInfAndSts().add(new PaymentTransaction110());
+
+		pacs002.getTxInfAndSts().get(0).setOrgnlEndToEndId(orgnlMsg.getDocument().getFiToFIPmtStsReq().getTxInf().get(0).getOrgnlEndToEndId());
+
+		pacs002.getTxInfAndSts().get(0).setTxSts("OTHR");
+		
+		// TxInfAndSts / StsRsnInf	
+		pacs002.getTxInfAndSts().get(0).getStsRsnInf().add(new StatusReasonInformation12());
+		pacs002.getTxInfAndSts().get(0).getStsRsnInf().get(0).setRsn(new StatusReason6Choice());
+		
+		pacs002.getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().setPrtry("U106");
+			
+		return pacs002;
+	}
 }

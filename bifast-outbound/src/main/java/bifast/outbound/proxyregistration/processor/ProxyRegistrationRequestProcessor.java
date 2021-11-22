@@ -44,6 +44,9 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		
 		hdr = appHeaderService.getAppHdr(config.getBicode(), "prxy.001.001.01", bizMsgId);
 		
+		if (null == chnReq.getCustomerId()) 
+			chnReq.setCustomerId(chnReq.getSecondIdValue());
+			
 		Proxy001Seed seedProxyRegis = new Proxy001Seed();
 		
 		seedProxyRegis.setMsgId(msgId);

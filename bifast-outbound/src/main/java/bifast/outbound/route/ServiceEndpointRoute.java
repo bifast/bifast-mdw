@@ -145,12 +145,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.removeHeaders("*")
 			.marshal(chnlResponseJDF)
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
 
-//			.removeHeader("clientid")
-//			.removeHeaders("hdr_*")
-//			.removeHeaders("req_*")
-//			.removeHeader("HttpMethod")
-//			.removeHeader("cookie")
 		;
 		
 		from("seda:savetablechannel").routeId("komi.savechnltrns")

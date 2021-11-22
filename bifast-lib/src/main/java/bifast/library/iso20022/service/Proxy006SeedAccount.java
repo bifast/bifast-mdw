@@ -1,7 +1,5 @@
 package bifast.library.iso20022.service;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 public class Proxy006SeedAccount {
     
 	protected String regnId;

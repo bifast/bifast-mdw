@@ -67,6 +67,11 @@ public class UpdateStatusSAFProcessor implements Processor{
 
 		ct.setLastUpdateDt(LocalDateTime.now());
 		
+		if (ct.getPsCounter()==5) 
+			exchange.getMessage().setHeader("ps_notif", "yes");
+		else
+			exchange.getMessage().setHeader("ps_notif", "no");
+		
 		ctRepo.save(ct);
 		chnlTrnsRepo.save(ch);
 	}

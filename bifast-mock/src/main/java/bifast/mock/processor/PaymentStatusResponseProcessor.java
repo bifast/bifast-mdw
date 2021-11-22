@@ -80,20 +80,21 @@ public class PaymentStatusResponseProcessor implements Processor{
 		seed.setStatus("RJCT");
 		seed.setReason("U106");
 		seed.setAdditionalInfo("Credit Transfer Request Not Found");
+		seed.setMsgId(msgId);
 
 		FIToFIPaymentStatusReportV10 response = new FIToFIPaymentStatusReportV10();
 		try {
-			response = pacs002Service.creditTransferRequestResponse(seed, psRequest);
+			response = pacs002Service.notFoundPaymentStatusResponse(seed, psRequest);
 
-		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.getAppHdr(psRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", bizMsgId);
-		hdr.setBizSvc("CLEAR");
-		
-		Document doc = new Document();
-		doc.setFiToFIPmtStsRpt(response);
-		busMesg.setAppHdr(hdr);
-		busMesg.setDocument(doc);
+			BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
+			hdr = hdrService.getAppHdr(psRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
+										"pacs.002.001.10", bizMsgId);
+			hdr.setBizSvc("CLEAR");
+			
+			Document doc = new Document();
+			doc.setFiToFIPmtStsRpt(response);
+			busMesg.setAppHdr(hdr);
+			busMesg.setDocument(doc);
 
 		} catch (DatatypeConfigurationException e) {
 			// TODO Auto-generated catch block
@@ -101,7 +102,6 @@ public class PaymentStatusResponseProcessor implements Processor{
 		}
 
 		return busMesg;
-//		exchange.getMessage().setBody(busMesg);
 
 	}
 

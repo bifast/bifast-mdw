@@ -18,15 +18,11 @@ import bifast.library.iso20022.prxy006.CashAccount40;
 import bifast.library.iso20022.prxy006.CashAccountType2ChoiceProxy;
 import bifast.library.iso20022.prxy006.GenericAccountIdentification1;
 
-import bifast.library.iso20022.prxy006.AccountIdentification4Choice;
 import bifast.library.iso20022.prxy006.BIAddtlCstmrInf;
 import bifast.library.iso20022.prxy006.BISupplementaryData1;
 import bifast.library.iso20022.prxy006.BISupplementaryDataEnvelope1;
 import bifast.library.iso20022.prxy006.BranchAndFinancialInstitutionIdentification5;
-import bifast.library.iso20022.prxy006.CashAccount40;
-import bifast.library.iso20022.prxy006.CashAccountType2ChoiceProxy;
 import bifast.library.iso20022.prxy006.FinancialInstitutionIdentification8;
-import bifast.library.iso20022.prxy006.GenericAccountIdentification1;
 import bifast.library.iso20022.prxy006.GenericFinancialIdentification1;
 import bifast.library.iso20022.prxy006.GroupHeader60;
 import bifast.library.iso20022.prxy006.OriginalGroupInformation3;

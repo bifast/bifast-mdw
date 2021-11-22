@@ -1,7 +1,5 @@
 package bifast.library.iso20022.service;
 
-import bifast.library.iso20022.prxy003.ProxyLookUpType1Code;
-
 public class Proxy005Seed {
 	
 	private String msgId;

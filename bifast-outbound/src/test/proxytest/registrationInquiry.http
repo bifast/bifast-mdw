@@ -6,10 +6,10 @@ Authorization: Basic CMS:password
 
 {
     "ProxyRegistrationInquiry" : {
-        "NoRef" : "1254565",
+        "NoRef" : "2112566825",
         "SenderAccountNumber" : "7732004021",
         "ScndIdType" : "01",
-        "ScndIdValue" : "K16212"
+        "ScndIdValue" : "K162042"
     }
 }
 

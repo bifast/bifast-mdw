@@ -6,14 +6,17 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.springframework.stereotype.Service;
 
+import bifast.inbound.pojo.flat.FlatAdmi004Pojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
+import bifast.inbound.pojo.flat.FlatPrxy901Pojo;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.GroupHeader91;
 import bifast.library.iso20022.pacs002.OriginalGroupHeader17;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
+import bifast.library.iso20022.prxy901.ProxyAccount1;
 
 @Service
 public class FlattenIsoMessageService {
@@ -25,17 +28,13 @@ public class FlattenIsoMessageService {
 		BusinessApplicationHeaderV01 hdr = busMsg.getAppHdr();
 		
 		flatMsg.setFrBic(hdr.getFr().getFIId().getFinInstnId().getOthr().getId());
-		
 		flatMsg.setToBic(hdr.getTo().getFIId().getFinInstnId().getOthr().getId());
-			
 		flatMsg.setBizMsgIdr(hdr.getBizMsgIdr());
-		
 		flatMsg.setMsgDefIdr(hdr.getMsgDefIdr());
 
 		if (!(null == hdr.getBizSvc()))
 			flatMsg.setBizSvc(hdr.getBizSvc());
 
-		
 		flatMsg.setCreDt(strTgl(hdr.getCreDt()));
 
 		if (!(null == hdr.getCpyDplct()))
@@ -159,8 +158,6 @@ public class FlattenIsoMessageService {
 	}
 	
 
-
-	
 	public FlatPacs008Pojo flatteningPacs008 (BusinessMessage busMsg) {
 		
 		FlatPacs008Pojo flatMsg = new FlatPacs008Pojo();
@@ -304,6 +301,71 @@ public class FlattenIsoMessageService {
 		return flatMsg;
 	}
 
+
+	public FlatAdmi004Pojo flatteningAdmi004 (BusinessMessage busMsg) {
+		FlatAdmi004Pojo admi004 = new FlatAdmi004Pojo();
+				
+		admi004.setFrBic(busMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());	
+		admi004.setToBic(busMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		admi004.setBizMsgIdr(busMsg.getAppHdr().getBizMsgIdr());
+		admi004.setMsgDefIdr(busMsg.getAppHdr().getMsgDefIdr());
+		admi004.setBizSvc(busMsg.getAppHdr().getBizSvc());
+		admi004.setCpyDplct(busMsg.getAppHdr().getCpyDplct().value());
+		admi004.setCreDt(strTgl(busMsg.getAppHdr().getCreDt()));
+		admi004.setPssblDplct(null);
+		
+		admi004.setEventCode(busMsg.getDocument().getSysEvtNtfctn().getEvtInf().getEvtCd());
+		admi004.setEventDesc(busMsg.getDocument().getSysEvtNtfctn().getEvtInf().getEvtDesc());
+		
+		admi004.setEventParamList(busMsg.getDocument().getSysEvtNtfctn().getEvtInf().getEvtParam());
+		
+		admi004.setEventTime(strTgl(busMsg.getDocument().getSysEvtNtfctn().getEvtInf().getEvtTm()));
+		
+		return admi004;		
+	}
+	
+	
+	public FlatPrxy901Pojo flatteningPrxy901 (BusinessMessage busMsg) {
+		FlatPrxy901Pojo flat = new FlatPrxy901Pojo();
+		
+		flat.setBizMsgIdr(busMsg.getAppHdr().getBizMsgIdr());
+		flat.setBizSvc(busMsg.getAppHdr().getBizSvc());
+		flat.setCpyDplct(busMsg.getAppHdr().getCpyDplct().value());
+		
+		flat.setCreDtTm(strTgl(busMsg.getDocument().getPrxyNtfctn().getGrpHdr().getCreDtTm()));
+		flat.setFrBic(busMsg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+		flat.setMsgDefIdr(busMsg.getAppHdr().getMsgDefIdr());
+		flat.setMsgId(busMsg.getDocument().getPrxyNtfctn().getGrpHdr().getMsgId());
+		
+		ProxyAccount1 newAccount = busMsg.getDocument().getPrxyNtfctn().getNtfctn().getNewAcct();
+		flat.setNewAccountName(newAccount.getAcct().getNm());
+		flat.setNewAccountNumber(newAccount.getAcct().getId().getOthr().getId());
+		flat.setNewAccountType(newAccount.getAcct().getTp().getPrtry());
+		flat.setNewBankId(newAccount.getAgt().getFinInstnId().getOthr().getId());
+		flat.setNewCustomerId(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
+		flat.setNewCustomerType(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
+		flat.setNewDisplayName(newAccount.getDsplNm());
+		flat.setNewRegistrationId(newAccount.getRegnId());
+		flat.setNewResidentStatus(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
+		flat.setNewTownName(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
+		
+		ProxyAccount1 orgnlAccount = busMsg.getDocument().getPrxyNtfctn().getNtfctn().getOrgnlAcct();
+		flat.setOrgnlAccountName(orgnlAccount.getAcct().getNm());
+		flat.setOrgnlAccountNumber(orgnlAccount.getAcct().getId().getOthr().getId());
+		flat.setOrgnlAccountType(orgnlAccount.getAcct().getTp().getPrtry());
+		flat.setOrgnlBankId(orgnlAccount.getAgt().getFinInstnId().getOthr().getId());
+		flat.setOrgnlCustomerId(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
+		flat.setOrgnlCustomerType(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
+		flat.setOrgnlDisplayName(orgnlAccount.getDsplNm());
+		flat.setOrgnlRegistrationId(orgnlAccount.getRegnId());
+		flat.setOrgnlResidentStatus(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
+		flat.setOrgnlTownName(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
+		
+		flat.setRecipientBank(busMsg.getDocument().getPrxyNtfctn().getGrpHdr().getMsgRcpt().getAgt().getFinInstnId().getOthr().getId());
+		flat.setToBic(busMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		
+		return flat;
+	}
 	
 	private String strTgl (XMLGregorianCalendar tgl) {
 		String strDate = String.format("%04d-%02d-%02dT%02d:%02d:%02d.%03d", 

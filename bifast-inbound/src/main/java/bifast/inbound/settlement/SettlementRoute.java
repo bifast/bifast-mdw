@@ -17,7 +17,7 @@ public class SettlementRoute extends RouteBuilder {
 			.log("Terima settlement ${body}")
 			.process(settlementProcessor)
 
-	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan submit Settlement ke corebank")
+	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Submit Settlement ke corebank")
 
 	 		.filter().simple("${body.orgnlKomiTrnsId} != null")
 				.to("seda:callcb")

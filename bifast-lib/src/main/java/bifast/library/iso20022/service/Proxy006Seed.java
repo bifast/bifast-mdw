@@ -12,13 +12,13 @@ public class Proxy006Seed {
 	private String status; 
 	private String reason;
 	
-    protected String OrgnlMsgId;
-    protected String OrgnlMsgNmId;
-    protected XMLGregorianCalendar OrgnlCreDtTm;
+	private String OrgnlMsgId;
+	private String OrgnlMsgNmId;
+	private XMLGregorianCalendar OrgnlCreDtTm;
     
-    protected List<Proxy006SeedAccount> proxy006SeedAccountList;
+	private List<Proxy006SeedAccount> proxy006SeedAccountList;
    
-    protected String cstmrTwnNm;
+	private String cstmrTwnNm;
 
 	public String getMsgId() {
 		return msgId;

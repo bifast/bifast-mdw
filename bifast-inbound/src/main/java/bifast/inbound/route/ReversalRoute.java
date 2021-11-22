@@ -44,7 +44,7 @@ public class ReversalRoute extends RouteBuilder {
 			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http://localhost:9002/services/komi/outbound?"
+				.enrich("{{komi.url.outbound}}?"
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)

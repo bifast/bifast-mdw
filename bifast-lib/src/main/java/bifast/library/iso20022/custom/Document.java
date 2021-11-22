@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import bifast.library.iso20022.admi002.MessageRejectV01;
+import bifast.library.iso20022.admi004.SystemEventNotificationV02;
+import bifast.library.iso20022.admi011.SystemEventAcknowledgementV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
@@ -16,6 +18,7 @@ import bifast.library.iso20022.prxy003.ProxyLookUpV01;
 import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
 import bifast.library.iso20022.prxy005.ProxyEnquiryV01;
 import bifast.library.iso20022.prxy006.ProxyEnquiryResponseV01;
+import bifast.library.iso20022.prxy901.ProxyNtfctnV01;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -29,7 +32,8 @@ import bifast.library.iso20022.prxy006.ProxyEnquiryResponseV01;
     "prxyLookUp",
     "prxyLookUpRspn",
     "prxyNqryReq",
-    "messageReject"
+    "messageReject",
+    "sysEvtNtfctn"
 })
 public class Document {
 
@@ -63,9 +67,20 @@ public class Document {
     
     @XmlElement(name = "PrxyNqryRspn", required = true)
     protected ProxyEnquiryResponseV01 prxyNqryRspn;
+    
     // unt Message Reject
     @XmlElement(name = "MessageReject", required = false)
     protected MessageRejectV01 messageReject;
+    
+    @XmlElement(name = "SysEvtNtfctn", required = true)
+    protected SystemEventNotificationV02 sysEvtNtfctn;
+    
+    @XmlElement(name = "SysEvtAck", required = true)
+    protected SystemEventAcknowledgementV01 sysEvtAck;
+
+    @XmlElement(name = "PrxyNtfctn", required = true)
+    protected ProxyNtfctnV01 prxyNtfctn;
+
     
 	public FIToFICustomerCreditTransferV08 getFiToFICstmrCdtTrf() {
 		return fiToFICstmrCdtTrf;
@@ -161,6 +176,30 @@ public class Document {
 
 	public void setPrxyNqryRspn(ProxyEnquiryResponseV01 prxyNqryRspn) {
 		this.prxyNqryRspn = prxyNqryRspn;
+	}
+
+	public SystemEventNotificationV02 getSysEvtNtfctn() {
+		return sysEvtNtfctn;
+	}
+
+	public void setSysEvtNtfctn(SystemEventNotificationV02 sysEvtNtfctn) {
+		this.sysEvtNtfctn = sysEvtNtfctn;
+	}
+
+	public SystemEventAcknowledgementV01 getSysEvtAck() {
+		return sysEvtAck;
+	}
+
+	public void setSysEvtAck(SystemEventAcknowledgementV01 sysEvtAck) {
+		this.sysEvtAck = sysEvtAck;
+	}
+
+	public ProxyNtfctnV01 getPrxyNtfctn() {
+		return prxyNtfctn;
+	}
+
+	public void setPrxyNtfctn(ProxyNtfctnV01 prxyNtfctn) {
+		this.prxyNtfctn = prxyNtfctn;
 	}
 
 }

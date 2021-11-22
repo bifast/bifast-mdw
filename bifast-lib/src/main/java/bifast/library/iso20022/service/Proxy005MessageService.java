@@ -15,7 +15,6 @@ import bifast.library.iso20022.prxy005.FinancialInstitutionIdentification8;
 import bifast.library.iso20022.prxy005.GenericFinancialIdentification1;
 import bifast.library.iso20022.prxy005.GroupHeader59;
 import bifast.library.iso20022.prxy005.Party12Choice;
-import bifast.library.iso20022.prxy005.ProxyDefinition1;
 import bifast.library.iso20022.prxy005.ProxyEnquiryChoice1;
 import bifast.library.iso20022.prxy005.ProxyEnquiryV01;
 import bifast.library.iso20022.prxy005.ScndIdDefinition1;

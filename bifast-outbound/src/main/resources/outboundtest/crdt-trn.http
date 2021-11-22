@@ -15,10 +15,10 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB211108110620242",
+		"NoRef": "MOB211108110620216",
 		"TerminalId": "GATEUSER",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "88234567890",
+		"CreditorAccountNumber": "885234567890",
 		"CreditorAccountType": "CACC",
 		"CreditorId": "KTP-205772715",
 		"CreditorType": "01",
@@ -32,7 +32,7 @@ Authorization: Basic MB:password
 		"RecipientBank": "BSMDIDJA",
 		"DebtorAccountNumber": "012104794259",
 		"DebtorAccountType": "SVGS",
-		"DebtorId": "88777555444443333",
+		"DebtorId": "7555444443333",
 		"DebtorResidentialStatus": "01",
 		"DebtorType": "01",
 		"DebtorTownName": "0300",

@@ -8,6 +8,7 @@ public class UndefinedCTPojo {
 	public String reqBizmsgid;
 	public String KomiTrnsId;
 	public String channelType;
+	public String channelNoref;
 	public String recipientBank;
 
 	public LocalDateTime orgnlDateTime;
@@ -62,6 +63,12 @@ public class UndefinedCTPojo {
 	}
 	public void setResponseCode(String responseCode) {
 		this.responseCode = responseCode;
+	}
+	public String getChannelNoref() {
+		return channelNoref;
+	}
+	public void setChannelNoref(String channelNoref) {
+		this.channelNoref = channelNoref;
 	}
 	public String getReasonCode() {
 		return reasonCode;

@@ -53,10 +53,8 @@ public class ProxyRegistrationInquiryProcessor implements Processor{
 		
 		accountProxylist = accountProxyRepository.getListByScndIdTpAndByScndIdVal(scndIdTp,scndIdVal);
 		
+		System.out.println("Hasil enquiry ada " + accountProxylist.size() + " proxy.");
 		if(accountProxylist.size() > 0) {
-
-			seed.setStatus("ACTC");
-			seed.setReason("U000");
 
 			List<Proxy006SeedAccount> proxy006SeedAccountList = new ArrayList<Proxy006SeedAccount>();
 			for(AccountProxy data:accountProxylist) {
@@ -77,7 +75,18 @@ public class ProxyRegistrationInquiryProcessor implements Processor{
 				seedAcc.setCstmrTwnNm(data.getCstmrTwnNm());
 				seedAcc.setCstmrRsdntSts(data.getCstmrRsdntSts());
 				
-				proxy006SeedAccountList.add(seedAcc);
+				if (data.getAccountStatus().equals("ACTV")) {
+					proxy006SeedAccountList.add(seedAcc);
+				}
+			}
+
+			if (proxy006SeedAccountList.size()>0) {
+				seed.setStatus("ACTC");
+				seed.setReason("U000");
+			}
+			else {
+				seed.setStatus("RJCT");
+				seed.setReason("U804");
 			}
 			seed.setProxy006SeedAccountList(proxy006SeedAccountList);
 

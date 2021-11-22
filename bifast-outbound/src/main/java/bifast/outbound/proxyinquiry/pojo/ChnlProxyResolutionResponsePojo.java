@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	,"accountName"
 	,"customerType"
 	,"customerId"
-	,"residentialStatus"
+	,"residentStatus"
 	,"townName"
 	})
 public class ChnlProxyResolutionResponsePojo  {
@@ -44,7 +44,7 @@ public class ChnlProxyResolutionResponsePojo  {
 	private String customerType;
 	@JsonProperty("CustomerId")
 	private String customerId;
-	@JsonProperty("ResidentStatus")
+	@JsonProperty("ResidentialStatus")
 	private String residentStatus;
 	@JsonProperty("TownName")
 	private String townName;

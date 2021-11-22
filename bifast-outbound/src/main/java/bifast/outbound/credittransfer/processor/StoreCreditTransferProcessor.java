@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.apache.camel.ServiceStatus;
+import org.apache.camel.spi.RouteController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -121,5 +123,14 @@ public class StoreCreditTransferProcessor implements Processor {
 		}
 			
 		creditTransferRepo.save(ct);
+
+		if (ct.getCallStatus().equals("TIMEOUT")) {
+			RouteController routeCtl = exchange.getContext().getRouteController();
+			ServiceStatus serviceSts = routeCtl.getRouteStatus("komi.ps.saf");
+			
+			if (serviceSts.isStopped())
+				routeCtl.startRoute("komi.ps.saf");
+		}
+
 	}
 }

@@ -57,6 +57,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		}
 		
 		seed.setMsgId(msgId);
+
 			
 		ProxyRegistrationResponseV01 response = proxy002MessageService.proxyRegistrationResponse(seed, msg);
 		

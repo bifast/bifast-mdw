@@ -8,8 +8,8 @@ Authorization: Basic CMS:password
     "ProxyRegistrationRequest" : {
         "NoRef" : "6624444",
         "RegistrationType" : "DEAC",
-        "ProxyType" : "02",
-        "ProxyValue" : "yogi@gmail.com",
+        "ProxyType" : "01",
+        "ProxyValue" : "08111555666",
         "AccountNumber" : "22522",
         "AccountType" : "CACC",
         "SecondaryIdType" : "01",

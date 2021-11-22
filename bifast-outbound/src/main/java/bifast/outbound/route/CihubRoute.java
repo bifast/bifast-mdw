@@ -70,7 +70,7 @@ public class CihubRoute extends RouteBuilder {
 				.setHeader("HttpMethod", constant("POST"))
 				
 				.enrich()
-					.simple("http:{{komi.ciconnector-url}}?"
+					.simple("http:{{komi.url.ciconnector}}?"
 						+ "socketTimeout=${header.hdr_remain_time}&" 
 						+ "bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)

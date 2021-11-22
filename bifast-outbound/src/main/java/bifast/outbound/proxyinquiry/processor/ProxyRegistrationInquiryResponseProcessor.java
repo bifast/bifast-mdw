@@ -55,6 +55,10 @@ public class ProxyRegistrationInquiryResponseProcessor implements Processor {
 			else
 				channelResponseWr.setResponseMessage("General Error");
 
+			ChnlProxyRegistrationInquiryResponsePojo chnResponse = new ChnlProxyRegistrationInquiryResponsePojo();
+			chnResponse.setNoRef(chnRequest.getChannelRefId());
+			channelResponseWr.getResponses().add(chnResponse);
+
 		}
 		
 		else if (objBody.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
@@ -88,6 +92,10 @@ public class ProxyRegistrationInquiryResponseProcessor implements Processor {
 					channelResponseWr.setResponseCode("RJCT");
 					channelResponseWr.setReasonCode("U804");
 					channelResponseWr.setReasonMessage("Alias Not Found Or Inactive");
+					ChnlProxyRegistrationInquiryResponsePojo chnResponse = new ChnlProxyRegistrationInquiryResponsePojo();
+					chnResponse.setNoRef(chnRequest.getChannelRefId());
+					channelResponseWr.getResponses().add(chnResponse);
+
 				}
 				
 				else {
@@ -130,6 +138,19 @@ public class ProxyRegistrationInquiryResponseProcessor implements Processor {
 						channelResponseWr.getResponses().add(chnResponse);
 					}
 				}
+			}
+			
+			else {
+				channelResponseWr.setResponseCode(resp.getResponseCode());
+				channelResponseWr.setReasonCode(resp.getReasonCode());
+				Optional<StatusReason> optStatusReason = statusReasonRepo.findById(channelResponseWr.getReasonCode());
+				if (optStatusReason.isPresent()) {
+					String desc = optStatusReason.get().getDescription();
+					channelResponseWr.setReasonMessage(desc);
+				}	
+				ChnlProxyRegistrationInquiryResponsePojo chnResponse = new ChnlProxyRegistrationInquiryResponsePojo();
+				chnResponse.setNoRef(chnRequest.getChannelRefId());
+				channelResponseWr.getResponses().add(chnResponse);
 			}
 		}
 		
