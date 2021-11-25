@@ -45,9 +45,7 @@ public class ProcessQuerySAFProcessor implements Processor{
 		ct.setReqBizmsgid((String)arr.get("req_bizmsgid"));
 		ct.setChannelType((String)arr.get("channel_type"));
 		ct.setChannelNoref((String) arr.get("channel_ref_id"));
-		
-		System.out.println(ct.getChannelNoref());
-		
+			
 		Timestamp ldt = (Timestamp) arr.get("request_time");	
 		ct.setOrgnlDateTime(ldt.toLocalDateTime());
 		

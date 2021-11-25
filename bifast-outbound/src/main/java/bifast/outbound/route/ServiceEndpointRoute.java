@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 
 import bifast.outbound.model.ChannelTransaction;
+import bifast.outbound.notification.BuildLogMessageForPortalProcessor;
+import bifast.outbound.notification.pojo.PortalApiPojo;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.ChnlRequestWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -42,6 +44,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	private JacksonDataFormatService jdfService;
 	@Autowired
 	private ExceptionProcessor exceptionProcessor;
+	@Autowired private BuildLogMessageForPortalProcessor buildLogMessage;
 
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
@@ -51,7 +54,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
-//		JacksonDataFormat chnlRequestJDF = jdfService.basic(RequestMessageWrapper.class);
+		JacksonDataFormat portalLogJDF = jdfService.wrapPrettyPrint(PortalApiPojo.class);
 		JacksonDataFormat chnlRequestJDF = jdfService.basic(ChnlRequestWrapper.class);
 
 		onException(Exception.class).routeId("komi.endpointRoute.onException")
@@ -86,7 +89,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "dari ${header.hdr_request_list.channelId}")
 
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
-				
+
 			.process(validateInputProcessor)
 
 			// save data awal ke table channel_transaction dulu
@@ -114,13 +117,13 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			})
 			
 			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} start.")
+
 			.choice()
 				.when().simple("${header.hdr_request_list.msgName} == 'AEReq'")
 					.to("direct:acctenqr")
 					
 				.when().simple("${header.hdr_request_list.msgName} == 'CTReq'")
-//					.to("direct:crdttrns")
-					.to("seda:ct_aft_corebank")
+					.to("seda:credittrns")
 
 				.when().simple("${header.hdr_request_list.msgName} == 'PSReq'")
 					.to("direct:pschnl")
@@ -138,11 +141,14 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					.to("direct:acctcustmrinfo")
 
 			.end()
+			
 
 			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} finish.")
 
-			.to("seda:savetablechannel")
-
+			.to("seda:savetablechannel?exchangePattern=InOnly")
+			
+			.to("seda:logportal?exchangePattern=InOnly")
+				
 			.removeHeaders("*")
 			.marshal(chnlResponseJDF)
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
@@ -154,6 +160,13 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.process(saveChannelTransactionProcessor)
 		;		
 
+		from("seda:logportal").routeId("logportal")
+			.process(buildLogMessage)
+			.marshal(portalLogJDF)
+		    .removeHeaders("CamelHttp*")
+			.to("rest:post:portalapi?host={{komi.url.portalapi}}")
+			.log("setelah logportal")
+		;
 
 	}
 

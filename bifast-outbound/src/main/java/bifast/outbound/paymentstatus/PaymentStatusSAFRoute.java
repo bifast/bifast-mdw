@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.exception.PSNotFoundException;
+import bifast.outbound.notification.pojo.PortalApiPojo;
+import bifast.outbound.paymentstatus.processor.BuildMessageForPortalProcessor;
 import bifast.outbound.paymentstatus.processor.BuildPaymentStatusSAFRequestProcessor;
 import bifast.outbound.paymentstatus.processor.PaymentStatusResponseProcessor;
 import bifast.outbound.paymentstatus.processor.ProcessQuerySAFProcessor;
@@ -21,22 +23,19 @@ import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class PaymentStatusSAFRoute extends RouteBuilder {
-	@Autowired
-	private BuildPaymentStatusSAFRequestProcessor buildPSRequest;;
-	@Autowired
-	private PaymentStatusResponseProcessor psResponseProcessor;
-	@Autowired
-	private UpdateStatusSAFProcessor updateStatusProcessor;
-	@Autowired
-	private ProcessQuerySAFProcessor processQueryProcessor;
-	@Autowired
-	private JacksonDataFormatService jdfService;
+	@Autowired private BuildMessageForPortalProcessor logPortalProcessor;
+	@Autowired private BuildPaymentStatusSAFRequestProcessor buildPSRequest;;
+	@Autowired private JacksonDataFormatService jdfService;
+	@Autowired private PaymentStatusResponseProcessor psResponseProcessor;
+	@Autowired private ProcessQuerySAFProcessor processQueryProcessor;
+	@Autowired private UpdateStatusSAFProcessor updateStatusProcessor;
 
 	@Override
 	public void configure() throws Exception {
 		
 		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
-		
+		JacksonDataFormat portalLogJDF = jdfService.wrapPrettyPrint(PortalApiPojo.class);
+
 		onException(PSNotFoundException.class).routeId("ps.onException")
 			.handled(true)
 			.to("controlbus:route?routeId=komi.ps.saf&action=stop&async=true")
@@ -48,11 +47,12 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 				+ "from kc_credit_transfer ct "
 				+ "join kc_channel_transaction cht on ct.komi_trns_id = cht.komi_trns_id "
 				+ "join kc_channel chnl on chnl.channel_id = cht.channel_id "
-				+ " where ct.call_status = 'TIMEOUT'?"
-				+ "delay=5000&"
-				+ "sendEmptyMessageWhenIdle=true")
+				+ " where ct.call_status = 'TIMEOUT'"
+				+ "?delay=5000"
+				+ "&sendEmptyMessageWhenIdle=true"
+				)
 			.routeId("komi.ps.saf")
-			.autoStartup(false)
+//			.autoStartup(false)
 						
 			.log("[ChnlReq:${body[channel_ref_id]}] PymtStsSAF started.")
 
@@ -110,6 +110,12 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 				.log("akan notifikasi")
 			.end()
 			
+			.filter().simple("${body.psStatus} != 'UNDEFINED'")
+				.process(logPortalProcessor)
+				.marshal(portalLogJDF)
+			    .removeHeaders("CamelHttp*")
+				.to("rest:post:portalapi?host={{komi.url.portalapi}}")
+			.end()
 			
 			.removeHeaders("ps_*")
 					

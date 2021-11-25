@@ -46,7 +46,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	public void configure() throws Exception {
 	    JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 		
-		from("seda:ct_aft_corebank").routeId("komi.ct")
+		from("seda:credittrns").routeId("komi.ct")
 			
 			.setHeader("ct_progress", constant("Start"))
 			
@@ -112,8 +112,8 @@ public class CreditTransferRoute extends RouteBuilder {
 				.to("seda:debitreversal")
 			.end()
 	
-			.process(crdtTransferResponseProcessor)
-			
+			.process(crdtTransferResponseProcessor)		
+
 			.removeHeaders("ct_*")
 			
 		;
@@ -156,6 +156,8 @@ public class CreditTransferRoute extends RouteBuilder {
 		from("seda:savecredittransfer")
 			.process(saveCrdtTrnsProcessor)
 		;
+		
+		
 		
 	}
 }

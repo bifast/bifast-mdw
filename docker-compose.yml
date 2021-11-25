@@ -63,6 +63,7 @@ services:
       environment: 
         - KOMI.URL.CICONNECTOR=komi-mock:9006/mock/cihub
         - KOMI.URL.COREBANK=mock-cb:9007/api/corebank
+        - KOMI.URL.PORTALAPI=komi-mock:9006/mock
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.BICODE=INDOIDJA
         - KOMI.INBOUND-URL=komi-inbound:9001/services/api/enquiry

@@ -56,4 +56,13 @@ public class JacksonDataFormatService {
 		return jdf;
 	}
 
+	public JacksonDataFormat wrapPrettyPrint (Class<?> unmarshalType) {
+		JacksonDataFormat jdf = new JacksonDataFormat(unmarshalType);
+		jdf.setInclude("NON_NULL");
+		jdf.setInclude("NON_EMPTY");
+		jdf.enableFeature(SerializationFeature.WRAP_ROOT_VALUE);
+		jdf.setPrettyPrint(true);
+		return jdf;
+	}
+
 }
