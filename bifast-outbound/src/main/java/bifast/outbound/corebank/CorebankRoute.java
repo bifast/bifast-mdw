@@ -40,6 +40,10 @@ public class CorebankRoute extends RouteBuilder{
 		JacksonDataFormat customerInfoRequestJDF = jdfService.wrapRoot(CbCustomerInfoRequestPojo.class);
 		JacksonDataFormat customerInfoResponseJDF = jdfService.basic(CbCustomerInfoResponsePojo.class);
 
+		onException(Exception.class)
+			.log("ada exception")
+		;
+		
 		// ROUTE CALLCB 
 		from("seda:callcb").routeId("komi.corebank")
 		
@@ -74,7 +78,7 @@ public class CorebankRoute extends RouteBuilder{
 			.setHeader("HttpMethod", constant("POST"))
 			.enrich()
 				.simple("http://{{komi.url.corebank}}?"
-					+ "socketTimeout=5000&" 
+//					+ "socketTimeout=7000&" 
 					+ "bridgeEndpoint=true")
 				.aggregationStrategy(enrichmentAggregator)
 

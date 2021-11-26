@@ -28,6 +28,8 @@ public class BuildCBDebitRequestProcessor implements Processor{
 
 		debitReq.setCategoryPurpose(chnReq.getCategoryPurpose());
 		
+		debitReq.setNoRef(rmw.getRequestId());
+		
 		debitReq.setDebtorName(chnReq.getDbtrName());
 		debitReq.setDebtorType(chnReq.getDbtrType());
 		debitReq.setDebtorId(chnReq.getDbtrId());
