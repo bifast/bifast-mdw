@@ -55,7 +55,7 @@ public class CreditTransferResponseProcessor implements Processor{
 		seed.setCreditorTown(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
 
         // int posbl4 = rand.nextInt(4);
-		if (norekDebitur.startsWith("5")) {
+		if (norek.startsWith("5")) {
 			seed.setStatus("RJCT");
 			seed.setReason("U110");
 			seed.setAdditionalInfo("Additional Info abbc lsdjf 46");

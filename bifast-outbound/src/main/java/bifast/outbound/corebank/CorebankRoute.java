@@ -47,7 +47,7 @@ public class CorebankRoute extends RouteBuilder{
 		// ROUTE CALLCB 
 		from("seda:callcb").routeId("komi.corebank")
 		
-			.log("[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] call Corebank")
+			.log(LoggingLevel.DEBUG, "komi.corebank", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] call Corebank")
 
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
@@ -57,9 +57,7 @@ public class CorebankRoute extends RouteBuilder{
 					exchange.getMessage().setHeader("hdr_request_list", rmw);
 				}
 			})
-					
-			.log("${body.class}")
-			
+							
 			.choice()
 				.when().simple("${body.class} endsWith 'CbDebitRequestPojo'")
 					.setHeader("cb_requestName", constant("debit"))

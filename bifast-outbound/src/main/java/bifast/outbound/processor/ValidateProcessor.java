@@ -68,21 +68,12 @@ public class ValidateProcessor implements Processor  {
 		if (rmw.getChannelRequest().getClass().getSimpleName().equals("ChnlAccountEnquiryRequestPojo")) {
 			ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
 			validationService.validateAccountEnquiryRequest(aeReq);
-//			validateChannel = true;
-//			validateBank = true;
-//			validatePurpose = true;
 		}
 		
-		else if (msgType.equals("CTReq")) {
+//		else if (msgType.equals("CTReq")) {
+		else if (rmw.getChannelRequest().getClass().getSimpleName().equals("ChnlCreditTransferRequestPojo")) {
 			ChnlCreditTransferRequestPojo req = rmw.getChnlCreditTransferRequest();
-			try {
-				@SuppressWarnings("unused")
-				DomainCode dm = domainCodeRepo.findByGrpAndKey("CUSTOMER.TYPE", req.getCrdtType()).orElseThrow();
-				dm = domainCodeRepo.findByGrpAndKey("CUSTOMER.TYPE", req.getDbtrType()).orElseThrow();
-			}
-			catch(NoSuchElementException ne) {
-					throw new InputValidationException ("Input value error");
-			}
+			validationService.validateCreditTransferRequest(req);
 		}
 
 		else if (msgType.equals("PrxRegnReq")) {

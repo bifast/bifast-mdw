@@ -37,9 +37,7 @@ public class DebitReversalRoute extends RouteBuilder{
 			
 			//submit reversal
 			.to("seda:callcb")
-			
-			.log("${body.class}")
-			
+					
 			.filter().simple("${body} is 'bifast.outbound.pojo.FaultPojo'")
 				.log("Fault!")
 			.end()

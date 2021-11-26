@@ -22,11 +22,12 @@ public class BuildCBDebitRequestProcessor implements Processor{
 		
 		CbDebitRequestPojo debitReq = new CbDebitRequestPojo();	
 
+		debitReq.setKomiTrnsId(rmw.getKomiTrxId());
+		debitReq.setCategoryPurpose(chnReq.getCategoryPurpose());
 		debitReq.setMerchantType(rmw.getMerchantType());
 		
 		debitReq.setTerminalId(chnReq.getTerminalId());
 
-		debitReq.setCategoryPurpose(chnReq.getCategoryPurpose());
 		
 		debitReq.setNoRef(rmw.getRequestId());
 		

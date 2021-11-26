@@ -43,6 +43,19 @@ public class ValidationService {
 			throw new InputValidationException("Format Amount salah.");
 		if (ctReq.getAmount().length() > 19)
 				throw new InputValidationException("Format Amount salah.");	
+		if (!(ctReq.getFeeTransfer().matches(pattern))) 
+			throw new InputValidationException("Format Amount salah.");
+		if (ctReq.getFeeTransfer().length() > 19)
+				throw new InputValidationException("Format Amount salah.");	
+
+		try {
+			@SuppressWarnings("unused")
+			DomainCode dm = domainCodeRepo.findByGrpAndKey("CUSTOMER.TYPE", ctReq.getCrdtType()).orElseThrow();
+			dm = domainCodeRepo.findByGrpAndKey("CUSTOMER.TYPE", ctReq.getDbtrType()).orElseThrow();
+		}
+		catch(NoSuchElementException ne) {
+				throw new InputValidationException ("Input value error");
+		}
 
 	}
 

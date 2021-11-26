@@ -14,8 +14,12 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.credittransfer.processor.BuildCBDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
+import bifast.outbound.credittransfer.processor.ExceptionResponseProcessor;
 import bifast.outbound.credittransfer.processor.FindingSettlementProcessor;
 import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
+import bifast.outbound.exception.DebitException;
+import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.service.FlattenIsoMessageService;
@@ -24,20 +28,14 @@ import bifast.outbound.service.JacksonDataFormatService;
 @Component
 public class CreditTransferRoute extends RouteBuilder {
 
-	@Autowired
-	private BuildCTRequestProcessor crdtTransferProcessor;
-	@Autowired
-	private CreditTransferResponseProcessor crdtTransferResponseProcessor;
-	@Autowired
-	private StoreCreditTransferProcessor saveCrdtTrnsProcessor;
-	@Autowired
-	private FindingSettlementProcessor findingSettlementProcessor;
-	@Autowired
-	private BuildCBDebitRequestProcessor buildDebitRequestProcessor;
-	@Autowired
-	private FlattenIsoMessageService flattenIsoMessage;
-	@Autowired
-	private JacksonDataFormatService jdfService;
+	@Autowired private BuildCBDebitRequestProcessor buildDebitRequestProcessor;
+	@Autowired private BuildCTRequestProcessor crdtTransferProcessor;
+	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
+	@Autowired private ExceptionResponseProcessor exceptionResponseProcessor;
+	@Autowired private FindingSettlementProcessor findingSettlementProcessor;
+	@Autowired private FlattenIsoMessageService flattenIsoMessage;
+	@Autowired private JacksonDataFormatService jdfService;
+	@Autowired private StoreCreditTransferProcessor saveCrdtTrnsProcessor;
 	
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
@@ -45,7 +43,17 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 	    JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
-		
+		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
+
+	    onException(DebitException.class)
+	    	.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}] Debit account gagal.")
+	    	.process(exceptionResponseProcessor)
+	    	.marshal(chnlResponseJDF)
+	    	.log("${body}")
+	    	.removeHeaders("*")
+	    	.handled(true)
+	    ;
+	    
 		from("seda:credittrns").routeId("komi.ct")
 			
 			.setHeader("ct_progress", constant("Start"))
@@ -58,23 +66,24 @@ public class CreditTransferRoute extends RouteBuilder {
 				.to("seda:callcb")
 			.end()
 		
-			// periksa hasil debit-account
-			.choice()
-				.when().simple("${header.ct_progress} == 'CB' && ${body.class} endsWith 'FaultPojo' ")
-					.setHeader("ct_progress", constant("STOP"))
-//				.when().simple("${header.ct_progress} == 'CB' && ${body.class} endsWith 'CBDebitResponsePojo' ")
-//					.setHeader("ct_progress", constant("LANJUTCIHUB"))
-				.otherwise()
-					.setHeader("ct_progress", constant("LANJUTCIHUB"))
+			// periksa hasil debit-account. Jika failure raise exception
+			.filter().simple("${body.class} endsWith 'FaultPojo'")
+				.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						FaultPojo fault = exchange.getMessage().getBody(FaultPojo.class);
+						throw new DebitException("Debit failure", fault);
+					}
+				})
 			.end()
+
 			.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] setelah corebank, ${header.ct_progress}.")
 		
-			.filter().simple("${header.ct_progress} == 'LANJUTCIHUB'")
+//			.filter().simple("${header.ct_progress} == 'LANJUTCIHUB'")
 				.process(crdtTransferProcessor)
 				.to("direct:call-cihub")
 				.to("seda:savecredittransfer?exchangePattern=InOnly")
 
-			.end()
+//			.end()
 
 			// periksa hasil call cihub
 			.choice()

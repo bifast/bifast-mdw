@@ -30,21 +30,14 @@ import bifast.outbound.service.JacksonDataFormatService;
 @Component
 public class ServiceEndpointRoute extends RouteBuilder {
 
-	@Autowired
-	private CheckChannelRequestTypeProcessor checkChannelRequest;
-	@Autowired
-	private ValidateProcessor validateInputProcessor;
-	@Autowired
-	private InitRequestMessageWrapperProcessor initRmwProcessor;
-	@Autowired
-	private SaveChannelTransactionProcessor saveChannelTransactionProcessor;
-	@Autowired
-	private ChannelTransactionRepository channelTransactionRepo;
-	@Autowired
-	private JacksonDataFormatService jdfService;
-	@Autowired
-	private ExceptionProcessor exceptionProcessor;
 	@Autowired private BuildLogMessageForPortalProcessor buildLogMessage;
+	@Autowired private ChannelTransactionRepository channelTransactionRepo;
+	@Autowired private CheckChannelRequestTypeProcessor checkChannelRequest;
+	@Autowired private ExceptionProcessor exceptionProcessor;
+	@Autowired private InitRequestMessageWrapperProcessor initRmwProcessor;
+	@Autowired private JacksonDataFormatService jdfService;
+	@Autowired private SaveChannelTransactionProcessor saveChannelTransactionProcessor;
+	@Autowired private ValidateProcessor validateInputProcessor;
 
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");

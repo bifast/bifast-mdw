@@ -18,10 +18,8 @@ import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class ExceptionProcessor implements Processor {
-	@Autowired
-	private FaultClassRepository faultClassRepo;
-	@Autowired
-	private StatusReasonRepository statusReasonRepo;
+	@Autowired private FaultClassRepository faultClassRepo;
+	@Autowired private StatusReasonRepository statusReasonRepo;
 	
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
