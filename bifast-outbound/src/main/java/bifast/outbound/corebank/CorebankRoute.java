@@ -1,5 +1,7 @@
 package bifast.outbound.corebank;
 
+import java.lang.reflect.Method;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -95,12 +97,15 @@ public class CorebankRoute extends RouteBuilder{
 				.when().simple("${body.status} == 'RJCT'")
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
-							CbDebitResponsePojo response = exchange.getMessage().getBody(CbDebitResponsePojo.class);
+							Object oResponse = exchange.getMessage().getBody(Object.class);
 							ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
 							FaultPojo fault = new FaultPojo();
 							fault.setCallStatus("REJECT-CB");
-							fault.setResponseCode(response.getStatus());
-							fault.setReasonCode(response.getReason());
+							Method mthStatus = oResponse.getClass().getMethod("getStatus");
+							String status = (String) mthStatus.invoke(oResponse);
+							String reason =  (String) oResponse.getClass().getMethod("getReason").invoke(oResponse);
+							fault.setResponseCode(status);
+							fault.setReasonCode(reason);
 							rmc.setCorebankResponse(fault);
 							rmc.setFault(fault);
 							exchange.getMessage().setHeader("hdr_response_list", rmc);
