@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 
 import bifast.outbound.model.ChannelTransaction;
-import bifast.outbound.notification.BuildLogMessageForPortalProcessor;
-import bifast.outbound.notification.pojo.PortalApiPojo;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.ChnlRequestWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -30,7 +28,6 @@ import bifast.outbound.service.JacksonDataFormatService;
 @Component
 public class ServiceEndpointRoute extends RouteBuilder {
 
-	@Autowired private BuildLogMessageForPortalProcessor buildLogMessage;
 	@Autowired private ChannelTransactionRepository channelTransactionRepo;
 	@Autowired private CheckChannelRequestTypeProcessor checkChannelRequest;
 	@Autowired private ExceptionProcessor exceptionProcessor;
@@ -47,7 +44,6 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
-		JacksonDataFormat portalLogJDF = jdfService.wrapPrettyPrint(PortalApiPojo.class);
 		JacksonDataFormat chnlRequestJDF = jdfService.basic(ChnlRequestWrapper.class);
 
 		onException(Exception.class).routeId("komi.endpointRoute.onException")
@@ -153,13 +149,6 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.process(saveChannelTransactionProcessor)
 		;		
 
-		from("seda:logportal").routeId("logportal")
-			.process(buildLogMessage)
-			.marshal(portalLogJDF)
-		    .removeHeaders("CamelHttp*")
-			.to("rest:post:portalapi?host={{komi.url.portalapi}}")
-			.log("setelah logportal")
-		;
 
 	}
 
