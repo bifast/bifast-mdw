@@ -32,8 +32,11 @@ import bifast.library.iso20022.prxy901.ProxyNtfctnV01;
     "prxyLookUp",
     "prxyLookUpRspn",
     "prxyNqryReq",
+    "prxyNqryRspn",
     "messageReject",
-    "sysEvtNtfctn"
+    "sysEvtNtfctn",
+    "sysEvtAck",
+    "prxyNtfctn"
 })
 public class Document {
 

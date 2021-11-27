@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BI_SupplementaryDataEnvelope1", propOrder = {
-    "cstmr"
+    "dtl"
 })
 public class BISupplementaryDataEnvelopeDetail {
 

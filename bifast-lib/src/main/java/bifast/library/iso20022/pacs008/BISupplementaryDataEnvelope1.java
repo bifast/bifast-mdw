@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "BI_SupplementaryDataEnvelope1", propOrder = {
     "dbtr",
     "cdtr",
-    "orgnlEndtoEndId"
+    "rltdEndToEndId"
 })
 public class BISupplementaryDataEnvelope1 {
 

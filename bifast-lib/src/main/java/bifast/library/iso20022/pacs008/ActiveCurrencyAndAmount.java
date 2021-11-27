@@ -40,8 +40,9 @@ import javax.xml.bind.annotation.XmlValue;
 })
 public class ActiveCurrencyAndAmount {
 
-    @XmlValue
-    @XmlElement(name = "Value")
+	/*
+	 * @XmlValue */
+	@XmlElement(name = "Value")
     protected BigDecimal value;
     @XmlAttribute(name = "Ccy", required = true)
     protected String ccy;

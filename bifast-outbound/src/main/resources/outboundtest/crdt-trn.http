@@ -15,7 +15,7 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB211121110620231",
+		"NoRef": "MOB211124110620257",
 		"TerminalId": "GATEUSER",
 		"CategoryPurpose": "01",
 		"CreditorAccountNumber": "234567890",
@@ -27,7 +27,7 @@ Authorization: Basic MB:password
 		"CreditorTownName": "0300",
 		"CreditorProxyId": "",
 		"CreditorProxyType": "",
-		"Amount": "1000000.00",
+		"Amount": "120000.00",
 		"FeeTransfer": "0.00",
 		"RecipientBank": "BSMDIDJA",
 		"DebtorAccountNumber": "012104794259",

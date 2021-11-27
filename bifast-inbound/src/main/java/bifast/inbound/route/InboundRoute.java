@@ -54,7 +54,7 @@ public class InboundRoute extends RouteBuilder {
 			.marshal().base64()
 			.setHeader("hdr_frBI_jsonzip", simple("${body}"))
 			.setBody(simple("${header.hdr_tmp}")).id("process_encr_request")
-			
+
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
 			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
 

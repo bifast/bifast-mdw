@@ -74,6 +74,13 @@
 			<artifactId>camel-jackson</artifactId>
 			<version>${camel.version}</version>
 		</dependency>
+		
+	    <dependency>
+	        <groupId>org.apache.camel.springboot</groupId>
+	        <artifactId>camel-jaxb-starter</artifactId>
+			<version>${camel.version}</version>
+	    </dependency>
+	    
 		<dependency>
 		  <groupId>com.fasterxml.jackson.module</groupId>
 		  <artifactId>jackson-module-jaxb-annotations</artifactId>
