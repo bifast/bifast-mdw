@@ -53,6 +53,11 @@ public class Pacs002MessageService {
 		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
 		pacs002.getGrpHdr().setCreDtTm(xcal);
 		
+		// +OrgnlGrpInfAndSts
+		pacs002.getOrgnlGrpInfAndSts().add(new OriginalGroupHeader17());
+		pacs002.getOrgnlGrpInfAndSts().get(0).setOrgnlMsgId(orgnlMessage.getDocument().getFiToFICstmrCdtTrf().getGrpHdr().getMsgId());
+		pacs002.getOrgnlGrpInfAndSts().get(0).setOrgnlMsgNmId(orgnlMessage.getAppHdr().getMsgDefIdr());
+
 		// TxInfAndSts
 		PaymentTransaction110 txInfAndSts = new PaymentTransaction110();
 

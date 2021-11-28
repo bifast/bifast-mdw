@@ -29,34 +29,34 @@ public class InboundRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		JacksonDataFormat jsonBusinessMessageDataFormat = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 		
-		restConfiguration()
-			.component("servlet")
-		;
-			
-		rest("/api")
-			.post("/inbound")
-				.description("REST listener untuk terima message")
-				.consumes("application/json")
-				.to("direct:receive")
-
-			.get("/timer")
-				.to("seda:timercontrol")
-		;	
+//		restConfiguration()
+//			.component("servlet")
+//		;
+//			
+//		rest("/api")
+//			.post("/inbound")
+//				.description("REST listener untuk terima message")
+//				.consumes("application/json")
+//				.to("direct:receive")
+//
+//			.get("/timer")
+//				.to("seda:timercontrol")
+//		;	
 
 	
 
-		from("direct:receive").routeId("komi.inboundEndpoint")
-			.convertBodyTo(String.class).id("start_route")
-			
-			// simpan msg inbound compressed
-			.setHeader("hdr_tmp", simple("${body}"))
-			.marshal().zipDeflater()
-			.marshal().base64()
-			.setHeader("hdr_frBI_jsonzip", simple("${body}"))
-			.setBody(simple("${header.hdr_tmp}")).id("process_encr_request")
-
-			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
-			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
+		from("direct:receive").routeId("komi.inboundRoute")
+//			.convertBodyTo(String.class).id("start_route")
+//			
+//			// simpan msg inbound compressed
+//			.setHeader("hdr_tmp", simple("${body}"))
+//			.marshal().zipDeflater()
+//			.marshal().base64()
+//			.setHeader("hdr_frBI_jsonzip", simple("${body}"))
+//			.setBody(simple("${header.hdr_tmp}")).id("process_encr_request")
+//
+//			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
+//			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
 
 			.process(checkRequestMsgProcessor) 
 			.id("process1")
@@ -143,10 +143,10 @@ public class InboundRoute extends RouteBuilder {
 			.end()
 		;
 
-		from("seda:timercontrol")
-			.log("timer control")
-			.process(pendingCorebankProcessor)
-			;
+//		from("seda:timercontrol")
+//			.log("timer control")
+//			.process(pendingCorebankProcessor)
+//			;
 
 	}
 }

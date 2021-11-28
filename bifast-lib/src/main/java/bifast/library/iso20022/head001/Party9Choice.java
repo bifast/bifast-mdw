@@ -43,7 +43,7 @@ public class Party9Choice {
 
     @XmlElement(name = "OrgId")
     protected PartyIdentification42 orgId;
-    @XmlElement(name = "Fiid")
+    @XmlElement(name = "FIId")
     protected BranchAndFinancialInstitutionIdentification5 fiId;
 
     /**

@@ -23,23 +23,34 @@ public class InboundXMLRoute extends RouteBuilder {
 			.component("servlet")
 		;
 			
-		rest("/api")
-			.post("/xmlinbound")
+		rest("/xml")
+			.post("/service")
 				.consumes("application/xml")
-				.type(BusinessMessage.class)
-				.to("direct:receivexml")
+				.to("direct:parsexml")
 		;
 
 	
 
-		from("direct:receivexml").routeId("komi.xmlInboundEndpoint")
+		from("direct:parsexml").routeId("komi.xmlEndpoint")
 			.convertBodyTo(String.class)
-			
+
+			// simpan msg inbound compressed
+			.setHeader("hdr_tmp", simple("${body}"))
+			.marshal().zipDeflater()
+			.marshal().base64()
+			.setHeader("hdr_frBI_jsonzip", simple("${body}"))
+			.setBody(simple("${header.hdr_tmp}"))
+
 			.unmarshal(jaxb)	
+			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
 			
 			.log("${body}")
+			.removeHeaders("*")
 			.stop()
 			
+			
+			.to("direct:receive")
+
 		
 		;
 

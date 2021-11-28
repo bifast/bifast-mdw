@@ -40,7 +40,7 @@ import bifast.library.iso20022.prxy901.ProxyNtfctnV01;
 })
 public class Document {
 
-	@XmlElement(name = "FitoFICstmrCdtTrf", required = false)
+	@XmlElement(name = "FIToFICstmrCdtTrf", required = false)
     protected FIToFICustomerCreditTransferV08 fiToFICstmrCdtTrf;
 
     @XmlElement(name = "FitoFIPmtStsRpt", required = false)
