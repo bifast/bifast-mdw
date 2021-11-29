@@ -31,6 +31,7 @@ public class InboundJsonRoute extends RouteBuilder {
 
 		from("direct:parsejson").routeId("komi.jsonInboundEndpoint")
 			.convertBodyTo(String.class)
+			.setHeader("hdr_inputformat", constant("json"))
 			
 			// simpan msg inbound compressed
 			.setHeader("hdr_tmp", simple("${body}"))
@@ -43,6 +44,22 @@ public class InboundJsonRoute extends RouteBuilder {
 			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
 
 			.to("direct:receive")
+			
+			.filter().simple("${header.hdr_msgType} !in 'SETTLEMENT, PROXYNOTIF'")
+				.marshal(jsonBusinessMessageDataFormat) 
+				// simpan outbound compress
+				.setHeader("hdr_tmp", simple("${body}"))
+				.marshal().zipDeflater()
+				.marshal().base64()
+				.setHeader("hdr_toBI_jsonzip", simple("${body}"))
+				.setBody(simple("${header.hdr_tmp}"))
+			.end()
+			.to("seda:logandsave?exchangePattern=InOnly")
+	
+			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
+			.removeHeaders("*")
+
+			
 		;
 
 

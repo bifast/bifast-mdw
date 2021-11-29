@@ -1,12 +1,12 @@
 # ACCOUNT ENQUIRY FROM CI-HUB
-POST http://localhost:9001/services/api/inbound HTTP/1.1
+POST http://localhost:9001/komi-inbound/json/service HTTP/1.1
 Content-Type: application/json
 
 {
   "BusMsg": {
     "AppHdr": {
       "Fr": {
-        "Fiid": {
+        "FIId": {
           "FinInstnId": {
             "Othr": {
               "Id": "CITYIDJA"
@@ -15,7 +15,7 @@ Content-Type: application/json
         }
       },
       "To": {
-        "Fiid": {
+        "FIId": {
           "FinInstnId": {
             "Othr": {
               "Id": "SIHBIDJ1"
@@ -28,7 +28,7 @@ Content-Type: application/json
       "CreDt": "2021-11-03T08:43:33Z"
     },
     "Document": {
-      "FitoFICstmrCdtTrf": {
+      "FIToFICstmrCdtTrf": {
         "GrpHdr": {
           "MsgId": "20211103CITYIDJA51000000007",
           "CreDtTm": "2021-11-03T12:43:33.361",

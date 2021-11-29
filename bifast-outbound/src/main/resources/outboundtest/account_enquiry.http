@@ -7,12 +7,12 @@ Authorization: Basic CMS:password
 
 {
   "AccountEnquiryRequest" : {
-    "NoRef" : "36655477",
-    "SenderAccountNumber": "4395230",
+    "NoRef" : "36655438",
+    "SenderAccountNumber": "14395230",
     "RecipientBank" : "CITYIDJA",
     "Amount" : "24520064.00",
     "CategoryPurpose" : "01",
-    "RecipientAccountNumber" : "175771839",
+    "RecipientAccountNumber" : "3175771839",
     "ProxyType" : "01",
     "ProxyId" : "22330021"
  }

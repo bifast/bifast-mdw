@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 /**
  * <p>Java class for ActiveCurrencyAndAmount complex type.
@@ -40,9 +42,10 @@ import javax.xml.bind.annotation.XmlValue;
 })
 public class ActiveCurrencyAndAmount {
 
-	/*
-	 * @XmlValue */
-	@XmlElement(name = "Value")
+	
+	@XmlValue 
+	@JsonProperty("Value")
+//	@XmlElement(name = "Value")
     protected BigDecimal value;
     @XmlAttribute(name = "Ccy", required = true)
     protected String ccy;

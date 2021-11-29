@@ -3,8 +3,7 @@ POST http://localhost:9006/mock/cihub HTTP/1.1
 Content-Type: application/json
 Authorization: Basic user:passwords
 
-{"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"BizMsgIdr":"20211002SIHBIDJ1510O0100000050","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-10-02T13:22:40"},"Document":{"FitoFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20211002SIHBIDJ151000556773","CreDtTm":"2021-10-02T13:22:40","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20211002SIHBIDJ1510O0100000050","TxId":"20211002SIHBIDJ151000556773"},"IntrBkSttlmAmt":{"Value":"137400.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"Cdtr":{},"CdtrAcct":{"Id":{"Othr":{"Id":"77589"}}}}]}}}}
-
+{"BusMsg":{"AppHdr":{"Fr":{"FIId":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"FIId":{"FinInstnId":{"Othr":{"Id":"CITYIDJA"}}}},"BizMsgIdr":"20211129SIHBIDJ1510O0100000479","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-11-29T04:03:47Z"},"Document":{"FIToFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20211129SIHBIDJ151000000479","CreDtTm":"2021-11-29T11:03:47.229","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20211129SIHBIDJ1510O0100000479","TxId":"20211129SIHBIDJ151000000479"},"PmtTpInf":{"CtgyPurp":{"Prtry":"51001"}},"IntrBkSttlmAmt":{"Value":"24520064.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"CITYIDJA"}}},"Cdtr":{},"CdtrAcct":{"Id":{"Othr":{"Id":"3175771839"}}}}]}}}}
 ###
 # direct ke mock, not timeout
 POST http://localhost:9006/mock/cihub HTTP/1.1
