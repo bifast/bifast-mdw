@@ -13,13 +13,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.pacs002.BranchAndFinancialInstitutionIdentification6;
 import bifast.library.iso20022.pacs002.CashAccount38;
 import bifast.library.iso20022.pacs002.CashAccountType2Choice;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
-import bifast.library.iso20022.pacs002.FinancialInstitutionIdentification18;
 import bifast.library.iso20022.pacs002.GenericAccountIdentification1;
-import bifast.library.iso20022.pacs002.GenericFinancialIdentification1;
 import bifast.library.iso20022.pacs002.GroupHeader91;
 import bifast.library.iso20022.pacs002.OriginalGroupHeader17;
 import bifast.library.iso20022.pacs002.OriginalTransactionReference28;
@@ -29,7 +26,6 @@ import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.pacs002.StatusReason6Choice;
 import bifast.library.iso20022.pacs002.StatusReasonInformation12;
 import bifast.library.iso20022.pacs002.SupplementaryDataEnvelope1;
-import bifast.library.iso20022.pacs009.CreditTransferTransaction44;
 import bifast.library.iso20022.pacs002.AccountIdentification4Choice;
 import bifast.library.iso20022.pacs002.BIAddtlCstmrInf;
 import bifast.library.iso20022.pacs002.BISupplementaryData1;
@@ -210,90 +206,90 @@ public class Pacs002MessageService {
 	}
 
 
-	public FIToFIPaymentStatusReportV10 fIFICreditTransferRequestResponse (Pacs002Seed seed, 
-			BusinessMessage orgnlMessage) throws DatatypeConfigurationException {
-		
-		FIToFIPaymentStatusReportV10 pacs002 = new FIToFIPaymentStatusReportV10();
-		
-		CreditTransferTransaction44 requestMsg = orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0);
-
-		// GrpHdr
-		GroupHeader91 grpHdr = new GroupHeader91();
-		grpHdr.setMsgId(seed.getMsgId());  // 019 transaction_type untuk FIFICRDTTRN
-		
-		GregorianCalendar gcal = new GregorianCalendar();
-		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		grpHdr.setCreDtTm(xcal);
-		
-		pacs002.setGrpHdr(grpHdr);
-
-		// OrgnlGrpInfAndSts
-		OriginalGroupHeader17 orgnlGrpInfAndSts = new OriginalGroupHeader17();
-		orgnlGrpInfAndSts.setOrgnlMsgId(orgnlMessage.getDocument().getFiCdtTrf().getGrpHdr().getMsgId());
-		orgnlGrpInfAndSts.setOrgnlMsgNmId( orgnlMessage.getAppHdr().getMsgDefIdr() );
-//		orgnlGrpInfAndSts.setOrgnlCreDtTm(orgnlMessage.getAppHdr().getCreDt());
-		
-		pacs002.getOrgnlGrpInfAndSts().add(orgnlGrpInfAndSts);
-		
-		// TxInfAndSts
-		
-		PaymentTransaction110 txInfAndSts = new PaymentTransaction110();
-		
-		txInfAndSts.setOrgnlEndToEndId( requestMsg.getPmtId().getEndToEndId() );
-		txInfAndSts.setOrgnlTxId(requestMsg.getPmtId().getTxId() );
-		txInfAndSts.setTxSts(seed.getStatus());
-		
-		// TxInfAndSts / StsRsnInf
-		
-		StatusReason6Choice rsn = new StatusReason6Choice();
-		rsn.setPrtry(seed.getReason());
-		StatusReasonInformation12 stsRsnInf = new StatusReasonInformation12();
-		stsRsnInf.setRsn(rsn);
-		
-		txInfAndSts.getStsRsnInf().add(stsRsnInf);
-		
-		// TxInfAndSts / OrgnlTxRef
-		OriginalTransactionReference28 orgnlTxRef = new OriginalTransactionReference28();
-		
-		orgnlTxRef.setIntrBkSttlmDt(requestMsg.getIntrBkSttlmDt() );
-
-		// TxInfAndSts / OrgnlTxRef / Dbtr
-		String debtorBic = requestMsg.getDbtr().getFinInstnId().getOthr().getId();
-		String creditorBic = requestMsg.getCdtr().getFinInstnId().getOthr().getId();
-		
-		GenericFinancialIdentification1 dbtrOthr = new GenericFinancialIdentification1();
-		dbtrOthr.setId( debtorBic );
-		
-		FinancialInstitutionIdentification18 dbtrFinInstnId = new FinancialInstitutionIdentification18();
-		dbtrFinInstnId.setOthr(dbtrOthr);
-		BranchAndFinancialInstitutionIdentification6 dbtrAgt = new BranchAndFinancialInstitutionIdentification6();
-		dbtrAgt.setFinInstnId(dbtrFinInstnId);
-		Party40Choice dbtr = new Party40Choice();
-		dbtr.setAgt(dbtrAgt);
-
-		orgnlTxRef.setDbtr(dbtr);
-		
-		// TxInfAndSts / OrgnlTxRef / Cdtr
-		GenericFinancialIdentification1 cdtrOthr = new GenericFinancialIdentification1();
-		cdtrOthr.setId( creditorBic );
-		FinancialInstitutionIdentification18 cdtrFinInstnId = new FinancialInstitutionIdentification18();
-		cdtrFinInstnId.setOthr(cdtrOthr);
-		BranchAndFinancialInstitutionIdentification6 cdtrAgt = new BranchAndFinancialInstitutionIdentification6();
-		cdtrAgt.setFinInstnId(cdtrFinInstnId);
-		Party40Choice cdtr = new Party40Choice();
-		cdtr.setAgt(cdtrAgt);
-
-		orgnlTxRef.setCdtr(cdtr);
-		
-		txInfAndSts.setOrgnlTxRef(orgnlTxRef);
-		
-		// TxInfAndSts / SplmtryData
-		
-		
-		pacs002.getTxInfAndSts().add(txInfAndSts);
-		
-		return pacs002;
-	}
+//	public FIToFIPaymentStatusReportV10 fIFICreditTransferRequestResponse (Pacs002Seed seed, 
+//			BusinessMessage orgnlMessage) throws DatatypeConfigurationException {
+//		
+//		FIToFIPaymentStatusReportV10 pacs002 = new FIToFIPaymentStatusReportV10();
+//		
+//		CreditTransferTransaction44 requestMsg = orgnlMessage.getDocument().getFiCdtTrf().getCdtTrfTxInf().get(0);
+//
+//		// GrpHdr
+//		GroupHeader91 grpHdr = new GroupHeader91();
+//		grpHdr.setMsgId(seed.getMsgId());  // 019 transaction_type untuk FIFICRDTTRN
+//		
+//		GregorianCalendar gcal = new GregorianCalendar();
+//		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+//		grpHdr.setCreDtTm(xcal);
+//		
+//		pacs002.setGrpHdr(grpHdr);
+//
+//		// OrgnlGrpInfAndSts
+//		OriginalGroupHeader17 orgnlGrpInfAndSts = new OriginalGroupHeader17();
+//		orgnlGrpInfAndSts.setOrgnlMsgId(orgnlMessage.getDocument().getFiCdtTrf().getGrpHdr().getMsgId());
+//		orgnlGrpInfAndSts.setOrgnlMsgNmId( orgnlMessage.getAppHdr().getMsgDefIdr() );
+////		orgnlGrpInfAndSts.setOrgnlCreDtTm(orgnlMessage.getAppHdr().getCreDt());
+//		
+//		pacs002.getOrgnlGrpInfAndSts().add(orgnlGrpInfAndSts);
+//		
+//		// TxInfAndSts
+//		
+//		PaymentTransaction110 txInfAndSts = new PaymentTransaction110();
+//		
+//		txInfAndSts.setOrgnlEndToEndId( requestMsg.getPmtId().getEndToEndId() );
+//		txInfAndSts.setOrgnlTxId(requestMsg.getPmtId().getTxId() );
+//		txInfAndSts.setTxSts(seed.getStatus());
+//		
+//		// TxInfAndSts / StsRsnInf
+//		
+//		StatusReason6Choice rsn = new StatusReason6Choice();
+//		rsn.setPrtry(seed.getReason());
+//		StatusReasonInformation12 stsRsnInf = new StatusReasonInformation12();
+//		stsRsnInf.setRsn(rsn);
+//		
+//		txInfAndSts.getStsRsnInf().add(stsRsnInf);
+//		
+//		// TxInfAndSts / OrgnlTxRef
+//		OriginalTransactionReference28 orgnlTxRef = new OriginalTransactionReference28();
+//		
+//		orgnlTxRef.setIntrBkSttlmDt(requestMsg.getIntrBkSttlmDt() );
+//
+//		// TxInfAndSts / OrgnlTxRef / Dbtr
+//		String debtorBic = requestMsg.getDbtr().getFinInstnId().getOthr().getId();
+//		String creditorBic = requestMsg.getCdtr().getFinInstnId().getOthr().getId();
+//		
+//		GenericFinancialIdentification1 dbtrOthr = new GenericFinancialIdentification1();
+//		dbtrOthr.setId( debtorBic );
+//		
+//		FinancialInstitutionIdentification18 dbtrFinInstnId = new FinancialInstitutionIdentification18();
+//		dbtrFinInstnId.setOthr(dbtrOthr);
+//		BranchAndFinancialInstitutionIdentification6 dbtrAgt = new BranchAndFinancialInstitutionIdentification6();
+//		dbtrAgt.setFinInstnId(dbtrFinInstnId);
+//		Party40Choice dbtr = new Party40Choice();
+//		dbtr.setAgt(dbtrAgt);
+//
+//		orgnlTxRef.setDbtr(dbtr);
+//		
+//		// TxInfAndSts / OrgnlTxRef / Cdtr
+//		GenericFinancialIdentification1 cdtrOthr = new GenericFinancialIdentification1();
+//		cdtrOthr.setId( creditorBic );
+//		FinancialInstitutionIdentification18 cdtrFinInstnId = new FinancialInstitutionIdentification18();
+//		cdtrFinInstnId.setOthr(cdtrOthr);
+//		BranchAndFinancialInstitutionIdentification6 cdtrAgt = new BranchAndFinancialInstitutionIdentification6();
+//		cdtrAgt.setFinInstnId(cdtrFinInstnId);
+//		Party40Choice cdtr = new Party40Choice();
+//		cdtr.setAgt(cdtrAgt);
+//
+//		orgnlTxRef.setCdtr(cdtr);
+//		
+//		txInfAndSts.setOrgnlTxRef(orgnlTxRef);
+//		
+//		// TxInfAndSts / SplmtryData
+//		
+//		
+//		pacs002.getTxInfAndSts().add(txInfAndSts);
+//		
+//		return pacs002;
+//	}
 
 
 	public FIToFIPaymentStatusReportV10 notFoundPaymentStatusResponse (Pacs002Seed seed, BusinessMessage orgnlMsg) 

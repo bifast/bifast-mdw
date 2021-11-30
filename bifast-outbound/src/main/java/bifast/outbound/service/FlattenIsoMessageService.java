@@ -16,7 +16,6 @@ import bifast.library.iso20022.pacs002.GroupHeader91;
 import bifast.library.iso20022.pacs002.OriginalGroupHeader17;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
-import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
 import bifast.library.iso20022.prxy006.ProxyEnquiryInformation1;
@@ -24,7 +23,6 @@ import bifast.library.iso20022.prxy006.ProxyEnquiryResponseV01;
 import bifast.outbound.pojo.flat.FlatAdmi002Pojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.pojo.flat.FlatPacs008Pojo;
-import bifast.outbound.pojo.flat.FlatPacs009Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy002Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy006AliasPojo;
@@ -465,70 +463,7 @@ public class FlattenIsoMessageService {
 		return flatMsg;
 	}
 
-	public FlatPacs009Pojo flatteningPacs009 (BusinessMessage busMsg) {
-		
-		FlatPacs009Pojo flatMsg = new FlatPacs009Pojo();
 
-		BusinessApplicationHeaderV01 hdr = busMsg.getAppHdr();
-		
-		flatMsg.setFrBic(hdr.getFr().getFIId().getFinInstnId().getOthr().getId());
-		
-		flatMsg.setToBic(hdr.getTo().getFIId().getFinInstnId().getOthr().getId());
-			
-		flatMsg.setBizMsgIdr(hdr.getBizMsgIdr());
-		
-		flatMsg.setMsgDefIdr(hdr.getMsgDefIdr());
-
-		if (!(null == hdr.getBizSvc()))
-			flatMsg.setBizSvc(hdr.getBizSvc());
-		
-//		flatMsg.setCreDt(hdr.getCreDt().format(dtf));
-		flatMsg.setCreDt(strTgl(hdr.getCreDt()));
-
-		if (!(null == hdr.getCpyDplct()))
-			flatMsg.setCpyDplct(hdr.getCpyDplct().value());
-
-		if (!(null == hdr.isPssblDplct()))
-			flatMsg.setPssblDplct(hdr.isPssblDplct());
-		
-		FinancialInstitutionCreditTransferV09 ct = busMsg.getDocument().getFiCdtTrf();
-		
-		flatMsg.setMsgId(ct.getGrpHdr().getMsgId()); 
-		
-		flatMsg.setCreDtTm(strTgl(ct.getGrpHdr().getCreDtTm()));
-		
-		flatMsg.setSettlementMtd(ct.getGrpHdr().getSttlmInf().getSttlmMtd().value());
-
-		flatMsg.setEndToEndId(ct.getCdtTrfTxInf().get(0).getPmtId().getEndToEndId());
-		
-		if (!(null == ct.getCdtTrfTxInf().get(0).getPmtId().getTxId()))
-			flatMsg.setTransactionId(ct.getCdtTrfTxInf().get(0).getPmtId().getTxId());
-		
-		flatMsg.setCategoryPurpose(ct.getCdtTrfTxInf().get(0).getPmtTpInf().getCtgyPurp().getPrtry());
-			
-		DecimalFormat df = new DecimalFormat("#############.00");
-		flatMsg.setAmount(df.format(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue()));	
-			
-		flatMsg.setCurrency(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getCcy());
-
-		if (!(null == ct.getCdtTrfTxInf().get(0).getIntrBkSttlmDt()))
-			flatMsg.setSettlementDt(strTgl(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmDt()));
-		
-		if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr())) 
-			if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr().getFinInstnId().getOthr())) 
-				flatMsg.setDebtorFinInstId(ct.getCdtTrfTxInf().get(0).getDbtr().getFinInstnId().getOthr().getId());
-
-		if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr())) 
-			if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr().getFinInstnId().getOthr())) 
-				flatMsg.setCreditorFinInstId(ct.getCdtTrfTxInf().get(0).getCdtr().getFinInstnId().getOthr().getId());
-
-		if (!(null == ct.getCdtTrfTxInf().get(0).getRmtInf()))
-			flatMsg.setRemittanceInfo(ct.getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0));
-
-		
-		return flatMsg;
-	}
-	
 	private String strTgl (XMLGregorianCalendar tgl) {
 		String strDate = String.format("%04d-%02d-%02dT%02d:%02d:%02d.%03d", 
 				tgl.getYear(),tgl.getMonth(), tgl.getDay(),

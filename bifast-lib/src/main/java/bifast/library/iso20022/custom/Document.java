@@ -10,7 +10,6 @@ import bifast.library.iso20022.admi004.SystemEventNotificationV02;
 import bifast.library.iso20022.admi011.SystemEventAcknowledgementV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
-import bifast.library.iso20022.pacs009.FinancialInstitutionCreditTransferV09;
 import bifast.library.iso20022.pacs028.FIToFIPaymentStatusRequestV04;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
@@ -25,7 +24,7 @@ import bifast.library.iso20022.prxy901.ProxyNtfctnV01;
 @XmlType(name = "Document", propOrder = {
     "fiToFICstmrCdtTrf", 
     "fiToFIPmtStsRpt", 
-    "fiCdtTrf", 
+//    "fiCdtTrf", 
     "fiToFIPmtStsReq",
     "prxyRegn",
     "prxyRegnRspn",
@@ -43,14 +42,14 @@ public class Document {
 	@XmlElement(name = "FIToFICstmrCdtTrf", required = false)
     protected FIToFICustomerCreditTransferV08 fiToFICstmrCdtTrf;
 
-    @XmlElement(name = "FitoFIPmtStsRpt", required = false)
+    @XmlElement(name = "FIToFIPmtStsRpt", required = false)
     protected FIToFIPaymentStatusReportV10 fiToFIPmtStsRpt;   // SettlementConfirmation
 
-    @XmlElement(name = "FicdtTrf", required = false)
-    protected FinancialInstitutionCreditTransferV09 fiCdtTrf;   // FI Credit Transfer
+//    @XmlElement(name = "FicdtTrf", required = false)
+//    protected FinancialInstitutionCreditTransferV09 fiCdtTrf;   // FI Credit Transfer
 
     // unt Payment Status Request 
-    @XmlElement(name = "FitoFIPmtStsReq", required = false)
+    @XmlElement(name = "FIToFIPmtStsReq", required = false)
     protected FIToFIPaymentStatusRequestV04 fiToFIPmtStsReq;
     
     @XmlElement(name = "PrxyRegn", required = false)
@@ -101,13 +100,13 @@ public class Document {
 		this.fiToFIPmtStsRpt = fiToFIPmtStsRpt;
 	}
 
-	public FinancialInstitutionCreditTransferV09 getFiCdtTrf() {
-		return fiCdtTrf;
-	}
-
-	public void setFiCdtTrf(FinancialInstitutionCreditTransferV09 fiCdtTrf) {
-		this.fiCdtTrf = fiCdtTrf;
-	}
+//	public FinancialInstitutionCreditTransferV09 getFiCdtTrf() {
+//		return fiCdtTrf;
+//	}
+//
+//	public void setFiCdtTrf(FinancialInstitutionCreditTransferV09 fiCdtTrf) {
+//		this.fiCdtTrf = fiCdtTrf;
+//	}
 
     public FIToFIPaymentStatusRequestV04 getFIToFIPmtStsReq() {
         return fiToFIPmtStsReq;

@@ -2,11 +2,14 @@ package bifast.outbound.route;
 
 import java.time.Instant;
 
+import javax.xml.bind.JAXBContext;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,13 +39,24 @@ public class CihubRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
+		
+		JaxbDataFormat jaxb = new JaxbDataFormat();
+		JAXBContext con = JAXBContext.newInstance(BusinessMessage.class);
+		jaxb.setContext(con);
 
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
 		from("direct:call-cihub").routeId("komi.call-cihub")
 		
 			.setHeader("hdr_cihub_request", simple("${body}")).id("start_route")
 	
-			.marshal(businessMessageJDF)
+			.choice()
+				.when().simple("${properties:komi.output-format} == 'json'")
+					.log("Format JSON")
+					.marshal(businessMessageJDF)
+				.otherwise()
+					.log("Format XML")		
+					.marshal(jaxb)
+			.end()
 	
 
 			// zip dulu body ke cihubroute_encr_request
@@ -66,6 +80,7 @@ public class CihubRoute extends RouteBuilder {
 			.process(setRemainTime)
 			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request dengan sisa waktu ${header.hdr_remain_time} ms.")
 			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
+			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
 				

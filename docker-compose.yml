@@ -3,7 +3,7 @@ version: '3.7'
 services:
     komidb:
       build: komi-db
-      image: fransmzh/komi-db:1.8
+      image: fransmzh/komi-db:1.9
       container_name: komi-db
       restart: always
       environment:
@@ -26,7 +26,7 @@ services:
 
     inbound:
       build: bifast-inbound
-      image: fransmzh/komi-inbound:1.8
+      image: fransmzh/komi-inbound:1.9
       container_name: komi-inbound
       restart: always
       depends_on: 
@@ -51,7 +51,7 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:1.8
+      image: fransmzh/komi-outbound:1.9
       container_name: komi-outbound
       restart: always
       depends_on: 
@@ -83,7 +83,7 @@ services:
     mock:
       build: bifast-mock
       container_name: komi-mock
-      image: fransmzh/komi-mock:1.8
+      image: fransmzh/komi-mock:1.9
       restart: always
       depends_on: 
         - komidb

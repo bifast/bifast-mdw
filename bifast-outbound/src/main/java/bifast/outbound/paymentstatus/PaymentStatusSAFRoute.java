@@ -56,7 +56,9 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 						
 			.log("[ChnlReq:${body[channel_ref_id]}] PymtStsSAF started.")
 
+			// selesai dan matikan router jika tidak ada lagi SAF
 			.filter().simple("${body} == null")
+//				.to("controlbus:route?routeId=komi.ps.saf&action=stop&async=true")
 				.throwException(PSNotFoundException.class, "PS Selesai.")			  
 			.end()	
 						
@@ -80,9 +82,13 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.to("seda:caristtl")
 			// selesai check settlement
 			
-			.process(buildPSRequest)
 			
-			.to("direct:call-cihub")
+			.filter().simple("${header.hdr_settlement} == 'NOTFOUND'")	// jika tidak ada settlement
+				.log("Belum ada settlement")
+				.process(buildPSRequest)
+				.to("direct:call-cihub")				
+			.end()
+			
 			.process(psResponseProcessor)
 
 			.process(updateStatusProcessor)

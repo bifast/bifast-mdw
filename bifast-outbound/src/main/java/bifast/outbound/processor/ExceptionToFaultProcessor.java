@@ -26,6 +26,8 @@ public class ExceptionToFaultProcessor implements Processor {
 		Optional<FaultClass> oFaultClass = faultClassRepo.findByExceptionClass(exceptionClassName);
 			
 		FaultPojo fault = new FaultPojo();
+		
+		fault.setLocation("CI-HUB");
 	
 		ResponseMessageCollection responseCol = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
 		

@@ -11,6 +11,8 @@ public class FaultPojo {
 	private String reasonMessage;
 	
 	private String errorMessage;
+	
+	private String location;
 
 	public String getCallStatus() {
 		return callStatus;
@@ -50,6 +52,14 @@ public class FaultPojo {
 
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 
 	@Override

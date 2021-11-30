@@ -52,6 +52,7 @@ public class ProcessQuerySAFProcessor implements Processor{
 		exchange.getMessage().setHeader("ps_request", ct);
 		
 		ChannelTransaction chnlTrns = channelTrnsRepo.findById(ct.getKomiTrnsId()).orElse(new ChannelTransaction());
+		
 		Channel channel = channelRepo.findById(chnlTrns.getChannelId()).orElse(new Channel());
 		CreditTransfer creditTransfer = creditTransferRepo.findByKomiTrnsId(ct.getKomiTrnsId()).orElse(new CreditTransfer());
 		
@@ -70,7 +71,6 @@ public class ProcessQuerySAFProcessor implements Processor{
 		
 		ObjectMapper map = new ObjectMapper();
 		map.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
-		
 	
 		String chnlRequestText = chnlTrns.getTextMessage();
 		

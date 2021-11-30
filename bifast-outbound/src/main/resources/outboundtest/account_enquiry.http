@@ -7,7 +7,7 @@ Authorization: Basic CMS:password
 
 {
   "AccountEnquiryRequest" : {
-    "NoRef" : "36655438",
+    "NoRef" : "36655453",
     "SenderAccountNumber": "14395230",
     "RecipientBank" : "CITYIDJA",
     "Amount" : "24520064.00",
