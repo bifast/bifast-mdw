@@ -68,7 +68,6 @@ public class CiHubRoute extends RouteBuilder {
 				.consumes("application/json")
 				.to("direct:receive")
 			.post("/cihub-proxy-regitrastion")
-				.description("Pengiriman instruksi Proxy Registration BI-FAST")
 				.consumes("application/json")
 				.to("direct:proxyRegistration")
 		;
@@ -87,7 +86,6 @@ public class CiHubRoute extends RouteBuilder {
 			.process(checkMessageTypeProcessor)
 			.log("${header.msgType}")
 
-			.setHeader("delay", constant(300))
 			.setHeader("delay_ae", simple("{{komi.timeout-ae}}"))
 			.setHeader("delay_ct", simple("{{komi.timeout-ct}}"))
 

@@ -64,9 +64,9 @@ services:
         - KOMI.URL.CICONNECTOR=komi-mock:9006/mock/cihub
         - KOMI.URL.COREBANK=mock-cb:9007/api/corebank
         - KOMI.URL.PORTALAPI=komi-mock:9006/mock
+        - KOMI.URL.INBOUND=komi-inbound:9001/komi-inbound/json
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.BICODE=INDOIDJA
-        - KOMI.INBOUND-URL=komi-inbound:9001/services/api/enquiry
         - LOGGING.FILE.NAME=/home/logs/komi-outbound.log
         - LOGGING.LEVEL.BIFAST.OUTBOUND=DEBUG
         - SPRING_DATASOURCE_URL=jdbc:postgresql://komidb:5432/komidb 
@@ -94,7 +94,7 @@ services:
       environment: 
         - LOGGING.FILE.NAME=/home/logs/komi-mock.log
         - BIFAST.INBOUND-LOG-FOLDER=/home/logs
-        - KOMI.INBOUND-URL=komi-inbound:9001/services/api
+        - KOMI.INBOUND-URL=komi-inbound:9001/komi-inbound/json
         - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/mock:/home/logs

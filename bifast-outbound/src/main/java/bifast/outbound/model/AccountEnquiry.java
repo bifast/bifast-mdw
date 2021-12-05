@@ -39,6 +39,9 @@ public class AccountEnquiry {
 	
 	@Column(length=50)
 	private String accountNo;
+	
+	@Column(length=150)
+	private String proxyId;
 
 	@Column(name="CIHUB_REQ_TIME")
 	private LocalDateTime submitDt;

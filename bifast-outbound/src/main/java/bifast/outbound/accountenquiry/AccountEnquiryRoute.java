@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.accountenquiry.processor.AEProxyEnrichmentProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
 import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
@@ -27,8 +26,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 	private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired
 	private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
-	@Autowired
-	private AEProxyEnrichmentProcessor aeProxyEnrichment;
 	@Autowired
 	private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
 	@Autowired
@@ -78,26 +75,22 @@ public class AccountEnquiryRoute extends RouteBuilder{
 						exchange.getMessage().setHeader("hdr_request_list", rmw);
 						exchange.getMessage().setBody(prxRes);
 					}
-					
 				})
 				.process(proxyResolutionRequestProcessor)
 				.to("direct:call-cihub")
-				.process(aeProxyEnrichment)
+//				.process(aeProxyEnrichment)
 				
 			.end()
 			// selesai panggil Proxy Resolution
 			
-			
-			.filter().simple("${body.class} endsWith 'ChnlAccountEnquiryRequestPojo' && "
-							+ "${body.creditorAccountNumber} != null") 
-				.process(buildAccountEnquiryRequestProcessor)
-				
+			.filter().simple("${body.class} endsWith 'ChnlAccountEnquiryRequestPojo'")
+				.log("Proxy Resolution as AE Response")
+				.process(buildAccountEnquiryRequestProcessor)					
 				.to("direct:call-cihub")
-
-				.process(saveAccountEnquiryProcessor)
-
 			.end()
 			
+			.process(saveAccountEnquiryProcessor)
+
 			.process(accountEnqrResponseProcessor)
 
 		;

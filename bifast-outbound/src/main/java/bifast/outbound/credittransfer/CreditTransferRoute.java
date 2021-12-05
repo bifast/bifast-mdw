@@ -95,7 +95,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			// FILTER-C: jika timeout, check settlement dulu
 			.filter().simple("${header.ct_progress} == 'TIMEOUT'")
 				.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] cari Settlement.")
-				.to("seda:caristtl")
+				.to("direct:caristtl")
 			.end()
 			
 			//cek hasil find settlement 

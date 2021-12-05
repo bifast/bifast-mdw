@@ -9,14 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.FaultClass;
+import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.FaultClassRepository;
+import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class ExceptionToFaultProcessor implements Processor {
 	@Autowired 
 	private FaultClassRepository faultClassRepo;
+	@Autowired StatusReasonRepository statusReasonRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -63,14 +66,17 @@ public class ExceptionToFaultProcessor implements Processor {
 		if (statusCode == 504) {
 			fault.setResponseCode("KSTS");
 			fault.setReasonCode("K000");
+			fault.setReasonCode(statusReasonRepo.findById("K000").orElse(new StatusReason()).getDescription());
 		}
 		else if (oFaultClass.isPresent()) {
 			fault.setResponseCode("KSTS");
 			fault.setReasonCode(oFaultClass.get().getReason());
+			fault.setReasonCode(statusReasonRepo.findById("K000").orElse(new StatusReason()).getDescription());
 		}
 		else {
 			fault.setResponseCode("RJCT");
 			fault.setReasonCode("U220");
+			fault.setReasonCode(statusReasonRepo.findById("U220").orElse(new StatusReason()).getDescription());
 		}
 		
 		responseCol.setFault(fault);

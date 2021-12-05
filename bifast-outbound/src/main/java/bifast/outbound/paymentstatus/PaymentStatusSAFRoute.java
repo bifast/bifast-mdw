@@ -67,7 +67,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.unmarshal().base64()
 			.unmarshal().zipDeflater()
 			
-			.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${header.ps_request.channelNoref}] ${body}")
+			.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${header.ps_request.channelNoref}] Original request: ${body}")
 
 			.unmarshal(businessMessageJDF)
 			.process(new Processor() {
@@ -79,12 +79,12 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 				}
 				
 			})
-			.to("seda:caristtl")
+			.to("direct:caristtl")
 			// selesai check settlement
-			
-			
+
+			.log("hdr_settlement: ${header.hdr_settlement}")
 			.filter().simple("${header.hdr_settlement} == 'NOTFOUND'")	// jika tidak ada settlement
-				.log("Belum ada settlement")
+//				.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${body[channel_ref_id]}]Tidak ada settlement, build PS Request")
 				.process(buildPSRequest)
 				.to("direct:call-cihub")				
 			.end()
@@ -111,7 +111,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 				
 			.end()
 			
-			//TODO jika udah 5 kali  masih timeout call notifitikasi
+			//TODO call notifikasi
 			.filter().simple("${header.ps_notif} == 'yes'")
 				.log("akan notifikasi")
 			.end()

@@ -16,7 +16,6 @@ import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
 import bifast.outbound.repository.StatusReasonRepository;
@@ -45,37 +44,36 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
 		chnResp.setOrignReffId(chnReq.getChannelRefId());
 
-		ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
-		if (null == chnReq.getRecptBank()) {
-			chnResp.setRecipientBank(rmc.getProxyResolutionResponse().getRegisterBank());
-		}
-		else 
-			chnResp.setRecipientBank(chnReq.getRecptBank());
+//		ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+//		if (null == chnReq.getRecptBank()) {
+//			chnResp.setRecipientBank(rmc.getProxyResolutionResponse().getRegisterBank());
+//		}
+//		else 
+//			chnResp.setRecipientBank(chnReq.getRecptBank());
 
 		Object objBody = exchange.getMessage().getBody(Object.class);
 		if (objBody.getClass().getSimpleName().equals("FaultPojo")) {
 			FaultPojo fault = (FaultPojo)objBody;
 			
-			channelResponseWr.setResponseCode("KSTS");
+			channelResponseWr.setResponseCode(fault.getResponseCode());
 			channelResponseWr.setReasonCode(fault.getReasonCode());
-			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
-			if (oStatusReason.isPresent())
-				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+			if (null != fault.getReasonMessage())
+				channelResponseWr.setReasonMessage(fault.getReasonMessage());
 			else
 				channelResponseWr.setResponseMessage("General Error");
 		}
 		
-		else if (objBody.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
-
-			channelResponseWr.setResponseCode("RJCT");
-			channelResponseWr.setReasonCode("U215");
-			Optional<StatusReason> oStatusReason = statusReasonRepo.findById("U215");
-			if (oStatusReason.isPresent())
-				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
-			else
-				channelResponseWr.setResponseMessage("General Error");
-
-		}
+//		else if (objBody.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
+//
+//			channelResponseWr.setResponseCode("RJCT");
+//			channelResponseWr.setReasonCode("U215");
+//			Optional<StatusReason> oStatusReason = statusReasonRepo.findById("U215");
+//			if (oStatusReason.isPresent())
+//				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
+//			else
+//				channelResponseWr.setResponseMessage("General Error");
+//
+//		}
 
 		else if (objBody.getClass().getSimpleName().equals("FlatPrxy004Pojo")) {
 			FlatPrxy004Pojo prxRsltResponse = (FlatPrxy004Pojo) objBody;
@@ -86,7 +84,33 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			if (oStatusReason.isPresent())
 				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 			else
-				channelResponseWr.setResponseMessage("General Error");
+				channelResponseWr.setReasonMessage("General Error");
+			
+			chnResp.setProxyId(prxRsltResponse.getProxyValue());			
+			chnResp.setProxyType(prxRsltResponse.getProxyType());
+
+			if (null != prxRsltResponse.getRegisterBank())
+				chnResp.setRecipientBank(prxRsltResponse.getRegisterBank());
+
+			if (null != prxRsltResponse.getAccountNumber()) {
+				chnResp.setCreditorAccountNumber(prxRsltResponse.getAccountNumber());
+				chnResp.setCreditorAccountType(prxRsltResponse.getAccountType());
+			}
+			
+			if (null != prxRsltResponse.getDisplayName())
+				chnResp.setCreditorName(prxRsltResponse.getDisplayName());
+			
+			if (null != prxRsltResponse.getCustomerId())
+				chnResp.setCreditorId(prxRsltResponse.getCustomerId());
+
+			if (null != prxRsltResponse.getCustomerType())
+				chnResp.setCreditorType(prxRsltResponse.getCustomerType());
+			
+			if (null != prxRsltResponse.getResidentialStatus())
+				chnResp.setCreditorResidentStatus(prxRsltResponse.getResidentialStatus());
+			
+			if (null != prxRsltResponse.getTownName())
+				chnResp.setCreditorTownName(prxRsltResponse.getTownName());
 		}
 
 		else {
@@ -102,6 +126,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 				channelResponseWr.setReasonMessage(desc);
 			}	
 			
+			chnResp.setRecipientBank(chnReq.getRecptBank());
+				
 			chnResp.setCreditorAccountNumber(bm.getCdtrAcctId());
 			chnResp.setCreditorAccountType(bm.getCdtrAcctTp());
 			

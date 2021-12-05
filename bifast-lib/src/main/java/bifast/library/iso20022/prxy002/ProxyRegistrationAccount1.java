@@ -8,8 +8,6 @@
 
 package bifast.library.iso20022.prxy002;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -40,8 +38,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ProxyRegistrationAccount1", propOrder = {
     "regnId",
-    "agt",
-    "splmtryData"
+    "agt"
+//    "splmtryData"
 })
 public class ProxyRegistrationAccount1 {
 
@@ -49,8 +47,8 @@ public class ProxyRegistrationAccount1 {
     protected String regnId;
     @XmlElement(name = "Agt")
     protected BranchAndFinancialInstitutionIdentification5 agt;
-    @XmlElement(name = "SplmtryData")
-    protected List<BISupplementaryData1> splmtryData;
+//    @XmlElement(name = "SplmtryData")
+//    protected List<BISupplementaryData1> splmtryData;
 
     /**
      * Gets the value of the regnId property.
@@ -122,11 +120,11 @@ public class ProxyRegistrationAccount1 {
      * 
      * 
      */
-    public List<BISupplementaryData1> getSplmtryData() {
-        if (splmtryData == null) {
-            splmtryData = new ArrayList<BISupplementaryData1>();
-        }
-        return this.splmtryData;
-    }
+//    public List<BISupplementaryData1> getSplmtryData() {
+//        if (splmtryData == null) {
+//            splmtryData = new ArrayList<BISupplementaryData1>();
+//        }
+//        return this.splmtryData;
+//    }
 
 }

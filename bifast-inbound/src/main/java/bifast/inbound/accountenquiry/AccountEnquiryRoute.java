@@ -27,6 +27,7 @@ public class AccountEnquiryRoute extends RouteBuilder {
 
 	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai call AE corebank")
 			.process(aeResponseProcessor)
+
 					
 			.removeHeaders("ae_*")
 		;

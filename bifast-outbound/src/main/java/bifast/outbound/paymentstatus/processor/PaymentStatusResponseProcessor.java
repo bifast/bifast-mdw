@@ -33,14 +33,14 @@ public class PaymentStatusResponseProcessor implements Processor {
 		}
 
 			
-		else if (objResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
-			//TODO subject of notification
-			psReq.setPsStatus("UNDEFINED");
-			psReq.setResponseCode("RJCT");
-			psReq.setReasonCode("U215");
+//		else if (objResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
+//			//TODO subject of notification
+//			psReq.setPsStatus("UNDEFINED");
+//			psReq.setResponseCode("RJCT");
+//			psReq.setReasonCode("U215");
+//
+//		}
 
-		}
-		
 		else {
 			
 			FlatPacs002Pojo biResp = (FlatPacs002Pojo)objResponse;

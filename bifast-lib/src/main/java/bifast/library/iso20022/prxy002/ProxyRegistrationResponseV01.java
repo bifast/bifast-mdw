@@ -8,6 +8,8 @@
 
 package bifast.library.iso20022.prxy002;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -39,7 +41,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "ProxyRegistrationResponseV01", propOrder = {
     "grpHdr",
     "orgnlGrpInf",
-    "regnRspn"
+    "regnRspn",
+    "splmtryData"
 })
 public class ProxyRegistrationResponseV01 {
 
@@ -49,6 +52,8 @@ public class ProxyRegistrationResponseV01 {
     protected OriginalGroupInformation3 orgnlGrpInf;
     @XmlElement(name = "RegnRspn", required = true)
     protected ProxyRegistrationResponse1 regnRspn;
+    @XmlElement(name = "SplmtryData")
+    protected List<BISupplementaryData1> splmtryData;
 
     /**
      * Gets the value of the grpHdr property.
@@ -121,5 +126,13 @@ public class ProxyRegistrationResponseV01 {
     public void setRegnRspn(ProxyRegistrationResponse1 value) {
         this.regnRspn = value;
     }
+
+	public List<BISupplementaryData1> getSplmtryData() {
+		return splmtryData;
+	}
+
+	public void setSplmtryData(List<BISupplementaryData1> splmtryData) {
+		this.splmtryData = splmtryData;
+	}
 
 }

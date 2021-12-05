@@ -1,13 +1,16 @@
 package bifast.outbound.service;
 
+import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.config.Config;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.exception.InputValidationException;
+import bifast.outbound.exception.TrnsLimitException;
 import bifast.outbound.model.DomainCode;
 import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.repository.DomainCodeRepository;
@@ -15,9 +18,17 @@ import bifast.outbound.repository.DomainCodeRepository;
 @Service
 public class ValidationService {
 	@Autowired private DomainCodeRepository domainCodeRepo;
+	@Autowired private Config config;
 
 	public void validateAccountEnquiryRequest (ChnlAccountEnquiryRequestPojo aeReq) throws Exception {
-		
+		try {
+			@SuppressWarnings("unused")
+			DomainCode domain = domainCodeRepo.findByGrpAndKey("CATEGORY.PURPOSE", aeReq.getCategoryPurpose()).orElseThrow();
+		}
+		catch(NoSuchElementException ne) {
+			throw new InputValidationException ("Category Purpose type error");
+		}
+
 		if (null == aeReq.getCreditorAccountNumber()) {
 			if (null == aeReq.getProxyId())
 				throw new InputValidationException("CreditorAccountNumber atau ProxyId/ProxyType tidak boleh kosong.");
@@ -56,7 +67,13 @@ public class ValidationService {
 		catch(NoSuchElementException ne) {
 				throw new InputValidationException ("Input value error");
 		}
-
+		
+		// cek max transaksi 
+		BigDecimal amt = new BigDecimal(ctReq.getAmount());	
+		if (amt.compareTo(config.getLimitTrnsAmount()) > 0)
+			throw new TrnsLimitException("Transaction over limit.");
+			
+		
 	}
 
 	public void validateProxyRegistration (ChnlProxyRegistrationRequestPojo regnReq) throws Exception {

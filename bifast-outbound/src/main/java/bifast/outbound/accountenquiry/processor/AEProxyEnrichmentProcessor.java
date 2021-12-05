@@ -27,11 +27,6 @@ public class AEProxyEnrichmentProcessor implements Processor{
 			rmc.setReasonCode(fault.getReasonCode());
 
 		}
-		else if (oResp.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
-
-			rmc.setResponseCode("RJCT");
-			rmc.setReasonCode("U215");
-		}
 
 		if (oResp.getClass().getSimpleName().equals("FlatPrxy004Pojo")) {
 			FlatPrxy004Pojo prx004 = (FlatPrxy004Pojo)oResp;

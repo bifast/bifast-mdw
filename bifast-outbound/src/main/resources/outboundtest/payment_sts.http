@@ -1,12 +1,12 @@
 # Payment Status Request from channel on generic endpoint
 POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
-Authorization: Basic CMS:password
+Authorization: Basic MB:password
 
 {
     "PaymentStatusRequest" : {
-      "NoRef" : "212455",
-      "OriginalNoRef" : "MOB211108110620227"
+      "NoRef" : "212457",
+      "OriginalNoRef" : "MOB211124110620251"
     }
 }
 

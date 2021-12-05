@@ -114,6 +114,10 @@ public class CihubRoute extends RouteBuilder {
 				.setHeader("hdr_error_status", constant(null))
 				
 				.process(flatResponseProcessor)
+				
+				.filter().simple("${body.class} endsWith 'FaultPojo'")
+					.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CI-HUB Response: ${header.tmp_body}")
+		    	.end()
 			
 			.endDoTry()
 	    	.doCatch(Exception.class)

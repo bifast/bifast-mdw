@@ -18,10 +18,8 @@ import bifast.outbound.repository.CreditTransferRepository;
 
 @Component
 public class CheckSAFResultProcessor implements Processor {
-	@Autowired
-	private ChannelTransactionRepository channelRequestRepo;
-	@Autowired
-	private CreditTransferRepository creditTransferRepo;
+	@Autowired private ChannelTransactionRepository channelRequestRepo;
+	@Autowired private CreditTransferRepository creditTransferRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -29,7 +27,8 @@ public class CheckSAFResultProcessor implements Processor {
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ChnlPaymentStatusRequestPojo chnReq = rmw.getChnlPaymentStatusRequest();
 		
-		List<ChannelTransaction> lCT = channelRequestRepo.findByChannelIdAndChannelRefId(rmw.getChannelId(), chnReq.getOrgnlRefId());	
+//		List<ChannelTransaction> lCT = channelRequestRepo.findByChannelIdAndChannelRefId(rmw.getChannelId(), chnReq.getOrgnlRefId());	
+		List<ChannelTransaction> lCT = channelRequestRepo.findByChannelRefId(chnReq.getOrgnlRefId());	
 		ChannelTransaction channelTrns = null;
 		CreditTransfer crdtTrnsf = null;
 		if (lCT.size()>0) {

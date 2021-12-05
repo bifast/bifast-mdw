@@ -7,6 +7,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.config.Config;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.paymentstatus.UndefinedCTPojo;
@@ -16,10 +17,9 @@ import bifast.outbound.repository.CreditTransferRepository;
 
 @Component
 public class UpdateStatusSAFProcessor implements Processor{
-	@Autowired
-	private CreditTransferRepository ctRepo;
-	@Autowired
-	private ChannelTransactionRepository chnlTrnsRepo;
+	@Autowired private ChannelTransactionRepository chnlTrnsRepo;
+	@Autowired private CreditTransferRepository ctRepo;
+	@Autowired private Config config;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -67,7 +67,7 @@ public class UpdateStatusSAFProcessor implements Processor{
 
 		ct.setLastUpdateDt(LocalDateTime.now());
 		
-		if (ct.getPsCounter()==5) 
+		if (ct.getPsCounter()== config.getMaxRetryBeforeNotif()) 
 			exchange.getMessage().setHeader("ps_notif", "yes");
 		else
 			exchange.getMessage().setHeader("ps_notif", "no");

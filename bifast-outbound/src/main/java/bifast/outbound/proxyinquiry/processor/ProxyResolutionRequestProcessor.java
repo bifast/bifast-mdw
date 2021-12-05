@@ -66,7 +66,7 @@ public class ProxyResolutionRequestProcessor implements Processor {
 		busMsg.setAppHdr(hdr);
 		busMsg.setDocument(doc);
 	
-		rmw.setProxyRegistrationRequest(busMsg);
+		rmw.setProxyResolutionRequest(busMsg);
 		exchange.getMessage().setHeader("hdr_request_list",  rmw);
 		exchange.getIn().setBody(busMsg);
 	}

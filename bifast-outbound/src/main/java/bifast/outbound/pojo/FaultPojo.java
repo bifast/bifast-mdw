@@ -13,6 +13,8 @@ public class FaultPojo {
 	private String errorMessage;
 	
 	private String location;
+	
+	private Object orgnlResponse;
 
 	public String getCallStatus() {
 		return callStatus;
@@ -60,6 +62,14 @@ public class FaultPojo {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public Object getOrgnlResponse() {
+		return orgnlResponse;
+	}
+
+	public void setOrgnlResponse(Object orgnlResponse) {
+		this.orgnlResponse = orgnlResponse;
 	}
 
 	@Override

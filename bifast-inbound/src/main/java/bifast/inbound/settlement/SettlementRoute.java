@@ -11,7 +11,7 @@ public class SettlementRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 
-		from("direct:settlement")
+		from("direct:settlement").routeId("komi.settlement")
 			
 			// prepare untuk request ke corebank
 			.log("Terima settlement ${body}")

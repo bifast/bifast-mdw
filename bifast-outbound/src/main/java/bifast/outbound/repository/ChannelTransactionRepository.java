@@ -13,6 +13,7 @@ public interface ChannelTransactionRepository extends JpaRepository<ChannelTrans
 
 //	Optional<ChannelTransaction> findByKomiTrnsId (String komiTrnsId);
 	List<ChannelTransaction> findByChannelIdAndChannelRefId (String channelId, String refId);
+	List<ChannelTransaction> findByChannelRefId (String refId);
 	
 	@Query(value = "select nextval('kc_outboundseq')", nativeQuery = true)
 	Long getKomiSequence();

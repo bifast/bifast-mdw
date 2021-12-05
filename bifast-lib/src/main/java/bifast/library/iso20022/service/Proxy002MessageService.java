@@ -93,15 +93,17 @@ public class Proxy002MessageService {
 		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("PORT"))
 			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.PORT);
 
-		// RegnRspn / PrxyRegn
+		// +RegnRspn / ++PrxyRegn
 		proxy002.getRegnRspn().getPrxyRegn().add(new ProxyRegistrationAccount1());
 		proxy002.getRegnRspn().getPrxyRegn().get(0).setRegnId(seed.getRegnId());
 		
-		// RegnRspn / PrxyRegn / Agt
+		// +RegnRspn / ++PrxyRegn / +++Agt
 		proxy002.getRegnRspn().getPrxyRegn().get(0).setAgt(new BranchAndFinancialInstitutionIdentification5());
 		proxy002.getRegnRspn().getPrxyRegn().get(0).getAgt().setFinInstnId(new FinancialInstitutionIdentification8());
 		proxy002.getRegnRspn().getPrxyRegn().get(0).getAgt().getFinInstnId().setOthr(new GenericFinancialIdentification1());
 		proxy002.getRegnRspn().getPrxyRegn().get(0).getAgt().getFinInstnId().getOthr().setId(seed.getAgtId());
+
+		// +SplmtryData
 
 		// RegnRspn / PrxyRegn /+++SplmtryData
 		Boolean splmntExists = false;
@@ -115,9 +117,9 @@ public class Proxy002MessageService {
 		}
 
 		if (splmntExists) {
-			proxy002.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().add(new BISupplementaryData1());
-			proxy002.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).setEnvlp(new BISupplementaryDataEnvelopeDetail());
-			proxy002.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().setDtl(new BISupplementaryDataEnvelope1());
+			proxy002.getSplmtryData().add(new BISupplementaryData1());
+			proxy002.getSplmtryData().get(0).setEnvlp(new BISupplementaryDataEnvelopeDetail());
+			proxy002.getSplmtryData().get(0).getEnvlp().setDtl(new BISupplementaryDataEnvelope1());
 			
 			BIAddtlCstmrInf addtlCstmrInf = new BIAddtlCstmrInf();
 
@@ -130,7 +132,7 @@ public class Proxy002MessageService {
 			if (null != seed.getCstmrRsdntSts())
 				addtlCstmrInf.setRsdntSts(seed.getCstmrRsdntSts());
 			
-			proxy002.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().setCstmr(addtlCstmrInf);
+			proxy002.getSplmtryData().get(0).getEnvlp().getDtl().setCstmr(addtlCstmrInf);
 			
 		}			
 		

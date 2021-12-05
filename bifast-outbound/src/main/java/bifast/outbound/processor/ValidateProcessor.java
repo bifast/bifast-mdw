@@ -41,6 +41,8 @@ public class ValidateProcessor implements Processor  {
 		
 		if ((noref.isBlank()) || (noref.isEmpty()))
 			throw new NoRefNullException("Nomor RefId kosong");
+		if (noref.length()>20)
+			throw new NoRefNullException("RefId tidak boleh lebih dari 20 char.");
 
 		String channelid = rmw.getChannelId(); 
 

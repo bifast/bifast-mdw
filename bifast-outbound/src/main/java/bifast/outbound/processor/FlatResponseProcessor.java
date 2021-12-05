@@ -1,23 +1,28 @@
 package bifast.outbound.processor;
 
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.model.RejectCode;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.flat.FlatAdmi002Pojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy002Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
 import bifast.outbound.pojo.flat.FlatPrxy006Pojo;
+import bifast.outbound.repository.RejectCodeRepository;
 import bifast.outbound.service.FlattenIsoMessageService;
 
 @Component
 public class FlatResponseProcessor implements Processor {
 
-	@Autowired
-	private FlattenIsoMessageService flattenMessageService;
+	@Autowired private FlattenIsoMessageService flattenMessageService;
+	@Autowired private RejectCodeRepository rejectCodeRepo;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -34,7 +39,21 @@ public class FlatResponseProcessor implements Processor {
 		else if (busMesg.getAppHdr().getMsgDefIdr().equals("admi.002.001.01")) {
 			
 			FlatAdmi002Pojo flatAdmi002 = flattenMessageService.flatteningAdmi002(busMesg);
-			exchange.getMessage().setBody(flatAdmi002);
+//			exchange.getMessage().setBody(flatAdmi002);
+			
+			FaultPojo fault = new FaultPojo();
+			fault.setCallStatus("ERROR");
+			fault.setResponseCode("RJCT");
+			fault.setReasonCode("U215");
+			fault.setReasonMessage("Message Rejected with Admi.002");
+			
+			Optional<RejectCode> oRejectCode = rejectCodeRepo.findById(flatAdmi002.getReason());
+			if (oRejectCode.isPresent()) 
+				fault.setErrorMessage(oRejectCode.get().getDescription());
+			
+			fault.setLocation("CIHUB");
+			fault.setOrgnlResponse(busMesg);
+			exchange.getMessage().setBody(fault);
 
 		}
 		

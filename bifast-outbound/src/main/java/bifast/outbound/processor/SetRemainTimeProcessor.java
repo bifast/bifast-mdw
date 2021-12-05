@@ -8,13 +8,13 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.config.Param;
+import bifast.outbound.config.Config;
 import bifast.outbound.pojo.RequestMessageWrapper;
 
 @Component
 public class SetRemainTimeProcessor implements Processor {
 	@Autowired
-	private Param param;
+	private Config param;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {

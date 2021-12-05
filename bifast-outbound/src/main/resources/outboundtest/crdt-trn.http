@@ -1,7 +1,7 @@
 # Credit Transfer Request from channel on generic endpoint
 
 # categorypurpuse 02.. akan reject by CB
-# norekDebitur 5xx akan response reject
+# norekCreditor 5xx akan response reject
 # jika norekCreditor 8xx timeout, get settlement
 # jika norekCreditor 88x timeout ct, no settlement 
 # positif test refId bukan 9 dan norek bukan 77-8-9
@@ -15,10 +15,10 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB211124110620257",
+		"NoRef": "MOB211124110620251",
 		"TerminalId": "GATEUSER",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "234567890",
+		"CreditorAccountNumber": "834567890",
 		"CreditorAccountType": "CACC",
 		"CreditorId": "KTP-205772715",
 		"CreditorType": "01",
@@ -27,10 +27,10 @@ Authorization: Basic MB:password
 		"CreditorTownName": "0300",
 		"CreditorProxyId": "",
 		"CreditorProxyType": "",
-		"Amount": "120000.00",
+		"Amount": "120000.57",
 		"FeeTransfer": "0.00",
 		"RecipientBank": "BSMDIDJA",
-		"DebtorAccountNumber": "012104794259",
+		"DebtorAccountNumber": "104794259",
 		"DebtorAccountType": "SVGS",
 		"DebtorId": "7555444443333",
 		"DebtorResidentialStatus": "01",

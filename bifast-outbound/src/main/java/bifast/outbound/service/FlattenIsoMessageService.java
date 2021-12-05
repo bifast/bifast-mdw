@@ -205,22 +205,22 @@ public class FlattenIsoMessageService {
 		flatMsg.setRegistrationId(data.getRegnRspn().getPrxyRegn().get(0).getRegnId());
 		flatMsg.setRegisterBank(data.getRegnRspn().getPrxyRegn().get(0).getAgt().getFinInstnId().getOthr().getId());
 
-		if (data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().size() > 0) {
+		if (data.getSplmtryData().size() > 0) {
 
-			if (null != data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId())
-				flatMsg.setCustomerId(data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
+			if (null != data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId())
+				flatMsg.setCustomerId(data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
 			
-			if (null != data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp())
-				flatMsg.setCustomerType(data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
+			if (null != data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp())
+				flatMsg.setCustomerType(data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
 	
 			if (null != data.getOrgnlGrpInf().getOrgnlCreDtTm())
 				flatMsg.setOrgnlCreDtTm(strTgl(data.getOrgnlGrpInf().getOrgnlCreDtTm()));
 	
-			if (null != data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts())
-				flatMsg.setResidentialStatus(data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
+			if (null != data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts())
+				flatMsg.setResidentialStatus(data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
 			
-			if (null != data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm())
-				flatMsg.setTownName(data.getRegnRspn().getPrxyRegn().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
+			if (null != data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm())
+				flatMsg.setTownName(data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
 		
 		}
 		

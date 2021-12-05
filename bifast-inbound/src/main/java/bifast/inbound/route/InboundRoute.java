@@ -27,7 +27,6 @@ public class InboundRoute extends RouteBuilder {
 		from("direct:receive").routeId("komi.inboundRoute")
 
 			.process(checkRequestMsgProcessor) 
-			.id("process1")
 			
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] ${header.hdr_msgType} received.")
 		
@@ -44,11 +43,7 @@ public class InboundRoute extends RouteBuilder {
 				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
 					.to("direct:accountenq")
 
-				.when().simple("${header.hdr_msgType} == '010'")    // terima credit transfer
-					.to("direct:crdttransfer")
-//					.setHeader("hdr_toBIobj", simple("${body}"))
-
-				.when().simple("${header.hdr_msgType} == '110'")    // terima credit transfer with proxy
+				.when().simple("${header.hdr_msgType} in '010,110'")    // terima credit transfer
 					.to("direct:crdttransfer")
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
@@ -63,8 +58,14 @@ public class InboundRoute extends RouteBuilder {
 				.otherwise()	
 					.log("[Inbound] Message ${header.hdr_msgType} tidak dikenal")
 			.end()
-
-		
+	
+			// kirim log notif ke Portal
+			.filter().simple("${header.hdr_msgType} in '510,010,110,011' ")
+				.setHeader("hdr_tmpbody", simple("${body}"))
+				.to("seda:portalnotif")
+				.setBody(simple("${header.hdr_tmpbody}"))
+			.end()
+				
 			// jika CT yang mesti reversal
 //			.choice()
 //				.when().simple("${header.hdr_reversal} == 'PENDING'")

@@ -15,7 +15,7 @@ public class InboundJsonRoute extends RouteBuilder {
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat jsonBusinessMessageDataFormat = jdfService.wrapUnwrapRoot(BusinessMessage.class);
+		JacksonDataFormat jsonBusinessMessageDataFormat = jdfService.unwrapRoot(BusinessMessage.class);
 
 		
 		restConfiguration()
@@ -29,7 +29,7 @@ public class InboundJsonRoute extends RouteBuilder {
 		;
 
 
-		from("direct:parsejson").routeId("komi.jsonInboundEndpoint")
+		from("direct:parsejson").routeId("komi.jsonEndpoint")
 			.convertBodyTo(String.class)
 			.setHeader("hdr_inputformat", constant("json"))
 			

@@ -26,7 +26,7 @@ public class CheckSettlementRoute extends RouteBuilder{
 		
 	    JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 
-		from("seda:caristtl").routeId("komi.findsttl")
+		from("direct:caristtl").routeId("komi.findsttl")
 			.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] sedang cari settlement.")
 			.setHeader("tmp_body", simple("${body}"))
 	
@@ -53,6 +53,7 @@ public class CheckSettlementRoute extends RouteBuilder{
 			.end()
 			
 			.setHeader("hdr_settlement", constant("FOUND"))
+
 			.filter().simple("${body} == null")
 				.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] Tidak ketemu settlement.")
 				.setHeader("hdr_settlement", constant("NOTFOUND"))

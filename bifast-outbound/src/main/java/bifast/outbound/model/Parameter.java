@@ -1,17 +1,22 @@
 package bifast.outbound.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity(name="KC_PARAMETER")
+@Entity(name="M_SYSTEMPARAM")
 public class Parameter {
 
 	@Id
 	private Integer id;
-	private String module;
-	private String code;
-	private String value;
-	private String notes;
+	
+	@Column(name="PARAMNAME")
+	private String paramName;
+	
+	@Column(name="PARAMVALUA")
+	private String paramValue;
+	
+	private String status;
 	
 	public Integer getId() {
 		return id;
@@ -19,30 +24,25 @@ public class Parameter {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public String getModule() {
-		return module;
+	public String getParamName() {
+		return paramName;
 	}
-	public void setModule(String module) {
-		this.module = module;
+	public void setParamName(String paramName) {
+		this.paramName = paramName;
 	}
-	public String getCode() {
-		return code;
+	public String getParamValue() {
+		return paramValue;
 	}
-	public void setCode(String code) {
-		this.code = code;
+	public void setParamValue(String paramValue) {
+		this.paramValue = paramValue;
 	}
-	public String getValue() {
-		return value;
+	public String getStatus() {
+		return status;
 	}
-	public void setValue(String value) {
-		this.value = value;
+	public void setStatus(String status) {
+		this.status = status;
 	}
-	public String getNotes() {
-		return notes;
-	}
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
+	
 	
 	
 }

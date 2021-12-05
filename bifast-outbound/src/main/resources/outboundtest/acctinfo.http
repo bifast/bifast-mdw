@@ -5,7 +5,8 @@ Authorization: Basic CMS:password
 
 {
   "AccountCustomerInfo" : {
-    "NoRef" : "20265",   
+    "NoRef" : "20265", 
+    "TerminalId" : "T00000",  
     "AccountNumber" : "2012104794259"
   }
 }
