@@ -5,6 +5,26 @@ Content-Type: application/json
 Authorization: Basic CMS:password
 
 {
+    "ProxyRegistrationRequest": {
+        "NoRef": "{{noRef}}",
+        "RegistrationType": "NEWR",
+        "ProxyType": "02",
+        "ProxyValue": "bams11@gmail.com",
+        "DisplayName": "JOHN SMITH",
+        "AccountNumber": "112222334",
+        "AccountType": "CACC",
+        "AccountName": "JOHN SMITH ",
+        "SecondaryIdType": "01",
+        "SecondaryIdValue": "KTP-222044001",
+        "CustomerType": "01",
+        "CustomerId": "KTP-220440201",
+        "ResidentialStatus": "01",
+        "TownName": "0300"
+    }
+}
+
+###
+{
     "ProxyRegistrationRequest" : {
         "NoRef" : "4111242",
         "RegistrationType" : "NEWR",

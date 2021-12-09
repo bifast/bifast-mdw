@@ -105,6 +105,7 @@ services:
       build: corebankiface
       container_name: mock-cb
       image: fransmzh/mock-cb:1.0
+      restart: always
       expose: 
         - "9007"
       ports: 

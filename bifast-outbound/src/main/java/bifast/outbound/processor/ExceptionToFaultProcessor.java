@@ -65,20 +65,23 @@ public class ExceptionToFaultProcessor implements Processor {
 
 		if (statusCode == 504) {
 			fault.setResponseCode("KSTS");
-			fault.setReasonCode("K000");
-			fault.setReasonCode(statusReasonRepo.findById("K000").orElse(new StatusReason()).getDescription());
+			fault.setReasonCode("K000"); 
+			fault.setReasonMessage(statusReasonRepo.findById("K000").orElse(new StatusReason()).getDescription());
 		}
 		else if (oFaultClass.isPresent()) {
+			
 			fault.setResponseCode("KSTS");
-			fault.setReasonCode(oFaultClass.get().getReason());
-			fault.setReasonCode(statusReasonRepo.findById("K000").orElse(new StatusReason()).getDescription());
+			String reasonCode = oFaultClass.get().getReason();
+			fault.setReasonCode(reasonCode);
+			fault.setReasonMessage(statusReasonRepo.findById(reasonCode).orElse(new StatusReason()).getDescription());
 		}
 		else {
 			fault.setResponseCode("RJCT");
 			fault.setReasonCode("U220");
 			fault.setReasonCode(statusReasonRepo.findById("U220").orElse(new StatusReason()).getDescription());
 		}
-		
+
+
 		responseCol.setFault(fault);
 		responseCol.setLastError(description);
 		exchange.getMessage().setHeader("hdr_response_list", responseCol);

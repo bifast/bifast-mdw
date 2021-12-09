@@ -1,7 +1,9 @@
 package bifast.library.iso20022.service;
 
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -117,6 +119,9 @@ public class Proxy002MessageService {
 		}
 
 		if (splmntExists) {
+
+			List<BISupplementaryData1> suppl = new ArrayList<>();
+			proxy002.setSplmtryData(suppl);
 			proxy002.getSplmtryData().add(new BISupplementaryData1());
 			proxy002.getSplmtryData().get(0).setEnvlp(new BISupplementaryDataEnvelopeDetail());
 			proxy002.getSplmtryData().get(0).getEnvlp().setDtl(new BISupplementaryDataEnvelope1());

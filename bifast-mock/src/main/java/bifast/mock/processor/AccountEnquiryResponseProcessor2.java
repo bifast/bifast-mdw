@@ -1,6 +1,5 @@
 package bifast.mock.processor;
 
-import java.util.Optional;
 import java.util.Random;
 
 import org.apache.camel.Exchange;
@@ -16,13 +15,11 @@ import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
-import bifast.mock.persist.AccountProxy;
-import bifast.mock.persist.AccountProxyRepository;
 
 @Component
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
-public class AccountEnquiryResponseProcessor implements Processor {
-	@Autowired AccountProxyRepository accountRepo;
+public class AccountEnquiryResponseProcessor2 implements Processor {
+
 	@Autowired
 	private AppHeaderService hdrService;
 	@Autowired
@@ -33,48 +30,38 @@ public class AccountEnquiryResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
+        Random rand = new Random();
+        // int posbl4 = rand.nextInt(4);
 
 		BusinessMessage msg = exchange.getIn().getBody(BusinessMessage.class);
 		String bizMsgId = utilService.genRfiBusMsgId("510", "02", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		String msgId = utilService.genMessageId("510", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 
 		String acctNo = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
-		String bank = msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+
 		exchange.getMessage().setHeader("hdr_account_no", acctNo);
 
-		AccountProxy account = null;
-		Optional<AccountProxy> oAcct = accountRepo.findByAccountNumberAndRegisterBank(acctNo, bank);
-		
 		Pacs002Seed seed = new Pacs002Seed();
-		seed.setMsgId(msgId);
-		seed.setCreditorAccountNo(acctNo);
 
-		if (oAcct.isPresent()) {
-			account = oAcct.get();
-			
-			if (account.getAccountStatus().equals("ACTV")) {
-				seed.setStatus("ACTC");
-				seed.setReason("U000");				
-			}
-			else {
-				seed.setStatus("RJCT");
-				seed.setReason("U102");				
-			}
-			
-			seed.setCreditorName(account.getAccountName());
-			seed.setCreditorAccountIdType(account.getAccountType());
-			seed.setCreditorType(account.getCstmrTp());
-			seed.setCreditorId(account.getCstmrId());
-			seed.setCreditorTown(account.getCstmrTwnNm());
-			seed.setCreditorResidentialStatus(account.getCstmrRsdntSts());
-		}
-		
-		else {
+		if (acctNo.startsWith("9")) {
+		// if (posbl4 == 0) {
 			seed.setStatus("RJCT");
-			seed.setReason("U101");
-			seed.setCreditorAccountIdType("OTHR");
+			seed.setReason("U102");
+		}
+		else {
+			seed.setStatus("ACTC");
+			seed.setReason("U000");
+			
 		}
 		
+		seed.setMsgId(msgId);
+		seed.setCreditorName(utilService.getFullName());
+		seed.setCreditorAccountNo(acctNo);
+		seed.setCreditorAccountIdType("CACC");
+		seed.setCreditorType("01");
+		seed.setCreditorId(String.format("KTP-2%08d", rand.nextInt(9999999)));
+		seed.setCreditorTown("0300");
+		seed.setCreditorResidentialStatus("01");
 		
 		FIToFIPaymentStatusReportV10 response = pacs002Service.accountEnquiryResponse(seed, msg);
 		

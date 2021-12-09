@@ -107,7 +107,8 @@ public class CreditTransferRoute extends RouteBuilder {
 			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] ${body.class}, ${header.ct_progress}.")
 
 			// jika response RJCT/ERROR, harus reversal ke corebanking
-			.filter().simple("${header.ct_progress} in 'REJECT,ERROR'")
+			// unt Teller tidak dilakukan KOMI tapi oleh Teller langsung
+			.filter().simple("${header.ct_progress} in 'REJECT,ERROR' && ${header.hdr_request_list.merchantType} != '6010'")
 				.log("akan reversal")
 				.to("seda:debitreversal")
 			.end()
@@ -118,7 +119,6 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 		;
 		
-
 		
 		from("seda:savecredittransfer")
 			.process(saveCrdtTrnsProcessor)

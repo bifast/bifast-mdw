@@ -1,6 +1,7 @@
 package bifast.mock.processor;
 
 import java.util.GregorianCalendar;
+import java.util.Optional;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -17,10 +18,12 @@ import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs002MessageService;
 import bifast.library.iso20022.service.Pacs002Seed;
+import bifast.mock.persist.AccountProxy;
+import bifast.mock.persist.AccountProxyRepository;
 
 @Component
 public class CreditTransferResponseProcessor implements Processor{
-
+	@Autowired AccountProxyRepository accountRepo;
 	@Autowired
 	private AppHeaderService hdrService;
 	@Autowired
@@ -36,42 +39,47 @@ public class CreditTransferResponseProcessor implements Processor{
 		String bizMsgId = utilService.genRfiBusMsgId("010", "02", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		String msgId = utilService.genMessageId("010", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 		
-		String norekDebitur = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId();
-		String norek = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
-		exchange.getMessage().setHeader("hdr_account_no", norek);
+		String norekCdtr = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
+		String bank = msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+		exchange.getMessage().setHeader("hdr_account_no", norekCdtr);
+
+		Optional<AccountProxy> oAcct = accountRepo.findByAccountNumberAndRegisterBank(norekCdtr, bank);
 
 		Pacs002Seed seed = new Pacs002Seed();
-		
 		seed.setMsgId(msgId);
 		
-		if (null == msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm())
-			seed.setCreditorName(utilService.getFullName());
-		else
+		AccountProxy account = null;
+		if (oAcct.isPresent()) {
+			account = oAcct.get();
+
+			if (account.getAccountStatus().equals("ACTV")) {
+				seed.setStatus("ACTC");
+				seed.setReason("U000");				
+				seed.setCreditorName(account.getAccountName());
+			}
+			else {
+				seed.setStatus("RJCT");
+				seed.setReason("U102");				
+			}
+		}
+		else {
+			seed.setStatus("RJCT");
+			seed.setReason("U101");
 			seed.setCreditorName(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
+		}
+		
 
 		seed.setCreditorType("01");
 		seed.setCreditorId(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
 		seed.setCreditorResidentialStatus("01");
 		seed.setCreditorTown(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
 
-        // int posbl4 = rand.nextInt(4);
-		if (norek.startsWith("5")) {
-			seed.setStatus("RJCT");
-			seed.setReason("U110");
-			seed.setAdditionalInfo("Additional Info abbc lsdjf 46");
-		}
-		else {
-			seed.setStatus("ACTC");
-			seed.setReason("U000");
-		}
-		
 
 		if (seed.getStatus().equals("ACTC"))	
 			exchange.getMessage().setHeader("hdr_ctRespondStatus", "ACTC");
 		else
 			exchange.getMessage().setHeader("hdr_ctRespondStatus", "RJCT");
 			
-
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 

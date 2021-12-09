@@ -205,7 +205,8 @@ public class FlattenIsoMessageService {
 		flatMsg.setRegistrationId(data.getRegnRspn().getPrxyRegn().get(0).getRegnId());
 		flatMsg.setRegisterBank(data.getRegnRspn().getPrxyRegn().get(0).getAgt().getFinInstnId().getOthr().getId());
 
-		if (data.getSplmtryData().size() > 0) {
+		if ((null != data.getSplmtryData()) && 
+			(data.getSplmtryData().size() > 0)) {
 
 			if (null != data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId())
 				flatMsg.setCustomerId(data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());

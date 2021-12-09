@@ -78,11 +78,13 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 
 			data.setSender_account_name(chnReq.getDbtrName());
 			data.setSender_account_no(chnReq.getDbtrAccountNo());
-			
-			if (null != chnReq.getCrdtProxyIdValue())
-				data.setProxyFlag("Y");
-			else
+
+			if ((null == chnReq.getCrdtProxyIdValue() ||
+				(chnReq.getCrdtProxyIdValue().isBlank()))) {
 				data.setProxyFlag("T");
+			}
+			else
+				data.setProxyFlag("Y");
 		}
 		
 		else if (rmw.getMsgName().equals("AEReq")) {

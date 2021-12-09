@@ -25,5 +25,6 @@ public interface AccountProxyRepository extends JpaRepository<AccountProxy, Long
 
 	Optional<AccountProxy> findByProxyTypeAndProxyVal(String proxyType, String proxyVal);
 	Optional<AccountProxy> findByReginId (String reginId);
+	Optional<AccountProxy> findByAccountNumberAndRegisterBank (String accountNumber, String registerBank);
 	
 }
