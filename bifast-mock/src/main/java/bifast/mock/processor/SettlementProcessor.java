@@ -76,6 +76,8 @@ public class SettlementProcessor implements Processor {
 
 		in.getAppHdr().setBizMsgIdr(bizMsgId);
 		in.getAppHdr().setBizSvc("STTL");
+		
+		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).setTxSts("ACSC");
 
 		in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().setMsgId(msgId);
 		

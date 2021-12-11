@@ -39,34 +39,26 @@ public class SettlementRoute extends RouteBuilder {
 			.routeId("settlement")
 
 			
-			.filter().simple("${body[CDTR_ACCT]} startsWith '88' ")
-				.setHeader("sttl_delay", constant("YES"))
-			.end()
-			.delay(1000)
-			
 			.setHeader("sttl_tableqry", simple("${body}"))
 			.setHeader("sttl_id", simple("${body[ID]}"))
 
 			.log("${header.sttl_tableqry[RESULT]}")
-			
-			.filter().simple("${header.sttl_tableqry[RESULT]} == 'ACTC'")
 	
-				.setBody(simple("${body[FULL_MESSAGE]}"))
-				.unmarshal(jsonBusinessMessageDataFormat)
+			.setBody(simple("${body[FULL_MESSAGE]}"))
+			.unmarshal(jsonBusinessMessageDataFormat)
+		
+			.process(settlementProcessor)
 			
-				.process(settlementProcessor)
-				
-				.filter().simple("${header.sttl_delay} != 'YES'")
-					.log("stty_delay null ya disini")
-					.marshal(jsonBusinessMessageDataFormat)
-					.log("Submit settlement: ${body}")
-	
-					.to("rest:post:service?host={{komi.inbound-url}}&"
-							+ "exchangePattern=InOnly&"
-							+ "bridgeEndpoint=true")
-				.end()
-				
+			.filter().simple("${header.sttl_delay} != 'YES'")
+				.log("stty_delay null ya disini")
+				.marshal(jsonBusinessMessageDataFormat)
+				.log("Submit settlement: ${body}")
+
+				.to("rest:post:service?host={{komi.inbound-url}}&"
+						+ "exchangePattern=InOnly&"
+						+ "bridgeEndpoint=true")
 			.end()
+			
 			
 			.to("sql:update mock_pacs002 set sttl = 'DONE' where id::varchar = :#${header.sttl_id}::varchar")
 			.removeHeaders("sttl_*")

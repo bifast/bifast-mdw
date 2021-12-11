@@ -113,21 +113,12 @@ public class CiHubRoute extends RouteBuilder {
 				.endChoice()
 
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
+					.log("Akan process CT")
 
 					.process(creditTransferResponseProcessor)
 
-					.setHeader("hdr_ctResponseObj",simple("${body}"))
-					.marshal(jsonBusinessMessageDataFormat)
-					.process(creditResponseStoreProcessor)
-					.setBody(simple("${header.hdr_ctResponseObj}"))
-
-					.filter().simple("${header.hdr_account_no} startsWith '8' ")
-						.delay(simple("${header.delay_ct}"))
-						.removeHeaders("*")
-						.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(504))
-						.setBody(constant("Timeout"))
-						.stop()
-					.end()	
+					.setHeader("hdr_ctResponseObj",simple("${body}"))		
+					
 				.endChoice()
 
 				.when().simple("${header.msgType} == 'PaymentStatusRequest'")

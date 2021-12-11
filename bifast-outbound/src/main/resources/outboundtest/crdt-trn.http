@@ -4,6 +4,7 @@
 # norekCreditor 5xx akan response reject
 # jika norekCreditor 8xx timeout, get settlement
 # jika norekCreditor 88x timeout ct, no settlement 
+# jika norekCreditor 9x reject admi002
 # positif test refId bukan 9 dan norek bukan 77-8-9
 
 #localhost:9002/komi-outbound/routing/
@@ -15,10 +16,10 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB211124110620251",
+		"NoRef": "MOB211214110620248",
 		"TerminalId": "GATEUSER",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "834567890",
+		"CreditorAccountNumber": "994567890",
 		"CreditorAccountType": "CACC",
 		"CreditorId": "KTP-205772715",
 		"CreditorType": "01",
