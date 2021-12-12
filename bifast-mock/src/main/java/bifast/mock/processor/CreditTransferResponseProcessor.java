@@ -42,45 +42,16 @@ public class CreditTransferResponseProcessor implements Processor{
 		
 		BusinessMessage objRequest = exchange.getMessage().getHeader("objRequest", BusinessMessage.class);		
 		
+		String addInfo = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0);
+
 		String norekCdtr = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
 		String bank = objRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
 		exchange.getMessage().setHeader("hdr_account_no", norekCdtr);
 
-		Optional<AccountProxy> oAcct = accountRepo.findByAccountNumberAndRegisterBank(norekCdtr, bank);
-
-		BusinessMessage result = buildBusinessMessage (objRequest, oAcct);
-
-		if (result.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts().equals("ACTC"))	
-			exchange.getMessage().setHeader("hdr_ctRespondStatus", "ACTC");
-		else
-			exchange.getMessage().setHeader("hdr_ctRespondStatus", "RJCT");
+		BusinessMessage resultMessg = null;
 		
-		exchange.getMessage().setBody(result);
-		
-		saveCreditResponse(objRequest, result);
-		
-		// jika norek 8xxx delay dulu 15 dtk.
-		String norek = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
-		String addInfo = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0);
-		System.out.println("Norek: " + norek);
-		if ((norek.equals("221211888")) || (norek.equals("221211999"))) {
-		    try
-		    {
-		    	System.out.println("delay dulu");
-		        Thread.sleep(15000);
-		    }
-		    catch(InterruptedException ex)
-		    {
-		        Thread.currentThread().interrupt();
-		    }
-
-			exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 504);
-			exchange.getMessage().setBody("Timeout");
-
-		}
-		
-		else if (norek.startsWith("99")) {
-			System.out.println("hooho");
+	
+		if (norekCdtr.startsWith("99")) {
 			String str = admi002();
 	    	ObjectMapper map = new ObjectMapper();
 	    	map.registerModule(new JaxbAnnotationModule());
@@ -90,6 +61,29 @@ public class CreditTransferResponseProcessor implements Processor{
 			exchange.getMessage().setBody(msg);
 		}
 
+		else {
+
+			Optional<AccountProxy> oAcct = accountRepo.findByAccountNumberAndRegisterBank(norekCdtr, bank);
+			resultMessg = buildBusinessMessage (objRequest, oAcct);
+			saveCreditResponse(objRequest, resultMessg);
+
+			if (addInfo.toUpperCase().equals("TIMEOUT")) {
+			    try
+			    {
+			    	System.out.println("delay dulu");
+			        Thread.sleep(15000);
+			        resultMessg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().setPrtry("U900");
+			    }
+			    catch(InterruptedException ex)
+			    {
+			        Thread.currentThread().interrupt();
+			    }
+			}
+			
+			exchange.getMessage().setBody(resultMessg);
+			
+		}
+		
 	}
 	
 	BusinessMessage buildBusinessMessage (BusinessMessage bmInput, Optional<AccountProxy> oAccount) throws Exception {
@@ -145,7 +139,45 @@ public class CreditTransferResponseProcessor implements Processor{
 
 		return busMesg;
 	}
+	
+	BusinessMessage buildTimeoutResponse (BusinessMessage bmInput) throws Exception {
+		
+		String bizMsgId = utilService.genRfiBusMsgId("010", "02", bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+		String msgId = utilService.genMessageId("010", bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 
+		Pacs002Seed seed = new Pacs002Seed();
+		seed.setMsgId(msgId);
+
+		seed.setStatus("RJCT");
+		seed.setReason("U900");
+		seed.setCreditorName(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
+		
+		seed.setCreditorType("01");
+		seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+		seed.setCreditorResidentialStatus("01");
+		seed.setCreditorTown(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
+
+		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, bmInput);
+		
+		GregorianCalendar gcal = new GregorianCalendar();
+		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+		response.getTxInfAndSts().get(0).getOrgnlTxRef().setIntrBkSttlmDt(xcal);
+
+		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
+		hdr = hdrService.getAppHdr(bmInput.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
+									"pacs.002.001.10", bizMsgId);
+		hdr.setBizSvc("CLEAR");
+		hdr.getFr().getFIId().getFinInstnId().getOthr().setId(bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+
+		BusinessMessage busMesg = new BusinessMessage();
+		Document doc = new Document();
+		doc.setFiToFIPmtStsRpt(response);
+
+		busMesg.setAppHdr(hdr);
+		busMesg.setDocument(doc);
+
+		return busMesg;
+	}
 
     public void saveCreditResponse (BusinessMessage requestMsg, BusinessMessage responseMsg) throws Exception {
 

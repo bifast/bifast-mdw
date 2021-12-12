@@ -100,13 +100,13 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 					//TODO lakukan reversal
 				
 				//init data reversal dulu
-				.process(new Processor() {
-					public void process(Exchange exchange) throws Exception {
-						CbDebitRequestPojo reversalReq = new CbDebitRequestPojo();
-						reversalReq.setAmount(null);
-					}
-					
-				})
+//				.process(new Processor() {
+//					public void process(Exchange exchange) throws Exception {
+//						CbDebitRequestPojo reversalReq = new CbDebitRequestPojo();
+//						reversalReq.setAmount(null);
+//					}
+//					
+//				})
 				.to("seda:debitreversal")
 				
 			.end()

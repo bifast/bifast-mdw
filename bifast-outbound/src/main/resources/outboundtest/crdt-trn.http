@@ -2,8 +2,7 @@
 
 # categorypurpuse 02.. akan reject by CB
 # norekCreditor 5xx akan response reject
-# jika norekCreditor 8xx timeout, get settlement
-# jika norekCreditor 88x timeout ct, no settlement 
+# jika norekCreditor 221211999 timeout (payInfo: RJCT unt RJCT)
 # jika norekCreditor 9x reject admi002
 # positif test refId bukan 9 dan norek bukan 77-8-9
 
@@ -16,10 +15,43 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB211214110620248",
+		"NoRef": "MOB211014110620266",
 		"TerminalId": "GATEUSER",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "994567890",
+		"CreditorAccountNumber": "221211888",
+		"CreditorAccountType": "CACC",
+		"CreditorId": "KTP-205772715",
+		"CreditorType": "01",
+		"CreditorName": "Joko Susilo",
+		"CreditorResidentialStatus": "01",
+		"CreditorTownName": "0300",
+		"CreditorProxyId": "",
+		"CreditorProxyType": "",
+		"Amount": "120000.57",
+		"FeeTransfer": "0.00",
+		"RecipientBank": "BMRIIDJA",
+		"DebtorAccountNumber": "104794259",
+		"DebtorAccountType": "SVGS",
+		"DebtorId": "7555444443333",
+		"DebtorResidentialStatus": "01",
+		"DebtorType": "01",
+		"DebtorTownName": "0300",
+		"DebtorName": "Purnama Erwin",
+		"PaymentInformation": "TIMEOUT"
+	}
+}
+
+###
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic MB:password
+
+{
+  "CreditTransferRequest" : {
+		"NoRef": "MOB211212110620255",
+		"TerminalId": "GATEUSER",
+		"CategoryPurpose": "01",
+		"CreditorAccountNumber": "221211999",
 		"CreditorAccountType": "CACC",
 		"CreditorId": "KTP-205772715",
 		"CreditorType": "01",
@@ -38,34 +70,7 @@ Authorization: Basic MB:password
 		"DebtorType": "01",
 		"DebtorTownName": "0300",
 		"DebtorName": "Purnama Erwin",
-		"PaymentInformation": ""
-	}
-}
-
-###
-{
-  "CreditTransferRequest" : {
-    "NoRef" : "27621",   
-    "TerminalId" : "40434",
-    "CategoryPurpose" : "01",
-    "DebtorName" : "JONI",
-    "DebtorId" : "6055",
-    "DebtorType" : "01",
-    "DebtorAccountNumber" : "2524214",
-    "DebtorAccountType" : "CACC",
-    "DebtorResidentialStatus": "01",
-    "DebtorTownName": "0300",
-    "Amount" : "120500.50",
-    "FeeTransfer" : "4000.00",
-    "RecipientBank" : "BMNDIDJA",
-    "CreditorName" : "JONI N",
-    "CreditorId" : "C12103",
-    "CreditorType" : "01",
-    "CreditorAccountNumber" : "742896",
-    "CreditorAccountType" : "SVGS",
-    "CreditorResidentialStatus": "01",
-    "CreditorTownName": "0300",
-    "PaymentInformation" : "bayaran"
+		"PaymentInformation": "TIMEOUT"
   }
 }
 

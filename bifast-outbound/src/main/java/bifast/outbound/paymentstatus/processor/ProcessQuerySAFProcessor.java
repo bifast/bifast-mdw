@@ -22,16 +22,13 @@ import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.ChannelRepository;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.CreditTransferRepository;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class ProcessQuerySAFProcessor implements Processor{
-//    private static final SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
-	@Autowired
-	private ChannelRepository channelRepo;
-	@Autowired
-	private ChannelTransactionRepository channelTrnsRepo;
-	@Autowired
-	private CreditTransferRepository creditTransferRepo;
+	@Autowired private ChannelRepository channelRepo;
+	@Autowired private ChannelTransactionRepository channelTrnsRepo;
+	@Autowired private CreditTransferRepository creditTransferRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -66,7 +63,7 @@ public class ProcessQuerySAFProcessor implements Processor{
 		rmw.setChannelType(channel.getChannelType());
 
 		rmw.setMerchantType(channel.getMerchantCode());
-		rmw.setKomiTrxId(chnlTrns.getKomiTrnsId());
+		rmw.setKomiTrxId(ct.getKomiTrnsId());
 		rmw.setKomiStart(chnlTrns.getRequestTime().atZone(ZoneOffset.systemDefault()).toInstant());
 		
 		ObjectMapper map = new ObjectMapper();

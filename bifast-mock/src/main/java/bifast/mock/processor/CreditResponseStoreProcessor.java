@@ -22,8 +22,6 @@ public class CreditResponseStoreProcessor implements Processor {
         BusinessMessage responseMsg = exchange.getMessage().getHeader("hdr_ctResponseObj", BusinessMessage.class);
         String fullMsg = exchange.getMessage().getBody(String.class);
 
-        // String sts = exchange.getMessage().getHeader("hdr_ctRespondStatus", String.class);
-
         // simpan sbg history
 			MockPacs002 pacs002 = new MockPacs002();
 			pacs002.setBizMsgIdr(responseMsg.getAppHdr().getBizMsgIdr());
