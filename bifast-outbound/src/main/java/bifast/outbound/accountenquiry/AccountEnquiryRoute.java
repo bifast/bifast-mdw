@@ -59,7 +59,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			})
 			
 			// akan panggil Proxy Resolution
-			.filter().simple("${body.creditorAccountNumber} == null")
+			.filter().simple("${body.creditorAccountNumber} == null || ${body.creditorAccountNumber} == '' ")
 				.log(LoggingLevel.DEBUG, "komi.acctenq", "[ChnlReq:${header.hdr_request_list.requestId}][AE] akan panggil ProxyResolution.")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {

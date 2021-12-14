@@ -125,10 +125,12 @@ public class FlattenIsoMessageService {
 				flatMsg.setCdtrAgtFinInstnId(txInfAndSts.getOrgnlTxRef().getCdtrAgt().getFinInstnId().getOthr().getId());
 			}
 			
-			if (!(null == txInfAndSts.getOrgnlTxRef().getCdtr().getPty())) {
-				
-				flatMsg.setCdtrNm(txInfAndSts.getOrgnlTxRef().getCdtr().getPty().getNm());
-
+			if (!(null == txInfAndSts.getOrgnlTxRef().getCdtr())) {
+				if (!(null == txInfAndSts.getOrgnlTxRef().getCdtr().getPty())) {
+					
+					flatMsg.setCdtrNm(txInfAndSts.getOrgnlTxRef().getCdtr().getPty().getNm());
+	
+				}
 			}
 
 			if (!(null == txInfAndSts.getOrgnlTxRef().getCdtrAcct())) {

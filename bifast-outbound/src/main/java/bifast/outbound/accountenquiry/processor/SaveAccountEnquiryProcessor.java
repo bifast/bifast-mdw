@@ -29,7 +29,7 @@ public class SaveAccountEnquiryProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		AccountEnquiry ae = new AccountEnquiry();
-
+		
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		
 		ChnlAccountEnquiryRequestPojo chnlRequest = rmw.getChnlAccountEnquiryRequest();
@@ -74,7 +74,8 @@ public class SaveAccountEnquiryProcessor implements Processor {
 			ae.setRespBizMsgIdr(response.getBizMsgIdr());
 			ae.setResponseCode(response.getResponseCode());
 			ae.setReasonCode(response.getReasonCode());
-
+			ae.setProxyId(chnlRequest.getProxyId());
+			
 			if (!(null==rmw.getCihubEncriptedResponse()))
 				ae.setFullResponseMsg(rmw.getCihubEncriptedResponse());
 		}

@@ -200,6 +200,14 @@ public class AccountEnquiry {
 		this.errorMessage = errorMessage;
 	}
 
+	public String getProxyId() {
+		return proxyId;
+	}
+
+	public void setProxyId(String proxyId) {
+		this.proxyId = proxyId;
+	}
+
 
 
 }

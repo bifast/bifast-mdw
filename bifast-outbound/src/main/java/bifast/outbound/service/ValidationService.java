@@ -29,10 +29,10 @@ public class ValidationService {
 			throw new InputValidationException ("Category Purpose type error");
 		}
 
-		if (null == aeReq.getCreditorAccountNumber()) {
-			if (null == aeReq.getProxyId())
+		if ((null == aeReq.getCreditorAccountNumber() || aeReq.getCreditorAccountNumber().isBlank())) {
+			if ((null == aeReq.getProxyId() || aeReq.getProxyId().isBlank()))
 				throw new InputValidationException("CreditorAccountNumber atau ProxyId/ProxyType tidak boleh kosong.");
-			if (null == aeReq.getProxyType())
+			if ((null == aeReq.getProxyType() || aeReq.getProxyType().isBlank()))
 				throw new InputValidationException("CreditorAccountNumber atau ProxyId/ProxyType tidak boleh kosong.");
 		}
 		

@@ -28,7 +28,7 @@ public class NotificationRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.notif.portal", "send log-notif ${body}")
 
 		    .removeHeaders("CamelHttp*")
-			.to("rest:post:portalapi?host={{komi.url.portalapi}}")
+			.to("rest:post:insert?host={{komi.url.portalapi}}")
 			.log("setelah logportal")
 		;
 
@@ -36,8 +36,8 @@ public class NotificationRoute extends RouteBuilder {
 			.marshal(custNotifJDF)
 			.log(LoggingLevel.DEBUG, "komi.notif.customer", "send cust-notif ${body}")
 		    .removeHeaders("CamelHttp*")
-			.to("rest:post:custnotif?host={{komi.url.custnotif}}")
-			.log("setelah notif customer")
+//			.to("rest:post:custnotif?host={{komi.url.custnotif}}")
+//			.log("setelah notif customer")
 
 		;
 
