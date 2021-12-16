@@ -110,7 +110,7 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 		}
 		
 		else if (rmw.getMsgName().equals("PrxRegnReq")) {
-			logMsg.setCodelog("PrxRegnReq");
+			logMsg.setCodelog("PR");
 			ChnlProxyRegistrationRequestPojo regnReq = rmw.getChnlProxyRegistrationRequest();
 			
 			data.setBifast_trx_no(rmw.getProxyRegistrationRequest().getAppHdr().getBizMsgIdr());
@@ -125,7 +125,7 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 
 		
 		else if (rmw.getMsgName().equals("PaymentStsSAF")) {
-			logMsg.setCodelog("PymtSts");
+			logMsg.setCodelog("PS");
 			ChnlCreditTransferRequestPojo chn = rmw.getChnlCreditTransferRequest();
 			
 			data.setKomi_unique_id(chn.getChannelRefId());

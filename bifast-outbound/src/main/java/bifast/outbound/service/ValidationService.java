@@ -116,6 +116,12 @@ public class ValidationService {
 				throw new InputValidationException("ResidentialStatus tidak boleh kosong.");
 			if (regnReq.getTownName().isBlank()) 
 				throw new InputValidationException("TownName tidak boleh kosong.");
+			if (regnReq.getSecondIdValue().isBlank())
+				throw new InputValidationException("SecondaryIdValue tidak boleh kosong.");
+			if (regnReq.getSecondIdType().isBlank())
+				throw new InputValidationException("SecondaryIdType tidak boleh kosong.");
+			if (regnReq.getProxyValue().isBlank())
+				throw new InputValidationException("ProxyValue tidak boleh kosong.");
 
 		}
 	}
