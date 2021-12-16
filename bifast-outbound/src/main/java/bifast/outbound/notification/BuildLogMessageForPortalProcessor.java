@@ -112,15 +112,28 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 		else if (rmw.getMsgName().equals("PrxRegnReq")) {
 			logMsg.setCodelog("PR");
 			ChnlProxyRegistrationRequestPojo regnReq = rmw.getChnlProxyRegistrationRequest();
-			
-			data.setBifast_trx_no(rmw.getProxyRegistrationRequest().getAppHdr().getBizMsgIdr());
+
+			data.setProxy_regn_opr(regnReq.getRegistrationType());
+
+			if (null == rmw.getChnlProxyRegistrationRequest())
+				data.setBifast_trx_no(rmw.getProxyResolutionRequest().getAppHdr().getBizMsgIdr());
+			else
+				data.setBifast_trx_no(rmw.getProxyRegistrationRequest().getAppHdr().getBizMsgIdr());
+
 			data.setProxy_alias(regnReq.getProxyValue());
 			data.setProxy_type(regnReq.getProxyType());
-			data.setSender_account_name(regnReq.getAccountName());
-			data.setSender_account_no(regnReq.getAccountNumber());
-			data.setScnd_id_type(regnReq.getSecondIdType());
-			data.setScnd_id_value(regnReq.getSecondIdValue());
-			data.setProxy_regn_opr(regnReq.getRegistrationType());
+			
+			if (null != regnReq.getAccountName())
+				data.setSender_account_name(regnReq.getAccountName());
+
+			if (null != regnReq.getAccountName())
+				data.setSender_account_no(regnReq.getAccountNumber());
+			
+			if (null != regnReq.getSecondIdType())
+				data.setScnd_id_type(regnReq.getSecondIdType());
+
+			if (null != regnReq.getSecondIdValue())
+				data.setScnd_id_value(regnReq.getSecondIdValue());
 		}
 
 		

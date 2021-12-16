@@ -66,7 +66,6 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 				.enrich("direct:call-cihub", prxyAggrStrg)
 			.end()
 			
-			.log("${body}")
 			
 			.filter().simple("${body.class} endsWith 'ChnlProxyRegistrationRequestPojo'")
 				.process(proxyRegistrationRequestProcessor)

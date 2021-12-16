@@ -51,10 +51,8 @@ public class CihubRoute extends RouteBuilder {
 	
 			.choice()
 				.when().simple("${properties:komi.output-format} == 'json'")
-					.log("Format JSON")
 					.marshal(businessMessageJDF)
 				.otherwise()
-					.log("Format XML")		
 					.marshal(jaxb)
 			.end()
 	
@@ -78,7 +76,7 @@ public class CihubRoute extends RouteBuilder {
 			})
 			
 			.process(setRemainTime)
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request dengan sisa waktu ${header.hdr_remain_time} ms.")
+//			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request dengan sisa waktu ${header.hdr_remain_time} ms.")
 			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
 			
 			.doTry()
