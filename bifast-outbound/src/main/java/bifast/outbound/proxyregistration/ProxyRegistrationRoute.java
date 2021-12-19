@@ -46,7 +46,7 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 		from("direct:prxyrgst").routeId("komi.prxyrgst")
 			.log(LoggingLevel.INFO, "komi.prxy.prxyrgst", "[ChRefId:${header.hdr_chnlRefId}] Proxy started.")
 			
-			// jika bukan NEWR, siapkan data request unt Proxy Resolution
+			// jika bukan NEWR, siapkan data request unt Proxy Resolution unt ambil RegistrationID
 			.filter().simple("${body.registrationType} != 'NEWR'")
 				.log(LoggingLevel.INFO, "komi.prxy.prxyrgst", "[ChRefId:${header.hdr_chnlRefId}] Proxy Resolution dulu.")
 				.process(new Processor() {

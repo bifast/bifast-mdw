@@ -4,6 +4,7 @@ import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.flat.FlatPrxy004Pojo;
@@ -15,23 +16,36 @@ public class ProxyEnrichmentAggregator implements AggregationStrategy {
 	@Override
 	public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 		
-		FlatPrxy004Pojo pxrxResltn = newExchange.getMessage().getBody(FlatPrxy004Pojo.class);
-		
-		ResponseMessageCollection rmc = oldExchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
-		rmc.setProxyResolutionResponse(pxrxResltn);
-		oldExchange.getMessage().setHeader("hdr_response_list", rmc);
-		
 		RequestMessageWrapper rmw = oldExchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		ChnlProxyRegistrationRequestPojo regnReq = rmw.getChnlProxyRegistrationRequest();
 
-		if (regnReq.getRegistrationType().equals("NEWR"))
-			regnReq.setRegistrationId("");
-		else {
-			regnReq.setRegistrationId(pxrxResltn.getRegistrationId());
+		Object oPxrxResltn = newExchange.getMessage().getBody(Object.class);
+		
+		FlatPrxy004Pojo pxrxResltn = null;
+		
+
+		if (oPxrxResltn.getClass().getSimpleName().equals("FlatPrxy004Pojo")) {
+			pxrxResltn = newExchange.getMessage().getBody(FlatPrxy004Pojo.class);
+			
+			ResponseMessageCollection rmc = oldExchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+			rmc.setProxyResolutionResponse(pxrxResltn);
+			oldExchange.getMessage().setHeader("hdr_response_list", rmc);
+
+			if (regnReq.getRegistrationType().equals("NEWR"))
+				regnReq.setRegistrationId("");
+			else {
+				regnReq.setRegistrationId(pxrxResltn.getRegistrationId());
+			}
+
 		}
 		
+		if (oPxrxResltn.getClass().getSimpleName().equals("FaultPojo")) {
+			FaultPojo fault = (FaultPojo) oPxrxResltn;
+			oldExchange.getMessage().setBody(fault);
+		}
+
 		// jika mau activate dan dari resolution status SUSP
-		if ((regnReq.getRegistrationType().equals("ACTV")) &&
+		else if ((regnReq.getRegistrationType().equals("ACTV")) &&
 			(pxrxResltn.getReasonCode().equals("U805")) ) {
 			
 			regnReq.setRegisterBic(pxrxResltn.getRegisterBank());
