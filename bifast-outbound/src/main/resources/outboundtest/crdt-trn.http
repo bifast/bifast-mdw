@@ -2,8 +2,9 @@
 
 # categorypurpuse 02.. akan reject by CB
 # norekCreditor 5xx akan response reject
-# jika norekCreditor 221211999 timeout (payInfo: RJCT unt RJCT)
-# jika norekCreditor 9x reject admi002
+# jika norekCreditor 221211999 RJCT 
+# Jika payInfo TIMEOUT, akan Timeout
+# jika norekCreditor 99x reject admi002
 # positif test refId bukan 9 dan norek bukan 77-8-9
 
 #localhost:9002/komi-outbound/routing/
@@ -15,7 +16,7 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB211014110620266",
+		"NoRef": "MOB211014110620276",
 		"TerminalId": "GATEUSER",
 		"CategoryPurpose": "01",
 		"CreditorAccountNumber": "221211888",

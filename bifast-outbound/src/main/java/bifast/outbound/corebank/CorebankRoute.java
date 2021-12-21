@@ -25,11 +25,10 @@ import bifast.outbound.service.JacksonDataFormatService;
 @Component
 public class CorebankRoute extends RouteBuilder{
 
-	@Autowired
-	private SaveCBTableProcessor saveCBTableProcessor;
-	@Autowired
-	private JacksonDataFormatService jdfService;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
+	@Autowired private SaveCBTableProcessor saveCBTableProcessor;
+	@Autowired private JacksonDataFormatService jdfService;
+	@Autowired private CBExceptionToFaultProcessor exceptionToFaultProcessor;
 
 	@Override
 	public void configure() throws Exception {
@@ -73,29 +72,37 @@ public class CorebankRoute extends RouteBuilder{
 	 		.log(LoggingLevel.DEBUG, "komi.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
 	 														+ " CB Request: ${body}")
 
-			.setHeader("HttpMethod", constant("POST"))
-			.enrich()
-				.simple("http://{{komi.url.corebank}}?"
-//					+ "socketTimeout=7000&" 
-					+ "bridgeEndpoint=true")
-				.aggregationStrategy(enrichmentAggregator)
+			.doTry()
 
-			.convertBodyTo(String.class)
-			
-//			.process(mockResponse)
-	 		.log(LoggingLevel.DEBUG, "komi.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
-	 														+ " CB Response: ${body}")
+				.setHeader("HttpMethod", constant("POST"))
+				.enrich()
+					.simple("http://{{komi.url.corebank}}?"
+	//					+ "socketTimeout=7000&" 
+						+ "bridgeEndpoint=true")
+					.aggregationStrategy(enrichmentAggregator)
 
-			.choice()
-				.when().simple("${header.cb_requestName} == 'debit'")
-					.unmarshal(debitResponseJDF)
-				.when().simple("${header.cb_requestName} ==  'emailphonelist'")
-					.unmarshal(customerInfoResponseJDF)
-				.when().simple("${header.cb_requestName} ==  'debitreversal'")
-					.unmarshal(debitReversalResponseJDF)
+				.convertBodyTo(String.class)
+				.choice()
+					.when().simple("${header.cb_requestName} == 'debit'")
+						.unmarshal(debitResponseJDF)
+					.when().simple("${header.cb_requestName} ==  'emailphonelist'")
+						.unmarshal(customerInfoResponseJDF)
+					.when().simple("${header.cb_requestName} ==  'debitreversal'")
+						.unmarshal(debitReversalResponseJDF)
+				.end()
+
+			.endDoTry()
+	    	.doCatch(Exception.class)
+				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_request_list.requestId}] Call Corebank Error.")
+		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+		    	.process(exceptionToFaultProcessor)
+	
 			.end()
-				
+
+					
 			.choice()
+				.when().simple("${body.class} endsWith 'FaultPojo'")
+		 			.log(LoggingLevel.DEBUG, "komi.corebank", "[ChReq:${header.hdr_request_list.requestId}] Fault")
 				.when().simple("${body.status} == 'RJCT'")
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {

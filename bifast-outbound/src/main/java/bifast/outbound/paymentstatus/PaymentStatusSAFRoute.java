@@ -119,8 +119,9 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.filter().simple("${body.psStatus} != 'UNDEFINED'")
 				.process(logPortalProcessor)
 				.marshal(portalLogJDF)
+				.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
 			    .removeHeaders("CamelHttp*")
-				.to("rest:post:portalapi?host={{komi.url.portalapi}}")
+				.to("rest:post:?host={{komi.url.portalapi}}")
 			.end()
 			
 			.removeHeaders("ps_*")

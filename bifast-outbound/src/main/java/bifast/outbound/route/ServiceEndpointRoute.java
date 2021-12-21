@@ -136,8 +136,10 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.to("seda:savetablechannel?exchangePattern=InOnly")
 			
-			.to("seda:logportal?exchangePattern=InOnly")
-				
+			.filter().simple("${header.hdr_request_list.msgName} in 'AEReq,CTReq,PrxRegnReq' ")
+				.to("seda:logportal?exchangePattern=InOnly")
+			.end()
+			
 			.removeHeaders("*")
 			.marshal(chnlResponseJDF)
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
