@@ -11,10 +11,10 @@ Authorization: Basic CMS:password
   "AccountEnquiryRequest" : {
     "NoRef" : "66755427",
     "SenderAccountNumber": "14395230",
-    "RecipientBank" : "BRINIDJA",
+    "RecipientBank" : "BMRIIDJA",
     "Amount" : "24520024.10",
     "CategoryPurpose" : "01",
-    "RecipientAccountNumber" : "77211777"
+    "RecipientAccountNumber" : "221211888"
  }
 }
 
