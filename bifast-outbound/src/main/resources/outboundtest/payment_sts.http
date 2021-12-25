@@ -5,8 +5,8 @@ Authorization: Basic MB:password
 
 {
     "PaymentStatusRequest" : {
-      "NoRef" : "212457",
-      "OriginalNoRef" : "MOB211124110620251"
+      "NoRef" : "21244257",
+      "OriginalNoRef" : "TLR2112351510000"
     }
 }
 

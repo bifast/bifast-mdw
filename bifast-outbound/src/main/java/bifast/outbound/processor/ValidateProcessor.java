@@ -45,12 +45,17 @@ public class ValidateProcessor implements Processor  {
 			throw new NoRefNullException("RefId tidak boleh lebih dari 20 char.");
 
 		String channelid = rmw.getChannelId(); 
+		String msgType = rmw.getMsgName();
 
 //		// noRef tidak boleh duplikat
 		List<ChannelTransaction> lChnlTrns = chnlTrnsRepo.findByChannelIdAndChannelRefId(channelid, noref); 
-		if (lChnlTrns.size()>0) 
-			throw new DuplicateIdException("Nomor RefId duplikat");
-
+		if ((msgType.equals("AEReq")) ||
+		 	(msgType.equals("CTReq")) || 
+		 	(msgType.equals("PrxRegnReq")) ) 
+		{
+			if (lChnlTrns.size()>0) 
+				throw new DuplicateIdException("Nomor RefId duplikat");
+		}
 
 		//TODO nilai transaksi harian
 		//TODO frekuensi transaksi harian
@@ -64,7 +69,6 @@ public class ValidateProcessor implements Processor  {
 		
 		Boolean validatePurpose = false;
 
-		String msgType = rmw.getMsgName();
 		
 //		if (msgType.equals("AEReq")) {
 		if (rmw.getChannelRequest().getClass().getSimpleName().equals("ChnlAccountEnquiryRequestPojo")) {

@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -43,10 +44,9 @@ public class PaymentStatusRoute extends RouteBuilder {
 			//find CT
 			.process(checkSAFResult)
 
-			.log("${body}")
+			.log(LoggingLevel.DEBUG, "komi.ps.chnl", "check result: ${body}")
 
 			.filter().simple("${header.hdr_response_list.reasonCode} == 'U000'")
-				.log("Akan unmarshal")
 				.unmarshal(ctRequestJDF)
 			.end()
 			
