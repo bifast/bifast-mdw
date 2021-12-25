@@ -4,6 +4,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.paymentstatus.UndefinedCTPojo;
@@ -15,7 +17,8 @@ public class PaymentStatusResponseProcessor implements Processor {
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
 
-    
+    private static Logger logger = LoggerFactory.getLogger(PaymentStatusResponseProcessor.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
@@ -32,18 +35,12 @@ public class PaymentStatusResponseProcessor implements Processor {
 			
 		}
 
-			
-//		else if (objResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
-//			//TODO subject of notification
-//			psReq.setPsStatus("UNDEFINED");
-//			psReq.setResponseCode("RJCT");
-//			psReq.setReasonCode("U215");
-//
-//		}
-
 		else {
 			
 			FlatPacs002Pojo biResp = (FlatPacs002Pojo)objResponse;
+
+			logger.debug("UndefinedCT : " + biResp.getReasonCode());
+			logger.debug("UndefinedCT : " + biResp.getTransactionStatus());
 
 			if (biResp.getReasonCode().equals("U900")) {
 				psReq.setPsStatus("UNDEFINED");

@@ -84,7 +84,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 
 			.log("hdr_settlement: ${header.hdr_settlement}")
 			.filter().simple("${header.hdr_settlement} == 'NOTFOUND'")	// jika tidak ada settlement
-//				.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${body[channel_ref_id]}]Tidak ada settlement, build PS Request")
+				.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${body[channel_ref_id]}]Tidak ada settlement, build PS Request")
 				.process(buildPSRequest)
 				.to("direct:call-cihub")				
 			.end()

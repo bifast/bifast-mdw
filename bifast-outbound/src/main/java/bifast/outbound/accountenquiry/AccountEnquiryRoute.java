@@ -89,7 +89,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 				.to("direct:call-cihub")
 			.end()
 			
-			.process(saveAccountEnquiryProcessor)
+//			.process(saveAccountEnquiryProcessor)
 
 			.process(accountEnqrResponseProcessor)
 

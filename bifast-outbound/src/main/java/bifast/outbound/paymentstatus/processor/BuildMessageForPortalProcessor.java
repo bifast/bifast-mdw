@@ -24,7 +24,7 @@ public class BuildMessageForPortalProcessor implements Processor {
 		PortalApiPojo logMsg = new PortalApiPojo();
 		LogDataPojo data = new LogDataPojo();
 
-		logMsg.setCodelog("PymtSts");
+		logMsg.setCodelog("PS");
 
 		data.setStatus_code("SUCCESS");
 		
