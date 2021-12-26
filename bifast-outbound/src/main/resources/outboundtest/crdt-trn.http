@@ -16,10 +16,10 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB211014110620276",
+		"NoRef": "MOB211214110620278",
 		"TerminalId": "GATEUSER",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "221211888",
+		"CreditorAccountNumber": "5221211888",
 		"CreditorAccountType": "CACC",
 		"CreditorId": "KTP-205772715",
 		"CreditorType": "01",
@@ -38,7 +38,7 @@ Authorization: Basic MB:password
 		"DebtorType": "01",
 		"DebtorTownName": "0300",
 		"DebtorName": "Purnama Erwin",
-		"PaymentInformation": "TIMEOUT"
+		"PaymentInformation": ""
 	}
 }
 

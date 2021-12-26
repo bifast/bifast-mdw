@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.ExceptionToFaultProcessor;
 import bifast.outbound.processor.FlatResponseProcessor;
@@ -76,7 +77,6 @@ public class CihubRoute extends RouteBuilder {
 			})
 			
 			.process(setRemainTime)
-//			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request dengan sisa waktu ${header.hdr_remain_time} ms.")
 			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
 			
 			.doTry()
@@ -103,11 +103,18 @@ public class CihubRoute extends RouteBuilder {
 						rmw.setCihubEncriptedResponse(body);
 						exchange.getMessage().setHeader("hdr_request_list", rmw);
 					}
-					
 				})
-				.setBody(simple("${header.tmp_body}"))
-	
+				
+				.setBody(simple("${header.tmp_body}"))	
 				.unmarshal(businessMessageJDF)
+				.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
+						ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+						rmc.setCihubResponse(bm);
+						exchange.getMessage().setHeader("hdr_response_list", rmc);
+					}
+				})
 				
 				.setHeader("hdr_error_status", constant(null))
 				

@@ -1,6 +1,5 @@
 package bifast.outbound.paymentstatus;
 
-
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.exception.PSNotFoundException;
 import bifast.outbound.notification.pojo.PortalApiPojo;
 import bifast.outbound.paymentstatus.processor.BuildMessageForPortalProcessor;
@@ -19,6 +17,7 @@ import bifast.outbound.paymentstatus.processor.PaymentStatusResponseProcessor;
 import bifast.outbound.paymentstatus.processor.ProcessQuerySAFProcessor;
 import bifast.outbound.paymentstatus.processor.UpdateStatusSAFProcessor;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
@@ -48,13 +47,15 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 				+ "join kc_channel_transaction cht on ct.komi_trns_id = cht.komi_trns_id "
 				+ "join kc_channel chnl on chnl.channel_id = cht.channel_id "
 				+ " where ct.call_status = 'TIMEOUT'"
-				+ "?delay=5000"
+				+ "?delay=10000"
 				+ "&sendEmptyMessageWhenIdle=true"
 				)
 			.routeId("komi.ps.saf")
 //			.autoStartup(false)
 						
-			.log("[ChnlReq:${body[channel_ref_id]}] PymtStsSAF started.")
+			.setHeader("ps_qryresult", simple("${body}"))
+			
+			.log("[ChnlReq:${header.ps_qryresult[channel_ref_id]}] PymtStsSAF started.")
 
 			// selesai dan matikan router jika tidak ada lagi SAF
 			.filter().simple("${body} == null")
@@ -84,13 +85,23 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 
 			.log("hdr_settlement: ${header.hdr_settlement}")
 			.filter().simple("${header.hdr_settlement} == 'NOTFOUND'")	// jika tidak ada settlement
-				.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${body[channel_ref_id]}]Tidak ada settlement, build PS Request")
+				.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${header.ps_qryresult[channel_ref_id]}]Tidak ada settlement, build PS Request")
 				.process(buildPSRequest)
 				.to("direct:call-cihub")				
 			.end()
 			
+			//TODO kalo terima settlement, forward ke Inbound Service
+			.filter().simple("${header.hdr_settlement} == 'NOTFOUND' "
+						+ "&& ${body.class} endsWith 'FlatPacs002Pojo' "
+						+ "&& ${body.transactionStatus} == 'ACSC' ")
+				.log(LoggingLevel.DEBUG, "komi.ps.saf", "Terima settlement dari CIHUB harus kirim ke Inbound Service")
+				.to("seda:fwd_settlement?exchangePattern=InOnly")
+			.end()
+
+			.log(LoggingLevel.DEBUG, "komi.ps.saf", "Akan proses response SAF")
 			.process(psResponseProcessor)
 
+			.log(LoggingLevel.DEBUG, "komi.ps.saf", "Akan update status Credit Transfer SAF")
 			.process(updateStatusProcessor)
 			
 			.log("[ChnlReq:${header.ps_request.channelNoref}] PymtStsSAF result: ${body.psStatus}")
@@ -98,17 +109,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.filter().simple("${body.psStatus} == 'REJECTED'")
 				.log("${body.reqBizmsgid} Rejected")
 					//TODO lakukan reversal
-				
-				//init data reversal dulu
-//				.process(new Processor() {
-//					public void process(Exchange exchange) throws Exception {
-//						CbDebitRequestPojo reversalReq = new CbDebitRequestPojo();
-//						reversalReq.setAmount(null);
-//					}
-//					
-//				})
 				.to("seda:debitreversal")
-				
 			.end()
 			
 			//TODO call notifikasi
@@ -127,6 +128,21 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.removeHeaders("ps_*")
 					
 		;
+
+		from("seda:fwd_settlement").routeId("komi.ps.fwd_settlement")
+			.setHeader("ps_tmpbody", simple("${body}"))
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+					exchange.getMessage().setBody(rmc.getCihubResponse(), BusinessMessage.class);
+				}
+			})
+			.marshal(businessMessageJDF)
+			.log("${body}")
+			.to("rest:post:?host={{komi.url.inbound}}")
+			.setBody(simple("${header.ps_tmpbody}"))
+		;
+
 
 	}
 

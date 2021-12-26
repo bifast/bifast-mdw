@@ -48,7 +48,7 @@ public class PaymentStatusResponseProcessor implements Processor {
 				psReq.setReasonCode("K000");
 			}
 			
-			else if (biResp.getTransactionStatus().equals("ACTC")) {
+			else if (biResp.getTransactionStatus().equals("ACSC")) {
 				psReq.setPsStatus("ACCEPTED");
 				psReq.setResponseCode("ACTC");
 				psReq.setReasonCode(biResp.getReasonCode());

@@ -23,6 +23,7 @@ public class ResponseMessageCollection {
 	private ChnlProxyResolutionResponsePojo chnlProxyResolutionResponse;
 	
 	private Object corebankResponse;
+	private Object cihubResponse;
 	
 	private BusinessMessage accountEnquiryResponse;
 	private FlatPacs002Pojo creditTransferResponse;
@@ -72,6 +73,12 @@ public class ResponseMessageCollection {
 	}
 	public void setCorebankResponse(Object corebankResponse) {
 		this.corebankResponse = corebankResponse;
+	}
+	public Object getCihubResponse() {
+		return cihubResponse;
+	}
+	public void setCihubResponse(Object cihubResponse) {
+		this.cihubResponse = cihubResponse;
 	}
 	public ChnlAccountEnquiryResponsePojo getChnlAccountEnquiryResponse() {
 		return chnlAccountEnquiryResponse;

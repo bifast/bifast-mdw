@@ -82,6 +82,10 @@ public class CorebankRoute extends RouteBuilder{
 					.aggregationStrategy(enrichmentAggregator)
 
 				.convertBodyTo(String.class)
+				
+		 		.log(LoggingLevel.DEBUG, "komi.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
+							+ " CB Response: ${body}")
+
 				.choice()
 					.when().simple("${header.cb_requestName} == 'debit'")
 						.unmarshal(debitResponseJDF)

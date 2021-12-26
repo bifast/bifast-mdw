@@ -1,6 +1,7 @@
 package bifast.outbound.paymentstatus.processor;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -67,6 +68,9 @@ public class UpdateStatusSAFProcessor implements Processor{
 
 		ct.setLastUpdateDt(LocalDateTime.now());
 		
+		Long dur = ChronoUnit.MILLIS.between(ct.getCreateDt(), LocalDateTime.now());
+		ct.setCihubElapsedTime(dur);
+
 		if (ct.getPsCounter()== config.getMaxRetryBeforeNotif()) 
 			exchange.getMessage().setHeader("ps_notif", "yes");
 		else
