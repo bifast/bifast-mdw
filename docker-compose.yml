@@ -64,7 +64,7 @@ services:
         - KOMI.URL.CICONNECTOR=komi-mock:9006/mock/cihub
         - KOMI.URL.COREBANK=mock-cb:9007/api/corebank
         - KOMI.URL.PORTALAPI=komi-mock:9006/mock
-        - KOMI.URL.INBOUND=komi-inbound:9001/komi-inbound/json
+        - KOMI.URL.INBOUND=komi-inbound:9001/komi-inbound/json/service
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.BICODE=INDOIDJA
         - LOGGING.FILE.NAME=/home/logs/komi-outbound.log
