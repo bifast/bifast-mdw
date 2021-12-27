@@ -1,0 +1,181 @@
+"status_reason_code","description","status_code"
+U000,Success/ Transaction Accepted,ACSP
+U002,Success/ Transaction Accepted Stored in SAF,ACTC
+U101,Tenant Not Found,RJCT
+U102,Tenant Not Active,RJCT
+U103,Tenant Undefined,RJCT
+U104,Inbound Scheme Not Found,RJCT
+U106,Original Payment Not Found,OTHR
+U107,Original Payment Rejected,OTHR
+U108,Original Payment Not Responded,OTHR
+U111,Minimum Amount Check Failed,RJCT
+U112,Maximum Amount Check Failed,RJCT
+U114,Mod 10 check failed,RJCT
+U115,Date Sent Tolerance Check failed,RJCT
+U116,Date Settlement Tolerance Check failed,RJCT
+U117,Original Date Tolerance configuration error,RJCT
+U118,Original Date Tolerance check failed,RJCT
+U119,Session Validation Failed,RJCT
+U121,Inbound Bank Not Found,RJCT
+U122,Inbound Bank Not Active,RJCT
+U123,Product Undefined,RJCT
+U124,Bank Code Not Found,RJCT
+U125,Inbound Bank Id Cannot be Determined (Bank Classifier not found),RJCT
+U126,Outbound Bank Cannot be Determined,RJCT
+U128,Outbound Bank Not Active,RJCT
+U129,Payee Bank Unavailable,RJCT
+U130,Inbound Settlement Bank not found,RJCT
+U131,Outbound Settlement Bank not found,RJCT
+U132,Inbound Settlement Bank Inactive,RJCT
+U134,Outbound Settlement Bank Inactive,RJCT
+U135,Pre-Authorization Match Not Found,RJCT
+U136,Pre-Authorization Bank Account Check Failed,RJCT
+U137,Pre-Authorization Timeout,RJCT
+U138,Pre-Authorization Config Not Found,RJCT
+U139,Pre-Authorization Endpoint or Channel Not Configured,RJCT
+U140,Pre-Authorization Exception No Response Returned,RJCT
+U141,Pre-Authorization Exception,RJCT
+U142,Pre-Authorization Stand-In Limit Exceeded,RJCT
+U143,Pre-Authorization Stand-In Account Not Found,RJCT
+U144,Pre-Authorization Stand-In Account Inactive,RJCT
+U145,Pre-Authorization Stand-In Insufficient Funds,RJCT
+U146,Pre-Authorization Stand-In Not Permitted,RJCT
+U147,Pre-Authorization No Stand-In Response,RJCT
+U149,Duplicate Transaction,RJCT
+U150,Notification Configuration Not Found,RJCT
+U151,Notification Endpoint Or Channel Not Configured,RJCT
+U155,Fraud Check Failed,RJCT
+U156,Sanction Check Failed,RJCT
+U157,AML Check Failed,RJCT
+U159,Pre-Authorization Stand-In Rejected with Default Status,RJCT
+U160,Settlement Rules Not Found,RJCT
+U161,Settlement Endpoint Or Channel Not Configured,RJCT
+U162,Settlement Confirmation Not Received,RJCT
+U163,Forwarded Settlement Confirmation Response Not Received,RJCT
+U164,Settlement Total Management Not Configured,RJCT
+U170,Online Route Not Found,RJCT
+U171,Online Authorization Exception,RJCT
+U172,Online Authorization Exception No Response returned,RJCT
+U173,Online Authorization Exception Timeout,RJCT
+U180,Authorization Service is Not Configured,RJCT
+U181,Stand-In Limit Exceeded,RJCT
+U182,Stand In Account Not Found,RJCT
+U183,Stand In Account Inactive,RJCT
+U184,Stand In Insufficient Funds,RJCT
+U185,Stand In Not Permitted,RJCT
+U186,Stand In No Response,RJCT
+U187,Stand In forwarding Advice cannot be delivered,RJCT
+U189,Stand-In Rejected With Default Status,RJCT
+U191,Liquidity Rules Not Found,RJCT
+U192,Liquidity Position Validation Rule not found (Threshold limits),RJCT
+U193,Liquidity Position Validation Failure,RJCT
+U194,Insufficient Liquidity to process payment,RJCT
+U195,Liquidity Forced Payment Rejection,RJCT
+U196,Liquidity Parameter Invalid Or Null,RJCT
+U197,Liquidity Parameters Not Found,RJCT
+U198,Liquidity Validation Not Found,RJCT
+U199,Liquidity Position Definition Not Found,RJCT
+U200,LQM Maximum Amount Not Found,RJCT
+U201,LQM Maximum Amount Exceeded,RJCT
+U202,LQM Net Sender Threshold Limit Not Found,RJCT
+U203,LQM Insufficient Net Sender Funds,RJCT
+U205,Scheme Settlement Body Unavailable,RJCT
+U206,Settlement Rejection,RJCT
+U207,Default Settlement Body Not Defined,RJCT
+U208,Settlement Forward Confirmation Send Failed,RJCT
+U209,Settlement Forward Confirmation Receive Failed,RJCT
+U210,Outbound Scheme Not Found,RJCT
+U211,Outbound Scheme Not Active,RJCT
+U212,Connector Not Found,RJCT
+U213,Connector Configuration Error,RJCT
+U214,Clearing Rejection,RJCT
+U215,Message Rejected with Admi.002,RJCT
+U220,Exception Handler Failure,RJCT
+U799,Alias Management Rule not found,RJCT
+U801,Addressing Agency cannot be determined,RJCT
+U802,Addressing Privilege not defined,RJCT
+U803,Insufficient Privilege,RJCT
+U804,Alias Not Found Or Inactive,RJCT
+U805,Alias Is Suspended / Activated,RJCT
+U806,Alias belongs to same FI but different account,RJCT
+U807,Alias already registered with another FI,RJCT
+U808,Alias already registered with the same account,RJCT
+U809,Not sufficient privilege to perform addressing action on an alias,RJCT
+U810,Alias Request Failed,RJCT
+U811,Alias suspended by Administrator,RJCT
+U812,Alias Destination Not Configured,RJCT
+K002,NoRefDuplicate,KSTS
+U813,Cache Alias Maintenance Failed,RJCT
+U814,Alias already registered with same FI,RJCT
+U815,Duplicate Alias Service Request,RJCT
+U900,Internal Timeout,RJCT
+U901,System Malfunction,RJCT
+U902,Connection Or Communication Error,RJCT
+U904,Endpoint Error,RJCT
+U990,Session Error,RJCT
+U992,Response Not Delivered,RJCT
+U993,Reason Code not determined in response ,RJCT
+U999,Signature Verification Failure,RJCT
+U221,MandateRulesNotFound,RJCT
+U222,MandateMasterUpdateError,RJCT
+U223,MandateRecordNotFound,RJCT
+U224,MandateStartDateLessThanCurrentDate,RJCT
+U225,MandateStartDateFormatError,RJCT
+U226,MandateEndDateLessThanCurrentDate,RJCT
+U227,MandateEndDateFormatError,RJCT
+U228,MandateFrequencyTypeValidationError,RJCT
+U229,MandateUpdaterNotKnown,RJCT
+U230,MandateSenderNotAllowedToUpdate,RJCT
+U231,MandateStatusValidationError,RJCT
+U232,AmountGreaterThanMaximumLimit,RJCT
+U233,MadateAmountMissing,RJCT
+U234,RequestBeforeMandateStartDate,RJCT
+U235,FutureMandateCannotBeUpdated,RJCT
+U236,ExpiredMandateCannotBeUpdated,RJCT
+U237,CancelledMandateCannotBeUpdated,RJCT
+U238,RequestAfterMandateEndDate,RJCT
+U239,HoldDateExceedsExipryDate,RJCT
+U851,General Purpose Rules Not Found,RJCT
+U312,RequestForPayNotFound,RJCT
+U313,RequestForPayAlreadyProcessed,RJCT
+U314,RequestForPayAlreadyRejected,RJCT
+U315,RequestForPayInvalidState,RJCT
+U316,RequestForPayAlreadyReceived,RJCT
+U317,RequestForPayInvalidDbtrAgt,RJCT
+U318,ExpiryDateLessThanCurrentDate,RJCT
+U319,ExpiryDateFormatError,RJCT
+U320,RequestedExecutionDateLessThanCurrentDate,RJCT
+U321,RequestedExecutionDateFormatError,RJCT
+U310,RequestForPayExpired,RJCT
+U311,RequestForPayAlreadyTransferred,RJCT
+U322,MandateIsNotActive,RJCT
+U323,InvalidDebtorAgent,RJCT
+U324,InvalidOriginalDebtorAgent,RJCT
+U325,MandateAlreadyTransferred,RJCT
+U300-U309,Reserved for private use ,RJCT
+U326,RequestForPayAlreadyAccepted,RJCT
+U327,MerchantNotActive,RJCT
+U328,MerchantProductNotFound,RJCT
+U329,MerchantNotFound,RJCT
+U330,MerchantParameterNotFound,RJCT
+U331,MerchantMinAmountCheckFailed,RJCT
+U332,MerchantMaxAmountCheckFailed,RJCT
+U333,DateXpryCheckFailed,RJCT
+U334,MandateIsNotPending,RJCT
+U335,RPFLookupRulesNotFound,RJCT
+U336,PreAuthExpiryDateFormatError,RJCT
+U337,PreAuthExpiryDateExceedsMandateExipryDate,RJCT
+U338,PreAuthExpiryDateLessThanCreDtTm,RJCT
+U339,PreAuthExpiryDateLessThanCurrentDate,RJCT
+U340,MechantProductNotActive,RJCT
+U341,MerchantValidationRuleNotFound,RJCT
+U342,MerchantProductBankCodeNotFound,RJCT
+K000,Timeout/ On-progress,KSTS
+K003,InputValidationFailure,KSTS
+K001,NoRefNotFound,KSTS
+K004,TransactionLimitViolation,KSTS
+K005,AuthenticationFailure,KSTS
+K006,Communication Error,KSTS
+K010,KomiInternalError,KSTS
+K007,Database table error,KSTS
+U110,Payment Not Accepted,RJCT

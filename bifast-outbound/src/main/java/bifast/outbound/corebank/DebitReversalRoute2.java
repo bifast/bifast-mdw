@@ -11,8 +11,8 @@ import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 
-@Component
-public class DebitReversalRoute extends RouteBuilder{
+//@Component
+public class DebitReversalRoute2 extends RouteBuilder{
 	
 	@Override
 	public void configure() throws Exception {
@@ -37,25 +37,7 @@ public class DebitReversalRoute extends RouteBuilder{
 			})
 			
 			//submit reversal
-//			.to("seda:callcb")
-			.doTry()
-
-				.setHeader("HttpMethod", constant("POST"))
-				.enrich()
-					.simple("http://{{komi.url.isoadapter}}?"
-	//					+ "socketTimeout=7000&" 
-						+ "bridgeEndpoint=true")
-					.aggregationStrategy(enrichmentAggregator)
-	
-				.convertBodyTo(String.class)
-
-			.endDoTry()
-	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_request_list.requestId}] Call Corebank Error.")
-		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-//		    	.process(exceptionToFaultProcessor)
-	
-			.end()
+			.to("seda:callcb")
 			
 			.log("Hasil reversal: ${body}")
 			.filter().simple("${body} is 'bifast.outbound.pojo.FaultPojo'")
