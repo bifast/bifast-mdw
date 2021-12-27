@@ -4,37 +4,51 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.corebank.pojo.CbDebitReversalRequestPojo;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
+import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.processor.EnrichmentAggregator;
+import bifast.outbound.repository.CreditTransferRepository;
+import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class DebitReversalRoute extends RouteBuilder{
+	@Autowired private DebitReversalRequestProcessor debitReversalRequestProcessor;
+	@Autowired private EnrichmentAggregator enrichmentAggregator;
+	@Autowired private JacksonDataFormatService jdfService;
+	@Autowired private CreditTransferRepository ctRepo;
 	
 	@Override
 	public void configure() throws Exception {
 		
+		JacksonDataFormat debitReversalRequestJDF = jdfService.wrapRoot(CbDebitReversalRequestPojo.class);
+
 		from("seda:debitreversal").routeId("komi.reverse_ct")
 			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] akan Reversal.")
 			.setHeader("ct_progress", constant("REVERSAL"))
 			.setHeader("ct_tmpbody", simple("${body}"))
 			
+			//find orignal request
+//			.process(new Processor() {
+//				public void process(Exchange exchange) throws Exception {
+//					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+//					ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
+//					CreditTransfer ct = ctRepo.findByKomiTrnsId(rmw.getKomiTrxId()).orElse(new CreditTransfer());
+//					if (null != ct.getKomiTrnsId()) 
+//						exchange.getMessage().setBody(ct.getFullRequestMessage());
+//					else 
+//						exchange.getMessage().setBody(null);
+//				}
+//			})
+			
 			// build reversal message
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-					ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
-					CbDebitReversalRequestPojo reversalReq = new CbDebitReversalRequestPojo();
-					reversalReq.setKomiTrnsId(rmw.getKomiTrxId());
-					reversalReq.setOrgnlAccountNumber(chnReq.getDbtrAccountNo());
-					reversalReq.setOrgnlKomiTrnsId(rmw.getKomiTrxId());
-					
-					exchange.getMessage().setBody(reversalReq);
-				}
-			})
+			.process(debitReversalRequestProcessor)
 			
 			//submit reversal
 //			.to("seda:callcb")

@@ -50,6 +50,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 			.process(exceptionProcessor)
 			.marshal(chnlResponseJDF)
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
+			.log("=====*****=====")
 			.removeHeaders("*")
 			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
@@ -132,7 +134,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.end()
 			
 
-			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} finish.")
+			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} complete.")
 
 			.to("seda:savetablechannel?exchangePattern=InOnly")
 			
@@ -143,6 +145,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.removeHeaders("*")
 			.marshal(chnlResponseJDF)
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
+			.log("=====*****=====")
 
 		;
 		
