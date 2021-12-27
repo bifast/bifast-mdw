@@ -1,5 +1,6 @@
 package bifast.inbound.settlement;
 
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,13 +15,15 @@ public class SettlementRoute extends RouteBuilder {
 		from("direct:settlement").routeId("komi.settlement")
 			
 			// prepare untuk request ke corebank
-			.log("Terima settlement ${body}")
 			.process(settlementProcessor)
 
-	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Submit Settlement ke corebank")
+	 		.log(LoggingLevel.DEBUG, "komi.settlement", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Submit Settlement ke corebank")
 
-	 		.filter().simple("${body.orgnlKomiTrnsId} != null")
-				.to("seda:callcb")
+	 		.choice()
+	 			.when().simple("${body.orgnlKomiTrnsId} != null")
+	 				.to("seda:callcb")
+				.otherwise()
+					.log("Settlement tidak match")
 			.end()
 
 	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai proses Settlement ")

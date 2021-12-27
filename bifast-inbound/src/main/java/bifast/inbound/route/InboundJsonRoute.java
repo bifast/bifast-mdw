@@ -31,6 +31,7 @@ public class InboundJsonRoute extends RouteBuilder {
 
 		from("direct:parsejson").routeId("komi.jsonEndpoint")
 			.convertBodyTo(String.class)
+			.log("Terima: ${body}")
 			.setHeader("hdr_inputformat", constant("json"))
 			
 			// simpan msg inbound compressed

@@ -36,6 +36,7 @@ public class CorebankRoute extends RouteBuilder{
 
 		// ROUTE CALLCB 
 		from("seda:callcb").routeId("komi.corebank")
+			.log("Terima di corebank: ${body}")
 
 			.choice()
 				.when().simple("${body.class} endsWith 'CbAccountEnquiryRequestPojo'")
@@ -49,11 +50,13 @@ public class CorebankRoute extends RouteBuilder{
 				.when().simple("${body.class} endsWith 'CbSettlementRequestPojo'")
 					.setHeader("cb_requestName", constant("settlement"))
 					.marshal(settlementJDF)
+		 			.log("Akan kirim settlment: ${body}")
 			.end()
 					
 	 		.log(LoggingLevel.DEBUG, "komi.corebank", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}]"
 	 														+ " CB Request: ${body}")
-			.doTry()
+
+	 		.doTry()
 
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich()

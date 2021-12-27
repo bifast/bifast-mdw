@@ -44,7 +44,7 @@ public class AcctCustInfoRoute extends RouteBuilder{
 					aciReq.setKomiTrnsId(rmw.getKomiTrxId());
 					aciReq.setMerchantType(rmw.getMerchantType());
 					aciReq.setNoRef(chnlReq.getNoRef());
-					aciReq.setTerminalId("000000");
+					aciReq.setTerminalId(chnlReq.getTerminalId());
 					exchange.getMessage().setBody(aciReq);
 				}
 			})

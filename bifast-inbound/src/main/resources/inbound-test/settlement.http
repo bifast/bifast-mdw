@@ -31,19 +31,19 @@ Content-Type: application/json
     "Document": {
       "FIToFIPmtStsRpt": {
         "GrpHdr": {
-          "MsgId": "20211110SIHBIDJ101000000153",
+          "MsgId": "20211226SIHBIDJ1110O0200000630",
           "CreDtTm": "2021-11-10T09:34:40.377"
         },
         "OrgnlGrpInfAndSts": [
           {
-            "OrgnlMsgId": "20211110BMNDIDJA01000000040",
+            "OrgnlMsgId": "20211226SIHBIDJ1110O0200000631",
             "OrgnlMsgNmId": "pacs.008.001.08",
             "OrgnlCreDtTm": "2021-11-03T14:50:50.222"
           }
         ],
         "TxInfAndSts": [
           {
-            "OrgnlEndToEndId": "20211110BMNDIDJA010O0100000043",
+            "OrgnlEndToEndId": "20211226SIHBIDJ1110O0200000630",
             "OrgnlTxId": "20211110BMNDIDJA01000000040",
             "TxSts": "ACSC",
             "StsRsnInf": [
