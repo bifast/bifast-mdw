@@ -17,7 +17,7 @@ Authorization: Basic MB:password
 {
 	"CreditTransferRequest": {
 		"NoRef": "MOB21121411062028",
-		"TerminalId": "GATEUSER",
+		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
 		"CreditorAccountNumber": "112211333",
 		"CreditorAccountType": "CACC",
