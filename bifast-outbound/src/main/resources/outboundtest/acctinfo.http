@@ -6,7 +6,7 @@ Authorization: Basic MB:password
 {
   "AccountCustomerInfo" : {
     "NoRef" : "202652", 
-    "TerminalId" : "T00000",  
+    "TerminalId" : "T00001",  
     "AccountNumber" : "2012104794259"
   }
 }
