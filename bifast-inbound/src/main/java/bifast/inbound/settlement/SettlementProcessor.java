@@ -22,22 +22,13 @@ public class SettlementProcessor implements Processor {
 		
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 		FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
-		
-		System.out.println(flatSttl.getOrgnlEndToEndId());
-		CreditTransfer orgnlCT = null;
-		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatSttl.getOrgnlEndToEndId());	
-		
-		for (CreditTransfer ct : lCrdtTrns) {
-			System.out.println(ct.getResponseCode());
-			if (ct.getResponseCode().equals("ACTC"))
-				orgnlCT = ct;
-		}
-		
+
 		CbSettlementRequestPojo sttl = new CbSettlementRequestPojo();
 		sttl.setKomiTrnsId(processData.getKomiTrnsId());
-		
-		if (null!=orgnlCT)
-			sttl.setOrgnlKomiTrnsId(orgnlCT.getKomiTrnsId());
+
+		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatSttl.getOrgnlEndToEndId());	
+		if (lCrdtTrns.size()>0)
+			sttl.setOrgnlKomiTrnsId(lCrdtTrns.get(0).getKomiTrnsId());
 		
 		exchange.getMessage().setBody(sttl);
 				

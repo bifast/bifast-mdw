@@ -8,7 +8,8 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.corebank.pojo.CbDebitReversalRequestPojo;
+import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
+import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.pojo.FaultPojo;
@@ -21,35 +22,25 @@ import bifast.outbound.service.JacksonDataFormatService;
 public class DebitReversalRoute extends RouteBuilder{
 	@Autowired private DebitReversalRequestProcessor debitReversalRequestProcessor;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
+	@Autowired private CbFaultExceptionProcessor cbFaultProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private CreditTransferRepository ctRepo;
 	
 	@Override
 	public void configure() throws Exception {
 		
-		JacksonDataFormat debitReversalRequestJDF = jdfService.wrapRoot(CbDebitReversalRequestPojo.class);
+		JacksonDataFormat debitReversalRequestJDF = jdfService.wrapRoot(DebitReversalRequestPojo.class);
+		JacksonDataFormat debitReversalResponseJDF = jdfService.wrapRoot(DebitReversalResponsePojo.class);
 
 		from("seda:debitreversal").routeId("komi.reverse_ct")
 			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] akan Reversal.")
 			.setHeader("ct_progress", constant("REVERSAL"))
 			.setHeader("ct_tmpbody", simple("${body}"))
-			
-			//find orignal request
-//			.process(new Processor() {
-//				public void process(Exchange exchange) throws Exception {
-//					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-//					ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
-//					CreditTransfer ct = ctRepo.findByKomiTrnsId(rmw.getKomiTrxId()).orElse(new CreditTransfer());
-//					if (null != ct.getKomiTrnsId()) 
-//						exchange.getMessage().setBody(ct.getFullRequestMessage());
-//					else 
-//						exchange.getMessage().setBody(null);
-//				}
-//			})
-			
+				
 			// build reversal message
 			.process(debitReversalRequestProcessor)
-			
+			.marshal(debitReversalRequestJDF)
+			.log("Call ISOAdapter: ${body}")
 			//submit reversal
 //			.to("seda:callcb")
 			.doTry()
@@ -62,13 +53,25 @@ public class DebitReversalRoute extends RouteBuilder{
 					.aggregationStrategy(enrichmentAggregator)
 	
 				.convertBodyTo(String.class)
-
+				.unmarshal(debitReversalResponseJDF)
+				
+				.filter().simple("${body.status} != 'ACTC' ")
+					.process(new Processor() {
+						public void process(Exchange exchange) throws Exception {
+							DebitReversalResponsePojo resp = exchange.getMessage().getBody(DebitReversalResponsePojo.class);
+							FaultPojo fault = new FaultPojo();
+							fault.setResponseCode(resp.getStatus());
+							fault.setReasonCode(resp.getReason());
+							exchange.getMessage().setBody(fault);
+						}
+					})
+				.end()
+				
 			.endDoTry()
 	    	.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_request_list.requestId}] Call Corebank Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-//		    	.process(exceptionToFaultProcessor)
-	
+		    	.process(cbFaultProcessor)
 			.end()
 			
 			.log("Hasil reversal: ${body}")
@@ -78,10 +81,9 @@ public class DebitReversalRoute extends RouteBuilder{
 
 			// jika gagal reversal return as Fault, otherwise DebitResponse
 			.choice()
-				.when().simple("${body.class} endsWith 'CbDebitReversalResponsePojo'")
+				.when().simple("${body.class} endsWith 'DebitReversalResponsePojo'")
 					.setBody(simple("${header.ct_tmpbody}"))
 				.endChoice()
-				
 				
 				.when().simple("${body.class} endsWith 'FaultPojo'")
 					.process(new Processor() {
@@ -94,7 +96,6 @@ public class DebitReversalRoute extends RouteBuilder{
 						}
 					})
 				.endChoice()
-
 			.end()
 		
 		;

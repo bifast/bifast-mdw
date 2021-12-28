@@ -1,5 +1,8 @@
 package bifast.outbound.corebank;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -31,7 +34,6 @@ public class DebitReversalRequestProcessor implements Processor{
 		reversalReq.setCreditorTownName(chnReq.getCrdtTownName());
 		reversalReq.setCreditorType(chnReq.getCrdtType());
 		
-		reversalReq.setDateTime(null);
 		reversalReq.setDebtorAccountNumber(chnReq.getDbtrAccountNo());
 		reversalReq.setDebtorAccountType(chnReq.getDbtrAccountType());
 		reversalReq.setDebtorId(chnReq.getDbtrId());
@@ -42,14 +44,19 @@ public class DebitReversalRequestProcessor implements Processor{
 		reversalReq.setFeeTransfer(chnReq.getFeeTransfer());
 		
 		reversalReq.setMerchantType(rmw.getMerchantType());
-		reversalReq.setNoRef(chnReq.getChannelRefId()e);
-		reversalReq.setOriginalDateTime(null);
+		reversalReq.setNoRef(chnReq.getChannelRefId());
+		
+		String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+		reversalReq.setDateTime(dateTime);
+		reversalReq.setOriginalDateTime(dateTime);
 		
 		reversalReq.setOriginalNoRef(null);
+
 		reversalReq.setPaymentInformation(chnReq.getPaymentInfo());
 		reversalReq.setRecipientBank(chnReq.getRecptBank());
 		reversalReq.setTerminalId(chnReq.getTerminalId());
-		reversalReq.setTransactionId();
+		
+		reversalReq.setTransactionId("000001");
 		
 		exchange.getMessage().setBody(reversalReq);
 
