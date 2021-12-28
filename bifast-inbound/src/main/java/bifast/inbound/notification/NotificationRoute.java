@@ -30,11 +30,12 @@ public class NotificationRoute extends RouteBuilder{
 		
 		from("seda:portalnotif").routeId("komi.portalnotif")
 			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Portal notification")
-
+			
 			.process(portalLogProcessor)
 			.marshal(portalJdf)
 			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Notif ke portal: ${body}")
 			//TODO notifikasi ke customer
+			.removeHeaders("hdr_*")
 			.setHeader("HttpMethod", constant("POST"))
 			.to("http://{{komi.url.portalapi}}?"
 					+ "socketTimeout=5000&" 
