@@ -18,7 +18,7 @@ public class NotificationRoute extends RouteBuilder{
 	@Override
 	public void configure() throws Exception {
 
-		JacksonDataFormat portalJdf = jdfService.basic(PortalApiPojo.class);
+		JacksonDataFormat portalJdf = jdfService.wrapRoot(PortalApiPojo.class);
 		
 		from("direct:eventnotif").routeId("komi.eventnotif")
 			.log("Ada notifikasi")

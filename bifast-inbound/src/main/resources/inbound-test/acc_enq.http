@@ -23,14 +23,14 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20211103CITYIDJA510O0100000023",
+      "BizMsgIdr": "20211228CITYIDJA510O0100000023",
       "MsgDefIdr": "pacs.008.001.08",
-      "CreDt": "2021-11-03T08:43:33Z"
+      "CreDt": "2021-12-28T08:43:33Z"
     },
     "Document": {
       "FIToFICstmrCdtTrf": {
         "GrpHdr": {
-          "MsgId": "20211103CITYIDJA51000000007",
+          "MsgId": "20211228CITYIDJA51000000023",
           "CreDtTm": "2021-11-03T12:43:33.361",
           "NbOfTxs": "1",
           "SttlmInf": {
@@ -49,7 +49,7 @@ Content-Type: application/json
               }
             },
             "IntrBkSttlmAmt": {
-              "Value": "24520064.00",
+              "Value": "250064.00",
               "Ccy": "IDR"
             },
             "ChrgBr": "DEBT",
@@ -72,7 +72,7 @@ Content-Type: application/json
             "CdtrAcct": {
               "Id": {
                 "Othr": {
-                  "Id": "256189"
+                  "Id": "00102000753"
                 }
               }
             }

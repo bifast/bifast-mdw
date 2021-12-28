@@ -62,7 +62,7 @@ public class InboundRoute extends RouteBuilder {
 			// kirim log notif ke Portal
 			.filter().simple("${header.hdr_msgType} in '510,010,110,011' ")
 				.setHeader("hdr_tmpbody", simple("${body}"))
-				.to("seda:portalnotif")
+				.to("seda:portalnotif&exchangePattern=InOnly")
 				.setBody(simple("${header.hdr_tmpbody}"))
 			.end()
 				

@@ -50,7 +50,7 @@ public class DebitReversalRequestProcessor implements Processor{
 		reversalReq.setDateTime(dateTime);
 		reversalReq.setOriginalDateTime(dateTime);
 		
-		reversalReq.setOriginalNoRef(null);
+		reversalReq.setOriginalNoRef(chnReq.getChannelRefId());
 
 		reversalReq.setPaymentInformation(chnReq.getPaymentInfo());
 		reversalReq.setRecipientBank(chnReq.getRecptBank());

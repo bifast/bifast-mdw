@@ -53,6 +53,8 @@ public class DebitReversalRoute extends RouteBuilder{
 					.aggregationStrategy(enrichmentAggregator)
 	
 				.convertBodyTo(String.class)
+				
+				.log(LoggingLevel.DEBUG, "komi.reverse_ct", "Response ISOAdapter: ${body}")
 				.unmarshal(debitReversalResponseJDF)
 				
 				.filter().simple("${body.status} != 'ACTC' ")
@@ -74,7 +76,7 @@ public class DebitReversalRoute extends RouteBuilder{
 		    	.process(cbFaultProcessor)
 			.end()
 			
-			.log("Hasil reversal: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.reverse_ct", "Hasil reversal: ${body}")
 			.filter().simple("${body} is 'bifast.outbound.pojo.FaultPojo'")
 				.log("Fault!")
 			.end()

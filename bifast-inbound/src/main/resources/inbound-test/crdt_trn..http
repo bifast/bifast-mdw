@@ -1,13 +1,13 @@
 # CREDIT TRANSFER FROM CI-HUB
 # jika category 02 maka RJCT
-POST http://localhost:9001/services/api/inbound HTTP/1.1
+POST http://localhost:9001/komi-inbound/json/service HTTP/1.1
 Content-Type: application/json
 
 {
   "BusMsg": {
     "AppHdr": {
       "Fr": {
-        "Fiid": {
+        "FIId": {
           "FinInstnId": {
             "Othr": {
               "Id": "BMNDIDJA"
@@ -16,7 +16,7 @@ Content-Type: application/json
         }
       },
       "To": {
-        "Fiid": {
+        "FIId": {
           "FinInstnId": {
             "Othr": {
               "Id": "SIHBIDJ1"
@@ -24,14 +24,14 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20211110BMNDIDJA010O0100000045",
+      "BizMsgIdr": "20211228BMNDIDJA010O0100000045",
       "MsgDefIdr": "pacs.008.001.08",
       "CreDt": "2021-11-03T14:50:22Z"
     },
     "Document": {
-      "FitoFICstmrCdtTrf": {
+      "FIToFICstmrCdtTrf": {
         "GrpHdr": {
-          "MsgId": "20211110BMNDIDJA01000000040",
+          "MsgId": "20211228BMNDIDJA01000000045",
           "CreDtTm": "2021-11-11T21:50:22.960",
           "NbOfTxs": "1",
           "SttlmInf": {
@@ -53,10 +53,10 @@ Content-Type: application/json
               }
             },
             "IntrBkSttlmAmt": {
-              "Value": "120500.50",
+              "Value": "12050.50",
               "Ccy": "IDR"
             },
-            "IntrBkSttlmDt": "2021-11-01",
+            "IntrBkSttlmDt": "2021-12-28",
             "ChrgBr": "DEBT",
             "Dbtr": {
               "Nm": "JONI",
@@ -83,24 +83,24 @@ Content-Type: application/json
             "DbtrAgt": {
               "FinInstnId": {
                 "Othr": {
-                  "Id": "SIHBIDJ1"
+                  "Id": "BMNDIDJA"
                 }
               }
             },
             "CdtrAgt": {
               "FinInstnId": {
                 "Othr": {
-                  "Id": "BMNDIDJA"
+                  "Id": "SIHBIDJ1"
                 }
               }
             },
             "Cdtr": {
-              "Nm": "JONI N",
+              "Nm": "ELLA NURHAYATI",
               "Id": {
                 "PrvtId": {
                   "Othr": [
                     {
-                      "Id": "C12103"
+                      "Id": "123456789022222"
                     }
                   ]
                 }
@@ -109,11 +109,11 @@ Content-Type: application/json
             "CdtrAcct": {
               "Id": {
                 "Othr": {
-                  "Id": "244296"
+                  "Id": "00102000753"
                 }
               },
               "Tp": {
-                "Prtry": "SVGS"
+                "Prtry": "CACC"
               }
             },
             "RmtInf": {
@@ -133,7 +133,7 @@ Content-Type: application/json
                     "Cdtr": {
                       "Tp": "01",
                       "RsdntSts": "01",
-                      "TwnNm": "0300"
+                      "TwnNm": "0191"
                     }
                   }
                 }
