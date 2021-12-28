@@ -1,7 +1,6 @@
 package bifast.inbound.report;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

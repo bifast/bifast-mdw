@@ -33,7 +33,7 @@ public class NotificationRoute extends RouteBuilder{
 
 			.process(portalLogProcessor)
 			.marshal(portalJdf)
-			.log(LoggingLevel.DEBUG, "komi.portalnotif", "${body}")
+			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Notif ke portal: ${body}")
 			//TODO notifikasi ke customer
 			.setHeader("HttpMethod", constant("POST"))
 			.to("http://{{komi.url.portalapi}}?"

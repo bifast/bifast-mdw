@@ -23,14 +23,14 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20211228CITYIDJA510O0100000023",
+      "BizMsgIdr": "20211228CITYIDJA510O0100000024",
       "MsgDefIdr": "pacs.008.001.08",
       "CreDt": "2021-12-28T08:43:33Z"
     },
     "Document": {
       "FIToFICstmrCdtTrf": {
         "GrpHdr": {
-          "MsgId": "20211228CITYIDJA51000000023",
+          "MsgId": "20211228CITYIDJA51000000024",
           "CreDtTm": "2021-11-03T12:43:33.361",
           "NbOfTxs": "1",
           "SttlmInf": {
