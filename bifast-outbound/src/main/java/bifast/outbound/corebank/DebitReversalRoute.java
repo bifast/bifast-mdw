@@ -29,7 +29,7 @@ public class DebitReversalRoute extends RouteBuilder{
 	@Override
 	public void configure() throws Exception {
 		
-		JacksonDataFormat debitReversalRequestJDF = jdfService.wrapRoot(DebitReversalRequestPojo.class);
+		JacksonDataFormat debitReversalRequestJDF = jdfService.basic(DebitReversalRequestPojo.class);
 		JacksonDataFormat debitReversalResponseJDF = jdfService.wrapRoot(DebitReversalResponsePojo.class);
 
 		from("seda:debitreversal").routeId("komi.reverse_ct")
@@ -47,7 +47,7 @@ public class DebitReversalRoute extends RouteBuilder{
 
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich()
-					.simple("http://{{komi.url.isoadapter}}?"
+					.simple("http://{{komi.url.isoadapter}}/debitreversal?"
 	//					+ "socketTimeout=7000&" 
 						+ "bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)
