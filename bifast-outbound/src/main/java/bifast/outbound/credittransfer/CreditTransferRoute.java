@@ -93,18 +93,17 @@ public class CreditTransferRoute extends RouteBuilder {
 			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] hasil cihub, ${header.ct_progress}.")
 
 			// FILTER-C: jika timeout, check settlement dulu
-			.filter().simple("${header.ct_progress} == 'TIMEOUT'")
-				.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] cari Settlement.")
-				.to("direct:caristtl")
-			.end()
+//			.filter().simple("${header.ct_progress} == 'TIMEOUT'")
+//				.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] cari Settlement.")
+//				.to("direct:caristtl")
+//			.end()
 			
 			//cek hasil find settlement 
-			.filter().simple("${body.class} endsWith 'FlatPacs002Pojo' && ${body.bizSvc} == 'STTL'")
-				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] dapat Settlement.")
-				.setHeader("ct_progress", constant("SUCCESS"))
-			.end()
-
-			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] ${body.class}, ${header.ct_progress}.")
+//			.filter().simple("${body.class} endsWith 'FlatPacs002Pojo' && ${body.bizSvc} == 'STTL'")
+//				.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] dapat Settlement.")
+//				.setHeader("ct_progress", constant("SUCCESS"))
+//			.end()
+//			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] ${body.class}, ${header.ct_progress}.")
 
 			// jika response RJCT/ERROR, harus reversal ke corebanking
 			// unt Teller tidak dilakukan KOMI tapi oleh Teller langsung

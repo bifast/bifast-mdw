@@ -52,14 +52,14 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		if (oAcct.isPresent()) {
 			account = oAcct.get();
 			
-			if (account.getAccountStatus().equals("ACTV")) {
+//			if (account.getAccountStatus().equals("ACTV")) {
 				seed.setStatus("ACTC");
 				seed.setReason("U000");				
-			}
-			else {
-				seed.setStatus("RJCT");
-				seed.setReason("U102");				
-			}
+//			}
+//			else {
+//				seed.setStatus("RJCT");
+//				seed.setReason("U102");				
+//			}
 			
 			seed.setCreditorName(account.getAccountName());
 			seed.setCreditorAccountIdType(account.getAccountType());
