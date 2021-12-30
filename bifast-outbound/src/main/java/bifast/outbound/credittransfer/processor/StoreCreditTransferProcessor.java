@@ -3,6 +3,7 @@ package bifast.outbound.credittransfer.processor;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -23,34 +24,110 @@ import bifast.outbound.repository.CreditTransferRepository;
 @Component
 public class StoreCreditTransferProcessor implements Processor {
 
-	@Autowired
-	private CreditTransferRepository creditTransferRepo;
+	@Autowired private CreditTransferRepository creditTransferRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-		
-		CreditTransfer ct = new CreditTransfer();
-
-		ct.setKomiTrnsId(rmw.getKomiTrxId());
-
 		BusinessMessage biRequest = rmw.getCreditTransferRequest();
 		FIToFICustomerCreditTransferV08 creditTransferReq = biRequest.getDocument().getFiToFICstmrCdtTrf();
 		
-		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
+		CreditTransfer ct = null;
 
-		ct.setCihubRequestDT(LocalDateTime.now());
-		long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
-		ct.setCihubElapsedTime(timeElapsed);
+		Optional<CreditTransfer> oCT = creditTransferRepo.findByKomiTrnsId(rmw.getKomiTrxId());
+		if (oCT.isEmpty()) {
+			ct = new CreditTransfer();
+			ct.setKomiTrnsId(rmw.getKomiTrxId());
 
-		ct.setCrdtTrnRequestBizMsgIdr(biRequest.getAppHdr().getBizMsgIdr());
+			ct.setMsgType("Credit Transfer");
+			ct.setCihubRequestDT(LocalDateTime.now());
+			ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
+			ct.setCrdtTrnRequestBizMsgIdr(biRequest.getAppHdr().getBizMsgIdr());
+			ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
+			ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
+			ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
+			ct.setCreateDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
+			ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
+			ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
+			ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
+
+			if (ct.getDebtorType().endsWith("01"))
+				ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
+			else
+				ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		
+			
+			ct.setOriginatingBank(biRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+			ct.setRecipientBank(biRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+			
+			creditTransferRepo.save(ct);
+
+		}
 		
-		
-		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
-		ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
+		else {
+			
+			ct = oCT.get();
 
-		ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
+			long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
+			ct.setCihubElapsedTime(timeElapsed);
+			ct.setLastUpdateDt(LocalDateTime.now());
+			ct.setFullRequestMessage(rmw.getCihubEncriptedRequest());
+			if (null != rmw.getCihubEncriptedResponse())
+				ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
+
+			ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+			ct.setErrorMessage(rmc.getLastError());
+
+			Object oBiResponse = exchange.getMessage().getBody(Object.class);
+
+			if (oBiResponse.getClass().getSimpleName().equals("FaultPojo")) {
+				FaultPojo fault = (FaultPojo)oBiResponse;
+				ct.setCallStatus(fault.getCallStatus());
+				ct.setResponseCode(fault.getResponseCode());
+				ct.setReasonCode(fault.getReasonCode());
+				ct.setErrorMessage(fault.getErrorMessage());
+			}
+				
+			else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
+				ct.setCallStatus("REJECT");
+				ct.setResponseCode("RJCT");
+				ct.setReasonCode("U215");
+				ct.setErrorMessage("Message Rejected with Admi.002");
+			}
+			
+			else {
+
+				FlatPacs002Pojo ctResponse = (FlatPacs002Pojo) oBiResponse;
+
+				System.out.println(ctResponse.getReasonCode());
+				
+				if (ctResponse.getReasonCode().equals("U900")) {
+					ct.setCallStatus("TIMEOUT");
+				}
+				else {
+					ct.setCallStatus("SUCCESS");
+				}
+				
+				ct.setResponseCode(ctResponse.getTransactionStatus());
+				ct.setReasonCode(ctResponse.getReasonCode());
+				ct.setCrdtTrnResponseBizMsgIdr(ctResponse.getBizMsgIdr());
+				
+				if (!(null==rmw.getCihubEncriptedResponse()))
+					ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
+				
+				if (ct.getCallStatus().equals("TIMEOUT")) {
+					RouteController routeCtl = exchange.getContext().getRouteController();
+					ServiceStatus serviceSts = routeCtl.getRouteStatus("komi.ps.saf");
+					
+					if (serviceSts.isStopped())
+						routeCtl.startRoute("komi.ps.saf");
+				}
+
+				creditTransferRepo.save(ct);
+
+			}
+		}
+
 
 //		String crdtType = creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getgetId().getCreditorType();
 //		if (creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getCreditorType().equals("01"))
@@ -58,79 +135,9 @@ public class StoreCreditTransferProcessor implements Processor {
 //		else
 //			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
 
-		ct.setCreateDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
-		ct.setLastUpdateDt(LocalDateTime.now());
-		
-		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
-		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
-		ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
-
-		if (ct.getDebtorType().endsWith("01"))
-			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
-		else
-			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		
-		
-		ct.setFullRequestMessage(rmw.getCihubEncriptedRequest());
-		
-		if (null != rmw.getCihubEncriptedResponse())
-			ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
-
-		ct.setMsgType("Credit Transfer");
 //		if (null != chnlRequest.getOrgnlEndToEndId())
 //			ct.setMsgType("Reverse CT");
 
-		ct.setOriginatingBank(biRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
-		ct.setRecipientBank(biRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-
-		ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
-		ct.setErrorMessage(rmc.getLastError());
-		
-		// CHECK RESPONSE
-		Object oBiResponse = exchange.getMessage().getBody(Object.class);
-
-		if (oBiResponse.getClass().getSimpleName().equals("FaultPojo")) {
-			FaultPojo fault = (FaultPojo)oBiResponse;
-			ct.setCallStatus(fault.getCallStatus());
-			ct.setResponseCode(fault.getResponseCode());
-			ct.setReasonCode(fault.getReasonCode());
-			ct.setErrorMessage(fault.getErrorMessage());
-		}
-			
-		else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
-			ct.setCallStatus("REJECT");
-			ct.setResponseCode("RJCT");
-			ct.setReasonCode("U215");
-			ct.setErrorMessage("Message Rejected with Admi.002");
-		}
-		
-		else {
-
-			FlatPacs002Pojo ctResponse = (FlatPacs002Pojo) oBiResponse;
-
-			if (ctResponse.getReasonCode().equals("U900")) {
-				ct.setCallStatus("TIMEOUT");
-			}
-			else {
-				ct.setCallStatus("SUCCESS");
-			}
-			
-			ct.setResponseCode(ctResponse.getTransactionStatus());
-			ct.setReasonCode(ctResponse.getReasonCode());
-			ct.setCrdtTrnResponseBizMsgIdr(ctResponse.getBizMsgIdr());
-			
-			if (!(null==rmw.getCihubEncriptedResponse()))
-				ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
-		}
-			
-		creditTransferRepo.save(ct);
-
-		if (ct.getCallStatus().equals("TIMEOUT")) {
-			RouteController routeCtl = exchange.getContext().getRouteController();
-			ServiceStatus serviceSts = routeCtl.getRouteStatus("komi.ps.saf");
-			
-			if (serviceSts.isStopped())
-				routeCtl.startRoute("komi.ps.saf");
-		}
 
 	}
 }

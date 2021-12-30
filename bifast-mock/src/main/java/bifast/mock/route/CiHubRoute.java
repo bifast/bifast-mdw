@@ -87,7 +87,6 @@ public class CiHubRoute extends RouteBuilder {
 			.log("${header.msgType}")
 
 			.setHeader("delay_ae", simple("{{komi.timeout-ae}}"))
-			.setHeader("delay_ct", simple("{{komi.timeout-ct}}"))
 
 			.choice()
 

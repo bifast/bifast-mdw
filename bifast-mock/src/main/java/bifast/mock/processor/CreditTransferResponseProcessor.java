@@ -9,6 +9,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -36,6 +37,9 @@ public class CreditTransferResponseProcessor implements Processor{
     @Autowired private MockPacs002Repository mockPacs002Repo;
 	@Autowired private Pacs002MessageService pacs002Service;
 	@Autowired private UtilService utilService;
+	
+	@Value("${komi.timeout-ct}")
+	private int delay;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -71,7 +75,7 @@ public class CreditTransferResponseProcessor implements Processor{
 			    try
 			    {
 			    	System.out.println("delay dulu");
-			        Thread.sleep(15000);
+			        Thread.sleep(delay);
 			        resultMessg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().setPrtry("U900");
 			    }
 			    catch(InterruptedException ex)

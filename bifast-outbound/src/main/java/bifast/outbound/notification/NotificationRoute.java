@@ -25,11 +25,19 @@ public class NotificationRoute extends RouteBuilder {
 		from("seda:logportal").routeId("komi.notif.portal")
 			.process(buildLogMessage)
 			.marshal(portalLogJDF)
-			.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
+//			.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
 
-		    .removeHeaders("CamelHttp*")
-			.to("rest:post:?host={{komi.url.portalapi}}")
-			.log("setelah logportal")
+		    .removeHeaders("*")
+		    
+			.doTry()
+				.to("rest:post:?host={{komi.url.portalapi}}")
+			.endDoTry()
+	    	.doCatch(Exception.class)
+	    		.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
+    			.log(LoggingLevel.ERROR, "Error send notification ke Portal")
+//	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+			.end()
+
 		;
 
 		from("seda:notifcustomer").routeId("komi.notif.customer")

@@ -81,7 +81,8 @@ public class CihubRoute extends RouteBuilder {
 			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-				
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] sisa waktu ${header.hdr_remain_time}")
+
 				.enrich()
 					.simple("http:{{komi.url.ciconnector}}?"
 						+ "socketTimeout=${header.hdr_remain_time}&" 

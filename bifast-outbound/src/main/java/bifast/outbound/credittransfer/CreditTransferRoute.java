@@ -72,8 +72,12 @@ public class CreditTransferRoute extends RouteBuilder {
 		
 			// lanjut submit ke BI
 			.process(crdtTransferProcessor)
+			
+			// save data awal
+			.to("seda:savecredittransfer?exchangePattern=InOnly")   // data awal
+
 			.to("direct:call-cihub")
-			.to("seda:savecredittransfer?exchangePattern=InOnly")
+			.to("seda:savecredittransfer?exchangePattern=InOnly")   // update data
 
 
 			// periksa hasil call cihub
