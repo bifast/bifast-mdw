@@ -1,4 +1,4 @@
-package bifast.outbound.paymentstatus;
+package bifast.outbound.paymentstatus.pojo;
 
 import java.time.LocalDateTime;
 

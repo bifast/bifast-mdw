@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.notification.pojo.LogDataPojo;
 import bifast.outbound.notification.pojo.PortalApiPojo;
-import bifast.outbound.paymentstatus.UndefinedCTPojo;
+import bifast.outbound.paymentstatus.pojo.UndefinedCTPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 
 @Component

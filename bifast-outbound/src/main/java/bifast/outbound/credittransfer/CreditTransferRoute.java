@@ -76,7 +76,9 @@ public class CreditTransferRoute extends RouteBuilder {
 			// save data awal
 			.to("seda:savecredittransfer?exchangePattern=InOnly")   // data awal
 
-			.to("direct:call-cihub")
+			.to("direct:call-cihub?timeout=0")
+			
+			.log("${body}")
 			.to("seda:savecredittransfer?exchangePattern=InOnly")   // update data
 
 

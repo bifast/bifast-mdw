@@ -1,5 +1,7 @@
 package bifast.mock.processor;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
 import java.util.Optional;
 
@@ -74,8 +76,11 @@ public class CreditTransferResponseProcessor implements Processor{
 			if (addInfo.toUpperCase().equals("TIMEOUT")) {
 			    try
 			    {
-			    	System.out.println("delay dulu");
+			    	System.out.println("delay dulu selama " + delay);
+			    	LocalDateTime dt1 = LocalDateTime.now();
 			        Thread.sleep(delay);
+			        Long duration = Duration.between(LocalDateTime.now(), dt1).getSeconds();
+			        System.out.println("Oke : " + duration);
 			        resultMessg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().setPrtry("U900");
 			    }
 			    catch(InterruptedException ex)

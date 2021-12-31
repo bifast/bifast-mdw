@@ -33,9 +33,8 @@ public class NotificationRoute extends RouteBuilder {
 				.to("rest:post:?host={{komi.url.portalapi}}")
 			.endDoTry()
 	    	.doCatch(Exception.class)
-	    		.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
-    			.log(LoggingLevel.ERROR, "Error send notification ke Portal")
-//	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+	    		.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")
+	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 			.end()
 
 		;

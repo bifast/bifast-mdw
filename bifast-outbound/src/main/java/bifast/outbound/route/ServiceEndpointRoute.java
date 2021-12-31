@@ -51,7 +51,6 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.process(exceptionProcessor)
 			.marshal(chnlResponseJDF)
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
-			.log("==========")
 			.removeHeaders("*")
 			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
@@ -71,7 +70,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 
 			.log("=====*****=====")
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "Terima: ${body}")
+			.log("Terima: ${body}")
 
 			.setHeader("hdr_fulltextinput", simple("${body}"))
 			
@@ -115,7 +114,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					.to("direct:acctenqr")
 					
 				.when().simple("${header.hdr_request_list.msgName} == 'CTReq'")
-					.to("seda:credittrns")
+					.to("seda:credittrns?timeout=0")
 
 				.when().simple("${header.hdr_request_list.msgName} == 'PSReq'")
 					.to("direct:pschnl")
@@ -143,10 +142,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				.to("seda:logportal?exchangePattern=InOnly")
 			.end()
 			
-			.removeHeaders("*")
 			.marshal(chnlResponseJDF)
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
-			.log("==========")
+			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
+			.removeHeaders("*")
 
 		;
 		

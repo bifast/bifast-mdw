@@ -6,6 +6,7 @@ public class CbSettlementResponsePojo {
 	private String orgnlKomiTrnsId;
 	private String status;
 	private String reason;
+	private String additionalInfo;
 	
 	public String getKomiTrnsId() {
 		return komiTrnsId;
@@ -30,6 +31,12 @@ public class CbSettlementResponsePojo {
 	}
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+	public String getAdditionalInfo() {
+		return additionalInfo;
+	}
+	public void setAdditionalInfo(String additionalInfo) {
+		this.additionalInfo = additionalInfo;
 	}
 
 	

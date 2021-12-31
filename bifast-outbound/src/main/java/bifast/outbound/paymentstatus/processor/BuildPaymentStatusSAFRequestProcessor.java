@@ -11,7 +11,7 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs028MessageService;
 import bifast.library.iso20022.service.Pacs028Seed;
-import bifast.outbound.paymentstatus.UndefinedCTPojo;
+import bifast.outbound.paymentstatus.pojo.UndefinedCTPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.service.UtilService;
 

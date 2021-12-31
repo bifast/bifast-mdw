@@ -16,7 +16,7 @@ import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.model.Channel;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.CreditTransfer;
-import bifast.outbound.paymentstatus.UndefinedCTPojo;
+import bifast.outbound.paymentstatus.pojo.UndefinedCTPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.ChannelRepository;

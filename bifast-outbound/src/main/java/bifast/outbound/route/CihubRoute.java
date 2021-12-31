@@ -77,7 +77,7 @@ public class CihubRoute extends RouteBuilder {
 			})
 			
 			.process(setRemainTime)
-			.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
+			.log("[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
 			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
@@ -90,7 +90,7 @@ public class CihubRoute extends RouteBuilder {
 					.aggregationStrategy(enrichmentAggregator)
 				
 				.convertBodyTo(String.class)				
-				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB response: ${body}")
+				.log("[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB response: ${body}")
 	
 				.setHeader("tmp_body", simple("${body}"))
 				.marshal().zipDeflater()

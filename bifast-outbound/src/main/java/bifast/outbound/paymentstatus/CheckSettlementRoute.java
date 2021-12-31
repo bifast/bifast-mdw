@@ -1,4 +1,4 @@
-package bifast.outbound.credittransfer;
+package bifast.outbound.paymentstatus;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;

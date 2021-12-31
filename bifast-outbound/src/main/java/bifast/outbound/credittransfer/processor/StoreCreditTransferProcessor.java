@@ -81,7 +81,9 @@ public class StoreCreditTransferProcessor implements Processor {
 			Object oBiResponse = exchange.getMessage().getBody(Object.class);
 
 			if (oBiResponse.getClass().getSimpleName().equals("FaultPojo")) {
+
 				FaultPojo fault = (FaultPojo)oBiResponse;
+
 				ct.setCallStatus(fault.getCallStatus());
 				ct.setResponseCode(fault.getResponseCode());
 				ct.setReasonCode(fault.getReasonCode());
@@ -115,17 +117,17 @@ public class StoreCreditTransferProcessor implements Processor {
 				if (!(null==rmw.getCihubEncriptedResponse()))
 					ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
 				
-				if (ct.getCallStatus().equals("TIMEOUT")) {
-					RouteController routeCtl = exchange.getContext().getRouteController();
-					ServiceStatus serviceSts = routeCtl.getRouteStatus("komi.ps.saf");
-					
-					if (serviceSts.isStopped())
-						routeCtl.startRoute("komi.ps.saf");
-				}
-
-				creditTransferRepo.save(ct);
-
 			}
+			creditTransferRepo.save(ct);
+
+			if (ct.getCallStatus().equals("TIMEOUT")) {
+				RouteController routeCtl = exchange.getContext().getRouteController();
+				ServiceStatus serviceSts = routeCtl.getRouteStatus("komi.ps.saf");
+				
+				if (serviceSts.isStopped())
+					routeCtl.startRoute("komi.ps.saf");
+			}
+
 		}
 
 
