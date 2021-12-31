@@ -55,7 +55,6 @@ public class CheckRequestMsgProcessor implements Processor {
 		}
 
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("admi.004")) {
-			System.out.println("jenis msg System Notification");
 			FlatAdmi004Pojo flat004 = flatMsgService.flatteningAdmi004(inputMsg);
 			processData.setBiRequestFlat(flat004);
 			trnType = "EVENTNOTIF";

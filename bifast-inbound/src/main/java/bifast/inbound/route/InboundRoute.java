@@ -28,6 +28,7 @@ public class InboundRoute extends RouteBuilder {
 
 			.process(checkRequestMsgProcessor) 
 			
+			.log("=====*****=====")
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] ${header.hdr_msgType} received.")
 		
 			.choice().id("forward_msgtype")
@@ -51,9 +52,9 @@ public class InboundRoute extends RouteBuilder {
 					.to("direct:reverct")
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
-				.when().simple("${header.hdr_msgType} == 'EVENTNOTIF'")     // Event Notif
-					.to("direct:eventnotif")
-					.setHeader("hdr_toBIobj", simple("${body}"))
+//				.when().simple("${header.hdr_msgType} == 'EVENTNOTIF'")     // Event Notif
+//					.to("direct:eventnotif")
+//					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.otherwise()	
 					.log("[Inbound] Message ${header.hdr_msgType} tidak dikenal")

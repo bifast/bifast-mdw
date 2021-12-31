@@ -1,5 +1,6 @@
 package bifast.inbound.accountenquiry;
 
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ public class AccountEnquiryRoute extends RouteBuilder {
 			// prepare untuk request ke corebank
 			.process(buildAccountEnquiryRequestProcessor)
 
-	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan call AE corebank")
+	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan call AE corebank")
 
 			//TODO call corebank Account Enquiry
 			.to("seda:callcb")

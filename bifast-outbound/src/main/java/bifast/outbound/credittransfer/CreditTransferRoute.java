@@ -38,10 +38,10 @@ public class CreditTransferRoute extends RouteBuilder {
 		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
 
 	    onException(DebitException.class)
-	    	.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}] Debit account gagal.")
 	    	.process(exceptionResponseProcessor)
 	    	.marshal(chnlResponseJDF)
-	    	.log("${body}")
+	    	.log(LoggingLevel.ERROR, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}] Debit account gagal.")
+	    	.log(LoggingLevel.ERROR, "komi.ct", "${body}")
 	    	.removeHeaders("*")
 	    	.handled(true)
 	    ;
