@@ -42,7 +42,7 @@ services:
         - SPRING_JPA_HIBERNATE_DDL_AUTO=none
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
-        - KOMI.URL.COREBANK=mock-cb:9007/api/corebank
+        - KOMI.URL.COREBANK=http://mock-cb:9007/api/corebank
         - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs
@@ -65,7 +65,7 @@ services:
         - KOMI.URL.COREBANK=mock-cb:9007/api/corebank
         - KOMI.URL.ISOADAPTER=mock-cb:9003/komi/api/v1/adapter
         - KOMI.URL.PORTALAPI=komi-mock:9006/mock
-        - KOMI.URL.INBOUND=komi-inbound:9001/komi-inbound/json/service
+        - KOMI.URL.INBOUND=komi-inbound:9001
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.BICODE=INDOIDJA
         - LOGGING.FILE.NAME=/home/logs/komi-outbound.log

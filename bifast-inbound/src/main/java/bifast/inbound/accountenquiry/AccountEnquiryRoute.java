@@ -26,7 +26,7 @@ public class AccountEnquiryRoute extends RouteBuilder {
 			//TODO call corebank Account Enquiry
 			.to("seda:callcb")
 
-	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai call AE corebank")
+	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai call AE corebank")
 			.process(aeResponseProcessor)
 
 					

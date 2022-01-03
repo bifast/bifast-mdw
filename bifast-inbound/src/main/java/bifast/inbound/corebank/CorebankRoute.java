@@ -60,8 +60,8 @@ public class CorebankRoute extends RouteBuilder{
 
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich()
-					.simple("http://{{komi.url.corebank}}?"
-						+ "socketTimeout=5000&" 
+					.simple("{{komi.url.corebank}}?"
+						+ "socketTimeout=10000&" 
 						+ "bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)
 				.convertBodyTo(String.class)

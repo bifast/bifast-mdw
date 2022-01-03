@@ -22,8 +22,8 @@ public class InboundJsonRoute extends RouteBuilder {
 			.component("servlet")
 		;
 			
-		rest("/json")
-			.post("/service")
+		rest("/")
+			.post("")
 				.consumes("application/json")
 				.to("direct:parsejson")
 		;

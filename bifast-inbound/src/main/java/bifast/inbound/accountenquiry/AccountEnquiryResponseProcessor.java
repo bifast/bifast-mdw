@@ -50,8 +50,17 @@ public class AccountEnquiryResponseProcessor implements Processor {
 
 		if (oResp.getClass().getSimpleName().equals("CbAccountEnquiryResponsePojo")) {
 			seed.setStatus(aeResp.getStatus());
-			seed.setReason(aeResp.getReason());
-			
+			if ((aeResp.getReason().equals("U101") && (aeResp.getAccountType().equals("SVGS"))))
+				seed.setReason("53");
+			else if (aeResp.getReason().equals("U101"))
+				seed.setReason("52");
+			else if (aeResp.getReason().equals("U102"))
+				seed.setReason("78");
+			else if (!(aeResp.getReason().equals("U000")))
+				seed.setReason("62");
+			else 
+				seed.setReason(aeResp.getReason());
+
 			seed.setCreditorName(aeResp.getCreditorName());
 			seed.setCreditorAccountIdType(aeResp.getAccountType());
 			seed.setCreditorType(aeResp.getCreditorType());
@@ -59,9 +68,11 @@ public class AccountEnquiryResponseProcessor implements Processor {
 			seed.setCreditorTown(aeResp.getTownName());
 			seed.setCreditorResidentialStatus(aeResp.getResidentStatus());
 		}
+		
 		else {
 			seed.setStatus(fault.getResponseCode());
 			seed.setReason(fault.getReasonCode());	
+			seed.setCreditorAccountIdType("CACC");
 		}
 			
 		String bizMsgId = utilService.genRfiBusMsgId("510", processData.getKomiTrnsId());
