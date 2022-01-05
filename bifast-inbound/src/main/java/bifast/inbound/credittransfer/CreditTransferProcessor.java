@@ -75,11 +75,24 @@ public class CreditTransferProcessor implements Processor {
 				resp.setStatus(fault.getResponseCode());
 				resp.setReason(fault.getReasonCode());	
 			}
+
+			if ((resp.getReason().equals("U101") && (resp.getCreditorAccountIdType().equals("SVGS"))))
+				resp.setReason("53");
+			else if (resp.getReason().equals("U101"))
+				resp.setReason("52");
+			else if (resp.getReason().equals("U102"))
+				resp.setReason("78");
+			else if (!(resp.getReason().equals("U000")))
+				resp.setReason("62");
+
+
 		}
 		else {
 			resp.setStatus("ACTC");
 			resp.setReason("U000");
 		}
+		
+
 
 		resp.setCreditorResidentialStatus(flatRequest.getCreditorResidentialStatus());  // 01 RESIDENT
 		resp.setCreditorTown(flatRequest.getCreditorTownName());  

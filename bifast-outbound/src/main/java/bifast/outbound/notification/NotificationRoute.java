@@ -1,9 +1,12 @@
 package bifast.outbound.notification;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.notification.pojo.CustomerNotificationPojo;
@@ -12,8 +15,8 @@ import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class NotificationRoute extends RouteBuilder {
-	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private BuildLogMessageForPortalProcessor buildLogMessage;
+	@Autowired private JacksonDataFormatService jdfService;
 
 
 	@Override
@@ -29,8 +32,20 @@ public class NotificationRoute extends RouteBuilder {
 
 		    .removeHeaders("*")
 		    
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+		            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+				}
+			})
+			
 			.doTry()
+				.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
+				
 				.to("rest:post:?host={{komi.url.portalapi}}")
+//				.to("{{komi.url.portalapi}}?"
+//						+ "socketTimeout=1000&" 
+//						+ "bridgeEndpoint=true")
+
 			.endDoTry()
 	    	.doCatch(Exception.class)
 	    		.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")

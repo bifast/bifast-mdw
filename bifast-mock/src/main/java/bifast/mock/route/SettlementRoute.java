@@ -54,7 +54,7 @@ public class SettlementRoute extends RouteBuilder {
 				.marshal(jsonBusinessMessageDataFormat)
 				.log("Submit settlement: ${body}")
 
-				.to("rest:post:service?host={{komi.inbound-url}}&"
+				.to("rest:post:?host={{komi.inbound-url}}&"
 						+ "exchangePattern=InOnly&"
 						+ "bridgeEndpoint=true")
 			.end()

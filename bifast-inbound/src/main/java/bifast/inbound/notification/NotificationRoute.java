@@ -1,9 +1,12 @@
 package bifast.inbound.notification;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.accountenquiry.AEPortalLogProcessor;
@@ -36,10 +39,17 @@ public class NotificationRoute extends RouteBuilder{
 			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Notif ke portal: ${body}")
 			//TODO notifikasi ke customer
 			.removeHeaders("hdr_*")
+			
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+		            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+				}
+			})
+
 			.setHeader("HttpMethod", constant("POST"))
-			.to("http://{{komi.url.portalapi}}?"
-					+ "socketTimeout=5000&" 
-					+ "bridgeEndpoint=true")
+			
+			.to("rest:post:?host={{komi.url.portalapi}}")
+
 
 		;
 

@@ -57,7 +57,7 @@ public class CorebankRoute extends RouteBuilder{
 	 														+ " CB Request: ${body}")
 
 	 		.doTry()
-
+	 			.log("{{komi.url.corebank}}")
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich()
 					.simple("{{komi.url.corebank}}?"

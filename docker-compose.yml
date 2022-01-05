@@ -26,7 +26,7 @@ services:
 
     inbound:
       build: bifast-inbound
-      image: fransmzh/komi-inbound:2.1
+      image: fransmzh/komi-inbound:2.1.1
       container_name: komi-inbound
       restart: always
       depends_on: 
@@ -43,6 +43,7 @@ services:
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.URL.COREBANK=http://mock-cb:9007/api/corebank
+        - KOMI.URL.PORTALAPI=http://komi-mock:9006/mock
         - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs
@@ -64,7 +65,7 @@ services:
         - KOMI.URL.CICONNECTOR=komi-mock:9006/mock/cihub
         - KOMI.URL.COREBANK=mock-cb:9007/api/corebank
         - KOMI.URL.ISOADAPTER=mock-cb:9003/komi/api/v1/adapter
-        - KOMI.URL.PORTALAPI=komi-mock:9006/mock
+        - KOMI.URL.PORTALAPI=http://komi-mock:9006/mock
         - KOMI.URL.INBOUND=komi-inbound:9001
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.BICODE=INDOIDJA
