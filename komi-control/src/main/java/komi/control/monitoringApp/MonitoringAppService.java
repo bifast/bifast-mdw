@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.GsonBuilder;
 import komi.control.model.Parameter;
+import komi.control.dto.ModuleResponse;
 import komi.control.service.ParameterService;
 
 import java.io.IOException;
@@ -71,14 +72,14 @@ public class MonitoringAppService {
 		List<String> portCiConnector = this.urlSplit(new String(urlCi.get().getValue()));
 		
 		Optional<Parameter> urlCore = parameterService.findByModuleAndCode("EVENT", "URL.COREBANKSYSTEM");
-		List<String> portCoreBankSystem = this.urlSplit(new String(urlCore.get().getValue()));
+		String portCoreBankSystem = new String(urlCore.get().getValue());
 		
 		outbound = isSocketAliveUitlitybyCrunchify(portOutbound.get(0), Integer.valueOf(portOutbound.get(1)));
 		inbound = isSocketAliveUitlitybyCrunchify(portinbound.get(0), Integer.valueOf(portinbound.get(1)));
 		isoAdapter = isSocketAliveUitlitybyCrunchify(portIsoAdapter.get(0), Integer.valueOf(portIsoAdapter.get(1)));
 		database = isSocketAliveUitlitybyCrunchify(portDatabase.get(0), Integer.valueOf(portDatabase.get(1)));
 		ciConnector = isSocketAliveUitlitybyCrunchify(portCiConnector.get(0), Integer.valueOf(portCiConnector.get(1)));
-		coreBankSystem = isSocketAliveUitlitybyCrunchify(portCoreBankSystem.get(0), Integer.valueOf(portCoreBankSystem.get(1)));
+		coreBankSystem = coreBankCheck(portCoreBankSystem);
 		
 		if(outbound) {
 			komistatus.setOutboundService("Up");
@@ -158,7 +159,7 @@ public class MonitoringAppService {
 		}
 		return isAlive;
 	}
- 
+	
 	// Simple log utility
 	private static void log(String string) {
 		System.out.println(string);
@@ -169,6 +170,48 @@ public class MonitoringAppService {
 		System.out.println("isAlive result: " + isAlive + "\n");
 	}
  
+	
+	public static boolean coreBankCheck(String link) {
+		boolean isAlive = false;
+		
+		CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet httpPost = new HttpGet(link);
+
+        String jsonRspn=null;
+    
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            
+            try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                 CloseableHttpResponse rspn = httpClient.execute(httpPost)) {
+
+                HttpEntity entity = rspn.getEntity();
+                if (entity != null) {
+                    String json = EntityUtils.toString(rspn.getEntity());
+                    jsonRspn = json;
+                    System.out.println(json);
+                    if (json.equals("ERROR")) {
+                    	System.out.println("json = ERROR");
+                    } else {
+                        GsonBuilder gson = new GsonBuilder();
+
+                        ModuleResponse moduleResponse = gson.create().fromJson(json, ModuleResponse.class);
+ 
+                        if(moduleResponse.getModuleDetail().getActiveConnections() > 0) {
+                        	isAlive = true;
+                        }else {
+                        	isAlive = false;
+                        }
+                       
+                    }
+                }
+                client.close();
+            }catch (Exception e) {
+            	
+            	isAlive = false;
+            }
+		return isAlive;
+	}
 
 	/*
 	public MonitoringApp checkOutboundService (MonitoringApp monitoringUsed) {
