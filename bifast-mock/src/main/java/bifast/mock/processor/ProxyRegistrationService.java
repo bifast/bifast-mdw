@@ -26,10 +26,15 @@ public class ProxyRegistrationService {
 		String proxyVal = prxyRegn.getRegn().getPrxy().getVal();
 		Optional<AccountProxy> oAccountProxy = proxyRepo.findByProxyTypeAndProxyVal(proxyType, proxyVal);
 
+		if (oAccountProxy.isEmpty()) {}
+		else if (oAccountProxy.get().getAccountStatus().equals("ICTV"))
+
 		seed.setMsgRcptAgtId(prxyRegn.getGrpHdr().getMsgSndr().getAgt().getFinInstnId().getOthr().getId());
 		seed.setAgtId(prxyRegn.getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId());
 
-		if (oAccountProxy.isEmpty()) {
+		if ((oAccountProxy.isEmpty()) || 
+			(oAccountProxy.get().getAccountStatus().equals("ICTV"))) {
+				 
 			Random rand = new Random();
 			long random = (long)(rand.nextDouble()*10000000000L);
 			seed.setRegnId(String.valueOf(random));

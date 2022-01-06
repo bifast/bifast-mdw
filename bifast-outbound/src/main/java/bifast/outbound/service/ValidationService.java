@@ -86,6 +86,14 @@ public class ValidationService {
 				throw new InputValidationException ("Proxy Operation type error");
 		}
 
+		try {
+			@SuppressWarnings("unused")
+			DomainCode dm = domainCodeRepo.findByGrpAndKey("PROXY.TYPE", regnReq.getProxyType()).orElseThrow();
+		}
+		catch(NoSuchElementException ne) {
+				throw new InputValidationException ("Proxy Type tidak valid");
+		}
+
 		if (regnReq.getRegistrationType().equals("NEWR")) {
 			if (null == regnReq.getDisplayName()) 
 				throw new InputValidationException("DisplayName tidak boleh kosong.");
@@ -122,7 +130,6 @@ public class ValidationService {
 				throw new InputValidationException("SecondaryIdType tidak boleh kosong.");
 			if (regnReq.getProxyValue().isBlank())
 				throw new InputValidationException("ProxyValue tidak boleh kosong.");
-
 		}
 	}
 

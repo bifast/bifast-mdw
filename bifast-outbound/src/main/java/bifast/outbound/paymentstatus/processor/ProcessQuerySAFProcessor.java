@@ -22,7 +22,6 @@ import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.ChannelRepository;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.CreditTransferRepository;
-import bifast.outbound.service.UtilService;
 
 @Component
 public class ProcessQuerySAFProcessor implements Processor{

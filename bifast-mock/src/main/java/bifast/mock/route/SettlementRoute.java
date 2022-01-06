@@ -1,5 +1,6 @@
 package bifast.mock.route;
 
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,16 +49,21 @@ public class SettlementRoute extends RouteBuilder {
 			.unmarshal(jsonBusinessMessageDataFormat)
 		
 			.process(settlementProcessor)
-			
-			.filter().simple("${header.sttl_delay} != 'YES'")
-				.log("stty_delay null ya disini")
-				.marshal(jsonBusinessMessageDataFormat)
-				.log("Submit settlement: ${body}")
+		
+			.marshal(jsonBusinessMessageDataFormat)
+			.log("Submit settlement: ${body}")
+			.doTry()
+				.to("rest:post:?host={{komi.inbound-url}}"
+					+ "&exchangePattern=InOnly"
+//						+ "&bridgeEndpoint=true"
+					)
+				
+	 		.endDoTry()
+	    	.doCatch(Exception.class)
+				.log("Send settlement error.")
+		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+	    	.end()
 
-				.to("rest:post:?host={{komi.inbound-url}}&"
-						+ "exchangePattern=InOnly&"
-						+ "bridgeEndpoint=true")
-			.end()
 			
 			
 			.to("sql:update mock_pacs002 set sttl = 'DONE' where id::varchar = :#${header.sttl_id}::varchar")

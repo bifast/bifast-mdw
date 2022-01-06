@@ -22,22 +22,16 @@ import bifast.outbound.service.JacksonDataFormatService;
 @Component
 public class AccountEnquiryRoute extends RouteBuilder{
 
-	@Autowired
-	private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
-	@Autowired
-	private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
-	@Autowired
-	private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
-	@Autowired
-	private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
-	@Autowired
-	private ExceptionProcessor exceptionProcessor;
-	@Autowired
-	private JacksonDataFormatService jdfService;
+	@Autowired private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
+	@Autowired private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
+	@Autowired private ExceptionProcessor exceptionProcessor;
+	@Autowired private JacksonDataFormatService jdfService;
+	@Autowired private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
+//	@Autowired private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
+		JacksonDataFormat chnlResponseJDF = jdfService.basic(ChannelResponseWrapper.class);
 
 		onException(Exception.class).routeId("komi.acctenq.onException")
 			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
