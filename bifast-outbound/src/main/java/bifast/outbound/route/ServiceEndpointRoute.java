@@ -107,7 +107,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				}
 			})
 			
-			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} start.")
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
+					"[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} start.")
 
 			.choice()
 				.when().simple("${header.hdr_request_list.msgName} == 'AEReq'")
@@ -134,7 +135,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.end()
 			
 
-			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} complete.")
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
+					"[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} complete.")
 
 			.to("seda:savetablechannel?exchangePattern=InOnly")
 			

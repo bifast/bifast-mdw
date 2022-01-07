@@ -50,11 +50,14 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			.setHeader("ct_progress", constant("Start"))
 			
-			// FILTER-A debit-account corebank dulu donk untuk e-Channel
+			// FILTER-A debit-account di cbs dulu donk untuk e-Channel
 			.filter().simple("${header.hdr_request_list.merchantType} != '6010' ")
+				.log(LoggingLevel.DEBUG, "komi.ct", 
+						"yg bukan dari Teller harus debit-account dulu")
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
-				.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] call Corebank")
+				.log(LoggingLevel.DEBUG, "komi.ct", 
+						"[ChnlReq:${header.hdr_request_list.requestId}][CTReq] call Corebank")
 				.to("seda:callcb")
 			.end()
 		
@@ -68,7 +71,8 @@ public class CreditTransferRoute extends RouteBuilder {
 				})
 			.end()
 
-			.log(LoggingLevel.DEBUG, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] setelah corebank, ${header.ct_progress}.")
+			.log(LoggingLevel.DEBUG, "komi.ct", 
+					"[ChnlReq:${header.hdr_request_list.requestId}][CTReq] setelah corebank, ${header.ct_progress}.")
 		
 			// lanjut submit ke BI
 			.process(crdtTransferProcessor)
@@ -78,7 +82,7 @@ public class CreditTransferRoute extends RouteBuilder {
 
 			.to("direct:call-cihub?timeout=0")
 			
-			.log("${body}")
+			.log(LoggingLevel.DEBUG, "komi.ct", "${body}")
 			.to("seda:savecredittransfer?exchangePattern=InOnly")   // update data
 
 
@@ -96,7 +100,8 @@ public class CreditTransferRoute extends RouteBuilder {
 					.setHeader("ct_progress", constant("REJECT"))
 			.end()
 			
-			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] hasil cihub, ${header.ct_progress}.")
+			.log(LoggingLevel.DEBUG, "komi.ct", 
+					"[ChnlReq:${header.hdr_request_list.requestId}][CTReq] hasil cihub, ${header.ct_progress}.")
 
 			// FILTER-C: jika timeout, check settlement dulu
 //			.filter().simple("${header.ct_progress} == 'TIMEOUT'")
@@ -114,7 +119,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			// jika response RJCT/ERROR, harus reversal ke corebanking
 			// unt Teller tidak dilakukan KOMI tapi oleh Teller langsung
 			.filter().simple("${header.ct_progress} in 'REJECT,ERROR' && ${header.hdr_request_list.merchantType} != '6010'")
-				.log("akan reversal")
+				.log(LoggingLevel.DEBUG, "komi.ct", "akan reversal")
 				.to("seda:debitreversal")
 			.end()
 	

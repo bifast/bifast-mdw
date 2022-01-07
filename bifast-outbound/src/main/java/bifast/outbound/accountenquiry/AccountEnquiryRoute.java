@@ -78,7 +78,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			// selesai panggil Proxy Resolution
 			
 			.filter().simple("${body.class} endsWith 'ChnlAccountEnquiryRequestPojo'")
-				.log("Proxy Resolution as AE Response")
+				.log(LoggingLevel.DEBUG, "komi.acctenq", "Proxy Resolution as AE Response")
 				.process(buildAccountEnquiryRequestProcessor)					
 				.to("direct:call-cihub")
 			.end()

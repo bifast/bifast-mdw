@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class AcctCustInfoRoute extends RouteBuilder{
 			// call ke corebank
 			.to("seda:callcb")
 	
-			.log("After callcb: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.acctcustinfo", "After callcb: ${body}")
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
