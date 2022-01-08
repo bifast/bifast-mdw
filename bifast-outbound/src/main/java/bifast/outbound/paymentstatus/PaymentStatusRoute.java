@@ -39,12 +39,15 @@ public class PaymentStatusRoute extends RouteBuilder {
 
 		
 		from("direct:pschnl").routeId("komi.ps.chnl")
-			.log("PaymentStatus inquiry")
+			.log(LoggingLevel.DEBUG, "komi.ps.chnl", 
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] PaymentStatus inquiry")
 			
 			//find CT
 			.process(checkSAFResult)
 
-			.log(LoggingLevel.DEBUG, "komi.ps.chnl", "check result: ${body}")
+//			.log(LoggingLevel.DEBUG, "komi.ps.chnl", "check result: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.ps.chnl", 
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] check result: ${body}")
 
 			.filter().simple("${header.hdr_response_list.reasonCode} == 'U000'")
 				.unmarshal(ctRequestJDF)

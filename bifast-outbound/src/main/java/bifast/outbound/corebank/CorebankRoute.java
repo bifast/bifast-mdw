@@ -38,15 +38,12 @@ public class CorebankRoute extends RouteBuilder{
 		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(CbDebitReversalResponsePojo.class);
 		JacksonDataFormat customerInfoRequestJDF = jdfService.wrapRoot(CbCustomerInfoRequestPojo.class);
 		JacksonDataFormat customerInfoResponseJDF = jdfService.basic(CbCustomerInfoResponsePojo.class);
-
-		onException(Exception.class)
-			.log("ada exception")
-		;
-		
+	
 		// ROUTE CALLCB 
 		from("seda:callcb").routeId("komi.corebank")
 		
-			.log(LoggingLevel.DEBUG, "komi.corebank", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] call Corebank")
+			.log(LoggingLevel.DEBUG, "komi.corebank", 
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] call Corebank")
 
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
@@ -69,7 +66,7 @@ public class CorebankRoute extends RouteBuilder{
 					.marshal(debitReversalRequestJDF)
 			.end()
 			
-	 		.log(LoggingLevel.DEBUG, "komi.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
+	 		.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}]"
 	 														+ " CB Request: ${body}")
 
 			.doTry()
@@ -83,7 +80,7 @@ public class CorebankRoute extends RouteBuilder{
 
 				.convertBodyTo(String.class)
 				
-		 		.log(LoggingLevel.DEBUG, "komi.corebank", "[ChReq:${header.hdr_request_list.requestId}]"
+		 		.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}]"
 							+ " CB Response: ${body}")
 
 				.choice()
@@ -97,7 +94,7 @@ public class CorebankRoute extends RouteBuilder{
 
 			.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_request_list.requestId}] Call Corebank Error.")
+				.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Call Corebank Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultProcessor)
 	
@@ -106,7 +103,7 @@ public class CorebankRoute extends RouteBuilder{
 					
 			.choice()
 				.when().simple("${body.class} endsWith 'FaultPojo'")
-		 			.log(LoggingLevel.DEBUG, "komi.corebank", "[ChReq:${header.hdr_request_list.requestId}] Fault")
+		 			.log(LoggingLevel.DEBUG, "komi.corebank", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Fault")
 				.when().simple("${body.status} == 'RJCT'")
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {

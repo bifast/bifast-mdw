@@ -24,16 +24,12 @@ public class ProxyRegistrationService {
 		ProxyRegistrationV01 prxyRegn = bm.getDocument().getPrxyRegn();
 		String proxyType = prxyRegn.getRegn().getPrxy().getTp();
 		String proxyVal = prxyRegn.getRegn().getPrxy().getVal();
-		Optional<AccountProxy> oAccountProxy = proxyRepo.findByProxyTypeAndProxyVal(proxyType, proxyVal);
-
-		if (oAccountProxy.isEmpty()) {}
-		else if (oAccountProxy.get().getAccountStatus().equals("ICTV"))
+		Optional<AccountProxy> oAccountProxy = proxyRepo.findByProxyTypeAndProxyValAndAccountStatus(proxyType, proxyVal, "ACTV");
 
 		seed.setMsgRcptAgtId(prxyRegn.getGrpHdr().getMsgSndr().getAgt().getFinInstnId().getOthr().getId());
 		seed.setAgtId(prxyRegn.getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId());
 
-		if ((oAccountProxy.isEmpty()) || 
-			(oAccountProxy.get().getAccountStatus().equals("ICTV"))) {
+		if ((oAccountProxy.isEmpty()) ) {
 				 
 			Random rand = new Random();
 			long random = (long)(rand.nextDouble()*10000000000L);

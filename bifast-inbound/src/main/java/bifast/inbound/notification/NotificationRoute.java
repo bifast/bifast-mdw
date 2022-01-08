@@ -48,7 +48,7 @@ public class NotificationRoute extends RouteBuilder{
 
 			.setHeader("HttpMethod", constant("POST"))
 			
-			.to("rest:post:?host={{komi.url.portalapi}}")
+			.to("rest:post:?host={{komi.url.portalapi}}&bridgeEndpoint=true")
 
 
 		;

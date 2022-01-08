@@ -50,7 +50,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 			.process(exceptionProcessor)
 			.marshal(chnlResponseJDF)
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] "
+					+ " Response: ${body}")
 			.removeHeaders("*")
 			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
@@ -68,16 +69,13 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		
 		from("direct:service").routeId("komi.endpointRoute")
 			.convertBodyTo(String.class)
-
-			.log("=====*****=====")
-			.log("Terima: ${body}")
-
 			.setHeader("hdr_fulltextinput", simple("${body}"))
-			
+
 			.unmarshal(chnlRequestJDF)
-	
 			.process(initRmwProcessor)
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "dari ${header.hdr_request_list.channelId}")
+	
+			.log("=====*****=====")
+			.log("Terima dari ${header.hdr_request_list.channelId}: ${header.hdr_fulltextinput}")
 
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
 
@@ -108,7 +106,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			})
 			
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
-					"[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} start.")
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] start process.")
 
 			.choice()
 				.when().simple("${header.hdr_request_list.msgName} == 'AEReq'")
@@ -129,14 +127,14 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				.when().simple("${header.hdr_request_list.msgName} == 'PrxRegnInquiryReq'")
 					.to("direct:prxyrgstinquiry")
 
-				.when().simple("${header.hdr_request_list.msgName} == 'AcctCustmrInfo'")
+				.when().simple("${header.hdr_request_list.msgName} == 'ACReq'")
 					.to("direct:acctcustmrinfo")
 
 			.end()
 			
 
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
-					"[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} complete.")
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] process complete.")
 
 			.to("seda:savetablechannel?exchangePattern=InOnly")
 			
@@ -145,13 +143,14 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.end()
 			
 			.marshal(chnlResponseJDF)
-			.log("[ChnlReq:${header.hdr_request_list.requestId}] ${header.hdr_request_list.msgName} Response: ${body}")
+			.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
 
 		;
 		
 		from("seda:savetablechannel").routeId("komi.savechnltrns")
-			.log(LoggingLevel.DEBUG, "komi.savechnltrns", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] save table channel_transaction.")
+			.log(LoggingLevel.DEBUG, "komi.savechnltrns", 
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Save table channel_transaction.")
 			.process(saveChannelTransactionProcessor)
 		;		
 

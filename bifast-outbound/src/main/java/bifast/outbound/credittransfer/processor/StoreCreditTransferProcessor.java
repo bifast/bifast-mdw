@@ -100,9 +100,7 @@ public class StoreCreditTransferProcessor implements Processor {
 			else {
 
 				FlatPacs002Pojo ctResponse = (FlatPacs002Pojo) oBiResponse;
-
-				System.out.println(ctResponse.getReasonCode());
-				
+			
 				if (ctResponse.getReasonCode().equals("U900")) {
 					ct.setCallStatus("TIMEOUT");
 				}

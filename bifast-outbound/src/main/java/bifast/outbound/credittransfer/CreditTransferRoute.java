@@ -39,8 +39,9 @@ public class CreditTransferRoute extends RouteBuilder {
 
 	    onException(DebitException.class)
 	    	.process(exceptionResponseProcessor)
+			.to("seda:logportal?exchangePattern=InOnly")
 	    	.marshal(chnlResponseJDF)
-	    	.log(LoggingLevel.ERROR, "komi.ct", "[ChnlReq:${header.hdr_request_list.requestId}] Debit account gagal.")
+	    	.log(LoggingLevel.ERROR, "komi.ct", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Debit account gagal.")
 	    	.log(LoggingLevel.ERROR, "komi.ct", "${body}")
 	    	.removeHeaders("*")
 	    	.handled(true)
@@ -53,11 +54,11 @@ public class CreditTransferRoute extends RouteBuilder {
 			// FILTER-A debit-account di cbs dulu donk untuk e-Channel
 			.filter().simple("${header.hdr_request_list.merchantType} != '6010' ")
 				.log(LoggingLevel.DEBUG, "komi.ct", 
-						"yg bukan dari Teller harus debit-account dulu")
+						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] selain dari Teller")
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
 				.log(LoggingLevel.DEBUG, "komi.ct", 
-						"[ChnlReq:${header.hdr_request_list.requestId}][CTReq] call Corebank")
+						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] call Corebank")
 				.to("seda:callcb")
 			.end()
 		
@@ -72,7 +73,8 @@ public class CreditTransferRoute extends RouteBuilder {
 			.end()
 
 			.log(LoggingLevel.DEBUG, "komi.ct", 
-					"[ChnlReq:${header.hdr_request_list.requestId}][CTReq] setelah corebank, ${header.ct_progress}.")
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] "
+					+ "setelah corebank, ${header.ct_progress}.")
 		
 			// lanjut submit ke BI
 			.process(crdtTransferProcessor)
@@ -82,7 +84,8 @@ public class CreditTransferRoute extends RouteBuilder {
 
 			.to("direct:call-cihub?timeout=0")
 			
-			.log(LoggingLevel.DEBUG, "komi.ct", "${body}")
+			.log(LoggingLevel.DEBUG, "komi.ct", 
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] response class dari cihub: ${body}")
 			.to("seda:savecredittransfer?exchangePattern=InOnly")   // update data
 
 
@@ -101,7 +104,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.end()
 			
 			.log(LoggingLevel.DEBUG, "komi.ct", 
-					"[ChnlReq:${header.hdr_request_list.requestId}][CTReq] hasil cihub, ${header.ct_progress}.")
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] hasil cihub, ${header.ct_progress}.")
 
 			// FILTER-C: jika timeout, check settlement dulu
 //			.filter().simple("${header.ct_progress} == 'TIMEOUT'")

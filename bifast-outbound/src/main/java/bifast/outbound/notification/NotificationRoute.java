@@ -28,9 +28,11 @@ public class NotificationRoute extends RouteBuilder {
 		from("seda:logportal").routeId("komi.notif.portal")
 			.process(buildLogMessage)
 			.marshal(portalLogJDF)
-//			.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
 
-		    .removeHeaders("*")
+			.log(LoggingLevel.DEBUG, "komi.notif.portal",
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Log-notif ${body}")
+
+			.removeHeaders("*")
 		    
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
@@ -39,8 +41,7 @@ public class NotificationRoute extends RouteBuilder {
 			})
 			
 			.doTry()
-				.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
-				
+
 				.to("rest:post:?host={{komi.url.portalapi}}")
 //				.to("{{komi.url.portalapi}}?"
 //						+ "socketTimeout=1000&" 

@@ -77,11 +77,13 @@ public class CihubRoute extends RouteBuilder {
 			})
 			
 			.process(setRemainTime)
-			.log("[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB request: ${body}")
+			.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] request CIHUB: ${body}")
 			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-				.log(LoggingLevel.DEBUG, "komi.call-cihub", "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] sisa waktu ${header.hdr_remain_time}")
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", 
+						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] "
+						+ "sisa waktu ${header.hdr_remain_time}")
 
 				.enrich()
 					.simple("http:{{komi.url.ciconnector}}?"
@@ -90,7 +92,7 @@ public class CihubRoute extends RouteBuilder {
 					.aggregationStrategy(enrichmentAggregator)
 				
 				.convertBodyTo(String.class)				
-				.log("[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CIHUB response: ${body}")
+				.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] CIHUB response: ${body}")
 	
 				.setHeader("tmp_body", simple("${body}"))
 				.marshal().zipDeflater()
@@ -122,12 +124,12 @@ public class CihubRoute extends RouteBuilder {
 				.process(flatResponseProcessor)
 				
 				.filter().simple("${body.class} endsWith 'FaultPojo'")
-					.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_request_list.requestId}][${header.hdr_request_list.msgName}] CI-HUB Response: ${header.tmp_body}")
+					.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] CI-HUB Response: ${header.tmp_body}")
 		    	.end()
 			
 			.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[ChnlReq:${header.hdr_request_list.requestId}] Call CI-HUB Error.")
+				.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultMap)
 	

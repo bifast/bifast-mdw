@@ -15,7 +15,7 @@ public class InboundJsonRoute extends RouteBuilder {
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat jsonBusinessMessageDataFormat = jdfService.unwrapRoot(BusinessMessage.class);
+		JacksonDataFormat jsonBusinessMessageDataFormat = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 
 		
 		restConfiguration()
@@ -58,6 +58,8 @@ public class InboundJsonRoute extends RouteBuilder {
 			.to("seda:logandsave?exchangePattern=InOnly")
 	
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
+			
+			.log("Halo: ${body}")
 			.removeHeaders("*")
 
 			

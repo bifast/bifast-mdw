@@ -82,7 +82,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 
 		else if (null != req.getChnlAccountCstmrInfoRequest()) {
 			rmw.setChannelRequest(req.getChnlAccountCstmrInfoRequest());
-			rmw.setMsgName("AcctCustmrInfo");
+			rmw.setMsgName("ACReq");
 			rmw.setRequestId(req.getChnlAccountCstmrInfoRequest().getNoRef());
 			exchange.getMessage().setBody(req.getChnlAccountCstmrInfoRequest());
 		}
