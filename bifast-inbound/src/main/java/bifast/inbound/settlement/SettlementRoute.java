@@ -26,7 +26,7 @@ public class SettlementRoute extends RouteBuilder {
 					.log("Settlement tidak match")
 			.end()
 
-	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai proses Settlement ")
+	 		.log(LoggingLevel.DEBUG, "komi.settlement", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai proses Settlement ")
 		;
 
 	}

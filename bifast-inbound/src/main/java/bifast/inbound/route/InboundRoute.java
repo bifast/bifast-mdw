@@ -25,9 +25,9 @@ public class InboundRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		from("direct:receive").routeId("komi.inboundRoute")
-
+			.log("akan checkrequst")
 			.process(checkRequestMsgProcessor) 
-			
+			.log("Disini ${header.hdr_msgType}")
 			.log("=====*****=====")
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] ${header.hdr_msgType} received.")
 		

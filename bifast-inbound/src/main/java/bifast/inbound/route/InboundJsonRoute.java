@@ -48,6 +48,7 @@ public class InboundJsonRoute extends RouteBuilder {
 			
 			.filter().simple("${header.hdr_msgType} !in 'SETTLEMENT, PROXYNOTIF'")
 				.marshal(jsonBusinessMessageDataFormat) 
+				.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Response: ${body}")
 				// simpan outbound compress
 				.setHeader("hdr_tmp", simple("${body}"))
 				.marshal().zipDeflater()
@@ -59,7 +60,6 @@ public class InboundJsonRoute extends RouteBuilder {
 	
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
 			
-			.log("Halo: ${body}")
 			.removeHeaders("*")
 
 			

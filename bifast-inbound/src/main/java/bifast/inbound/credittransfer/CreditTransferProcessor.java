@@ -110,7 +110,7 @@ public class CreditTransferProcessor implements Processor {
 		doc.setFiToFIPmtStsRpt(respMsg);
 		
 		String orignBank = reqBusMesg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
-		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr(orignBank, "pacs002.001.10", bizMsgId);
+		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr(orignBank, "pacs.002.001.10", bizMsgId);
 		appHdr.setBizSvc("CLEAR");
 		
 		BusinessMessage respBusMesg = new BusinessMessage();

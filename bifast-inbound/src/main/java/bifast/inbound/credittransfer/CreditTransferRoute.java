@@ -48,7 +48,7 @@ public class CreditTransferRoute extends RouteBuilder {
 		from("direct:crdttransfer").routeId("komi.ct")
 			.process(duplicationTrnsValidation)
 			
-			.log("KOMI_ID : ${header.hdr_process_data.komiTrnsId}")
+//			.log("KOMI_ID : ${header.hdr_process_data.komiTrnsId}")
 
 			// cek apakah SAF atau bukan
 			// check saf
@@ -89,7 +89,9 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			// if SAF = NO/NEW --> call CB, set CBSTS = ACTC/RJCT
 			.filter().simple("${header.ct_saf} in 'NO,NEW'")
-				.log("akan call cb")
+				.log(LoggingLevel.DEBUG, "komi.ct", 
+						"[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan call CB")
+
 				.process(ctCorebankRequestProcessor)
 				.setHeader("ct_cbrequest", simple("${body}"))
 				// send ke corebank
@@ -107,8 +109,9 @@ public class CreditTransferRoute extends RouteBuilder {
 					
 			.process(creditTransferProcessor)
 			
+			.log(LoggingLevel.DEBUG, "komi.ct", 
+					"[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] saf ${header.ct_saf}, cb_sts ${header.ct_cbsts}")
 
-			.log("saf ${header.ct_saf}, cb_sts ${header.ct_cbsts}")
 			//if SAF=old/new and CBSTS=RJCT --> reversal
 			//jika saf dan corebank error, ct proses harus diulang: reversal = UNDEFINED
 			.filter().simple("${header.ct_saf} != 'NO'")

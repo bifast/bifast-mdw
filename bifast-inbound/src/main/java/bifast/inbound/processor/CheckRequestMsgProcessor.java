@@ -29,18 +29,15 @@ public class CheckRequestMsgProcessor implements Processor {
 		ProcessDataPojo processData = new ProcessDataPojo();
 
 		String trnType = inputMsg.getAppHdr().getBizMsgIdr().substring(16,19);
-
-		if ((inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) &&
-			(inputMsg.getAppHdr().getBizSvc().equals("STTL"))	) {
+		
+	
+		if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) {
 			
-			trnType = "SETTLEMENT";
 			FlatPacs002Pojo flat002 = flatMsgService.flatteningPacs002(inputMsg); 
 			processData.setBiRequestFlat(flat002);
-		}
-
-		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) {
-			FlatPacs002Pojo flat002 = flatMsgService.flatteningPacs002(inputMsg); 
-			processData.setBiRequestFlat(flat002);
+			
+			if (inputMsg.getAppHdr().getBizSvc().equals("STTL"))
+				trnType = "SETTLEMENT";
 		}
 
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901")) {
@@ -73,8 +70,7 @@ public class CheckRequestMsgProcessor implements Processor {
 
 		exchange.getMessage().setHeader("hdr_process_data", processData);
 
-		
-		
+	
 	}
 	
 
