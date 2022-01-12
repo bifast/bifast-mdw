@@ -1,4 +1,4 @@
-package bifast.mock.route;
+package bifast.mock.inbound;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
@@ -15,11 +15,10 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter.Serializ
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.mock.inbound.BuildAERequestProcessor;
-import bifast.mock.inbound.BuildCTRequestProcessor;
-import bifast.mock.inbound.BuildSttlProcessor;
-import bifast.mock.inbound.CTRequestPojo;
-import bifast.mock.inbound.CTResponsePojo;
+import bifast.mock.inbound.pojo.PaymentRequestPojo;
+import bifast.mock.inbound.pojo.AERequestPojo;
+import bifast.mock.inbound.pojo.CTResponsePojo;
+import bifast.mock.inbound.pojo.InboundMockWrapper;
 
 @Component
 public class InboundRoute extends RouteBuilder {
@@ -28,15 +27,29 @@ public class InboundRoute extends RouteBuilder {
 	@Autowired BuildCTRequestProcessor buildCTRequest;
 	@Autowired BuildSttlProcessor buildSettlement;
 
-	JacksonDataFormat ctRequestJDF = new JacksonDataFormat(CTRequestPojo.class);
+	JacksonDataFormat mockRequestWrapperJDF = new JacksonDataFormat(InboundMockWrapper.class);
+	JacksonDataFormat pymtRequestJDF = new JacksonDataFormat(PaymentRequestPojo.class);
 	JacksonDataFormat ctResponseJDF = new JacksonDataFormat(CTResponsePojo.class);
 	JacksonDataFormat busMesgJDF = new JacksonDataFormat(BusinessMessage.class);
+	JacksonDataFormat aeRequestJDF = new JacksonDataFormat(AERequestPojo.class);
+	JacksonDataFormat paymtRequestJDF = new JacksonDataFormat(PaymentRequestPojo.class);
 
 	private void configureJson() {
-		ctRequestJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
-		ctRequestJDF.setInclude("NON_NULL");
-		ctRequestJDF.setInclude("NON_EMPTY");
-		
+		mockRequestWrapperJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		mockRequestWrapperJDF.setInclude("NON_NULL");
+		mockRequestWrapperJDF.setInclude("NON_EMPTY");
+//		mockRequestWrapperJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		aeRequestJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		aeRequestJDF.setInclude("NON_NULL");
+		aeRequestJDF.setInclude("NON_EMPTY");
+		aeRequestJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
+		paymtRequestJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
+		paymtRequestJDF.setInclude("NON_NULL");
+		paymtRequestJDF.setInclude("NON_EMPTY");
+		paymtRequestJDF.enableFeature(DeserializationFeature.UNWRAP_ROOT_VALUE);
+
 		ctResponseJDF.addModule(new JaxbAnnotationModule());  //supaya nama element pake annot JAXB (uppercasecamel)
 		ctResponseJDF.setInclude("NON_NULL");
 		ctResponseJDF.setInclude("NON_EMPTY");
@@ -77,7 +90,30 @@ public class InboundRoute extends RouteBuilder {
 			.log("Terima di mock")
 			.log("${body}")
 			
-			.unmarshal(ctRequestJDF)
+			.unmarshal(mockRequestWrapperJDF)
+			
+			.choice()
+				.when().simple("${body.paymentRequest} != null")
+					.log("PaymentRequest")
+					.marshal(paymtRequestJDF)
+					.unmarshal(paymtRequestJDF)
+					.to("direct:payment2")
+				.when().simple("${body.aeRequest} != null")
+					.log("AccountEnquiry")
+					.marshal(aeRequestJDF)
+					.unmarshal(aeRequestJDF)
+					.to("direct:inb_ae")
+				.when().simple("${body.ctRequest} != null")
+					.log("CreditTransferRequest")
+				.otherwise()
+					.log("oh oh")
+			.end()
+			
+			.log("selesai proses")
+		;
+			
+		from("direct:payment_route")
+			.unmarshal(pymtRequestJDF)
 			.setHeader("inb_request", simple("${body}"))
 			.process(buildAERequest)
 			.marshal(busMesgJDF)
@@ -128,7 +164,7 @@ public class InboundRoute extends RouteBuilder {
 			.filter().simple("${body.responseCode} == 'ACTC' ")
 				.log("Akan kirim settlement")
 				.setExchangePattern(ExchangePattern.InOnly)
-				.to("seda:settlement")
+				.to("seda:inb_settlement")
 //				.to("seda:settlement&exchangePattern=InOnly")
 				.log("selesai kirim settlement")
 			.end()
@@ -140,36 +176,36 @@ public class InboundRoute extends RouteBuilder {
 			.removeHeaders("*")
 		;
 
-		from("direct:inb_ct").routeId("inbound_ct")
-			.log("start kirim ct")
-			.process(buildCTRequest)
-			.marshal(busMesgJDF)
-			.log("CT Request: ${body}")
-			
-			.to("rest:post:?host={{komi.inbound-url}}"
-					+ "&exchangePattern=InOnly"
-						+ "&bridgeEndpoint=true"
-					)
-			.convertBodyTo(String.class)
-			.log("CT Response: ${body}")
-			.unmarshal(busMesgJDF)
-			.setHeader("inb_ctResponse", simple("${body}"))
-
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					BusinessMessage msg = exchange.getMessage().getBody(BusinessMessage.class);
-					String responseCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts();
-					String reasonCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry();
-					CTResponsePojo inbResponse = new CTResponsePojo();
-					inbResponse.setResponseCode(responseCode);
-					inbResponse.setReasonCode(reasonCode);
-					exchange.getMessage().setBody(inbResponse);
-				}
-			})
-			
-		;
+//		from("direct:inb_ct").routeId("inbound_ct")
+//			.log("start kirim ct")
+//			.process(buildCTRequest)
+//			.marshal(busMesgJDF)
+//			.log("CT Request: ${body}")
+//			
+//			.to("rest:post:?host={{komi.inbound-url}}"
+//					+ "&exchangePattern=InOnly"
+//						+ "&bridgeEndpoint=true"
+//					)
+//			.convertBodyTo(String.class)
+//			.log("CT Response: ${body}")
+//			.unmarshal(busMesgJDF)
+//			.setHeader("inb_ctResponse", simple("${body}"))
+//
+//			.process(new Processor() {
+//				public void process(Exchange exchange) throws Exception {
+//					BusinessMessage msg = exchange.getMessage().getBody(BusinessMessage.class);
+//					String responseCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts();
+//					String reasonCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry();
+//					CTResponsePojo inbResponse = new CTResponsePojo();
+//					inbResponse.setResponseCode(responseCode);
+//					inbResponse.setReasonCode(reasonCode);
+//					exchange.getMessage().setBody(inbResponse);
+//				}
+//			})
+//			
+//		;
 		
-		from("seda:settlement").routeId("inbound_sttl")
+		from("seda:inb_settlement").routeId("inbound_sttl")
 			.delay(7000)
 			.process(buildSettlement)
 			.marshal(busMesgJDF)
@@ -182,6 +218,10 @@ public class InboundRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 		;
 		
+		from("direct:accountenq3").routeId("inbound.accountenq3")
+			.log("di direct:accountenq")
+			.setHeader("ae_obj_birequest", simple("${body}"))
+		;
 	}
 
 }

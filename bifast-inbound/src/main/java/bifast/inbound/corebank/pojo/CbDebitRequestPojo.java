@@ -2,14 +2,13 @@ package bifast.inbound.corebank.pojo;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonRootName("CreditRequest")
-public class CbCreditRequestPojo {
+@JsonRootName("DebitRequest")
+public class CbDebitRequestPojo {
 
 	private String komiTrnsId;
 	private String merchantType;
 	private String terminalId;
 	private String noRef;
-
 
 	private String categoryPurpose;
 	
@@ -239,5 +238,4 @@ public class CbCreditRequestPojo {
 		this.paymentInformation = paymentInformation;
 	}
 
-	
 }

@@ -1,12 +1,12 @@
-
-POST http://10.11.100.116:9002/komi-outbound/service HTTP/1.1
+# accountNumber '9***' akan reject K000
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
 Authorization: Basic MB:password
 
 {
   "AccountCustomerInfo" : {
-    "NoRef" : "MOB220108082347861", 
+    "NoRef" : "MOB220108082347321", 
     "TerminalId" : "MOBILE0001",  
-    "AccountNumber" : "0012107551019"
+    "AccountNumber" : "912107551019"
   }
 }

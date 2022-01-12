@@ -14,6 +14,7 @@ import bifast.library.iso20022.pacs002.PaymentTransaction110;
 import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
+import bifast.mock.inbound.pojo.PaymentRequestPojo;
 import bifast.mock.processor.UtilService;
 
 @Component
@@ -29,7 +30,7 @@ public class BuildCTRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		CTRequestPojo inbRequest = exchange.getMessage().getHeader("inb_request", CTRequestPojo.class);
+		PaymentRequestPojo inbRequest = exchange.getMessage().getHeader("inb_request", PaymentRequestPojo.class);
 		BusinessMessage aeResponse = exchange.getMessage().getHeader("inb_aeresponse", BusinessMessage.class);
 		
 		PaymentTransaction110 crdtInfo = aeResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);

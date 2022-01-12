@@ -61,7 +61,8 @@ public class CreditTransferProcessor implements Processor {
 
 		Pacs002Seed resp = new Pacs002Seed();
 		resp.setMsgId(msgId);
-		
+		resp.setCreditorAccountIdType(flatRequest.getCreditorAccountType());
+
 		
 		//SAF = NO --> reply as-is
 		//if SAF = OLD/NEW --> reply ok
@@ -75,6 +76,7 @@ public class CreditTransferProcessor implements Processor {
 				resp.setStatus(fault.getResponseCode());
 				resp.setReason(fault.getReasonCode());	
 			}
+			
 
 			if ((resp.getReason().equals("U101") && (resp.getCreditorAccountIdType().equals("SVGS"))))
 				resp.setReason("53");
@@ -92,7 +94,6 @@ public class CreditTransferProcessor implements Processor {
 			resp.setReason("U000");
 		}
 		
-
 
 		resp.setCreditorResidentialStatus(flatRequest.getCreditorResidentialStatus());  // 01 RESIDENT
 		resp.setCreditorTown(flatRequest.getCreditorTownName());  

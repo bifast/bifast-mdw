@@ -19,6 +19,8 @@ public class MockPacs002 {
     private String orgnlEndToEndId;
     @Column(length=5000)
     private String fullMessage;
+    @Column(length=5000)
+    private String ctRequest;
     private String result;
     private String sttl;
     private String cdtrAcct;
@@ -74,6 +76,12 @@ public class MockPacs002 {
 	}
 	public void setResult(String result) {
 		this.result = result;
+	}
+	public String getCtRequest() {
+		return ctRequest;
+	}
+	public void setCtRequest(String ctRequest) {
+		this.ctRequest = ctRequest;
 	}
 	public String getCdtrAcct() {
 		return cdtrAcct;

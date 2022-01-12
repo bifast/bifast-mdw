@@ -19,6 +19,7 @@ import bifast.library.iso20022.pacs002.BISupplementaryDataEnvelope1;
 import bifast.library.iso20022.pacs002.CashAccount38;
 import bifast.library.iso20022.pacs002.CashAccountType2Choice;
 import bifast.library.iso20022.pacs002.GenericAccountIdentification1;
+import bifast.mock.inbound.pojo.PaymentRequestPojo;
 import bifast.mock.persist.MockPacs002;
 import bifast.mock.persist.MockPacs002Repository;
 import bifast.mock.processor.UtilService;
@@ -34,7 +35,7 @@ public class BuildSttlProcessor implements Processor {
 //		BusinessMessage in = exchange.getMessage().getBody(BusinessMessage.class);		
 //		BusinessMessage aeResp = exchange.getMessage().getHeader("inb_aeresponse", BusinessMessage.class);
 		BusinessMessage ctResp = exchange.getMessage().getHeader("inb_ctResponse", BusinessMessage.class);
-		CTRequestPojo ibRequest = exchange.getMessage().getHeader("inb_request", CTRequestPojo.class);
+		PaymentRequestPojo ibRequest = exchange.getMessage().getHeader("inb_request", PaymentRequestPojo.class);
 		
 		ctResp.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().setId("INDOIDJA");
 		ctResp.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().setId("SIHBIDJ1");

@@ -39,7 +39,7 @@ public class BuildCTRequestProcessor implements Processor {
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
 
 		String msgType = "";
-		if (null == chnReq.getCrdtProxyIdValue()) 
+		if (null == chnReq.getCrdtProxyIdValue() || chnReq.getCrdtProxyIdValue().isBlank()) 
 			msgType = "010";	
 		else	
 			msgType = "110";	

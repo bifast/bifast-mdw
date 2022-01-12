@@ -21,6 +21,14 @@ public class CustomerInfoProcessor implements Processor{
 		CbCustomerInfoResponsePojo custInfoResponse = new CbCustomerInfoResponsePojo();
 		custInfoResponse.setKomiTrnsId(custInfoRequest.getKomiTrnsId());
 		
+		if (custInfoRequest.getAccountNumber().startsWith("9")) {
+			custInfoResponse.setStatus("KSTS");
+			custInfoResponse.setReason("K000");
+		}
+		else {
+			custInfoResponse.setStatus("ACTC");
+			custInfoResponse.setReason("U000");
+		}
 		custInfoResponse.setAccountNumber(custInfoRequest.getAccountNumber());
 		custInfoResponse.setAccountType("CACC");
 		custInfoResponse.setCustomerId("KTP3000040050004");
@@ -42,9 +50,7 @@ public class CustomerInfoProcessor implements Processor{
 		lPhone.add("0812222222");
 		custInfoResponse.setPhoneNumberList(lPhone);
 
-		custInfoResponse.setReason("U000");
 		custInfoResponse.setResidentStatus("01");
-		custInfoResponse.setStatus("ACTC");
 		custInfoResponse.setTerminalId(custInfoRequest.getTerminalId());
 		custInfoResponse.setTownName("0200");
 		

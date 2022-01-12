@@ -1,4 +1,4 @@
-package bifast.mock.inbound;
+package bifast.mock.inbound.pojo;
 
 public class CTResponsePojo {
 

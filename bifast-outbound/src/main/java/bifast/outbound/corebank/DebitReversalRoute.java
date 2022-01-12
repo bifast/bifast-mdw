@@ -10,12 +10,8 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
-import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
-import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.pojo.FaultPojo;
-import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.repository.CreditTransferRepository;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
@@ -24,7 +20,6 @@ public class DebitReversalRoute extends RouteBuilder{
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private CbFaultExceptionProcessor cbFaultProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
-	@Autowired private CreditTransferRepository ctRepo;
 	
 	@Override
 	public void configure() throws Exception {
@@ -40,7 +35,7 @@ public class DebitReversalRoute extends RouteBuilder{
 			// build reversal message
 			.process(debitReversalRequestProcessor)
 			.marshal(debitReversalRequestJDF)
-			.log("Call ISOAdapter: ${body}")
+			.log("[ChnlReq:${header.hdr_request_list.requestId}][CTReq] Call ISOAdapter: ${body}")
 			//submit reversal
 //			.to("seda:callcb")
 			.doTry()

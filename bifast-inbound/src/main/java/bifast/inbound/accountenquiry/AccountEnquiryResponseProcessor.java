@@ -50,10 +50,14 @@ public class AccountEnquiryResponseProcessor implements Processor {
 
 		if (oResp.getClass().getSimpleName().equals("CbAccountEnquiryResponsePojo")) {
 			seed.setStatus(aeResp.getStatus());
-			if ((aeResp.getReason().equals("U101") && (aeResp.getAccountType().equals("SVGS"))))
-				seed.setReason("53");
-			else if (aeResp.getReason().equals("U101"))
-				seed.setReason("52");
+			if (aeResp.getReason().equals("U101")) {
+				if (null == aeResp.getAccountType())
+					seed.setReason("52");
+				else if (aeResp.getAccountType().equals("SVGS"))
+					seed.setReason("53");
+				else
+					seed.setReason("52");
+			}
 			else if (aeResp.getReason().equals("U102"))
 				seed.setReason("78");
 			else if (!(aeResp.getReason().equals("U000")))

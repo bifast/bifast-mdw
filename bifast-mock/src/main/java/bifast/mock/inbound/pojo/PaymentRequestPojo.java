@@ -1,22 +1,17 @@
-package bifast.mock.inbound;
+package bifast.mock.inbound.pojo;
 
-public class CTRequestPojo {
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+@JsonRootName("PaymentRequest")
+public class PaymentRequestPojo {
 
 	private String amount;
 	
 	private String debtorName;
 	
 	private String debtorAccountNo;
-//	private String debtorAccountType;
-//	private String debtorAgentId;
-//	private String creditorAgentId;
 	private String creditorName;
-//	private String creditorPrvId;
-//	private String creditorOrgId;
-	
 	private String creditorAccountNo;
-//	private String creditorAccountType;
-	
 	private String paymentInfo;
 	
 

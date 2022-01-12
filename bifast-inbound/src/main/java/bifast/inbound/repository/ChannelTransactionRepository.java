@@ -1,6 +1,7 @@
 package bifast.inbound.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,8 +14,9 @@ public interface ChannelTransactionRepository extends JpaRepository<ChannelTrans
 
 //	Optional<ChannelTransaction> findByKomiTrnsId (String komiTrnsId);
 	List<ChannelTransaction> findByChannelIdAndChannelRefId (String channelId, String refId);
-	
+
 	@Query(value = "select nextval('kc_outboundseq')", nativeQuery = true)
 	Long getKomiSequence();
 
+	Optional<ChannelTransaction> findByKomiTrnsId (String komiTrnsId);
 }

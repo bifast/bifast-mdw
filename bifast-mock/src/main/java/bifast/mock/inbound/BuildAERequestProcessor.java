@@ -10,22 +10,24 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.service.AppHeaderService;
 import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
+import bifast.mock.inbound.pojo.AERequestPojo;
+import bifast.mock.inbound.pojo.PaymentRequestPojo;
+import bifast.mock.isoservice.ApplHeaderService;
 import bifast.mock.processor.UtilService;
 
 
 @Component
 public class BuildAERequestProcessor implements Processor {
-	@Autowired private AppHeaderService appHeaderService;
+	@Autowired private ApplHeaderService appHeaderService;
 	@Autowired private Pacs008MessageService pacs008MessageService;
 	@Autowired private UtilService utilService;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		CTRequestPojo req = exchange.getMessage().getBody(CTRequestPojo.class);
+		AERequestPojo req = exchange.getMessage().getBody(AERequestPojo.class);
 		
 		String msgType = "510";
 		String bizMsgId = utilService.genRfiBusMsgId("510", "01", "BMNDIDJA");
@@ -33,7 +35,7 @@ public class BuildAERequestProcessor implements Processor {
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
-		hdr = appHeaderService.getAppHdr("SIHBIDJ1", "pacs.008.001.08", bizMsgId);
+		hdr = appHeaderService.getAppHdr("BMNDIDJA", "SIHBIDJ1", "pacs.008.001.08", bizMsgId);
 
 		Pacs008Seed seedAcctEnquiry = new Pacs008Seed();
 		

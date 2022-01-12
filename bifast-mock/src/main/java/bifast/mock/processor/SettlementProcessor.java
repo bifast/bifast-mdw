@@ -36,6 +36,8 @@ public class SettlementProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 	
 		BusinessMessage in = exchange.getMessage().getBody(BusinessMessage.class);		
+		
+//		BusinessMessage ctRequest = exchange.getMessage().getHeader("objRequest", BusinessMessage.class);
 
 //		BusinessMessage in = exchange.getMessage().getHeader("hdr_ctResponseObj", BusinessMessage.class);
 		HashMap<String, String> frTable = exchange.getMessage().getHeader("sttl_tableqry", HashMap.class);
@@ -43,7 +45,6 @@ public class SettlementProcessor implements Processor {
 		
 		String bizMsgId = "";
 		String msgId = "";
-		String msgName = frTable.get("ORGNL_MSG_NAME");
 		
 //		String orgnlMsgId = exchange.getMessage().getHeader("sttl_orgnlmsgid", String.class);
 
@@ -52,7 +53,8 @@ public class SettlementProcessor implements Processor {
 
 		
 		String cdtrAcct = frTable.get("CDTR_ACCT");
-	
+//		String cdtrAcct = ctRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
+		
 		CashAccount38 cdtrAcctT = new CashAccount38();
 		cdtrAcctT.setId(new AccountIdentification4Choice());
 		cdtrAcctT.getId().setOthr(new GenericAccountIdentification1());
@@ -64,6 +66,7 @@ public class SettlementProcessor implements Processor {
 		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setCdtrAcct(cdtrAcctT);
 
 		String dbtrAcct = frTable.get("DBTR_ACCT"); 
+//		String dbtrAcct = ctRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId();
 		
 		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setDbtrAcct(new CashAccount38());
 		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().setId(new AccountIdentification4Choice());
@@ -119,13 +122,18 @@ public class SettlementProcessor implements Processor {
 
 		String strSttl = map.writeValueAsString(in);
 		
-		System.out.println("Akan save settlement");
+		String msgName = frTable.get("ORGNL_MSG_NAME");
+//		String msgName = ctRequest.getAppHdr().getMsgDefIdr();
 		
 		MockPacs002 pacs002 = new MockPacs002();
 		pacs002.setBizMsgIdr(bizMsgId);
 		pacs002.setFullMessage(strSttl);
+		
 		pacs002.setOrgnlEndToEndId(frTable.get("ORGNL_END_TO_END_ID"));
 		pacs002.setOrgnlMsgId(frTable.get("ORGNL_MSG_ID"));
+//		pacs002.setOrgnlEndToEndId(in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlEndToEndId());
+//		pacs002.setOrgnlMsgId(in.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).getOrgnlMsgId());
+
 		pacs002.setOrgnlMsgName(msgName);
 		pacs002.setSttl("DONE");
 		pacs002.setResult("ACTC");
@@ -134,6 +142,16 @@ public class SettlementProcessor implements Processor {
 		mockPacs002Repo.save(pacs002);
 
 		exchange.getMessage().setBody(in);
+		
+		String addInfo = "";
+		if (in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getAddtlInf().size() > 0)
+			addInfo = in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getAddtlInf().get(0);
+		
+		if (addInfo.equals("REVERSAL"))
+			exchange.getMessage().setHeader("hdr_reversal", "YES");
+		else
+			exchange.getMessage().setHeader("hdr_reversal", "NO");
+			
 	}
 
 }

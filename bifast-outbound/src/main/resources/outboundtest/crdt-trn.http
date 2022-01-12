@@ -16,7 +16,7 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB21121411062071",
+		"NoRef": "MOB21121411062111",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
 		"CreditorAccountNumber": "112211333",
@@ -28,7 +28,7 @@ Authorization: Basic MB:password
 		"CreditorTownName": "0300",
 		"CreditorProxyId": "",
 		"CreditorProxyType": "",
-		"Amount": "12000000.57",
+		"Amount": "12000.57",
 		"FeeTransfer": "0.00",
 		"RecipientBank": "CENAIDJA",
 		"DebtorAccountNumber": "104794259",
@@ -38,7 +38,7 @@ Authorization: Basic MB:password
 		"DebtorType": "01",
 		"DebtorTownName": "0300",
 		"DebtorName": "Purnama Erwin",
-		"PaymentInformation": ""
+		"PaymentInformation": "REVERSAL"
 	}
 }
 

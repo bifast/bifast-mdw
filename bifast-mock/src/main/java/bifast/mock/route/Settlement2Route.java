@@ -12,14 +12,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.mock.processor.BuildReversal;
 import bifast.mock.processor.SettlementProcessor;
 
 @Component
-public class SettlementRoute extends RouteBuilder {
+public class Settlement2Route extends RouteBuilder {
 	
-	@Autowired private BuildReversal buildReversal;
-	@Autowired private SettlementProcessor settlementProcessor;
+	@Autowired
+	private SettlementProcessor settlementProcessor;
 	
 	JacksonDataFormat jsonBusinessMessageDataFormat = new JacksonDataFormat(BusinessMessage.class);
 
@@ -38,18 +37,20 @@ public class SettlementRoute extends RouteBuilder {
 		configureJson();
 		
 	
-		from("sql:select * from mock_pacs002 where result = 'ACTC' and sttl is null")
-			.routeId("settlement")
+//		from("sql:select * from mock_pacs002 where result = 'ACTC' and sttl is null")
+		from("seda:settlement")
+			.routeId("mock.settlement")
+//			.delay(5000)
+//			.setExchangePattern(ExchangePattern.InOnly)
 
 			
-			.setHeader("sttl_tableqry", simple("${body}"))
-			.setHeader("sttl_id", simple("${body[ID]}"))
+//			.setHeader("sttl_tableqry", simple("${body}"))
+//			.setHeader("sttl_id", simple("${body[ID]}"))
 
-			.log("${header.sttl_tableqry[RESULT]}")
+//			.log("${header.sttl_tableqry[RESULT]}")
 	
-			.setBody(simple("${body[FULL_MESSAGE]}"))
-			.unmarshal(jsonBusinessMessageDataFormat)
-			.setHeader("hdr_ctresponse", simple("${body}"))
+//			.setBody(simple("${body[FULL_MESSAGE]}"))
+//			.unmarshal(jsonBusinessMessageDataFormat)
 		
 			.process(settlementProcessor)
 		
@@ -67,46 +68,13 @@ public class SettlementRoute extends RouteBuilder {
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 	    	.end()
 
-	    	.log("Reversal Flag: ${header.hdr_reversal}")
-			.filter().simple("${header.hdr_reversal} == 'YES' ")
-				.log("submit reversal message")
-				.setBody(simple("${header.sttl_tableqry[CT_REQUEST]}"))
-				.log("${body}")
-				.unmarshal(jsonBusinessMessageDataFormat)
-				
-				.setExchangePattern(ExchangePattern.InOnly)
-				.to("seda:reversal")
-			.end()
+			
 			
 			.to("sql:update mock_pacs002 set sttl = 'DONE' where id::varchar = :#${header.sttl_id}::varchar")
 			.removeHeaders("sttl_*")
 
 		;
-
-		from("seda:reversal").routeId("sedareversal")
-			.log("send reversal:")
-			.process(buildReversal)
-			.delay(3000)
-			.marshal(jsonBusinessMessageDataFormat)
-			.log("${body}")
-			.doTry()
-				.to("rest:post:?host={{komi.inbound-url}}"
-					+ "&exchangePattern=InOnly"
-		//						+ "&bridgeEndpoint=true"
-					)
-				
-				.endDoTry()
-				.convertBodyTo(String.class)
-				.log("Hasil reversal: ${body}")
-			.doCatch(Exception.class)
-				.log("Send reversal error.")
-		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-			.end()
-	
-		;
 		
 	}
-	
-
 
 }

@@ -2,18 +2,23 @@ package bifast.outbound.paymentstatus.processor;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.model.StatusReason;
 import bifast.outbound.notification.pojo.LogDataPojo;
 import bifast.outbound.notification.pojo.PortalApiPojo;
 import bifast.outbound.paymentstatus.pojo.UndefinedCTPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class BuildMessageForPortalProcessor implements Processor {
+	@Autowired private StatusReasonRepository statusReasonRepo;
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -30,7 +35,15 @@ public class BuildMessageForPortalProcessor implements Processor {
 		
 		data.setResponse_code(psReq.getResponseCode());
 		data.setReason_code(psReq.getReasonCode());
-//		data.setReason_message(responseWr.getReasonMessage());
+		
+		Optional<StatusReason> oStatusReason = statusReasonRepo.findById(psReq.getReasonCode());
+		String reasonMsg = "";
+		if (oStatusReason.isEmpty())
+			reasonMsg = "General Error";
+		else
+			reasonMsg = oStatusReason.get().getDescription();
+		
+		data.setReason_message(reasonMsg);
 		LocalDateTime.now();
 		data.setBifast_trx_no(psReq.getReqBizmsgid());
 		data.setKomi_unique_id(psReq.getChannelNoref());

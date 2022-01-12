@@ -48,13 +48,22 @@ public class CreditTransferResponseProcessor implements Processor{
 		
 		BusinessMessage objRequest = exchange.getMessage().getHeader("objRequest", BusinessMessage.class);		
 		
-		String addInfo = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0);
+    	ObjectMapper map4ctreq = new ObjectMapper();
+    	map4ctreq.registerModule(new JaxbAnnotationModule());
+    	map4ctreq.enable(SerializationFeature.WRAP_ROOT_VALUE);
+    	map4ctreq.setSerializationInclusion(Include.NON_NULL);
+    	String strCTReq = map4ctreq.writeValueAsString(objRequest);
+
+    	String addInfo = null;
+		if (null != objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf()) 
+			addInfo = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0);
+		else
+			addInfo = "";
 
 		String norekCdtr = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
 		String bank = objRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
 		exchange.getMessage().setHeader("hdr_account_no", norekCdtr);
 
-		BusinessMessage resultMessg = null;
 		
 	
 		if (norekCdtr.startsWith("99")) {
@@ -70,9 +79,9 @@ public class CreditTransferResponseProcessor implements Processor{
 		else {
 
 			Optional<AccountProxy> oAcct = accountRepo.findByAccountNumberAndRegisterBank(norekCdtr, bank);
-			resultMessg = buildBusinessMessage (objRequest, oAcct);
-			saveCreditResponse(objRequest, resultMessg);
-
+			BusinessMessage resultMessg = buildBusinessMessage (objRequest, oAcct);
+			saveCreditResponse(objRequest, resultMessg, strCTReq);
+	
 			if (addInfo.toUpperCase().equals("TIMEOUT")) {
 			    try
 			    {
@@ -122,6 +131,10 @@ public class CreditTransferResponseProcessor implements Processor{
 			seed.setCreditorName(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
 		}
 		
+		if ((null != bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf()) &&
+			(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().size() > 0))
+				seed.setAdditionalInfo(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0));
+		
 		seed.setCreditorType("01");
 		seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
 		seed.setCreditorResidentialStatus("01");
@@ -149,46 +162,46 @@ public class CreditTransferResponseProcessor implements Processor{
 		return busMesg;
 	}
 	
-	BusinessMessage buildTimeoutResponse (BusinessMessage bmInput) throws Exception {
-		
-		String bizMsgId = utilService.genRfiBusMsgId("010", "02", bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-		String msgId = utilService.genMessageId("010", bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+//	BusinessMessage buildTimeoutResponse (BusinessMessage bmInput) throws Exception {
+//		
+//		String bizMsgId = utilService.genRfiBusMsgId("010", "02", bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+//		String msgId = utilService.genMessageId("010", bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+//
+//		Pacs002Seed seed = new Pacs002Seed();
+//		seed.setMsgId(msgId);
+//
+//		seed.setStatus("RJCT");
+//		seed.setReason("U900");
+//		seed.setCreditorName(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
+//		
+//		seed.setCreditorType("01");
+//		seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+//		seed.setCreditorResidentialStatus("01");
+//		seed.setCreditorTown(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
+//
+//		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, bmInput);
+//		
+//		GregorianCalendar gcal = new GregorianCalendar();
+//		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+//		response.getTxInfAndSts().get(0).getOrgnlTxRef().setIntrBkSttlmDt(xcal);
+//
+//		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
+//		hdr = hdrService.getAppHdr(bmInput.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
+//									"pacs.002.001.10", bizMsgId);
+//		hdr.setBizSvc("CLEAR");
+//		hdr.getFr().getFIId().getFinInstnId().getOthr().setId(bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+//
+//		BusinessMessage busMesg = new BusinessMessage();
+//		Document doc = new Document();
+//		doc.setFiToFIPmtStsRpt(response);
+//
+//		busMesg.setAppHdr(hdr);
+//		busMesg.setDocument(doc);
+//
+//		return busMesg;
+//	}
 
-		Pacs002Seed seed = new Pacs002Seed();
-		seed.setMsgId(msgId);
-
-		seed.setStatus("RJCT");
-		seed.setReason("U900");
-		seed.setCreditorName(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getNm());
-		
-		seed.setCreditorType("01");
-		seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
-		seed.setCreditorResidentialStatus("01");
-		seed.setCreditorTown(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
-
-		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, bmInput);
-		
-		GregorianCalendar gcal = new GregorianCalendar();
-		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		response.getTxInfAndSts().get(0).getOrgnlTxRef().setIntrBkSttlmDt(xcal);
-
-		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.getAppHdr(bmInput.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", bizMsgId);
-		hdr.setBizSvc("CLEAR");
-		hdr.getFr().getFIId().getFinInstnId().getOthr().setId(bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
-
-		BusinessMessage busMesg = new BusinessMessage();
-		Document doc = new Document();
-		doc.setFiToFIPmtStsRpt(response);
-
-		busMesg.setAppHdr(hdr);
-		busMesg.setDocument(doc);
-
-		return busMesg;
-	}
-
-    public void saveCreditResponse (BusinessMessage requestMsg, BusinessMessage responseMsg) throws Exception {
+    public void saveCreditResponse (BusinessMessage requestMsg, BusinessMessage responseMsg, String strCTReq) throws Exception {
 
     	ObjectMapper map = new ObjectMapper();
     	map.registerModule(new JaxbAnnotationModule());
@@ -203,7 +216,7 @@ public class CreditTransferResponseProcessor implements Processor{
 		pacs002.setBizMsgIdr(responseMsg.getAppHdr().getBizMsgIdr());
 
 		pacs002.setFullMessage(respAsString);
-		
+		pacs002.setCtRequest(strCTReq);
         pacs002.setOrgnlEndToEndId(responseMsg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlEndToEndId());
 		
         pacs002.setOrgnlMsgId(responseMsg.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).getOrgnlMsgId());
