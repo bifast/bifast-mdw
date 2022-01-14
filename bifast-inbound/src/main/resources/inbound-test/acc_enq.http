@@ -1,5 +1,5 @@
 # ACCOUNT ENQUIRY FROM CI-HUB
-POST http://localhost:9001 HTTP/1.1
+POST http://localhost:9001/komi-inbound/json/service HTTP/1.1
 Content-Type: application/json
 
 {

@@ -1,5 +1,6 @@
 package bifast.inbound.route;
 
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,9 @@ public class InboundJsonRoute extends RouteBuilder {
 				.setHeader("hdr_toBI_jsonzip", simple("${body}"))
 				.setBody(simple("${header.hdr_tmp}"))
 			.end()
-			.to("seda:logandsave?exchangePattern=InOnly")
+			
+//			.setExchangePattern(ExchangePattern.InOnly)
+//			.to("seda:logandsave")
 	
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
 			

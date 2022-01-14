@@ -37,8 +37,7 @@ public class InboundAERoute extends RouteBuilder{
 
 		from("direct:inb_ae").routeId("inbound_ae")
 			.setExchangePattern(ExchangePattern.InOnly)
-			.log("proses AE")
-			.log("${body}")
+			.log("start direct:inb_ae")
 
 			.process(buildAERequest)
 			.marshal(busMesgJDF)
@@ -51,13 +50,10 @@ public class InboundAERoute extends RouteBuilder{
 
 			.convertBodyTo(String.class)
 			.log("AE Response: ${body}")
-			.removeHeaders("*")
+//			.removeHeaders("*")
 //			.stop()
 //			.unmarshal(busMesgJDF)
 //
-//			.setHeader("inb_aeresponse", simple("${body}"))
-//			.setHeader("inb_respCode", simple("${body.document.fiToFIPmtStsRpt.txInfAndSts[0].txSts}"))
-//			.log("${header.inb_respCode}")
 
 		;
 	}

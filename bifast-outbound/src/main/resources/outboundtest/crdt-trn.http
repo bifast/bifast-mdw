@@ -16,7 +16,7 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB21121411062111",
+		"NoRef": "MOB21121411062135",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
 		"CreditorAccountNumber": "112211333",
@@ -28,7 +28,7 @@ Authorization: Basic MB:password
 		"CreditorTownName": "0300",
 		"CreditorProxyId": "",
 		"CreditorProxyType": "",
-		"Amount": "12000.57",
+		"Amount": "12001.50",
 		"FeeTransfer": "0.00",
 		"RecipientBank": "CENAIDJA",
 		"DebtorAccountNumber": "104794259",

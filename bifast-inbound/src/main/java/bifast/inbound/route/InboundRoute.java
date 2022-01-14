@@ -17,7 +17,6 @@ public class InboundRoute extends RouteBuilder {
 	@Autowired private PendingCorebankProcessor pendingCorebankProcessor;
 	@Autowired private CheckRequestMsgProcessor checkRequestMsgProcessor;
 	@Autowired private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
-	@Autowired private SaveCreditTransferProcessor saveCreditTransferProcessor;
 	@Autowired private SaveSettlementMessageProcessor saveSettlementMessageProcessor;
 	
 
@@ -52,10 +51,6 @@ public class InboundRoute extends RouteBuilder {
 					.to("direct:reverct")
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
-//				.when().simple("${header.hdr_msgType} == 'EVENTNOTIF'")     // Event Notif
-//					.to("direct:eventnotif")
-//					.setHeader("hdr_toBIobj", simple("${body}"))
-
 				.otherwise()	
 					.log("[Inbound] Message ${header.hdr_msgType} tidak dikenal")
 			.end()
@@ -79,18 +74,6 @@ public class InboundRoute extends RouteBuilder {
 			.to("direct:reversal")
 		;
 
-		from("seda:logandsave?concurrentConsumers=5").routeId("savedb")
-			.log("Akan save ${header.hdr_msgType}")
-			.choice()
-				.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
-					.process(saveSettlementMessageProcessor)
-					
-				.when().simple("${header.hdr_msgType} == '510'")  // account enquiry
-					.process(saveAccountEnquiryProcessor)
-				.otherwise()
-					.process(saveCreditTransferProcessor)
-			.end()
-		;
 
 	}
 }

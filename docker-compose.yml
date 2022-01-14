@@ -26,7 +26,7 @@ services:
 
     inbound:
       build: bifast-inbound
-      image: fransmzh/komi-inbound:2.1.1
+      image: fransmzh/komi-inbound:2.2
       container_name: komi-inbound
       restart: always
       depends_on: 
@@ -52,7 +52,7 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:2.1
+      image: fransmzh/komi-outbound:2.2
       container_name: komi-outbound
       restart: always
       depends_on: 
@@ -85,7 +85,7 @@ services:
     mock:
       build: bifast-mock
       container_name: komi-mock
-      image: fransmzh/komi-mock:2.1
+      image: fransmzh/komi-mock:2.2
       restart: always
       depends_on: 
         - komidb
@@ -96,7 +96,7 @@ services:
       environment: 
         - LOGGING.FILE.NAME=/home/logs/komi-mock.log
         - BIFAST.INBOUND-LOG-FOLDER=/home/logs
-        - KOMI.INBOUND-URL=komi-inbound:9001/komi-inbound/json
+        - KOMI.INBOUND-URL=komi-inbound:9001/komi-inbound/json/service
         - KOMI.TIMEOUT-CT=50000
         - TZ=Asia/Jakarta
       volumes: 

@@ -25,7 +25,6 @@ public class InboundRoute extends RouteBuilder {
 	
 	@Autowired BuildAERequestProcessor buildAERequest;
 	@Autowired BuildCTRequestProcessor buildCTRequest;
-	@Autowired BuildSttlProcessor buildSettlement;
 
 	JacksonDataFormat mockRequestWrapperJDF = new JacksonDataFormat(InboundMockWrapper.class);
 	JacksonDataFormat pymtRequestJDF = new JacksonDataFormat(PaymentRequestPojo.class);
@@ -91,13 +90,13 @@ public class InboundRoute extends RouteBuilder {
 			.log("${body}")
 			
 			.unmarshal(mockRequestWrapperJDF)
-			
+
 			.choice()
 				.when().simple("${body.paymentRequest} != null")
 					.log("PaymentRequest")
 					.marshal(paymtRequestJDF)
 					.unmarshal(paymtRequestJDF)
-					.to("direct:payment2")
+					.to("direct:payment")
 				.when().simple("${body.aeRequest} != null")
 					.log("AccountEnquiry")
 					.marshal(aeRequestJDF)
@@ -105,123 +104,16 @@ public class InboundRoute extends RouteBuilder {
 					.to("direct:inb_ae")
 				.when().simple("${body.ctRequest} != null")
 					.log("CreditTransferRequest")
+//					.to("direct:inb_ct")
 				.otherwise()
 					.log("oh oh")
 			.end()
 			
+			.removeHeaders("*")
 			.log("selesai proses")
 		;
-			
-		from("direct:payment_route")
-			.unmarshal(pymtRequestJDF)
-			.setHeader("inb_request", simple("${body}"))
-			.process(buildAERequest)
-			.marshal(busMesgJDF)
-			.log("AE Request: ${body}")	
-
-			.to("rest:post:?host={{komi.inbound-url}}"
-				+ "&exchangePattern=InOnly"
-					+ "&bridgeEndpoint=true"
-				)
-			.convertBodyTo(String.class)
-			.log("AE Response: ${body}")
-			.unmarshal(busMesgJDF)
-			
-			.setHeader("inb_aeresponse", simple("${body}"))
-			.setHeader("inb_respCode", simple("${body.document.fiToFIPmtStsRpt.txInfAndSts[0].txSts}"))
-			.log("${header.inb_respCode}")
-
-//			.process(new Processor() {
-//				public void process(Exchange exchange) throws Exception {
-//					BusinessMessage msg = exchange.getMessage().getBody(BusinessMessage.class);
-//					String responseCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts();
-//					exchange.getMessage().setHeader("inb_responseCd", responseCode);
-//				}
-//			})
-
-			.choice()
-				.when().simple("${header.inb_respCode} == 'ACTC'")
-					.log("lanjut dengan CT")
-					.to("direct:inb_ct")
-				.otherwise()
-					.log("kita sudahi sampai disini")
-					.process(new Processor() {
-						public void process(Exchange exchange) throws Exception {
-							BusinessMessage msg = exchange.getMessage().getBody(BusinessMessage.class);
-							String responseCode = exchange.getMessage().getHeader("inb_aeresponse", String.class);
-							String reasonCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry();
-							CTResponsePojo inbResponse = new CTResponsePojo();
-							inbResponse.setResponseCode(responseCode);
-							inbResponse.setReasonCode(reasonCode);
-							exchange.getMessage().setBody(inbResponse);
-						}
-					})
-
-			.end()
-			
-			.log("milestone 37")
-
-			.filter().simple("${body.responseCode} == 'ACTC' ")
-				.log("Akan kirim settlement")
-				.setExchangePattern(ExchangePattern.InOnly)
-				.to("seda:inb_settlement")
-//				.to("seda:settlement&exchangePattern=InOnly")
-				.log("selesai kirim settlement")
-			.end()
-
-			.marshal(ctResponseJDF)  // remark bila rejection
-
-			// .process(proxyResolutionResponseProcessor)
-			.log("Response mock: ${body}")
-			.removeHeaders("*")
-		;
-
-//		from("direct:inb_ct").routeId("inbound_ct")
-//			.log("start kirim ct")
-//			.process(buildCTRequest)
-//			.marshal(busMesgJDF)
-//			.log("CT Request: ${body}")
-//			
-//			.to("rest:post:?host={{komi.inbound-url}}"
-//					+ "&exchangePattern=InOnly"
-//						+ "&bridgeEndpoint=true"
-//					)
-//			.convertBodyTo(String.class)
-//			.log("CT Response: ${body}")
-//			.unmarshal(busMesgJDF)
-//			.setHeader("inb_ctResponse", simple("${body}"))
-//
-//			.process(new Processor() {
-//				public void process(Exchange exchange) throws Exception {
-//					BusinessMessage msg = exchange.getMessage().getBody(BusinessMessage.class);
-//					String responseCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts();
-//					String reasonCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry();
-//					CTResponsePojo inbResponse = new CTResponsePojo();
-//					inbResponse.setResponseCode(responseCode);
-//					inbResponse.setReasonCode(reasonCode);
-//					exchange.getMessage().setBody(inbResponse);
-//				}
-//			})
-//			
-//		;
+				
 		
-		from("seda:inb_settlement").routeId("inbound_sttl")
-			.delay(7000)
-			.process(buildSettlement)
-			.marshal(busMesgJDF)
-			.log("Settlement: ${body}")	
-
-			.to("rest:post:?host={{komi.inbound-url}}"
-//				+ "&exchangePattern=InOnly"
-					+ "&bridgeEndpoint=true"
-				)
-			.convertBodyTo(String.class)
-		;
-		
-		from("direct:accountenq3").routeId("inbound.accountenq3")
-			.log("di direct:accountenq")
-			.setHeader("ae_obj_birequest", simple("${body}"))
-		;
 	}
 
 }

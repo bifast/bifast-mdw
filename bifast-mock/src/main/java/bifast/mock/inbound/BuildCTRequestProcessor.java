@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,15 +29,20 @@ public class BuildCTRequestProcessor implements Processor {
 	@Autowired
 	private UtilService utilService;
 
+	private static Logger logger = LoggerFactory.getLogger(BuildCTRequestProcessor.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		PaymentRequestPojo inbRequest = exchange.getMessage().getHeader("inb_request", PaymentRequestPojo.class);
+		logger.info("BuildCTRequestProcessor ");
+
+		PaymentRequestPojo inbRequest = exchange.getMessage().getHeader("hdr_pymtreq", PaymentRequestPojo.class);
 		BusinessMessage aeResponse = exchange.getMessage().getHeader("inb_aeresponse", BusinessMessage.class);
 		
 		PaymentTransaction110 crdtInfo = aeResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
 
+		
 		String msgType = "010";
 			
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();

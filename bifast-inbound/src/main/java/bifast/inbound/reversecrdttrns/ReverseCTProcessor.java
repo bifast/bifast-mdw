@@ -50,9 +50,13 @@ public class ReverseCTProcessor implements Processor {
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 		FlatPacs008Pojo flatCT = (FlatPacs008Pojo)processData.getBiRequestFlat();
 	
-		List<CreditTransfer> lOrgnlCT = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatCT.getTransactionId());
+		System.out.println(flatCT.getTransactionId());
+		
+		List<CreditTransfer> lOrgnlCT = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatCT.	getTransactionId());
+		System.out.println("Nemu: " + lOrgnlCT.size());
 		CreditTransfer orgnlCrdtTrns = null;
 		for (CreditTransfer ct : lOrgnlCT) {
+			System.out.println(ct.getResponseCode());
 			if ((ct.getResponseCode().equals("ACTC")) ||
 				(ct.getResponseCode().equals("ACSC"))) {
 				orgnlCrdtTrns = ct;

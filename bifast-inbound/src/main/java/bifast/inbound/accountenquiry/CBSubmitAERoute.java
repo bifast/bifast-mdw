@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.CbCallFaultProcessor;
 import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
-import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
 import bifast.inbound.corebank.pojo2.AccountEnquiryInboundRequest;
 import bifast.inbound.corebank.pojo2.AccountEnquiryInboundResponse;
 import bifast.inbound.processor.EnrichmentAggregator;

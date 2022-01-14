@@ -9,6 +9,7 @@ public class ProcessDataPojo {
 
 	private String komiTrnsId;
 	private String inbMesgType;
+	private String inbMsgName;
 	private LocalDateTime receivedDt;
 	private Instant startTime;
 	
@@ -35,6 +36,14 @@ public class ProcessDataPojo {
 
 	public void setInbMesgType(String inbMesgType) {
 		this.inbMesgType = inbMesgType;
+	}
+
+	public String getInbMsgName() {
+		return inbMsgName;
+	}
+
+	public void setInbMsgName(String inbMsgName) {
+		this.inbMsgName = inbMsgName;
 	}
 
 	public LocalDateTime getReceivedDt() {

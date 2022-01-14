@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -14,6 +13,8 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.corebank.pojo2.AccountEnquiryInboundRequest;
+import bifast.inbound.corebank.pojo2.AccountEnquiryInboundResponse;
 import bifast.inbound.model.CorebankTransaction;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
@@ -24,7 +25,7 @@ import bifast.inbound.reversecrdttrns.pojo.DebitReversalResponsePojo;
 import bifast.inbound.service.JacksonDataFormatService;
 
 @Component
-public class DebitReversalRoute extends RouteBuilder {
+public class AccountEnquiryCBRoute extends RouteBuilder {
 	@Autowired private CbCallFaultProcessor cbFaultProcessor;
 	@Autowired private CorebankTransactionRepository cbRepo;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
@@ -33,28 +34,28 @@ public class DebitReversalRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 
-		JacksonDataFormat debitReversalReqJDF = jdfService.basic(DebitReversalRequestPojo.class);
-		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponsePojo.class);
+		JacksonDataFormat aeRequestJDF = jdfService.basic(AccountEnquiryInboundRequest.class);
+		JacksonDataFormat aeResponseJDF = jdfService.basic(AccountEnquiryInboundResponse.class);
 
-		from("direct:cbdebitreversal").routeId("komi.cb.debitreversal")
-			.setHeader("cbrev_objRequest", simple("${body}"))
-			.marshal(debitReversalReqJDF)
-			.setHeader("cbrev_strRequest", simple("${body}"))
-			.log("CB DebitRev request: ${body}")
+		from("direct:cbacctenq").routeId("komi.cb.acctenq")
+			.setHeader("cbae_objRequest", simple("${body}"))
+			.marshal(aeRequestJDF)
+			.setHeader("cbae_strRequest", simple("${body}"))
+			.log("CB AcctEnquiry request: ${body}")
 		
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-				.enrich("http:{{komi.url.isoadapter}}/debitreversal?"
+				.enrich("http:{{komi.url.isoadapter}}/accountenquiry?"
 		//						+ "socketTimeout={{komi.timeout}}&" 
 						+ "bridgeEndpoint=true",
 						enrichmentAggregator)
 				.convertBodyTo(String.class)
 				.log("CB DebitRev response: ${body}")
 				
-				.unmarshal(debitReversalResponseJDF)
+				.unmarshal(aeResponseJDF)
 
-				.setExchangePattern(ExchangePattern.InOnly)
-				.to("seda:savecbdebitrevr")
+//				.setExchangePattern(ExchangePattern.InOnly)
+//				.to("seda:savecbaccenqr")
 
 				.filter().simple("${body.status} != 'ACTC' ")
 					.process(new Processor() {
@@ -78,11 +79,10 @@ public class DebitReversalRoute extends RouteBuilder {
 //				.setBody(constant(null))
 			.end()
 	
-			.removeHeaders("cbrev_*")
 		;
 	
-		from("seda:savecbdebitrevr?concurrentConsumers=5")
-			.log("akan save Debit Reversal ke CB-log")
+		from("seda:savecbaccenqr?concurrentConsumers=3")
+			.log("akan save Account Enquiry ke CB-log")
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
@@ -97,6 +97,7 @@ public class DebitReversalRoute extends RouteBuilder {
 					cbTrns.setCstmAccountNo(cbRequest.getCreditorAccountNumber());
 					cbTrns.setCstmAccountType(cbRequest.getCreditorAccountType());
 					cbTrns.setDateTime(cbRequest.getDateTime());
+//					cbTrns.setDebitAmount(cbRequest.getAmount());
 					cbTrns.setFeeAmount(new BigDecimal(cbRequest.getFeeTransfer()));
 					cbTrns.setFullTextRequest(strRequest);
 					cbTrns.setKomiNoref(cbRequest.getNoRef());

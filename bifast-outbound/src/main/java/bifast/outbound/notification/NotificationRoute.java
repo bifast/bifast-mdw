@@ -29,8 +29,8 @@ public class NotificationRoute extends RouteBuilder {
 			.process(buildLogMessage)
 			.marshal(portalLogJDF)
 
-			.log(LoggingLevel.DEBUG, "komi.notif.portal",
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Log-notif ${body}")
+//			.log(LoggingLevel.DEBUG, "komi.notif.portal",
+//					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Log-notif ${body}")
 
 			.removeHeaders("*")
 		    

@@ -48,8 +48,8 @@ public class SettlementProcessor implements Processor {
 		
 //		String orgnlMsgId = exchange.getMessage().getHeader("sttl_orgnlmsgid", String.class);
 
-		bizMsgId = utilService.genRfiBusMsgId("010", "02", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
-		msgId = utilService.genMessageId("010", in.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+		bizMsgId = utilService.genRfiBusMsgId("010", "02", "INDOIDJA");
+		msgId = utilService.genMessageId("010", "INDOIDJA");
 
 		
 		String cdtrAcct = frTable.get("CDTR_ACCT");

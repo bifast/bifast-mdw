@@ -35,7 +35,7 @@ public class BuildSttlProcessor implements Processor {
 //		BusinessMessage in = exchange.getMessage().getBody(BusinessMessage.class);		
 //		BusinessMessage aeResp = exchange.getMessage().getHeader("inb_aeresponse", BusinessMessage.class);
 		BusinessMessage ctResp = exchange.getMessage().getHeader("inb_ctResponse", BusinessMessage.class);
-		PaymentRequestPojo ibRequest = exchange.getMessage().getHeader("inb_request", PaymentRequestPojo.class);
+		PaymentRequestPojo ibRequest = exchange.getMessage().getHeader("hdr_pymtreq", PaymentRequestPojo.class);
 		
 		ctResp.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().setId("INDOIDJA");
 		ctResp.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().setId("SIHBIDJ1");

@@ -23,6 +23,7 @@ public class InboundPymtRoute extends RouteBuilder{
 
 	JacksonDataFormat paymtRequestJDF = new JacksonDataFormat(PaymentRequestPojo.class);
 	JacksonDataFormat busMesgJDF = new JacksonDataFormat(BusinessMessage.class);
+	JacksonDataFormat paymtResponseJDF = new JacksonDataFormat(CTResponsePojo.class);
 
 	@Override
 	public void configure() throws Exception {
@@ -39,10 +40,10 @@ public class InboundPymtRoute extends RouteBuilder{
 		busMesgJDF.setInclude("NON_EMPTY");
 
 
-		from("direct:payment2").routeId("payment2")
+		from("direct:payment").routeId("payment")
 			.setExchangePattern(ExchangePattern.InOnly)
-			.log("proses Payment")
-			.log("${body}")
+			.log("start direct:payment")
+
 			.setHeader("hdr_pymtreq", simple("${body}"))
 			
 			.process(new Processor() {
@@ -58,18 +59,32 @@ public class InboundPymtRoute extends RouteBuilder{
 			
 			.to("direct:inb_ae")
 			
-			.log("AE Response: ${body}")
 			.unmarshal(busMesgJDF)
 			
 			.setHeader("inb_aeresponse", simple("${body}"))
 			.setHeader("inb_respCode", simple("${body.document.fiToFIPmtStsRpt.txInfAndSts[0].txSts}"))
 			.log("${header.inb_respCode}")
-
+			
 			.choice()
 				.when().simple("${header.inb_respCode} == 'ACTC'")
 					.log("lanjut dengan CT")
+
 					.to("direct:inb_ct")
+					
+					.process(new Processor() {
+						public void process(Exchange exchange) throws Exception {
+							BusinessMessage msg = exchange.getMessage().getBody(BusinessMessage.class);
+							String responseCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts();
+							String reasonCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry();
+							CTResponsePojo inbResponse = new CTResponsePojo();
+							inbResponse.setResponseCode(responseCode);
+							inbResponse.setReasonCode(reasonCode);
+							exchange.getMessage().setBody(inbResponse);
+						}
+					})
+
 				.otherwise()
+				
 					.log("kita sudahi sampai disini")
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
@@ -84,6 +99,7 @@ public class InboundPymtRoute extends RouteBuilder{
 					})
 			.end()
 
+			.marshal(paymtResponseJDF)
 		;
 	}
 

@@ -5,6 +5,8 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
@@ -16,15 +18,23 @@ public class BuildReversal implements Processor{
 
 		BusinessMessage ctReq = exchange.getMessage().getBody(BusinessMessage.class);
 		
-		BusinessMessage ctReversal = ctReq;
+	    ObjectMapper objectMapper = new ObjectMapper();
+
+		BusinessMessage ctReversal = objectMapper.readValue(objectMapper.writeValueAsString(ctReq), BusinessMessage.class);;
 
 		String bicFrom = ctReq.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
 		String bicTo = ctReq.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
 		String orgnlTxId = ctReq.getDocument().getFiToFICstmrCdtTrf().getGrpHdr().getMsgId();
 		
+		System.out.print("bicFr: " + bicFrom);
+		System.out.print("bicTo: " + bicTo);
+	
 		String bizMsgId = utilService.genRfiBusMsgId("011", "02", bicFrom);
 		String msgId = utilService.genMessageId("011", bicFrom);
 
+//		ctReversal.getAppHdr().setMsgDefIdr("pacs.008.001.08");
+		
+		System.out.println("bizMsgId: " + orgnlTxId);
 		ctReversal.getAppHdr().setBizMsgIdr(bizMsgId);
 		ctReversal.getDocument().getFiToFICstmrCdtTrf().getGrpHdr().setMsgId(msgId);
 		
@@ -32,7 +42,9 @@ public class BuildReversal implements Processor{
 		ctReversal.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().setId(bicTo);
 
 		ctReversal.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getPmtId().setEndToEndId(bizMsgId);
-		ctReversal.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getPmtId().setTxId(orgnlTxId);
+
+		String orgnlBizmsgid = ctReq.getAppHdr().getBizMsgIdr();
+		ctReversal.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getPmtId().setTxId(orgnlBizmsgid);
 		
 		ctReversal.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0)
 			.setDbtr(ctReq.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr());
@@ -52,7 +64,7 @@ public class BuildReversal implements Processor{
 		ctReversal.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0)
 			.setDbtrAgt(ctReq.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAgt());
 		
-		exchange.getMessage().setBody(ctReq);
+		exchange.getMessage().setBody(ctReversal);
 	}
 
 }

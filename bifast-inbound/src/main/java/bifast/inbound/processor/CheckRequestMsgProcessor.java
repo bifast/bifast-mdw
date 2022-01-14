@@ -30,7 +30,16 @@ public class CheckRequestMsgProcessor implements Processor {
 
 		String trnType = inputMsg.getAppHdr().getBizMsgIdr().substring(16,19);
 		
+		if (trnType.equals("510"))
+			processData.setInbMsgName("AEReq");
 	
+		else if ((trnType.equals("010")) || (trnType.equals("110")))
+			processData.setInbMsgName("CTReq");
+
+		else if (trnType.equals("011")) 
+			processData.setInbMsgName("RevCT");
+
+		
 		if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) {
 			
 			FlatPacs002Pojo flat002 = flatMsgService.flatteningPacs002(inputMsg); 

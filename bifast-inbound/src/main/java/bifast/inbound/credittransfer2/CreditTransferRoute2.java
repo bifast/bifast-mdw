@@ -1,29 +1,25 @@
-package bifast.inbound.credittransfer;
+package bifast.inbound.credittransfer2;
 
-import java.util.List;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.accountenquiry.BuildAERequestForCbProcessor;
-import bifast.inbound.model.CreditTransfer;
-import bifast.inbound.pojo.ProcessDataPojo;
-import bifast.inbound.pojo.flat.FlatPacs008Pojo;
+import bifast.inbound.credittransfer.CTCorebankRequestProcessor;
+import bifast.inbound.credittransfer.CheckSAFStatusProcessor;
+import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
 import bifast.inbound.processor.DuplicateTransactionValidation;
-import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
-public class CreditTransferRoute extends RouteBuilder {
+public class CreditTransferRoute2 extends RouteBuilder {
 	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
-	@Autowired private CreditTransferProcessor creditTransferProcessor;
+	@Autowired private CreditTransfer2Processor creditTransferProcessor;
 	@Autowired private CTCorebankRequestProcessor ctCorebankRequestProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private DuplicateTransactionValidation duplicationTrnsValidation;
@@ -49,7 +45,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.removeHeaders("*")
 		;
 		
-		from("direct:crdttransfer").routeId("komi.ct")
+		from("direct:crdttransfer2").routeId("komi.ct2")
 			.process(duplicationTrnsValidation)
 			
 //			.log("KOMI_ID : ${header.hdr_process_data.komiTrnsId}")
@@ -65,8 +61,8 @@ public class CreditTransferRoute extends RouteBuilder {
 				.log(LoggingLevel.DEBUG, "komi.ct", 
 						"[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan call CB")
 
-//				.process(buildAccountEnquiryRequestProcessor)
-				.process(ctCorebankRequestProcessor)
+				.process(buildAccountEnquiryRequestProcessor)
+//				.process(ctCorebankRequestProcessor)
 
 				.setHeader("ct_cbrequest", simple("${body}"))
 				// send ke corebank

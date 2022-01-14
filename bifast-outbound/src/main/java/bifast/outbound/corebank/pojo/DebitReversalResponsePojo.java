@@ -68,6 +68,13 @@ public class DebitReversalResponsePojo {
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
+	@Override
+	public String toString() {
+		return "DebitReversalResponsePojo [transactionId=" + transactionId + ", noRef=" + noRef + ", merchantType="
+				+ merchantType + ", terminalId=" + terminalId + ", dateTime=" + dateTime + ", additionalInfo="
+				+ additionalInfo + ", accountNumber=" + accountNumber + ", status=" + status + ", reason=" + reason
+				+ "]";
+	}
 
     
 }

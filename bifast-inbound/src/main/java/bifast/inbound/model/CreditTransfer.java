@@ -56,6 +56,9 @@ public class CreditTransfer {
 	@Column(name="RESP_BIZMSGID", length=50)
 	private String crdtTrnResponseBizMsgIdr;
 
+	@Column(name="STTL_BIZMSGID", length=50)
+	private String settlementConfBizMsgIdr;
+
 	@Column(name="CIHUB_REQ_TIME")
 	private LocalDateTime cihubRequestDT;
 	
@@ -183,6 +186,12 @@ public class CreditTransfer {
 	}
 	public void setCrdtTrnResponseBizMsgIdr(String crdtTrnResponseBizMsgIdr) {
 		this.crdtTrnResponseBizMsgIdr = crdtTrnResponseBizMsgIdr;
+	}
+	public String getSettlementConfBizMsgIdr() {
+		return settlementConfBizMsgIdr;
+	}
+	public void setSettlementConfBizMsgIdr(String settlementConfBizMsgIdr) {
+		this.settlementConfBizMsgIdr = settlementConfBizMsgIdr;
 	}
 	public LocalDateTime getCihubRequestDT() {
 		return cihubRequestDT;

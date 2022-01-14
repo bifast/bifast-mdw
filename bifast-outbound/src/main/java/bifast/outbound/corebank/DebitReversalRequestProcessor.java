@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;

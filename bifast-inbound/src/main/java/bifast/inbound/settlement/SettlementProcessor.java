@@ -16,7 +16,7 @@ import bifast.inbound.repository.CreditTransferRepository;
 @Component
 public class SettlementProcessor implements Processor {
 	@Autowired private CreditTransferRepository ctRepo;
-	
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
@@ -26,9 +26,21 @@ public class SettlementProcessor implements Processor {
 		CbSettlementRequestPojo sttl = new CbSettlementRequestPojo();
 		sttl.setKomiTrnsId(processData.getKomiTrnsId());
 
-		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatSttl.getOrgnlEndToEndId());	
-		if (lCrdtTrns.size()>0)
-			sttl.setOrgnlKomiTrnsId(lCrdtTrns.get(0).getKomiTrnsId());
+		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatSttl.getOrgnlEndToEndId());
+		CreditTransfer ct = null;
+		for (CreditTransfer runningCT : lCrdtTrns) {
+			if ((runningCT.getResponseCode().equals("ACTC")) ||
+				(runningCT.getResponseCode().equals("ACSC"))) {
+				ct = runningCT;
+				break;
+			}
+		}
+
+		if (null != ct) {
+			ct.setSettlementConfBizMsgIdr(flatSttl.getBizMsgIdr());
+			ctRepo.save(ct);
+			sttl.setOrgnlKomiTrnsId(ct.getKomiTrnsId());
+		}
 		
 		exchange.getMessage().setBody(sttl);
 				

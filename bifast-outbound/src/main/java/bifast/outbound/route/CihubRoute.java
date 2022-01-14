@@ -118,9 +118,7 @@ public class CihubRoute extends RouteBuilder {
 						exchange.getMessage().setHeader("hdr_response_list", rmc);
 					}
 				})
-				
-				.setHeader("hdr_error_status", constant(null))
-				
+								
 				.process(flatResponseProcessor)
 				
 				.filter().simple("${body.class} endsWith 'FaultPojo'")
@@ -128,12 +126,13 @@ public class CihubRoute extends RouteBuilder {
 		    	.end()
 			
 			.endDoTry()
-	    	.doCatch(Exception.class)
+			.doCatch(java.net.SocketTimeoutException.class)
+				.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] CI-HUB TIMEOUT.")
+		    	.process(exceptionToFaultMap)
+			.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultMap)
-	
-//			.endDoTry()
 			.end()
 	
 			.removeHeaders("tmp_*")

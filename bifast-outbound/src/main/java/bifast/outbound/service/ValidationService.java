@@ -68,6 +68,12 @@ public class ValidationService {
 				throw new InputValidationException ("Input value error");
 		}
 		
+//		if (ctReq.getCrdtAccountNo().isBlank()) {
+//			
+//			if (ctReq.getCrdtProxyIdValue())
+//		}
+			
+			
 		// cek max transaksi 
 		BigDecimal amt = new BigDecimal(ctReq.getAmount());	
 		if (amt.compareTo(config.getLimitTrnsAmount()) > 0)

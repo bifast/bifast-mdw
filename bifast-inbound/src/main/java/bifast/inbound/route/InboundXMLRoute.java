@@ -56,7 +56,7 @@ public class InboundXMLRoute extends RouteBuilder {
 				.setHeader("hdr_toBI_jsonzip", simple("${body}"))
 				.setBody(simple("${header.hdr_tmp}"))
 			.end()
-			.to("seda:logandsave?exchangePattern=InOnly")
+//			.to("seda:logandsave?exchangePattern=InOnly")
 
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
 			.removeHeaders("*")

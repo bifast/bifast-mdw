@@ -85,10 +85,13 @@ public class SettlementRoute extends RouteBuilder {
 
 		from("seda:reversal").routeId("sedareversal")
 			.log("send reversal:")
+			.marshal(jsonBusinessMessageDataFormat)
+			.log("sebelum: ${body}")
+			.unmarshal(jsonBusinessMessageDataFormat)
 			.process(buildReversal)
 			.delay(3000)
 			.marshal(jsonBusinessMessageDataFormat)
-			.log("${body}")
+			.log("sesudah: ${body}")
 			.doTry()
 				.to("rest:post:?host={{komi.inbound-url}}"
 					+ "&exchangePattern=InOnly"

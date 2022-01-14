@@ -53,7 +53,7 @@ public class ReverseCTResponseProcessor implements Processor {
 			System.out.println("Pojo response "  + fault.getReasonCode());
 			resp.setStatus(fault.getResponseCode());
 			resp.setReason(fault.getReasonCode());				
-			resp.setAdditionalInfo(fault.getErrorMessage());
+//			resp.setAdditionalInfo(fault.getErrorMessage());
 			
 		}
 		if ((resp.getReason().equals("U101") && (resp.getCreditorAccountIdType().equals("SVGS"))))

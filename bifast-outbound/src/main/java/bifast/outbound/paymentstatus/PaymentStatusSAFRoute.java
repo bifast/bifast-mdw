@@ -54,8 +54,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 //			.autoStartup(false)
 						
 			.setHeader("ps_qryresult", simple("${body}"))
-			
-			.log("[ChnlReq:${header.ps_qryresult[channel_ref_id]}] PymtStsSAF started.")
+			.log("[CTReq:${header.ps_qryresult[channel_ref_id]}] PymtStsSAF started.")
 
 			// selesai dan matikan router jika tidak ada lagi SAF
 			.filter().simple("${body} == null")
@@ -68,7 +67,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.unmarshal().base64()
 			.unmarshal().zipDeflater()
 			
-			.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${header.ps_request.channelNoref}] Original request: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.ps.saf", "[CTReq:${header.ps_request.channelNoref}] Original request: ${body}")
 
 			.unmarshal(businessMessageJDF)
 			.process(new Processor() {
@@ -85,7 +84,8 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 
 			.log("hdr_settlement: ${header.hdr_settlement}")
 			.filter().simple("${header.hdr_settlement} == 'NOTFOUND'")	// jika tidak ada settlement
-				.log(LoggingLevel.DEBUG, "komi.ps.saf", "[ChnlReq:${header.ps_qryresult[channel_ref_id]}]Tidak ada settlement, build PS Request")
+				.log(LoggingLevel.DEBUG, "komi.ps.saf", 
+						"[CTReq:${header.ps_qryresult[channel_ref_id]}]Tidak ada settlement, build PS Request")
 				.process(buildPSRequest)
 				.to("direct:call-cihub")				
 			.end()
@@ -104,7 +104,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.ps.saf", "Akan update status Credit Transfer SAF")
 			.process(updateStatusProcessor)
 			
-			.log("[ChnlReq:${header.ps_request.channelNoref}] PymtStsSAF result: ${body.psStatus}")
+			.log("[CTReq:${header.ps_request.channelNoref}] PymtStsSAF result: ${body.psStatus}")
 
 			.filter().simple("${body.psStatus} == 'REJECTED'")
 				.log("${body.reqBizmsgid} Rejected")

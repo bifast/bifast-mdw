@@ -66,8 +66,8 @@ public class CorebankRoute extends RouteBuilder{
 					.marshal(debitReversalRequestJDF)
 			.end()
 			
-	 		.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}]"
-	 														+ " CB Request: ${body}")
+	 		.log(LoggingLevel.DEBUG, "komi.corebank", 
+	 				"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] CB Request: ${body}")
 
 			.doTry()
 
