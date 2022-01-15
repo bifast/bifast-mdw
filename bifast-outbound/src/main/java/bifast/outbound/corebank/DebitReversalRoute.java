@@ -84,57 +84,17 @@ public class DebitReversalRoute extends RouteBuilder{
 			.removeHeaders("revct_*")
 		;
 		
-		from("seda:savecbdebitrevr?concurrentConsumers=3")
-			.log("akan save Debit Reversal ke CB-log")
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
-					String komiTrnsId = rmw.getKomiTrxId();
-					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("revct_revRequest",DebitReversalRequestPojo.class);
-
-//					DebitReversalResponsePojo cbResponse = exchange.getMessage().getBody(DebitReversalResponsePojo.class);
-					Object oCbResponse = exchange.getMessage().getBody(Object.class);
-
-					String strRequest = exchange.getMessage().getHeader("revct_strRequest", String.class);
-	
-					CorebankTransaction cbTrns = new CorebankTransaction();
-					cbTrns.setCreditAmount(new BigDecimal(cbRequest.getAmount()));
-					cbTrns.setCstmAccountName(cbRequest.getDebtorName());
-					cbTrns.setCstmAccountNo(cbRequest.getDebtorAccountNumber());
-					cbTrns.setCstmAccountType(cbRequest.getDebtorAccountType());
-					cbTrns.setDateTime(cbRequest.getDateTime());
-					cbTrns.setFeeAmount(new BigDecimal(cbRequest.getFeeTransfer()));
-					cbTrns.setFullTextRequest(strRequest);
-					cbTrns.setKomiNoref(cbRequest.getNoRef());
-					cbTrns.setKomiTrnsId(komiTrnsId);
-		
-					cbTrns.setOrgnlChnlNoref(cbRequest.getOriginalNoRef());
-					cbTrns.setOrgnlDateTime(cbRequest.getOriginalDateTime());
-					cbTrns.setTransactionType("DebitReversal");
-					cbTrns.setTrnsDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-					cbTrns.setUpdateTime(LocalDateTime.now());
-					
-					String cbResponseClass = oCbResponse.getClass().getSimpleName();
-					if (oCbResponse.getClass().getSimpleName().equals("DebitReversalResponsePojo")) {
-						DebitReversalResponsePojo resp = (DebitReversalResponsePojo)oCbResponse;
-						cbTrns.setReason(resp.getReason());
-						cbTrns.setResponse(resp.getStatus());
-					}
-					else {
-						FaultPojo fault = (FaultPojo) oCbResponse;
-						cbTrns.setReason(fault.getReasonCode());
-						cbTrns.setResponse(fault.getCallStatus());
-					}
-					cbRepo.save(cbTrns);
-				}
-			})
-		;
 		
 		from("direct:postcreditreversal")
 			.log("akan kirim reversal")
+			.setProperty("bkp_hdr_request_list").header("hdr_request_list")
+			.setProperty("bkp_hdr_response_list").header("hdr_response_list")
+
+			.removeHeaders("hdr_*")
+			
 			.doTry()
 				.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Request ISOAdapter: ${body}")
-//				.removeHeaders("*")
+		
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 			            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
@@ -175,7 +135,58 @@ public class DebitReversalRoute extends RouteBuilder{
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(cbFaultProcessor)
 			.end()
+			
+			.setHeader("hdr_request_list", exchangeProperty("bkp_hdr_request_list"))
+			.setHeader("hdr_response_list", exchangeProperty("bkp_hdr_response_list"))
+			
 		;
+		
+		from("seda:savecbdebitrevr?concurrentConsumers=3")
+			.log("akan save Debit Reversal ke CB-log")
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					String komiTrnsId = rmw.getKomiTrxId();
+					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("revct_revRequest",DebitReversalRequestPojo.class);
+	
+	//				DebitReversalResponsePojo cbResponse = exchange.getMessage().getBody(DebitReversalResponsePojo.class);
+					Object oCbResponse = exchange.getMessage().getBody(Object.class);
+	
+					String strRequest = exchange.getMessage().getHeader("revct_strRequest", String.class);
+	
+					CorebankTransaction cbTrns = new CorebankTransaction();
+					cbTrns.setCreditAmount(new BigDecimal(cbRequest.getAmount()));
+					cbTrns.setCstmAccountName(cbRequest.getDebtorName());
+					cbTrns.setCstmAccountNo(cbRequest.getDebtorAccountNumber());
+					cbTrns.setCstmAccountType(cbRequest.getDebtorAccountType());
+					cbTrns.setDateTime(cbRequest.getDateTime());
+					cbTrns.setFeeAmount(new BigDecimal(cbRequest.getFeeTransfer()));
+					cbTrns.setFullTextRequest(strRequest);
+					cbTrns.setKomiNoref(cbRequest.getNoRef());
+					cbTrns.setKomiTrnsId(komiTrnsId);
+		
+					cbTrns.setOrgnlChnlNoref(cbRequest.getOriginalNoRef());
+					cbTrns.setOrgnlDateTime(cbRequest.getOriginalDateTime());
+					cbTrns.setTransactionType("DebitReversal");
+					cbTrns.setTrnsDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+					cbTrns.setUpdateTime(LocalDateTime.now());
+					
+					String cbResponseClass = oCbResponse.getClass().getSimpleName();
+					if (oCbResponse.getClass().getSimpleName().equals("DebitReversalResponsePojo")) {
+						DebitReversalResponsePojo resp = (DebitReversalResponsePojo)oCbResponse;
+						cbTrns.setReason(resp.getReason());
+						cbTrns.setResponse(resp.getStatus());
+					}
+					else {
+						FaultPojo fault = (FaultPojo) oCbResponse;
+						cbTrns.setReason(fault.getReasonCode());
+						cbTrns.setResponse(fault.getCallStatus());
+					}
+					cbRepo.save(cbTrns);
+				}
+			})
+		;
+		
 	}
 
 		

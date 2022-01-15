@@ -1,9 +1,11 @@
 package bifast.inbound.route;
 
 import org.apache.camel.ExchangePattern;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.service.JacksonDataFormatService;
@@ -32,8 +34,9 @@ public class InboundJsonRoute extends RouteBuilder {
 
 		from("direct:parsejson").routeId("komi.jsonEndpoint")
 			.convertBodyTo(String.class)
-			.log("Terima: ${body}")
 			.setHeader("hdr_inputformat", constant("json"))
+
+			.log(LoggingLevel.DEBUG,"komi.jsonEndpoint", "Terima: ${body}")
 			
 			// simpan msg inbound compressed
 			.setHeader("hdr_tmp", simple("${body}"))
@@ -52,9 +55,9 @@ public class InboundJsonRoute extends RouteBuilder {
 				.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Response: ${body}")
 				// simpan outbound compress
 				.setHeader("hdr_tmp", simple("${body}"))
-				.marshal().zipDeflater()
-				.marshal().base64()
-				.setHeader("hdr_toBI_jsonzip", simple("${body}"))
+//				.marshal().zipDeflater()
+//				.marshal().base64()
+//				.setHeader("hdr_toBI_jsonzip", simple("${body}"))
 				.setBody(simple("${header.hdr_tmp}"))
 			.end()
 			

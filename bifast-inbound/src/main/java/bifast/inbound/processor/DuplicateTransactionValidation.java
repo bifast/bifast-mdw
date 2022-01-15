@@ -64,7 +64,7 @@ public class DuplicateTransactionValidation implements Processor{
 
 		Pacs002Seed seed = new Pacs002Seed();
 		
-		seed.setAdditionalInfo("No BizMsgIdr sudah pernah dikirim");
+		seed.setAdditionalInfo("Nomor BizMsgIdr duplikat");
 		seed.setCreditorAccountIdType(request.getCreditorAccountType());
 		seed.setCreditorAccountNo(request.getCreditorAccountNo());
 		
@@ -78,7 +78,7 @@ public class DuplicateTransactionValidation implements Processor{
 		seed.setCreditorTown(request.getCreditorTownName());
 		seed.setCreditorType(request.getCreditorType());
 		seed.setMsgId(msgId);
-		seed.setReason("U149");
+		seed.setReason("62");
 		seed.setStatus("RJCT");
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();

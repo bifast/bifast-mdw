@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.accountenquiry.BuildAERequestForCbProcessor;
+import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
 import bifast.inbound.credittransfer.CTCorebankRequestProcessor;
 import bifast.inbound.credittransfer.CheckSAFStatusProcessor;
 import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
@@ -23,13 +24,15 @@ public class CreditTransferRoute2 extends RouteBuilder {
 	@Autowired private CTCorebankRequestProcessor ctCorebankRequestProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private DuplicateTransactionValidation duplicationTrnsValidation;
-	@Autowired private SaveCreditTransferProcessor saveCreditTransferProcessor;
+	@Autowired private SaveCreditTransfer2Processor saveCreditTransferProcessor;
 	@Autowired private CheckSAFStatusProcessor checkSafStatus;
 	
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat businessMessageJDF = jdfService.wrapRoot(BusinessMessage.class);
+		JacksonDataFormat accountEnqRequestJDF = jdfService.basic(CbAccountEnquiryRequestPojo.class);
 
+		
 		onException(Exception.class)
 			.log("Route level onException")
 			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
@@ -63,11 +66,13 @@ public class CreditTransferRoute2 extends RouteBuilder {
 
 				.process(buildAccountEnquiryRequestProcessor)
 //				.process(ctCorebankRequestProcessor)
-
+				
+				.marshal(accountEnqRequestJDF).log("${body}").unmarshal(accountEnqRequestJDF)
+				
 				.setHeader("ct_cbrequest", simple("${body}"))
 				// send ke corebank
 				.to("seda:callcb")
-				
+							
 				.choice()
 					.when().simple("${body.class} endsWith 'FaultPojo'")
 						.setHeader("ct_cbsts", constant("ERROR"))
@@ -80,6 +85,14 @@ public class CreditTransferRoute2 extends RouteBuilder {
 					
 			.process(creditTransferProcessor)
 			
+			// versi gzip nya unt dicatat di table
+			.setHeader("hdr_tmp", simple("${body}"))
+			.marshal(businessMessageJDF)
+			.marshal().zipDeflater()
+			.marshal().base64()
+			.setHeader("hdr_toBI_jsonzip", simple("${body}"))
+			.setBody(simple("${header.hdr_tmp}"))
+
 			.log(LoggingLevel.DEBUG, "komi.ct", 
 					"[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] saf ${header.ct_saf}, cb_sts ${header.ct_cbsts}")
 

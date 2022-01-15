@@ -3,6 +3,8 @@ package bifast.outbound.service;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,10 @@ public class UtilService {
 
 
 	public String genKomiTrnsId () {
+		
+		LocalTime now = LocalTime.now(ZoneId.systemDefault());
+		int secofday = now.toSecondOfDay() ;
+
 		String strToday = LocalDate.now().format(formatter);
 		Long cnt = channelTrnsRepo.getKomiSequence();
 		return (strToday + "O" + df.format(cnt));

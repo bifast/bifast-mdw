@@ -88,6 +88,8 @@ public class CreditTransfer {
 	private String reasonCode;
 	@Column(length=20)
 	private String responseCode;
+	@Column(length=20)
+	private String cbStatus;
 	
 	private LocalDateTime createDt;
 	private LocalDateTime lastUpdateDt;
@@ -240,6 +242,12 @@ public class CreditTransfer {
 	}
 	public void setReversal(String reversal) {
 		this.reversal = reversal;
+	}
+	public String getCbStatus() {
+		return cbStatus;
+	}
+	public void setCbStatus(String cbStatus) {
+		this.cbStatus = cbStatus;
 	}
 	public String getCallStatus() {
 		return callStatus;

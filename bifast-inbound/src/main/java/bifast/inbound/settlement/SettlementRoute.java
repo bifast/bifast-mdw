@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SettlementRoute extends RouteBuilder {
 	@Autowired private SettlementProcessor settlementProcessor;
+	@Autowired private SaveSettlementMessageProcessor saveSettlement;
 
 	@Override
 	public void configure() throws Exception {
@@ -26,6 +27,7 @@ public class SettlementRoute extends RouteBuilder {
 					.log("Settlement tidak match")
 			.end()
 
+			.process(saveSettlement)
 	 		.log(LoggingLevel.DEBUG, "komi.settlement", "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai proses Settlement ")
 		;
 

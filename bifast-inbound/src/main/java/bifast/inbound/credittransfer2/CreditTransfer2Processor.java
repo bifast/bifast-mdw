@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
@@ -38,13 +39,13 @@ public class CreditTransfer2Processor implements Processor {
 
 		String saf = exchange.getMessage().getHeader("ct_saf", String.class);
 		
-		CbCreditResponsePojo cbResponse = null;
+		CbAccountEnquiryResponsePojo cbResponse = null;
 		FaultPojo fault = null;
 
 		Object oCbResp = processData.getCorebankResponse();
 		if (null != oCbResp) {
-			if (oCbResp.getClass().getSimpleName().equals("CbCreditResponsePojo"))
-				cbResponse = (CbCreditResponsePojo) oCbResp;
+			if (oCbResp.getClass().getSimpleName().equals("CbAccountEnquiryResponsePojo"))
+				cbResponse = (CbAccountEnquiryResponsePojo) oCbResp;
 			else if (oCbResp.getClass().getSimpleName().equals("FaultPojo"))
 				fault = (FaultPojo) oCbResp;
 		}
@@ -71,7 +72,7 @@ public class CreditTransfer2Processor implements Processor {
 			if (null != cbResponse) {
 				resp.setStatus(cbResponse.getStatus());
 				resp.setReason(cbResponse.getReason());				
-				resp.setAdditionalInfo(cbResponse.getAdditionalInfo());
+//				resp.setAdditionalInfo(cbResponse.getgetAdditionalInfo());
 			} else {
 				resp.setStatus(fault.getResponseCode());
 				resp.setReason(fault.getReasonCode());	

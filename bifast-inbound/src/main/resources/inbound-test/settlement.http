@@ -1,5 +1,5 @@
 # SETTLEMENT CREDIT TRANSFER
-POST http://localhost:9001/json/service HTTP/1.1
+POST http://localhost:9001/komi-inbound/json/service HTTP/1.1
 Content-Type: application/json
 
 {
@@ -9,7 +9,7 @@ Content-Type: application/json
         "FIId": {
           "FinInstnId": {
             "Othr": {
-              "Id": "SIHBIDJ1"
+              "Id": "BMNDIDJA"
             }
           }
         }
@@ -18,7 +18,7 @@ Content-Type: application/json
         "FIId": {
           "FinInstnId": {
             "Othr": {
-              "Id": "BMNDIDJA"
+              "Id": "SIHBIDJ1"
             }
           }
         }
@@ -36,15 +36,15 @@ Content-Type: application/json
         },
         "OrgnlGrpInfAndSts": [
           {
-            "OrgnlMsgId": "20211226SIHBIDJ1110O0200000631",
+            "OrgnlMsgId": "20211228BMNDIDJA010O0100000054",
             "OrgnlMsgNmId": "pacs.008.001.08",
             "OrgnlCreDtTm": "2021-11-03T14:50:50.222"
           }
         ],
         "TxInfAndSts": [
           {
-            "OrgnlEndToEndId": "20211226SIHBIDJ1110O0200000630",
-            "OrgnlTxId": "20211110BMNDIDJA01000000040",
+            "OrgnlEndToEndId": "20211228BMNDIDJA010O0100000054",
+            "OrgnlTxId": "20211228BMNDIDJA010O0100000054",
             "TxSts": "ACSC",
             "StsRsnInf": [
               {

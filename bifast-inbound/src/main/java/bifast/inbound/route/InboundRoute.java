@@ -1,5 +1,6 @@
 package bifast.inbound.route;
 
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,9 +25,8 @@ public class InboundRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		from("direct:receive").routeId("komi.inboundRoute")
-			.log("akan checkrequst")
 			.process(checkRequestMsgProcessor) 
-			.log("Disini ${header.hdr_msgType}")
+			.log(LoggingLevel.DEBUG,"komi.inboundRoute", "Disini ${header.hdr_msgType}")
 			.log("=====*****=====")
 			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] ${header.hdr_msgType} received.")
 		
@@ -44,7 +44,8 @@ public class InboundRoute extends RouteBuilder {
 					.to("direct:accountenq")
 
 				.when().simple("${header.hdr_msgType} in '010,110'")    // terima credit transfer
-					.to("direct:crdttransfer")
+					.to("direct:crdttransfer2")
+//					.to("direct:crdttransfer")
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_msgType} == '011'")     // reverse CT
