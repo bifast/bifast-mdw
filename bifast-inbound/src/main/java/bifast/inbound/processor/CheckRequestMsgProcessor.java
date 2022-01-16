@@ -31,10 +31,10 @@ public class CheckRequestMsgProcessor implements Processor {
 		String trnType = inputMsg.getAppHdr().getBizMsgIdr().substring(16,19);
 		
 		if (trnType.equals("510"))
-			processData.setInbMsgName("AEReq");
+			processData.setInbMsgName("AccEnq");
 	
 		else if ((trnType.equals("010")) || (trnType.equals("110")))
-			processData.setInbMsgName("CTReq");
+			processData.setInbMsgName("CrdTrn");
 
 		else if (trnType.equals("011")) 
 			processData.setInbMsgName("RevCT");
@@ -45,25 +45,35 @@ public class CheckRequestMsgProcessor implements Processor {
 			FlatPacs002Pojo flat002 = flatMsgService.flatteningPacs002(inputMsg); 
 			processData.setBiRequestFlat(flat002);
 			
-			if (inputMsg.getAppHdr().getBizSvc().equals("STTL"))
+			if (inputMsg.getAppHdr().getBizSvc().equals("STTL")) {
 				trnType = "SETTLEMENT";
+				processData.setInbMsgName("Settl");
+			}
 		}
 
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901")) {
 			trnType = "PROXYNOTIF";
 			FlatPrxy901Pojo flat = flatMsgService.flatteningPrxy901(inputMsg);
 			processData.setBiRequestFlat(flat);
+			processData.setInbMsgName("PrxNtf");
 		}
 		
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.008")) {
 			FlatPacs008Pojo flat008 = flatMsgService.flatteningPacs008(inputMsg); 
 			processData.setBiRequestFlat(flat008);
+			if (trnType.equals("510"))
+				processData.setInbMsgName("AccEnq");
+			else if ((trnType.equals("010")) || (trnType.equals("110")))
+				processData.setInbMsgName("CrdTrn");
+			else if (trnType.equals("011")) 
+				processData.setInbMsgName("RevCT");
 		}
 
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("admi.004")) {
 			FlatAdmi004Pojo flat004 = flatMsgService.flatteningAdmi004(inputMsg);
 			processData.setBiRequestFlat(flat004);
 			trnType = "EVENTNOTIF";
+			processData.setInbMsgName("EvtNtf");
 		}
 
 		exchange.getMessage().setHeader("hdr_msgType", trnType);

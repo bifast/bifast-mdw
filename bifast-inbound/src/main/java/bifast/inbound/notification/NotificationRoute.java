@@ -32,11 +32,10 @@ public class NotificationRoute extends RouteBuilder{
 		
 		
 		from("seda:portalnotif").routeId("komi.portalnotif")
-			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Portal notification")
 			
 			.process(portalLogProcessor)
 			.marshal(portalJdf)
-			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Notif ke portal: ${body}")
+//			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Notif ke portal: ${body}")
 			//TODO notifikasi ke customer
 			.removeHeaders("hdr_*")
 			
@@ -48,7 +47,14 @@ public class NotificationRoute extends RouteBuilder{
 
 			.setHeader("HttpMethod", constant("POST"))
 			
-			.to("rest:post:?host={{komi.url.portalapi}}&bridgeEndpoint=true")
+			.doTry()
+
+				.to("rest:post:?host={{komi.url.portalapi}}&bridgeEndpoint=true")
+			.endDoTry()
+	    	.doCatch(Exception.class)
+	    		.log(LoggingLevel.ERROR, "komi.portalnotif", "Error Log-notif ${body}")
+	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+			.end()
 
 
 		;

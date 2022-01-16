@@ -52,7 +52,7 @@ public class InboundJsonRoute extends RouteBuilder {
 			
 			.filter().simple("${header.hdr_msgType} !in 'SETTLEMENT, PROXYNOTIF'")
 				.marshal(jsonBusinessMessageDataFormat) 
-				.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Response: ${body}")
+				.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Response: ${body}")
 				// simpan outbound compress
 				.setHeader("hdr_tmp", simple("${body}"))
 //				.marshal().zipDeflater()
@@ -64,7 +64,7 @@ public class InboundJsonRoute extends RouteBuilder {
 //			.setExchangePattern(ExchangePattern.InOnly)
 //			.to("seda:logandsave")
 	
-			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
+			.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] completed.")
 			
 			.removeHeaders("*")
 

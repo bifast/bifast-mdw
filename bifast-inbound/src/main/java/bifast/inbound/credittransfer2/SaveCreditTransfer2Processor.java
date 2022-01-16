@@ -113,9 +113,7 @@ public class SaveCreditTransfer2Processor implements Processor {
 		else
 			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());
 
-		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
-
-		if ((msgType.equals("010")) || (msgType.equals("110")))
+		if (processData.getInbMsgName().equals("CrdTrn"))
 			ct.setMsgType("Credit Transfer");
 		else
 			ct.setMsgType("Reverse CT");

@@ -15,7 +15,7 @@ import bifast.inbound.corebank.pojo.CbSettlementResponsePojo;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.service.JacksonDataFormatService;
 
-//@Component
+@Component
 public class CbSubmitCreditRoute extends RouteBuilder {
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
@@ -31,7 +31,7 @@ public class CbSubmitCreditRoute extends RouteBuilder {
 		JacksonDataFormat settlementJDF = jdfService.wrapRoot(CbSettlementRequestPojo.class);
 		JacksonDataFormat settlementResponseJDF = jdfService.basic(CbSettlementResponsePojo.class);
 
-		from("direct:post_credit_cb").routeId("post_crdt")
+		from("direct:post_credit_cb").routeId("post_cbs")
 			
 			.choice()
 				.when().simple("${body.class} endsWith 'CbAccountEnquiryRequestPojo'")
@@ -48,10 +48,7 @@ public class CbSubmitCreditRoute extends RouteBuilder {
 		 			.log("Akan kirim settlment: ${body}")
 			.end()
 
-			
-			
-			.marshal(creditJDF)
- 			.log("Akan kirim credit: ${body}")
+ 			.log(LoggingLevel.DEBUG,"post_cbs", "Akan kirim credit: ${body}")
 
 	 		.doTry()
 				.setHeader("HttpMethod", constant("POST"))
@@ -62,8 +59,17 @@ public class CbSubmitCreditRoute extends RouteBuilder {
 					.aggregationStrategy(enrichmentAggregator)
 				.convertBodyTo(String.class)
 		 		.log("CB Response: ${body}")
-				.unmarshal(creditResponseJDF)
-				
+		 		
+				.choice()
+					.when().simple("${header.cb_requestName} == 'accountinquiry'")
+						.unmarshal(accountEnquiryResponseJDF)
+					.when().simple("${header.cb_requestName} == 'credit'")
+						.unmarshal(creditResponseJDF)
+					.when().simple("${header.cb_requestName} == 'settlement'")
+						.unmarshal(settlementResponseJDF)
+				.end()
+
+				.log(LoggingLevel.DEBUG,"post_cbs", "Selesai post ke cbs")
 	 		.endDoTry()
 	    	.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[CTJob] Call CB Error.")
@@ -71,7 +77,9 @@ public class CbSubmitCreditRoute extends RouteBuilder {
 		    	.process(cbCallExceptionProcessor)
 	    	.end()
 
-	    	.delay(1500)	
+ 			.log("Hasil post cbs: ${body}")
+
+//	    	.delay(1500)	
 		;
 		
 		

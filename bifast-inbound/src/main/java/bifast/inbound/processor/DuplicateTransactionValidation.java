@@ -35,7 +35,7 @@ public class DuplicateTransactionValidation implements Processor{
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 
 		FlatPacs008Pojo flat008 = (FlatPacs008Pojo)processData.getBiRequestFlat();
-		System.out.println("Cari " + flat008.getBizMsgIdr());
+
 		List<CreditTransfer> lCreditTransfer = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flat008.getBizMsgIdr());	
 
 		String saf = Optional.ofNullable(flat008.getCpyDplct()).orElse("");

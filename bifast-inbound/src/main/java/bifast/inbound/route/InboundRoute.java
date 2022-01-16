@@ -5,20 +5,13 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.accountenquiry.SaveAccountEnquiryProcessor;
-import bifast.inbound.corebank.PendingCorebankProcessor;
-import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
 import bifast.inbound.processor.CheckRequestMsgProcessor;
-import bifast.inbound.settlement.SaveSettlementMessageProcessor;
 
 
 @Component
 public class InboundRoute extends RouteBuilder {
 
-	@Autowired private PendingCorebankProcessor pendingCorebankProcessor;
 	@Autowired private CheckRequestMsgProcessor checkRequestMsgProcessor;
-	@Autowired private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
-	@Autowired private SaveSettlementMessageProcessor saveSettlementMessageProcessor;
 	
 
 	@Override
@@ -26,13 +19,11 @@ public class InboundRoute extends RouteBuilder {
 		
 		from("direct:receive").routeId("komi.inboundRoute")
 			.process(checkRequestMsgProcessor) 
-			.log(LoggingLevel.DEBUG,"komi.inboundRoute", "Disini ${header.hdr_msgType}")
-			.log("=====*****=====")
-			.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] ${header.hdr_msgType} received.")
+			.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] received.")
 		
 			.choice().id("forward_msgtype")
 
-				.when().simple("${header.hdr_msgType} == 'SETTLEMENT'")   // terima settlement
+				.when().simple("${header.hdr_process_data.inbMsgName} == 'Settl'")   // terima settlement
 					.to("direct:settlement")
 					.setBody(constant(null))
 
@@ -40,10 +31,10 @@ public class InboundRoute extends RouteBuilder {
 					.to("direct:proxynotif")
 					.setBody(constant(null))
 
-				.when().simple("${header.hdr_msgType} == '510'")   // terima account enquiry
+				.when().simple("${header.hdr_process_data.inbMsgName} == 'AccEnq'")   // terima account enquiry
 					.to("direct:accountenq")
 
-				.when().simple("${header.hdr_msgType} in '010,110'")    // terima credit transfer
+				.when().simple("${header.hdr_process_data.inbMsgName} == 'CrdTrn'")    // terima credit transfer
 					.to("direct:crdttransfer2")
 //					.to("direct:crdttransfer")
 					.setHeader("hdr_toBIobj", simple("${body}"))

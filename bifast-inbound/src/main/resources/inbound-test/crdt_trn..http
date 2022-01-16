@@ -24,7 +24,7 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20211228BMNDIDJA010O0100000055",
+      "BizMsgIdr": "20211228BMNDIDJA010O0100000056",
       "MsgDefIdr": "pacs.008.001.08",
       "CreDt": "2021-11-03T14:50:22Z"
     },

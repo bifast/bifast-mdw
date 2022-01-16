@@ -1,13 +1,18 @@
 package bifast.inbound.settlement;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.model.Settlement;
+import bifast.inbound.pojo.ProcessDataPojo;
+import bifast.inbound.pojo.flat.FlatPacs002Pojo;
+import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.repository.SettlementRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
@@ -15,44 +20,38 @@ import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 
 @Component
 public class SaveSettlementMessageProcessor implements Processor {
-
-	@Autowired
-	private SettlementRepository settlementRepo;
+	@Autowired private CreditTransferRepository ctRepo;
+	@Autowired private SettlementRepository settlementRepo;
 
 	public void process(Exchange exchange) throws Exception {
 		 
+		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
+
 		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
 
-		BusinessMessage settlRequest = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
+//		BusinessMessage settlRequest = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
 		
-		BusinessApplicationHeaderV01 sttlHeader = settlRequest.getAppHdr();
-		FIToFIPaymentStatusReportV10 settlBody = settlRequest.getDocument().getFiToFIPmtStsRpt();
-		
-		String sttlBizMsgId = sttlHeader.getBizMsgIdr();
-		
+//		BusinessApplicationHeaderV01 sttlHeader = settlRequest.getAppHdr();
+//		FIToFIPaymentStatusReportV10 settlBody = settlRequest.getDocument().getFiToFIPmtStsRpt();
+			
 		Settlement sttl = new Settlement();
-		sttl.setOrgnlCrdtTrnReqBizMsgId(settlBody.getTxInfAndSts().get(0).getOrgnlEndToEndId());
-		sttl.setSettlConfBizMsgId(sttlBizMsgId);
+		sttl.setOrgnlCrdtTrnReqBizMsgId(flatSttl.getOrgnlEndToEndId());
+		sttl.setSettlConfBizMsgId(flatSttl.getBizMsgIdr());
 		
-		String orgnBank = sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId();
-		String recptBank = sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId();
-
-		sttl.setOrignBank(orgnBank);
-		sttl.setRecptBank(recptBank);
-
-		sttl.setOrignBank(sttlHeader.getFr().getFIId().getFinInstnId().getOthr().getId());
-		sttl.setRecptBank(sttlHeader.getTo().getFIId().getFinInstnId().getOthr().getId());
+		sttl.setOrignBank(flatSttl.getDbtrAgtFinInstnId());
+		sttl.setRecptBank(flatSttl.getCdtrAgtFinInstnId());
 		
-		if (!(null == settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtrAcct()))
-			sttl.setCrdtAccountNo(settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getCdtrAcct().getId().getOthr().getId());
+		if (!(null == flatSttl.getCdtrAcctId()))
+			sttl.setCrdtAccountNo(flatSttl.getCdtrAcctId());
 		
 //		sttl.setCrdtAccountType(orglBizMsgId);
 //		sttl.setCrdtId(orglBizMsgId);
 //		sttl.setCrdtIdType(orglBizMsgId);
 //		sttl.setCrdtName(orglBizMsgId);
 		
-		if (!(null == settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct()))
-			sttl.setDbtrAccountNo(settlBody.getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().getOthr().getId());
+		if (!(null == flatSttl.getDbtrAcctId()))
+			sttl.setDbtrAccountNo(flatSttl.getDbtrAcctId());
 //		sttl.setDbtrAccountType(orglBizMsgId);
 //		sttl.setDbtrId(orglBizMsgId);
 //		sttl.setDbtrIdType(orglBizMsgId);
@@ -68,6 +67,26 @@ public class SaveSettlementMessageProcessor implements Processor {
 		sttl.setFullMessage(fullReqMsg);
 		
 		settlementRepo.save(sttl);
+		
+///////////////////////		
+		
+		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatSttl.getOrgnlEndToEndId());
+		CreditTransfer ct = null;
+		for (CreditTransfer runningCT : lCrdtTrns) {
+			if ((runningCT.getResponseCode().equals("ACTC")) ||
+				(runningCT.getResponseCode().equals("ACSC"))) {
+				ct = runningCT;
+				break;
+			}
+		}
+
+		if (null != ct) {
+			ct.setSettlementConfBizMsgIdr(flatSttl.getBizMsgIdr());
+			ct.setCbStatus("READY");
+			ctRepo.save(ct);
+//			sttlRequest.setOrgnlKomiTrnsId(ct.getKomiTrnsId());
+		}
+
 
 	}
 }

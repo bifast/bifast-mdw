@@ -42,13 +42,9 @@ public class SettlementProcessor implements Processor {
 //		BusinessMessage in = exchange.getMessage().getHeader("hdr_ctresponse", BusinessMessage.class);
 		BusinessMessage ctReq = exchange.getMessage().getHeader("hdr_ctrequest", BusinessMessage.class);
 		
-		String bizMsgId = "";
-		String msgId = "";
-		
-//		String orgnlMsgId = exchange.getMessage().getHeader("sttl_orgnlmsgid", String.class);
 
-		bizMsgId = utilService.genRfiBusMsgId("010", "02", "INDOIDJA");
-		msgId = utilService.genMessageId("010", "INDOIDJA");
+		String bizMsgId = utilService.genRfiBusMsgId("010", "02", "INDOIDJA");
+		String msgId = utilService.genMessageId("010", "INDOIDJA");
 
 		BusinessMessage settlementConf = new BusinessMessage();
 		

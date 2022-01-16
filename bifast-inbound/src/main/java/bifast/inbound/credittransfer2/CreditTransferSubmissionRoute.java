@@ -1,5 +1,8 @@
 package bifast.inbound.credittransfer2;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -7,28 +10,31 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
 import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.exception.CTSAFException;
-import bifast.inbound.notification.PortalApiPojo;
+import bifast.inbound.model.Settlement;
 import bifast.inbound.pojo.ProcessDataPojo;
+import bifast.inbound.pojo.flat.FlatPacs002Pojo;
+import bifast.inbound.repository.SettlementRepository;
+import bifast.inbound.service.FlattenIsoMessageService;
 import bifast.inbound.service.JacksonDataFormatService;
+import bifast.inbound.settlement.BuildSettlementCBRequestProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
 public class CreditTransferSubmissionRoute extends RouteBuilder {
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private CTCorebankRequest2Processor ctRequestProcessor;
-//	@Autowired private buildSettlementProcessor buildSettlementRequest;
+	@Autowired private BuildSettlementCBRequestProcessor buildSettlementRequest;
 	@Autowired private InitiateCTJobProcessor initCTJobProcessor;
+	@Autowired private SettlementRepository sttlRepo;
+	@Autowired private FlattenIsoMessageService flatMessageService;
 
 	@Override
 	public void configure() throws Exception {
 		
 		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
-		JacksonDataFormat creditRequestJDF = jdfService.wrapRoot(CbCreditRequestPojo.class);
 		JacksonDataFormat creditResponseJDF = jdfService.basic(CbCreditResponsePojo.class);
 
 		onException(CTSAFException.class).routeId("ctsaf.onException")
@@ -36,10 +42,11 @@ public class CreditTransferSubmissionRoute extends RouteBuilder {
 			.to("controlbus:route?routeId=komi.ct.saf&action=stop&async=true")
 		;
 		
-		from("sql:select kct.id , kct.komi_trns_id , kct.response_code , kct.full_request_msg "
+		from("sql:select kct.id , kct.komi_trns_id, kct.req_bizmsgid, kct.response_code, "
+				+ "kct.full_request_msg ct_msg, sttl.full_message sttl_msg "
 				+ "from kc_credit_transfer kct "
-				+ "where kct.cb_status = 'PENDING' "
-				+ "and kct.sttl_bizmsgid is not null "
+				+ "join kc_settlement sttl on sttl.orgnl_crdt_trn_bizmsgid = kct.req_bizmsgid "
+				+ "where kct.cb_status = 'READY' "
 				+ "?delay=10000"
 				+ "&sendEmptyMessageWhenIdle=true"
 				)
@@ -55,11 +62,18 @@ public class CreditTransferSubmissionRoute extends RouteBuilder {
 			.setHeader("ctsaf_qryresult", simple("${body}"))
 			.log("[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] Submit CreditTransfer started.")
 
-			.setBody(simple("${header.ctsaf_qryresult[FULL_REQUEST_MSG]}"))
+			.setBody(simple("${header.ctsaf_qryresult[CT_MSG]}"))
 			.unmarshal().base64().unmarshal().zipDeflater()
-//			.log("setelah unzip ${body}")
 			.unmarshal(businessMessageJDF)
 			.setHeader("ctsaf_orgnCdTrns", simple("${body}"))
+
+			.setBody(simple("${header.ctsaf_qryresult[STTL_MSG]}"))
+			.unmarshal().base64().unmarshal().zipDeflater()
+			.unmarshal(businessMessageJDF)
+			.setHeader("ctsaf_orgnSttl", simple("${body}"))
+
+			.log(LoggingLevel.DEBUG,"komi.ct.saf", 
+					"[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] akan initiate data.")
 
 			.process(initCTJobProcessor)  // hdr_process_data
 
@@ -68,7 +82,6 @@ public class CreditTransferSubmissionRoute extends RouteBuilder {
 			.to("direct:post_credit_cb")
 			
 			.log("selesai call post_credit")
-			.marshal(creditResponseJDF).log("${body}").unmarshal(creditResponseJDF)
 			
 			.choice()
 				.when().simple("${body.status} == 'RJCT'")
@@ -78,14 +91,14 @@ public class CreditTransferSubmissionRoute extends RouteBuilder {
 				.endChoice()
 				.when().simple("${body.status} == 'ERROR'")
 					//TODO harus report ke admin
-					.log(LoggingLevel.ERROR,"komi.ct.saf", "error submit credit-account ke cbs")
+					.log(LoggingLevel.ERROR, "[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] error submit credit-account ke cbs")
 					.to("sql:update kc_credit_transfer "
 							+ "set cb_status = 'ERROR' "
 							+ "where id = :#${header.ctsaf_qryresult[id]}")
 				.endChoice()
 				.when().simple("${body.status} == 'TIMEOUT'")
 					//TODO harus report ke admin
-					.log(LoggingLevel.ERROR,"komi.ct.saf", "TIMEOUT submit credit-account ke cbs")
+					.log(LoggingLevel.ERROR, "[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] TIMEOUT submit credit-account ke cbs")
 					.to("sql:update kc_credit_transfer "
 							+ "set cb_status = 'TIMEOUT' "
 							+ "where id = :#${header.ctsaf_qryresult[id]}")
@@ -99,6 +112,7 @@ public class CreditTransferSubmissionRoute extends RouteBuilder {
 			.end()
 
 			.filter().simple("${header.ctsaf_settlement} == 'YES'")
+				.log(LoggingLevel.DEBUG,"komi.ct.saf", "[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] akan submit Settlement")
 				.to("direct:post_settlement")
 			.end()
 			
@@ -109,7 +123,17 @@ public class CreditTransferSubmissionRoute extends RouteBuilder {
 
 		from ("direct:post_settlement").routeId("post_settlement")
 			.log(LoggingLevel.DEBUG,"post_settlement", "Akan post settlement")
-			
+			.process(new Processor() {
+				public void process(Exchange exchange) throws Exception {
+					BusinessMessage settlementMsg = exchange.getMessage().getHeader("ctsaf_orgnSttl", BusinessMessage.class);
+					FlatPacs002Pojo flatMsg = flatMessageService.flatteningPacs002(settlementMsg);
+					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+					processData.setBiRequestFlat(flatMsg);
+				}
+			})
+			.process(buildSettlementRequest)
+			.to("direct:post_credit_cb")
+
 		;
 
 	}

@@ -16,7 +16,7 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
-		"NoRef": "MOB21121411062170",
+		"NoRef": "MOB21121411062171",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
 		"CreditorAccountNumber": "112211333",

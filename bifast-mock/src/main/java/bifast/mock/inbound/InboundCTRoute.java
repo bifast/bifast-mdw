@@ -35,6 +35,8 @@ public class InboundCTRoute extends RouteBuilder{
 			.log("start kirim ct")
 
 			.process(buildCTRequest)
+			.setHeader("inb_ctRequest", simple("${body}"))
+			
 			.marshal(busMesgJDF)
 			.log("CT Request: ${body}")
 			

@@ -34,8 +34,6 @@ public class InitiateCTJobProcessor implements Processor{
 		processData.setInbMesgType("CT");
 		processData.setKomiTrnsId(String.valueOf(arr.get("komi_trns_id")));
 		processData.setReceivedDt(LocalDateTime.now());
-//		processData.setTextDataReceived(null);
-
 
 		exchange.getMessage().setHeader("hdr_process_data", processData);
 		

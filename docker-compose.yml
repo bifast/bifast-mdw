@@ -42,8 +42,8 @@ services:
         - SPRING_JPA_HIBERNATE_DDL_AUTO=none
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
-        - KOMI.URL.COREBANK=http://mock-cb:9007/api/corebank
-        - KOMI.URL.PORTALAPI=http://komi-mock:9006/mock
+        - KOMI.URL.COREBANK=http://172.18.0.1:9007/api/corebank
+        - KOMI.URL.PORTALAPI=http://172.18.0.1:9006/mock
         - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs
@@ -52,7 +52,7 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:2.2
+      image: fransmzh/komi-outbound:2.2.1
       container_name: komi-outbound
       restart: always
       depends_on: 
@@ -62,11 +62,11 @@ services:
       ports: 
         - "9002:9002"
       environment: 
-        - KOMI.URL.CICONNECTOR=komi-mock:9006/mock/cihub
-        - KOMI.URL.COREBANK=mock-cb:9007/api/corebank
-        - KOMI.URL.ISOADAPTER=mock-cb:9003/komi/api/v1/adapter
-        - KOMI.URL.PORTALAPI=http://komi-mock:9006/mock
-        - KOMI.URL.INBOUND=komi-inbound:9001
+        - KOMI.URL.CICONNECTOR=172.18.0.1:9006/mock/cihub
+        - KOMI.URL.COREBANK=172.18.0.1:9007/api/corebank
+        - KOMI.URL.ISOADAPTER=172.18.0.1:9003/komi/api/v1/adapter
+        - KOMI.URL.PORTALAPI=http://172.18.0.1:9006/mock
+        - KOMI.URL.INBOUND=172.18.0.1:9001
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.BICODE=INDOIDJA
         - LOGGING.FILE.NAME=/home/logs/komi-outbound.log
@@ -85,7 +85,7 @@ services:
     mock:
       build: bifast-mock
       container_name: komi-mock
-      image: fransmzh/komi-mock:2.2
+      image: fransmzh/komi-mock:2.2.1
       restart: always
       depends_on: 
         - komidb
@@ -96,7 +96,7 @@ services:
       environment: 
         - LOGGING.FILE.NAME=/home/logs/komi-mock.log
         - BIFAST.INBOUND-LOG-FOLDER=/home/logs
-        - KOMI.INBOUND-URL=komi-inbound:9001/komi-inbound/json/service
+        - KOMI.INBOUND-URL=172.18.0.1:9001/komi-inbound/json/service
         - KOMI.TIMEOUT-CT=50000
         - TZ=Asia/Jakarta
       volumes: 
