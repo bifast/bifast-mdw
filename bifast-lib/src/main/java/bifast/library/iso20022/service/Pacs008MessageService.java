@@ -269,9 +269,10 @@ public class Pacs008MessageService {
 			pacs008.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy().getTp().setPrtry(seed.getCrdtProxyIdType());
 		}
 			
+
 		// CdtTrfTxInf / RmtInf
+		pacs008.getCdtTrfTxInf().get(0).setRmtInf(new RemittanceInformation16());
 		if (!(null==seed.getPaymentInfo())) {
-			pacs008.getCdtTrfTxInf().get(0).setRmtInf(new RemittanceInformation16());
 			pacs008.getCdtTrfTxInf().get(0).getRmtInf().getUstrd().add(seed.getPaymentInfo());
 		}
 		

@@ -15,17 +15,20 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.pacs002.AccountIdentification4Choice;
-import bifast.library.iso20022.pacs002.BISupplementaryData1;
-import bifast.library.iso20022.pacs002.BISupplementaryDataEnvelope1;
 import bifast.library.iso20022.pacs002.CashAccount38;
 import bifast.library.iso20022.pacs002.CashAccountType2Choice;
 import bifast.library.iso20022.pacs002.GenericAccountIdentification1;
+import bifast.mock.isoservice.SettlementHeaderService;
+import bifast.mock.isoservice.SettlementMessageService;
 import bifast.mock.persist.MockPacs002;
 import bifast.mock.persist.MockPacs002Repository;
 
 @Component
 public class SettlementProcessor implements Processor {
+	@Autowired SettlementMessageService settlementMesgService;
+	@Autowired SettlementHeaderService settlementHdrService;
 
 	@Autowired
 	private MockPacs002Repository mockPacs002Repo;
@@ -35,13 +38,9 @@ public class SettlementProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 	
-		BusinessMessage in = exchange.getMessage().getBody(BusinessMessage.class);		
 		
-//		BusinessMessage ctRequest = exchange.getMessage().getHeader("objRequest", BusinessMessage.class);
-
-//		BusinessMessage in = exchange.getMessage().getHeader("hdr_ctResponseObj", BusinessMessage.class);
-		HashMap<String, String> frTable = exchange.getMessage().getHeader("sttl_tableqry", HashMap.class);
-		
+//		BusinessMessage in = exchange.getMessage().getHeader("hdr_ctresponse", BusinessMessage.class);
+		BusinessMessage ctReq = exchange.getMessage().getHeader("hdr_ctrequest", BusinessMessage.class);
 		
 		String bizMsgId = "";
 		String msgId = "";
@@ -51,68 +50,67 @@ public class SettlementProcessor implements Processor {
 		bizMsgId = utilService.genRfiBusMsgId("010", "02", "INDOIDJA");
 		msgId = utilService.genMessageId("010", "INDOIDJA");
 
+		BusinessMessage settlementConf = new BusinessMessage();
 		
-		String cdtrAcct = frTable.get("CDTR_ACCT");
-//		String cdtrAcct = ctRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
+		settlementConf.setAppHdr(settlementHdrService.getAppHdr("010", bizMsgId));
 		
-		CashAccount38 cdtrAcctT = new CashAccount38();
-		cdtrAcctT.setId(new AccountIdentification4Choice());
-		cdtrAcctT.getId().setOthr(new GenericAccountIdentification1());
-		cdtrAcctT.getId().getOthr().setId(cdtrAcct);
-
-		cdtrAcctT.setTp(new CashAccountType2Choice());
-		cdtrAcctT.getTp().setPrtry("CACC");
-
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setCdtrAcct(cdtrAcctT);
-
-		String dbtrAcct = frTable.get("DBTR_ACCT"); 
-//		String dbtrAcct = ctRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId();
+		settlementConf.setDocument(new Document());
+		settlementConf.getDocument().setFiToFIPmtStsRpt(settlementMesgService.SettlementConfirmation(msgId, ctReq));
 		
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setDbtrAcct(new CashAccount38());
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().setId(new AccountIdentification4Choice());
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().setOthr(new GenericAccountIdentification1());
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().getOthr().setId(dbtrAcct);
-		
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().setTp(new CashAccountType2Choice());
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getTp().setPrtry("CACC");
-		
-
-		in.getAppHdr().setBizMsgIdr(bizMsgId);
-		in.getAppHdr().setBizSvc("STTL");
-		
-		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).setTxSts("ACSC");
-
-		in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().setMsgId(msgId);
-		
-		XMLGregorianCalendar orgnlDateTime = in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm();
-		in.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).setOrgnlCreDtTm(orgnlDateTime);
-
-		GenericAccountIdentification1 dbtrAgtAcctIdOth = new GenericAccountIdentification1();
-		dbtrAgtAcctIdOth.setId("123456");
-		AccountIdentification4Choice dbtrAgtAcctId = new AccountIdentification4Choice();
-		dbtrAgtAcctId.setOthr(dbtrAgtAcctIdOth);		
-		CashAccount38 dbtrAgtAcct = new CashAccount38();
-		dbtrAgtAcct.setId(dbtrAgtAcctId);
-		
-		GenericAccountIdentification1 cdtrAgtAcctIdOth = new GenericAccountIdentification1();
-		cdtrAgtAcctIdOth.setId("654321");
-		AccountIdentification4Choice cdtrAgtAcctId = new AccountIdentification4Choice();
-		cdtrAgtAcctId.setOthr(dbtrAgtAcctIdOth);		
-		CashAccount38 cdtrAgtAcct = new CashAccount38();
-		cdtrAgtAcct.setId(cdtrAgtAcctId);
-		
-		
-//		if (in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().size() == 0 ) {
+//		in.getAppHdr().setBizMsgIdr(bizMsgId);
+//		in.getAppHdr().setBizSvc("STTL");
 //		
-//			BISupplementaryData1 supplData = new BISupplementaryData1();
-//			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().add(supplData);
-//			
-//			BISupplementaryDataEnvelope1 dataEnvl = new BISupplementaryDataEnvelope1();
-//			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).setEnvlp(dataEnvl);
-//		}
-		
-//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setCdtrAgtAcct(cdtrAgtAcct);
-//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setDbtrAgtAcct(dbtrAgtAcct);
+//
+//		String cdtrAcct = ctReq.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
+//		
+//		CashAccount38 cdtrAcctT = new CashAccount38();
+//		cdtrAcctT.setId(new AccountIdentification4Choice());
+//		cdtrAcctT.getId().setOthr(new GenericAccountIdentification1());
+//		cdtrAcctT.getId().getOthr().setId(cdtrAcct);
+//
+//		cdtrAcctT.setTp(new CashAccountType2Choice());
+//		cdtrAcctT.getTp().setPrtry("CACC");
+//
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setCdtrAcct(cdtrAcctT);
+//
+//		String dbtrAcct = ctReq.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId();
+//		
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().setDbtrAcct(new CashAccount38());
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().setId(new AccountIdentification4Choice());
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().setOthr(new GenericAccountIdentification1());
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getId().getOthr().setId(dbtrAcct);
+//		
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().setTp(new CashAccountType2Choice());
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAcct().getTp().setPrtry("CACC");
+//		
+//		String dbtrAgt = in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtrAgt().getFinInstnId().getOthr().getId();
+//		String cdtrAgt = in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getCdtrAgt().getFinInstnId().getOthr().getId();
+//		
+//		System.out.println("Settlement dbtrAgt: " + dbtrAgt);
+//		System.out.println("Settlement cdtrAgt: " + cdtrAgt);
+//		
+//		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).setTxSts("ACSC");
+//
+//		in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().setMsgId(msgId);
+//		
+//		XMLGregorianCalendar orgnlDateTime = in.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm();
+//		in.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().get(0).setOrgnlCreDtTm(orgnlDateTime);
+//
+//		
+//
+////		if (in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().size() == 0 ) {
+////		
+////			BISupplementaryData1 supplData = new BISupplementaryData1();
+////			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().add(supplData);
+////			
+////			BISupplementaryDataEnvelope1 dataEnvl = new BISupplementaryDataEnvelope1();
+////			in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).setEnvlp(dataEnvl);
+////		}
+//		
+////		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setCdtrAgtAcct(cdtrAgtAcct);
+////		in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().setDbtrAgtAcct(dbtrAgtAcct);
+//
+		exchange.getMessage().setBody(settlementConf);
 
 		
 		ObjectMapper map = new ObjectMapper();
@@ -120,7 +118,9 @@ public class SettlementProcessor implements Processor {
 		map.enable(SerializationFeature.WRAP_ROOT_VALUE);
 	    map.setSerializationInclusion(Include.NON_NULL);
 
-		String strSttl = map.writeValueAsString(in);
+		HashMap<String, String> frTable = exchange.getMessage().getHeader("sttl_tableqry", HashMap.class);
+
+		String strSttl = map.writeValueAsString(settlementConf);
 		
 		String msgName = frTable.get("ORGNL_MSG_NAME");
 //		String msgName = ctRequest.getAppHdr().getMsgDefIdr();
@@ -141,16 +141,14 @@ public class SettlementProcessor implements Processor {
 		pacs002.setTrxType("STTL");
 		mockPacs002Repo.save(pacs002);
 
-		exchange.getMessage().setBody(in);
 		
-		String addInfo = "";
-		if (in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getAddtlInf().size() > 0)
-			addInfo = in.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getAddtlInf().get(0);
-		
-		if (addInfo.equals("REVERSAL"))
-			exchange.getMessage().setHeader("hdr_reversal", "YES");
-		else
-			exchange.getMessage().setHeader("hdr_reversal", "NO");
+		if (ctReq.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().size()>0) {
+			String addInfo = ctReq.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0);
+			if (addInfo.equals("REVERSAL"))
+				exchange.getMessage().setHeader("hdr_reversal", "YES");
+			else
+				exchange.getMessage().setHeader("hdr_reversal", "NO");
+		}
 			
 	}
 

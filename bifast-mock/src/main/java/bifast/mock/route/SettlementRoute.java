@@ -45,11 +45,16 @@ public class SettlementRoute extends RouteBuilder {
 			.setHeader("sttl_tableqry", simple("${body}"))
 			.setHeader("sttl_id", simple("${body[ID]}"))
 
-			.log("${header.sttl_tableqry[RESULT]}")
-	
-			.setBody(simple("${body[FULL_MESSAGE]}"))
+			.setBody(simple("${header.sttl_tableqry[FULL_MESSAGE]}"))
 			.unmarshal(jsonBusinessMessageDataFormat)
 			.setHeader("hdr_ctresponse", simple("${body}"))
+
+			.log("${header.sttl_tableqry[RESULT]}")
+	
+			.setBody(simple("${header.sttl_tableqry[CT_REQUEST]}"))
+			.unmarshal(jsonBusinessMessageDataFormat)
+			.setHeader("hdr_ctrequest", simple("${body}"))
+
 		
 			.process(settlementProcessor)
 		

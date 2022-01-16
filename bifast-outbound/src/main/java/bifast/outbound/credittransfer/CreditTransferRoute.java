@@ -108,7 +108,8 @@ public class CreditTransferRoute extends RouteBuilder {
 			// jika response RJCT/ERROR, harus reversal ke corebanking
 			// unt Teller tidak dilakukan KOMI tapi oleh Teller langsung
 			.filter().simple("${header.ct_progress} in 'REJECT,ERROR' && ${header.hdr_request_list.merchantType} != '6010'")
-				.log(LoggingLevel.DEBUG, "komi.ct", "akan reversal")
+				.log(LoggingLevel.DEBUG, "komi.ct", 
+						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] akan reversal")
 				.to("seda:debitreversal")
 			.end()
 	

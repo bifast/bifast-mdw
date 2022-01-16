@@ -23,7 +23,6 @@ public class GregorianCalendarXMLAdapterExclMillis extends XmlAdapter<String, XM
 		String strTime = String.format("%04d-%02d-%02dT%02d:%02d:%02dZ", 
 				v.getYear(),v.getMonth(), v.getDay(),
 				v.getHour(), v.getMinute(), v.getSecond());
-
 		return strTime;
 	}
 

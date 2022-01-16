@@ -11,9 +11,12 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+
 
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
@@ -32,7 +35,7 @@ public class DebitReversalRoute extends RouteBuilder{
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
 	
-//	private static Logger logger = LoggerFactory.getLogger(DebitReversalRoute.class);
+	private static Logger logger = LoggerFactory.getLogger(DebitReversalRoute.class);
 
 	@Override
 	public void configure() throws Exception {
@@ -85,13 +88,16 @@ public class DebitReversalRoute extends RouteBuilder{
 		;
 		
 		
-		from("direct:postcreditreversal")
-			.log("akan kirim reversal")
+		from("direct:postcreditreversal").routeId("komi.postcrdtrev")
+			.log(LoggingLevel.DEBUG, "komi.postcrdtrev", 
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Akan kirim reversal")
+
 			.setProperty("bkp_hdr_request_list").header("hdr_request_list")
 			.setProperty("bkp_hdr_response_list").header("hdr_response_list")
 
 			.removeHeaders("hdr_*")
-			
+			.setHeader("hdr_request_list", exchangeProperty("bkp_hdr_request_list"))
+
 			.doTry()
 				.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Request ISOAdapter: ${body}")
 		
@@ -126,23 +132,27 @@ public class DebitReversalRoute extends RouteBuilder{
 					})
 					.log(LoggingLevel.DEBUG, "komi.reverse_ct", 
 							"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Fault")
-	
 				.end()
-				
+
+				.setHeader("hdr_request_list", exchangeProperty("bkp_hdr_request_list"))
+				.setHeader("hdr_response_list", exchangeProperty("bkp_hdr_response_list"))
+
 			.endDoTry()
 	    	.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Call Corebank Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+				.setHeader("hdr_request_list", exchangeProperty("bkp_hdr_request_list"))
+				.setHeader("hdr_response_list", exchangeProperty("bkp_hdr_response_list"))
 		    	.process(cbFaultProcessor)
 			.end()
 			
-			.setHeader("hdr_request_list", exchangeProperty("bkp_hdr_request_list"))
-			.setHeader("hdr_response_list", exchangeProperty("bkp_hdr_response_list"))
 			
 		;
 		
-		from("seda:savecbdebitrevr?concurrentConsumers=3")
-			.log("akan save Debit Reversal ke CB-log")
+		from("seda:savecbdebitrevr?concurrentConsumers=3").routeId("komi.savecbdebitrevr")
+			.log(LoggingLevel.DEBUG, "komi.savecbdebitrevr", 
+				"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] akan save Debit Reversal ke CB-log")
+			
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
@@ -174,11 +184,13 @@ public class DebitReversalRoute extends RouteBuilder{
 					String cbResponseClass = oCbResponse.getClass().getSimpleName();
 					if (oCbResponse.getClass().getSimpleName().equals("DebitReversalResponsePojo")) {
 						DebitReversalResponsePojo resp = (DebitReversalResponsePojo)oCbResponse;
+						logger.debug("Response:" + resp.getStatus() + ", Reason:" + resp.getReason());
 						cbTrns.setReason(resp.getReason());
 						cbTrns.setResponse(resp.getStatus());
 					}
 					else {
 						FaultPojo fault = (FaultPojo) oCbResponse;
+						logger.debug("Response:" + fault.getCallStatus() + ", Reason:" + fault.getReasonCode());
 						cbTrns.setReason(fault.getReasonCode());
 						cbTrns.setResponse(fault.getCallStatus());
 					}

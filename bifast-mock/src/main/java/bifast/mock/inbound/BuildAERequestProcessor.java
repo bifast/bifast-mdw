@@ -14,13 +14,13 @@ import bifast.library.iso20022.service.Pacs008MessageService;
 import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.mock.inbound.pojo.AERequestPojo;
 import bifast.mock.inbound.pojo.PaymentRequestPojo;
-import bifast.mock.isoservice.ApplHeaderService;
+import bifast.mock.isoservice.MsgHeaderService;
 import bifast.mock.processor.UtilService;
 
 
 @Component
 public class BuildAERequestProcessor implements Processor {
-	@Autowired private ApplHeaderService appHeaderService;
+	@Autowired private MsgHeaderService appHeaderService;
 	@Autowired private Pacs008MessageService pacs008MessageService;
 	@Autowired private UtilService utilService;
 
