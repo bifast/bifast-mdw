@@ -17,7 +17,7 @@ public class GregorianCalendarXMLAdapterExclMillis extends XmlAdapter<String, XM
 	public XMLGregorianCalendar unmarshal(String v) throws Exception {
 		GregorianCalendar cal = new GregorianCalendar();
 		logger.info("akan parsing " + v);
-        cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(v));
+        cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(v));
         logger.info("berhasil parsing " + v);
         XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar( cal);
 		return calendar;
