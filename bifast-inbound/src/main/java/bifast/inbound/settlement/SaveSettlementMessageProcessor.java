@@ -2,24 +2,27 @@ package bifast.inbound.settlement;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.config.Config;
+import bifast.inbound.model.ChannelTransaction;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.model.Settlement;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;
+import bifast.inbound.repository.ChannelTransactionRepository;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.repository.SettlementRepository;
-import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 
 @Component
 public class SaveSettlementMessageProcessor implements Processor {
+	@Autowired private ChannelTransactionRepository chnlRepo;
+	@Autowired private Config config;
 	@Autowired private CreditTransferRepository ctRepo;
 	@Autowired private SettlementRepository settlementRepo;
 
@@ -29,12 +32,7 @@ public class SaveSettlementMessageProcessor implements Processor {
 		FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
 
 		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
-
-//		BusinessMessage settlRequest = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
 		
-//		BusinessApplicationHeaderV01 sttlHeader = settlRequest.getAppHdr();
-//		FIToFIPaymentStatusReportV10 settlBody = settlRequest.getDocument().getFiToFIPmtStsRpt();
-			
 		Settlement sttl = new Settlement();
 		sttl.setOrgnlCrdtTrnReqBizMsgId(flatSttl.getOrgnlEndToEndId());
 		sttl.setSettlConfBizMsgId(flatSttl.getBizMsgIdr());
@@ -45,23 +43,9 @@ public class SaveSettlementMessageProcessor implements Processor {
 		if (!(null == flatSttl.getCdtrAcctId()))
 			sttl.setCrdtAccountNo(flatSttl.getCdtrAcctId());
 		
-//		sttl.setCrdtAccountType(orglBizMsgId);
-//		sttl.setCrdtId(orglBizMsgId);
-//		sttl.setCrdtIdType(orglBizMsgId);
-//		sttl.setCrdtName(orglBizMsgId);
 		
 		if (!(null == flatSttl.getDbtrAcctId()))
 			sttl.setDbtrAccountNo(flatSttl.getDbtrAcctId());
-//		sttl.setDbtrAccountType(orglBizMsgId);
-//		sttl.setDbtrId(orglBizMsgId);
-//		sttl.setDbtrIdType(orglBizMsgId);
-//		sttl.setDbtrName(orglBizMsgId);
-		
-//		sttl.setCrdtBankAccountNo(
-//				settlBody.getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().getCdtrAgtAcct().getId().getOthr().getId());
-//		
-//		sttl.setDbtrBankAccountNo(
-//				settlBody.getTxInfAndSts().get(0).getSplmtryData().get(0).getEnvlp().getDbtrAgtAcct().getId().getOthr().getId());
 
 		sttl.setReceiveDate(LocalDateTime.now());
 		sttl.setFullMessage(fullReqMsg);
@@ -80,13 +64,27 @@ public class SaveSettlementMessageProcessor implements Processor {
 			}
 		}
 
+		String settlment_ctType = "Outbound";
 		if (null != ct) {
 			ct.setSettlementConfBizMsgIdr(flatSttl.getBizMsgIdr());
-			ct.setCbStatus("READY");
+			ct.setLastUpdateDt(LocalDateTime.now());
+			if (sttl.getRecptBank().equals(config.getBankcode())) {
+				ct.setCbStatus("READY");
+				settlment_ctType = "Inbound";
+			}
 			ctRepo.save(ct);
-//			sttlRequest.setOrgnlKomiTrnsId(ct.getKomiTrnsId());
 		}
+		exchange.getMessage().setHeader("sttl_transfertype", settlment_ctType);
 
+		if (settlment_ctType.equals("Inbound")) {
+			Optional<ChannelTransaction> oChnlTrns = chnlRepo.findByKomiTrnsId(ct.getKomiTrnsId());
+			if (oChnlTrns.isPresent())
+				exchange.getMessage().setHeader("sttl_orgnRef", oChnlTrns.get().getChannelRefId());
+			else
+				exchange.getMessage().setHeader("sttl_orgnRef", flatSttl.getOrgnlEndToEndId());
+				
+		}
+		
 
 	}
 }

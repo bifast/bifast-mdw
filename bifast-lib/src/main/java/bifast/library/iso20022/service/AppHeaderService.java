@@ -38,14 +38,14 @@ public class AppHeaderService {
 		fr.setFIId(new BranchAndFinancialInstitutionIdentification5());
 		fr.getFIId().setFinInstnId(new FinancialInstitutionIdentification8());
 		fr.getFIId().getFinInstnId().setOthr(new GenericFinancialIdentification1());
-		fr.getFIId().getFinInstnId().getOthr().setId(config.getBankcode());
+		fr.getFIId().getFinInstnId().getOthr().setId("SIHBIDJ1");
 		appHdr.setFr(fr);
 
 		Party9Choice to = new Party9Choice();
 		to.setFIId(new BranchAndFinancialInstitutionIdentification5());
 		to.getFIId().setFinInstnId(new FinancialInstitutionIdentification8());
 		to.getFIId().getFinInstnId().setOthr(new GenericFinancialIdentification1());
-		to.getFIId().getFinInstnId().getOthr().setId(bicTo);
+		to.getFIId().getFinInstnId().getOthr().setId("FASTIDJA");
 		appHdr.setTo(to);
 
 		appHdr.setMsgDefIdr(msgType);

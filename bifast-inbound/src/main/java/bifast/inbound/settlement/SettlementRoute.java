@@ -19,24 +19,27 @@ public class SettlementRoute extends RouteBuilder {
 		from("direct:settlement").routeId("komi.settlement")
 			
 			// prepare untuk request ke corebank
-//			.process(settlementProcessor)
 
 	 		.log(LoggingLevel.DEBUG, "komi.settlement", 
 	 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Terima settlement")
 
-//	 		.choice()
-//	 			.when().simple("${body.orgnlKomiTrnsId} != null")
-//	 				.to("seda:callcb")
-//				.otherwise()
-//					.log("Settlement tidak match")
-//			.end()
-
 			.process(saveSettlement)
-			
-			.process(jobWakeupProcessor)
-			
 	 		.log(LoggingLevel.DEBUG, "komi.settlement", 
-	 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai proses Settlement ")
+				"${header.sttl_transfertype}")
+			
+			.choice()
+				.when().simple("${header.sttl_transfertype} == 'Inbound'")
+		 			.log(LoggingLevel.DEBUG, "komi.settlement", 
+		 					"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] activate credit-posting job")
+
+					.process(jobWakeupProcessor)
+				.otherwise()
+					.process(settlementProcessor)
+					.to("direct:post_credit_cb")
+			 		.log(LoggingLevel.DEBUG, "komi.settlement", 
+			 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Selesai posting settlement")
+			.end()
+
 		;
 
 	}

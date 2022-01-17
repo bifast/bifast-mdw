@@ -85,12 +85,13 @@ public class SaveCreditTransfer2Processor implements Processor {
 		
 
 		if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr())) {
+			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId())) {
 
-			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId()))
-				ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
-			else
-				ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
-
+				if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId()))
+					ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+				else
+					ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
+			}
 		}
 		
 		ct.setCreateDt(LocalDateTime.now());
@@ -124,6 +125,8 @@ public class SaveCreditTransfer2Processor implements Processor {
 		ct.setOriginatingBank(orgnBank);
 		ct.setRecipientBank(recptBank);
 
+		ct.setSettlementConfBizMsgIdr("WAITING");
+		
 		String reversal = exchange.getMessage().getHeader("hdr_reversal",String.class);
 		ct.setReversal(reversal);
 		

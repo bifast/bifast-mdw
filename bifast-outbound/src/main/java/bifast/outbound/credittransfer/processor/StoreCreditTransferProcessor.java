@@ -67,16 +67,18 @@ public class StoreCreditTransferProcessor implements Processor {
 		else {
 			
 			ct = oCT.get();
-
 			long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
 			ct.setCihubElapsedTime(timeElapsed);
 			ct.setLastUpdateDt(LocalDateTime.now());
 			ct.setFullRequestMessage(rmw.getCihubEncriptedRequest());
 			if (null != rmw.getCihubEncriptedResponse())
 				ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
-
+			
+			
 			ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
 			ct.setErrorMessage(rmc.getLastError());
+
+			ct.setSettlementConfBizMsgIdr("WAITING");
 
 			Object oBiResponse = exchange.getMessage().getBody(Object.class);
 
@@ -128,15 +130,6 @@ public class StoreCreditTransferProcessor implements Processor {
 
 		}
 
-
-//		String crdtType = creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getgetId().getCreditorType();
-//		if (creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getCreditorType().equals("01"))
-//			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
-//		else
-//			ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
-
-//		if (null != chnlRequest.getOrgnlEndToEndId())
-//			ct.setMsgType("Reverse CT");
 
 
 	}

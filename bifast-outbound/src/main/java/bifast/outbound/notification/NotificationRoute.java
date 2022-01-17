@@ -50,7 +50,7 @@ public class NotificationRoute extends RouteBuilder {
 			.endDoTry()
 	    	.doCatch(Exception.class)
 	    		.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")
-	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+//	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 			.end()
 
 		;

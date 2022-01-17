@@ -8,7 +8,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 public class ProcessDataPojo {
 
 	private String komiTrnsId;
-	private String inbMesgType;
+//	private String inbMesgType;
 	private String inbMsgName;
 	private LocalDateTime receivedDt;
 	private Instant startTime;
@@ -30,13 +30,6 @@ public class ProcessDataPojo {
 		this.komiTrnsId = komiTrnsId;
 	}
 
-	public String getInbMesgType() {
-		return inbMesgType;
-	}
-
-	public void setInbMesgType(String inbMesgType) {
-		this.inbMesgType = inbMesgType;
-	}
 
 	public String getInbMsgName() {
 		return inbMsgName;

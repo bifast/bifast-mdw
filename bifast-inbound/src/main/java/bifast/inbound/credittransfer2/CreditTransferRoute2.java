@@ -121,7 +121,7 @@ public class CreditTransferRoute2 extends RouteBuilder {
 	
 		from("seda:save_ct?concurrentConsumers=2").routeId("savect")
 			.setExchangePattern(ExchangePattern.InOnly)
-			.log("Akan save ${header.hdr_msgType}")
+			.log("Akan save ${header.hdr_process_data.inbMsgName}")
 			.process(saveCreditTransferProcessor)
 			.process(jobWakeupProcessor)
 		;

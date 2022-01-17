@@ -24,9 +24,10 @@ public class AEPortalLogProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		String msgName = processData.getInbMsgName();
 		BusinessMessage resp = processData.getBiResponseMsg();
 		
-		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
+//		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
 
 		FlatPacs008Pojo req = (FlatPacs008Pojo) processData.getBiRequestFlat();
 		
@@ -55,13 +56,11 @@ public class AEPortalLogProcessor implements Processor{
 		long timeElapsed = Duration.between(processData.getReceivedDt(), LocalDateTime.now()).toMillis();
 		data.setTrx_duration(String.valueOf(timeElapsed));
 
-		if (msgType.equals("510"))
+		if (msgName.equals("AccEnq"))
 			logMsg.setCodelog("AE");
-		else if (msgType.equals("010"))
+		else if (msgName.equals("CrdTrn"))
 			logMsg.setCodelog("CT");
-		else if (msgType.equals("110"))
-			logMsg.setCodelog("CT");
-		else if (msgType.equals("011"))
+		else if (msgName.equals("RevCT"))
 			logMsg.setCodelog("RCT");
 
 		data.setBifast_trx_no(req.getBizMsgIdr());

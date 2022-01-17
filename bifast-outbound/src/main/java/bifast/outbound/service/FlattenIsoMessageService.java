@@ -136,7 +136,8 @@ public class FlattenIsoMessageService {
 			if (!(null == txInfAndSts.getOrgnlTxRef().getCdtrAcct())) {
 				
 				flatMsg.setCdtrAcctId(txInfAndSts.getOrgnlTxRef().getCdtrAcct().getId().getOthr().getId());
-				flatMsg.setCdtrAcctTp(txInfAndSts.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
+				if (null != txInfAndSts.getOrgnlTxRef().getCdtrAcct().getTp())
+					flatMsg.setCdtrAcctTp(txInfAndSts.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
 				
 			}
 				

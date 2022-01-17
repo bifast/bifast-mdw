@@ -29,17 +29,7 @@ public class CheckRequestMsgProcessor implements Processor {
 		ProcessDataPojo processData = new ProcessDataPojo();
 
 		String trnType = inputMsg.getAppHdr().getBizMsgIdr().substring(16,19);
-		
-		if (trnType.equals("510"))
-			processData.setInbMsgName("AccEnq");
-	
-		else if ((trnType.equals("010")) || (trnType.equals("110")))
-			processData.setInbMsgName("CrdTrn");
-
-		else if (trnType.equals("011")) 
-			processData.setInbMsgName("RevCT");
-
-		
+			
 		if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.002")) {
 			
 			FlatPacs002Pojo flat002 = flatMsgService.flatteningPacs002(inputMsg); 
@@ -76,11 +66,11 @@ public class CheckRequestMsgProcessor implements Processor {
 			processData.setInbMsgName("EvtNtf");
 		}
 
-		exchange.getMessage().setHeader("hdr_msgType", trnType);
+//		exchange.getMessage().setHeader("hdr_msgType", trnType);
 		
 		processData.setBiRequestMsg(inputMsg);
 		processData.setStartTime(Instant.now());
-		processData.setInbMesgType(trnType);
+//		processData.setInbMesgType(trnType);
 //		processData.setKomiCounter(null);
 		processData.setKomiTrnsId(utilService.genKomiTrnsId());
 		processData.setReceivedDt(LocalDateTime.now());

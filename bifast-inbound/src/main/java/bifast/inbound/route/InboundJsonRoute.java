@@ -1,11 +1,9 @@
 package bifast.inbound.route;
 
-import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.service.JacksonDataFormatService;
@@ -50,7 +48,7 @@ public class InboundJsonRoute extends RouteBuilder {
 
 			.to("direct:receive")
 			
-			.filter().simple("${header.hdr_msgType} !in 'SETTLEMENT, PROXYNOTIF'")
+			.filter().simple("${header.hdr_process_data.inbMsgName} !in 'Settl, PrxNtf'")
 				.marshal(jsonBusinessMessageDataFormat) 
 				.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Response: ${body}")
 				// simpan outbound compress

@@ -7,12 +7,18 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GregorianCalendarXMLAdapterExclMillis extends XmlAdapter<String, XMLGregorianCalendar> {
+	private static Logger logger = LoggerFactory.getLogger(GregorianCalendarXMLAdapterExclMillis.class);
 
 	@Override
 	public XMLGregorianCalendar unmarshal(String v) throws Exception {
 		GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(v));
+		logger.info("akan parsing " + v);
+        cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(v));
+        logger.info("berhasil parsing " + v);
         XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar( cal);
 		return calendar;
 	}

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.service.FlattenIsoMessageService;
-import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
@@ -31,7 +30,7 @@ public class InitiateCTJobProcessor implements Processor{
 		
 		processData.setBiRequestMsg(orgnlCTRequest);
 		processData.setStartTime(Instant.now());
-		processData.setInbMesgType("CT");
+		processData.setInbMsgName("CrdTrn");
 		processData.setKomiTrnsId(String.valueOf(arr.get("komi_trns_id")));
 		processData.setReceivedDt(LocalDateTime.now());
 
