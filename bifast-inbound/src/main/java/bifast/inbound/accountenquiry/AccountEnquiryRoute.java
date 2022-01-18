@@ -21,12 +21,12 @@ public class AccountEnquiryRoute extends RouteBuilder {
 			// prepare untuk request ke corebank
 			.process(buildAccountEnquiryRequestProcessor)
 
-	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan call AE corebank")
+	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Akan call AE corebank")
 
 			//TODO call corebank Account Enquiry
 			.to("seda:callcb")
 
-	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] selesai call AE corebank")
+	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] selesai call AE corebank")
 			.process(aeResponseProcessor)
 
 					
