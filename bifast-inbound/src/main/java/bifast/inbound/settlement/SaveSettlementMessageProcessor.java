@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,8 @@ public class SaveSettlementMessageProcessor implements Processor {
 	@Autowired private CreditTransferRepository ctRepo;
 	@Autowired private SettlementRepository settlementRepo;
 
+	private static Logger logger = LoggerFactory.getLogger(SaveSettlementMessageProcessor.class);
+
 	public void process(Exchange exchange) throws Exception {
 		 
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
@@ -34,11 +38,11 @@ public class SaveSettlementMessageProcessor implements Processor {
 		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
 		
 		Settlement sttl = new Settlement();
-		sttl.setOrgnlCrdtTrnReqBizMsgId(flatSttl.getOrgnlEndToEndId());
-		sttl.setSettlConfBizMsgId(flatSttl.getBizMsgIdr());
+		sttl.setOrgnlCTBizMsgId(flatSttl.getOrgnlEndToEndId());
+		sttl.setSettlBizMsgId(flatSttl.getBizMsgIdr());
 		
-		sttl.setOrignBank(flatSttl.getDbtrAgtFinInstnId());
-		sttl.setRecptBank(flatSttl.getCdtrAgtFinInstnId());
+		sttl.setDbtrBank(flatSttl.getDbtrAgtFinInstnId());
+		sttl.setCrdtBank(flatSttl.getCdtrAgtFinInstnId());
 		
 		if (!(null == flatSttl.getCdtrAcctId()))
 			sttl.setCrdtAccountNo(flatSttl.getCdtrAcctId());
@@ -65,10 +69,16 @@ public class SaveSettlementMessageProcessor implements Processor {
 		}
 
 		String settlment_ctType = "Outbound";
+		logger.debug(sttl.getCrdtBank() + " vs " + config.getBankcode());
+		
 		if (null != ct) {
 			ct.setSettlementConfBizMsgIdr(flatSttl.getBizMsgIdr());
 			ct.setLastUpdateDt(LocalDateTime.now());
-			if (sttl.getRecptBank().equals(config.getBankcode())) {
+			
+			logger.debug("iya");
+
+			if (sttl.getCrdtBank().equals(config.getBankcode())) {
+				logger.debug("nggak");
 				ct.setCbStatus("READY");
 				settlment_ctType = "Inbound";
 			}

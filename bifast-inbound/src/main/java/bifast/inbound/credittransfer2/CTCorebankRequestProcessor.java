@@ -1,25 +1,40 @@
-package bifast.inbound.credittransfer;
+package bifast.inbound.credittransfer2;
+
+import java.text.DecimalFormat;
+import java.util.HashMap;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.config.Config;
 import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 
 @Component
 public class CTCorebankRequestProcessor implements Processor {
+	@Autowired Config config;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
+		ProcessDataPojo processData= exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 		FlatPacs008Pojo biReq = (FlatPacs008Pojo) processData.getBiRequestFlat();
-		
+
+
+		@SuppressWarnings("unchecked")
+		HashMap<String, Object> arr = exchange.getMessage().getHeader("ctsaf_qryresult", HashMap.class);
+
 		CbCreditRequestPojo cbRequest = new CbCreditRequestPojo();
+
+		cbRequest.setKomiTrnsId(String.valueOf(arr.get("komi_trns_id")));
+		cbRequest.setRecipientBank(config.getBankcode());
 		
-		cbRequest.setAmount(biReq.getAmount());
+		DecimalFormat df = new DecimalFormat("#############.00");
+		cbRequest.setAmount(df.format(biReq.getAmount()));
+
 		cbRequest.setCategoryPurpose(biReq.getCategoryPurpose());
 		cbRequest.setCreditorAccountNumber(biReq.getCreditorAccountNo());
 		cbRequest.setCreditorAccountType(biReq.getCreditorAccountType());
@@ -53,8 +68,6 @@ public class CTCorebankRequestProcessor implements Processor {
 		cbRequest.setDebtorType(biReq.getDebtorType());
 		
 		cbRequest.setFeeTransfer("0.00");
-		cbRequest.setKomiTrnsId(processData.getKomiTrnsId());
-		cbRequest.setRecipientBank(biReq.getToBic());
 
 		
 		if (!(null == biReq.getPaymentInfo()))

@@ -1,5 +1,7 @@
 package bifast.inbound.accountenquiry;
 
+import java.text.DecimalFormat;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,10 @@ public class BuildAERequestForCbProcessor implements Processor {
 		CbAccountEnquiryRequestPojo cbRequest = new CbAccountEnquiryRequestPojo();
 
 		cbRequest.setKomiTrnsId(processData.getKomiTrnsId());
-		cbRequest.setAmount(biReq.getAmount());
+
+		DecimalFormat df = new DecimalFormat("#############.00");
+		cbRequest.setAmount(df.format(biReq.getAmount()));
+
 		cbRequest.setCategoryPurpose(biReq.getCategoryPurpose());
 		cbRequest.setAccountNumber(biReq.getCreditorAccountNo());
 		

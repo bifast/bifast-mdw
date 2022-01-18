@@ -34,8 +34,7 @@ public class InboundRoute extends RouteBuilder {
 					.to("direct:accountenq")
 
 				.when().simple("${header.hdr_process_data.inbMsgName} == 'CrdTrn'")    // terima credit transfer
-					.to("direct:crdttransfer2")
-//					.to("direct:crdttransfer")
+					.to("direct:crdttransfer")
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.when().simple("${header.hdr_process_data.inbMsgName} == 'RevCT'")     // reverse CT

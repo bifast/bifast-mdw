@@ -14,8 +14,6 @@ import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.repository.CreditTransferRepository;
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
 
 @Component
 public class SaveCreditTransfer2Processor implements Processor {
@@ -26,8 +24,8 @@ public class SaveCreditTransfer2Processor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		 
 
-		BusinessMessage rcvBi = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
-		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
+//		BusinessMessage rcvBi = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
+//		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
 
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 		FlatPacs008Pojo flatReq = (FlatPacs008Pojo)processData.getBiRequestFlat();
@@ -50,7 +48,6 @@ public class SaveCreditTransfer2Processor implements Processor {
 			ct.setReasonCode(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry());
 			ct.setCallStatus("SUCCESS");
 			ct.setCbStatus("PENDING");
-			
 		}
 		
 		ct.setCihubRequestDT(processData.getReceivedDt());
@@ -59,71 +56,43 @@ public class SaveCreditTransfer2Processor implements Processor {
 		ct.setCihubElapsedTime(timeElapsed);
 
 
-		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
+//		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
 		
-		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
-		ct.setCrdtTrnRequestBizMsgIdr(hdr.getBizMsgIdr());
-			
-		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
+		ct.setAmount(flatReq.getAmount());
+		ct.setCrdtTrnRequestBizMsgIdr(flatReq.getEndToEndId());
+		ct.setCreditorAccountNumber(flatReq.getCreditorAccountNo());
 
-		if (!(null == creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp()))
-			ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
-
-		// jika node splmtryData ada, ambil data custType dari sini; jika tidak maka cek apakah ada di prvtId atau orgId
+		if (!(null == flatReq.getCreditorAccountType()))
+			ct.setCreditorAccountType(flatReq.getCreditorAccountType());
 		
-		if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0) {	
-			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr()))
-				ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
-		}
-		
-		else if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr())) {
-				ct.setCreditorType("01");
-			}
+		if (null!=flatReq.getCreditorType()) 
+			ct.setCreditorType(flatReq.getCreditorType());
 
-		else 
-			ct.setCreditorType("02");
-		
-
-		if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr())) {
-			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId())) {
-
-				if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId()))
-					ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
-				else
-					ct.setCreditorId(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
-			}
-		}
-		
+		if (!(null==flatReq.getCreditorPrvId()))
+			ct.setCreditorId(flatReq.getCreditorPrvId());
+		else
+			ct.setCreditorId(flatReq.getCreditorOrgId());
+				
 		ct.setCreateDt(LocalDateTime.now());
 		
-		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
-		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
+		ct.setDebtorAccountNumber(flatReq.getDebtorAccountNo());
+		ct.setDebtorAccountType(flatReq.getDebtorAccountType());
 		
-		// tentukan debtorType: Personal atau bukan
-		if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0) {	
-			if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr()))
-				ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
-		}
-		else if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId())) 
-				ct.setDebtorType("01");
-		else 
-			ct.setDebtorType("02");
+		if (null != flatReq.getDebtorType())
+				ct.setDebtorType(flatReq.getDebtorType());
 
-		if (!(null==creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId()))
-			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
+		if (!(null==flatReq.getDebtorPrvId()))
+			ct.setDebtorId(flatReq.getDebtorPrvId());
 		else
-			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());
+			ct.setDebtorId(flatReq.getDebtorOrgId());
 
 		if (processData.getInbMsgName().equals("CrdTrn"))
 			ct.setMsgType("Credit Transfer");
 		else
 			ct.setMsgType("Reverse CT");
-			
-		String orgnBank = hdr.getFr().getFIId().getFinInstnId().getOthr().getId();
-		String recptBank = hdr.getTo().getFIId().getFinInstnId().getOthr().getId();
-
-		ct.setOriginatingBank(orgnBank);
-		ct.setRecipientBank(recptBank);
+				
+		ct.setOriginatingBank(flatReq.getDebtorAgentId());
+		ct.setRecipientBank(flatReq.getCreditorAgentId());
 
 		ct.setSettlementConfBizMsgIdr("WAITING");
 		

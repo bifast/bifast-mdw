@@ -1,5 +1,7 @@
 package bifast.inbound.pojo.flat;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("Pacs008")
@@ -12,7 +14,7 @@ public class FlatPacs008Pojo extends FlatMessageBase {
 	private String transactionId;
 	private String paymentChannel;
 	private String categoryPurpose;
-	private String amount;
+	private BigDecimal amount;
 	private String currency;
 	private String chargeBearer;
 	
@@ -85,10 +87,10 @@ public class FlatPacs008Pojo extends FlatMessageBase {
 	public void setCategoryPurpose(String categoryPurpose) {
 		this.categoryPurpose = categoryPurpose;
 	}
-	public String getAmount() {
+	public BigDecimal getAmount() {
 		return amount;
 	}
-	public void setAmount(String amount) {
+	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 	public String getCurrency() {

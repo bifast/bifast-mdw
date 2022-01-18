@@ -118,7 +118,9 @@ public class FlattenIsoMessageService {
 			if (!(null == txInfAndSts.getOrgnlTxRef().getCdtrAcct())) {
 				
 				flatMsg.setCdtrAcctId(txInfAndSts.getOrgnlTxRef().getCdtrAcct().getId().getOthr().getId());
-				flatMsg.setCdtrAcctTp(txInfAndSts.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
+				
+				if (null != txInfAndSts.getOrgnlTxRef().getCdtrAcct().getTp())
+					flatMsg.setCdtrAcctTp(txInfAndSts.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
 				
 			}
 				
@@ -205,8 +207,9 @@ public class FlattenIsoMessageService {
 				flatMsg.setCategoryPurpose(ct.getCdtTrfTxInf().get(0).getPmtTpInf().getCtgyPurp().getPrtry().substring(3, 5));
 		}
 			
-		DecimalFormat df = new DecimalFormat("#############.00");
-		flatMsg.setAmount(df.format(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue()));	
+//		DecimalFormat df = new DecimalFormat("#############.00");
+//		flatMsg.setAmount(df.format(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue()));	
+		flatMsg.setAmount(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());	
 			
 		flatMsg.setCurrency(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getCcy());
 		

@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.accountenquiry.BuildAERequestForCbProcessor;
 import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
-import bifast.inbound.credittransfer.CTCorebankRequestProcessor;
-import bifast.inbound.credittransfer.CheckSAFStatusProcessor;
-import bifast.inbound.credittransfer.SaveCreditTransferProcessor;
 import bifast.inbound.processor.DuplicateTransactionValidation;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -49,7 +46,7 @@ public class CreditTransferRoute2 extends RouteBuilder {
 			.removeHeaders("*")
 		;
 		
-		from("direct:crdttransfer2").routeId("komi.ct2")
+		from("direct:crdttransfer").routeId("komi.ct")
 			.process(duplicationTrnsValidation)
 			
 //			.log("KOMI_ID : ${header.hdr_process_data.komiTrnsId}")

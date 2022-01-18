@@ -1,5 +1,6 @@
 package bifast.inbound.accountenquiry;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -69,7 +70,9 @@ public class AEPortalLogProcessor implements Processor{
 		data.setRecipient_bank(req.getToBic());
 		data.setRecipient_account_no(req.getCreditorAccountNo());
 		data.setSender_account_no(req.getDebtorAccountNo());
-		data.setTrx_amount(req.getAmount());
+
+		DecimalFormat df = new DecimalFormat("#############.00");
+		data.setTrx_amount(df.format(req.getAmount()));
 		
 		logMsg.setData(data);
 		exchange.getMessage().setBody(logMsg);

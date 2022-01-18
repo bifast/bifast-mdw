@@ -28,7 +28,7 @@ public class EnquiryProcessor implements Processor{
 		
 	
 		if (messageRequest.getMsgType().equals("Settlement")) {
-			List<Settlement> listSettlement = settlementRepo.findByOrgnlCrdtTrnReqBizMsgId(messageRequest.getEndToEndId());
+			List<Settlement> listSettlement = settlementRepo.findByOrgnlCTBizMsgId(messageRequest.getEndToEndId());
 
 			System.out.println("Cari orgnlCrdtTrnReqBizMsgId = " + messageRequest.getEndToEndId());
 			

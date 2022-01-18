@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer;
+package bifast.inbound.credittransfer2;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.repository.CreditTransferRepository;
 
 @Component
-public class CheckSAFStatusProcessor implements Processor {
+public class CheckSAFStatusProcessor implements Processor{
 	@Autowired private CreditTransferRepository ctRepo;
 
 	@Override
@@ -46,7 +46,8 @@ public class CheckSAFStatusProcessor implements Processor {
 		exchange.getMessage().setHeader("ct_saf", saf);
 		exchange.getMessage().setHeader("ct_cbsts", cbSts);
 		exchange.getMessage().setBody(flat);
-			
+				
 	}
 
+	
 }
