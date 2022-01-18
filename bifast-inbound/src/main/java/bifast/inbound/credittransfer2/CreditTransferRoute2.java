@@ -56,7 +56,7 @@ public class CreditTransferRoute2 extends RouteBuilder {
 			.process(checkSafStatus)
 			
 			.log(LoggingLevel.DEBUG,"komi.ct", 
-					"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Status SAF: ${header.ct_saf}")
+					"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Status SAF: ${header.ct_saf}")
 			
 			// if SAF = NO/NEW --> call CB, set CBSTS = ACTC/RJCT
 			.filter().simple("${header.ct_saf} in 'NO,NEW'")

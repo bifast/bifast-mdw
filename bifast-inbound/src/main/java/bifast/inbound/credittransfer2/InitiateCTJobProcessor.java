@@ -31,6 +31,7 @@ public class InitiateCTJobProcessor implements Processor{
 		processData.setBiRequestMsg(orgnlCTRequest);
 		processData.setStartTime(Instant.now());
 		processData.setInbMsgName("CrdTrn");
+		processData.setEndToEndId(flat008.getEndToEndId());
 		processData.setKomiTrnsId(String.valueOf(arr.get("komi_trns_id")));
 		processData.setReceivedDt(LocalDateTime.now());
 

@@ -34,6 +34,7 @@ public class InboundJsonRoute extends RouteBuilder {
 			.convertBodyTo(String.class)
 			.setHeader("hdr_inputformat", constant("json"))
 
+			.log(LoggingLevel.DEBUG,"komi.jsonEndpoint", "-------****------")
 			.log(LoggingLevel.DEBUG,"komi.jsonEndpoint", "Terima: ${body}")
 			
 			// simpan msg inbound compressed

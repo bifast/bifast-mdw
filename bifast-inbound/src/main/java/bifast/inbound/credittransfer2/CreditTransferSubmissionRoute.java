@@ -1,8 +1,5 @@
 package bifast.inbound.credittransfer2;
 
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -10,13 +7,9 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
-import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.exception.CTSAFException;
-import bifast.inbound.model.Settlement;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;
-import bifast.inbound.repository.SettlementRepository;
 import bifast.inbound.service.FlattenIsoMessageService;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.inbound.settlement.BuildSettlementCBRequestProcessor;
@@ -28,14 +21,12 @@ public class CreditTransferSubmissionRoute extends RouteBuilder {
 	@Autowired private CTCorebankRequestProcessor ctRequestProcessor;
 	@Autowired private BuildSettlementCBRequestProcessor buildSettlementRequest;
 	@Autowired private InitiateCTJobProcessor initCTJobProcessor;
-	@Autowired private SettlementRepository sttlRepo;
 	@Autowired private FlattenIsoMessageService flatMessageService;
 
 	@Override
 	public void configure() throws Exception {
 		
 		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
-		JacksonDataFormat creditResponseJDF = jdfService.basic(CbCreditResponsePojo.class);
 
 		onException(CTSAFException.class).routeId("ctsaf.onException")
 			.handled(true)

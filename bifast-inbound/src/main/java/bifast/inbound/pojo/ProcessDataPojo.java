@@ -10,6 +10,8 @@ public class ProcessDataPojo {
 	private String komiTrnsId;
 //	private String inbMesgType;
 	private String inbMsgName;
+	private String endToEndId;
+	
 	private LocalDateTime receivedDt;
 	private Instant startTime;
 	
@@ -77,6 +79,14 @@ public class ProcessDataPojo {
 
 	public void setBiResponseMsg(BusinessMessage biResponseMsg) {
 		this.biResponseMsg = biResponseMsg;
+	}
+
+	public String getEndToEndId() {
+		return endToEndId;
+	}
+
+	public void setEndToEndId(String endToEndId) {
+		this.endToEndId = endToEndId;
 	}
 
 	public Object getCorebankRequest() {

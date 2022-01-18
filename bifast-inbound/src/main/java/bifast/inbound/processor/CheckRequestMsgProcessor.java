@@ -38,6 +38,7 @@ public class CheckRequestMsgProcessor implements Processor {
 			if (inputMsg.getAppHdr().getBizSvc().equals("STTL")) {
 				trnType = "SETTLEMENT";
 				processData.setInbMsgName("Settl");
+				processData.setEndToEndId(flat002.getOrgnlEndToEndId());
 			}
 		}
 
@@ -51,6 +52,7 @@ public class CheckRequestMsgProcessor implements Processor {
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.008")) {
 			FlatPacs008Pojo flat008 = flatMsgService.flatteningPacs008(inputMsg); 
 			processData.setBiRequestFlat(flat008);
+			processData.setEndToEndId(flat008.getEndToEndId());
 			if (trnType.equals("510"))
 				processData.setInbMsgName("AccEnq");
 			else if ((trnType.equals("010")) || (trnType.equals("110")))
