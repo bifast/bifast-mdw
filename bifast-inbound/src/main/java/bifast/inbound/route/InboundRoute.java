@@ -18,7 +18,7 @@ public class InboundRoute extends RouteBuilder {
 		
 		from("direct:receive").routeId("komi.inboundRoute")
 			.process(checkRequestMsgProcessor) 
-			.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] received.")
+			.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] received.")
 		
 			.choice().id("forward_msgtype")
 

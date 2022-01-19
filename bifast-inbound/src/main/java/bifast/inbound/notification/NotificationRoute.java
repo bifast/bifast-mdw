@@ -35,7 +35,7 @@ public class NotificationRoute extends RouteBuilder{
 			
 			.process(portalLogProcessor)
 			.marshal(portalJdf)
-//			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Notif ke portal: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Notif ke portal: ${body}")
 			//TODO notifikasi ke customer
 			.removeHeaders("hdr_*")
 			

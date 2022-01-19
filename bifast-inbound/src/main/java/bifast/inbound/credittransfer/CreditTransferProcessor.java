@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer2;
+package bifast.inbound.credittransfer;
 
 import java.time.format.DateTimeFormatter;
 
@@ -25,7 +25,7 @@ import bifast.library.iso20022.service.Pacs002Seed;
 
 @Component
 @ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
-public class CreditTransfer2Processor implements Processor {
+public class CreditTransferProcessor implements Processor {
 
 	@Autowired private AppHeaderService appHdrService;
 	@Autowired private Pacs002MessageService pacs002Service;

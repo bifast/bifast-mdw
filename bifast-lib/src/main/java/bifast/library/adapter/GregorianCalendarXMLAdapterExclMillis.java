@@ -1,5 +1,6 @@
 package bifast.library.adapter;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
@@ -14,11 +15,14 @@ public class GregorianCalendarXMLAdapterExclMillis extends XmlAdapter<String, XM
 	private static Logger logger = LoggerFactory.getLogger(GregorianCalendarXMLAdapterExclMillis.class);
 
 	@Override
-	public XMLGregorianCalendar unmarshal(String v) throws Exception {
+	public XMLGregorianCalendar unmarshal(String v) throws Exception  {
 		GregorianCalendar cal = new GregorianCalendar();
-		logger.info("akan parsing " + v);
-        cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(v));
-        logger.info("berhasil parsing " + v);
+        try {
+			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(v));
+		} catch (ParseException e) {
+			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(v));
+			e.printStackTrace();
+		}
         XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar( cal);
 		return calendar;
 	}

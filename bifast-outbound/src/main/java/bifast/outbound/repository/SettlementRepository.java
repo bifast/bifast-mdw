@@ -10,6 +10,6 @@ import bifast.outbound.model.Settlement;
 @Repository
 public interface SettlementRepository extends JpaRepository<Settlement, Long> {
 
-	Optional<Settlement> findByOrgnlCrdtTrnReqBizMsgId (String bizMsgId);
+	Optional<Settlement> findByOrgnlCTBizMsgId (String bizMsgId);
 	
 }

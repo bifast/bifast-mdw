@@ -76,7 +76,12 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setDbtrTownName(chnReq.getDbtrTownName());
 
 		seedCreditTrn.setOrignBank(config.getBankcode());
-		seedCreditTrn.setPaymentInfo(chnReq.getPaymentInfo());
+		
+		if ((null == seedCreditTrn.getPaymentInfo() || seedCreditTrn.getPaymentInfo().isBlank()))
+			seedCreditTrn.setPaymentInfo("0");
+		else
+			seedCreditTrn.setPaymentInfo(chnReq.getPaymentInfo());
+
 		seedCreditTrn.setRecptBank(chnReq.getRecptBank());
 		
 		if (!(null == chnReq.getCrdtProxyIdValue())) {

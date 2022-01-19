@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer2;
+package bifast.inbound.credittransfer;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;

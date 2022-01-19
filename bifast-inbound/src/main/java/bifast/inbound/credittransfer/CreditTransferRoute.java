@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer2;
+package bifast.inbound.credittransfer;
 
 
 import org.apache.camel.ExchangePattern;
@@ -15,11 +15,10 @@ import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
-public class CreditTransferRoute2 extends RouteBuilder {
+public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired private CheckSAFStatusProcessor checkSafStatus;
-	@Autowired private CreditTransfer2Processor creditTransferProcessor;
-	@Autowired private CTCorebankRequestProcessor ctCorebankRequestProcessor;
+	@Autowired private CreditTransferProcessor creditTransferProcessor;
 	@Autowired private DuplicateTransactionValidation duplicationTrnsValidation;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private JobWakeupProcessor jobWakeupProcessor;

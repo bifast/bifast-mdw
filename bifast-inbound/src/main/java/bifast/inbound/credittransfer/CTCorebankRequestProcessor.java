@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer2;
+package bifast.inbound.credittransfer;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;

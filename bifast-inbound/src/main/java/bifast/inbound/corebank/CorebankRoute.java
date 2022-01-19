@@ -36,7 +36,7 @@ public class CorebankRoute extends RouteBuilder{
 
 		// ROUTE CALLCB 
 		from("seda:callcb").routeId("komi.corebank")
-			.log(LoggingLevel.DEBUG,"komi.corebank", "[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Terima di corebank: ${body}")
+			.log(LoggingLevel.DEBUG,"komi.corebank", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Terima di corebank: ${body}")
 
 			.choice()
 				.when().simple("${body.class} endsWith 'CbAccountEnquiryRequestPojo'")
@@ -53,7 +53,7 @@ public class CorebankRoute extends RouteBuilder{
 		 			.log("Akan kirim settlment: ${body}")
 			.end()
 					
-	 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}]"
+	 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}]"
 	 														+ " CB Request: ${body}")
 
 	 		.doTry()
@@ -64,7 +64,7 @@ public class CorebankRoute extends RouteBuilder{
 						+ "bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)
 				.convertBodyTo(String.class)
-		 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] CB Response: ${body}")
+		 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] CB Response: ${body}")
 
 		    	.choice()
 		 			.when().simple("${header.cb_requestName} == 'accountinquiry'")
@@ -80,7 +80,7 @@ public class CorebankRoute extends RouteBuilder{
 
 	 		.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Call CB Error.")
+				.log(LoggingLevel.ERROR, "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Call CB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(cbFaultProcessor)
 	    	.end()

@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,8 @@ public class ExceptionToFaultProcessor implements Processor {
 	private FaultClassRepository faultClassRepo;
 	@Autowired StatusReasonRepository statusReasonRepo;
 
+	private static Logger logger = LoggerFactory.getLogger(ExceptionToFaultProcessor.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
@@ -28,6 +32,7 @@ public class ExceptionToFaultProcessor implements Processor {
 		String exceptionClassName = objException.getClass().getName();
 		Optional<FaultClass> oFaultClass = faultClassRepo.findByExceptionClass(exceptionClassName);
 			
+		logger.debug("Nama Exception : " + exceptionClassName);
 		FaultPojo fault = new FaultPojo();
 		
 		fault.setLocation("CI-HUB");

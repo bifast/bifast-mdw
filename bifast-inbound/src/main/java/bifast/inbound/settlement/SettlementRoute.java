@@ -5,7 +5,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.credittransfer2.JobWakeupProcessor;
+import bifast.inbound.credittransfer.JobWakeupProcessor;
 
 @Component
 public class SettlementRoute extends RouteBuilder {
@@ -21,7 +21,7 @@ public class SettlementRoute extends RouteBuilder {
 			// prepare untuk request ke corebank
 
 	 		.log(LoggingLevel.DEBUG, "komi.settlement", 
-	 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Terima settlement")
+	 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Terima settlement")
 
 			.process(saveSettlement)
 	 		.log(LoggingLevel.DEBUG, "komi.settlement", 
@@ -30,14 +30,14 @@ public class SettlementRoute extends RouteBuilder {
 			.choice()
 				.when().simple("${header.sttl_transfertype} == 'Inbound'")
 		 			.log(LoggingLevel.DEBUG, "komi.settlement", 
-		 					"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] activate credit-posting job")
+		 					"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] activate credit-posting job")
 
 					.process(jobWakeupProcessor)
 				.otherwise()
 					.process(settlementProcessor)
 					.to("direct:post_credit_cb")
 			 		.log(LoggingLevel.DEBUG, "komi.settlement", 
-			 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Selesai posting settlement")
+			 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Selesai posting settlement")
 			.end()
 
 		;

@@ -22,7 +22,7 @@ public class FindingSettlementProcessor implements Processor {
 		
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		String orglBizMsgId = rmw.getCreditTransferRequest().getAppHdr().getBizMsgIdr();
-		Optional<Settlement> oSettlement = settlementRepo.findByOrgnlCrdtTrnReqBizMsgId(orglBizMsgId);
+		Optional<Settlement> oSettlement = settlementRepo.findByOrgnlCTBizMsgId(orglBizMsgId);
 		
 		if (oSettlement.isPresent()) {
 			String strSettlement = oSettlement.get().getFullMessage();

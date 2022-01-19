@@ -41,7 +41,7 @@ public class CBSubmitAERoute extends RouteBuilder{
 			.log("Terima di corebank: ${body}")
 //			.marshal(accountEnquiryJDF)
 			
-	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}]"
+	 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_process_data.endToEndId}]"
 						+ " CB Request: ${body}")
 	 		
 	 		.process(new Processor() {
@@ -72,12 +72,12 @@ public class CBSubmitAERoute extends RouteBuilder{
 						+ "bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)
 				.convertBodyTo(String.class)
-		 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] CB Response: ${body}")
+		 		.log("[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_process_data.endToEndId}] CB Response: ${body}")
 				.unmarshal(adapterAccountEnquiryResponseJDF)
 
 	 		.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Call CB Error.")
+				.log(LoggingLevel.ERROR, "[${header.hdr_frBIobj.appHdr.msgDefIdr}:${header.hdr_process_data.endToEndId}] Call CB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(cbFaultProcessor)
 	    	.end()

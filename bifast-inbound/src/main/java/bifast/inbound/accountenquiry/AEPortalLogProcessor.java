@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,8 @@ import bifast.library.iso20022.custom.BusinessMessage;
 public class AEPortalLogProcessor implements Processor{
 	@Autowired StatusReasonRepository statusReasonRepo;
 	
+	private static Logger logger = LoggerFactory.getLogger(AEPortalLogProcessor.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
@@ -45,10 +49,15 @@ public class AEPortalLogProcessor implements Processor{
 		data.setReason_code(reasonCode);
 		data.setReason_message(stsRsn.getDescription());
 
+		data.setRecipient_account_name(req.getCreditorName());
+		data.setSender_account_name(req.getDebtorName());
+		logger.debug("Sender : " + req.getCreditorName() + " Rec: " + req.getCreditorName());
+		
 		data.setKomi_trx_no(processData.getKomiTrnsId());
-		data.setKomi_unique_id(req.getBizMsgIdr());
-//		data.setChannel_type(rmw.getChannelType());
-		data.setSender_bank(req.getFrBic());
+		data.setKomi_unique_id(req.getEndToEndId());
+		data.setChannel_type("99");
+	
+		data.setSender_bank(req.getDebtorAgentId());
 		data.setTrx_type("I");
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

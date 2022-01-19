@@ -39,7 +39,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		String msgId = utilService.genMessageId("510", msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 
 		String acctNo = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
-		String bank = msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+//		String bank = msg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+		String bank = msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getOthr().getId();
 		exchange.getMessage().setHeader("hdr_account_no", acctNo);
 
 		AccountProxy account = null;

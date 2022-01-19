@@ -52,7 +52,7 @@ public class ReverseCTProcessor implements Processor {
 	
 		System.out.println(flatCT.getTransactionId());
 		
-		List<CreditTransfer> lOrgnlCT = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatCT.	getTransactionId());
+		List<CreditTransfer> lOrgnlCT = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatCT.getTransactionId());
 		System.out.println("Nemu: " + lOrgnlCT.size());
 		CreditTransfer orgnlCrdtTrns = null;
 		for (CreditTransfer ct : lOrgnlCT) {
@@ -94,61 +94,18 @@ public class ReverseCTProcessor implements Processor {
 			}
 		}
 	
-		
-		if (null == orignlDebitRequest) {
-			System.out.println("Tidak nemu credit Transfer asal");
-			FaultPojo fault = new FaultPojo();
-			fault.setCallStatus("ERROR");
-			fault.setErrorMessage("Original Payment Not Found");
-			fault.setReasonCode("U106");
-			fault.setResponseCode("OTHR");
-			exchange.getMessage().setBody(fault);
-		}
-		
+
+	
 		else {
 			
 			// siapkan untuk debit reversal
 			DebitReversalRequestPojo reversalReq = new DebitReversalRequestPojo();
 
-			reversalReq.setAmount(orignlDebitRequest.getAmount());
-			reversalReq.setCategoryPurpose(orignlDebitRequest.getCategoryPurpose());
-			reversalReq.setCreditorAccountNumber(orignlDebitRequest.getCreditorAccountNumber());
-			reversalReq.setCreditorAccountType(orignlDebitRequest.getCreditorAccountType());
-			reversalReq.setCreditorId(orignlDebitRequest.getCreditorId());
-			reversalReq.setCreditorName(orignlDebitRequest.getCreditorName());
-			reversalReq.setCreditorProxyId(orignlDebitRequest.getCreditorProxyId());
-			reversalReq.setCreditorProxyType(orignlDebitRequest.getCreditorProxyType());
-			reversalReq.setCreditorResidentStatus(orignlDebitRequest.getCreditorResidentStatus());
-			reversalReq.setCreditorTownName(orignlDebitRequest.getCreditorTownName());
-			reversalReq.setCreditorType(orignlDebitRequest.getCreditorType());
-			
-			reversalReq.setDebtorAccountNumber(orignlDebitRequest.getDebtorAccountNumber());
-			reversalReq.setDebtorAccountType(orignlDebitRequest.getDebtorAccountType());
-			reversalReq.setDebtorId(orignlDebitRequest.getDebtorId());
-			reversalReq.setDebtorName(orignlDebitRequest.getDebtorName());
-			reversalReq.setDebtorResidentStatus(orignlDebitRequest.getDebtorResidentStatus());
-			reversalReq.setDebtorTownName(orignlDebitRequest.getDebtorTownName());
-			reversalReq.setDebtorType(orignlDebitRequest.getDebtorType());
-			reversalReq.setFeeTransfer(orignlDebitRequest.getFeeTransfer());
+
 			
 			reversalReq.setMerchantType(merchant);
 			
-			TransRef.Ref ref = TransRef.newRef();
-			reversalReq.setNoRef(ref.getNoRef());
-			
-//			String orgnlDateTime = orignlDebitRequest.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
-			reversalReq.setOriginalDateTime(orgnlDateTime);
-			reversalReq.setDateTime(ref.getDateTime());
-			
-			reversalReq.setOriginalNoRef(orgnlNoRef);
 
-			reversalReq.setPaymentInformation(orignlDebitRequest.getPaymentInformation());
-			reversalReq.setRecipientBank(orignlDebitRequest.getRecipientBank());
-			reversalReq.setTerminalId(orignlDebitRequest.getTerminalId());
-			
-			reversalReq.setTransactionId(transactionId);
-			
-			exchange.getMessage().setBody(reversalReq);
 			
 		}
 			

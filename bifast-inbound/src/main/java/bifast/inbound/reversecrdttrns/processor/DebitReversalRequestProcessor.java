@@ -1,4 +1,4 @@
-package bifast.inbound.reversecrdttrns;
+package bifast.inbound.reversecrdttrns.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

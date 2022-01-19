@@ -61,7 +61,8 @@ public class CreditTransferResponseProcessor implements Processor{
 			addInfo = "";
 
 		String norekCdtr = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
-		String bank = objRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+//		String bank = objRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
+		String bank = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getOthr().getId();
 		exchange.getMessage().setHeader("hdr_account_no", norekCdtr);
 
 		
