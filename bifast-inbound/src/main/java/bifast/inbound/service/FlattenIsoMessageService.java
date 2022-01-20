@@ -207,7 +207,8 @@ public class FlattenIsoMessageService {
 			
 //		DecimalFormat df = new DecimalFormat("#############.00");
 //		flatMsg.setAmount(df.format(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue()));	
-		flatMsg.setAmount(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());	
+		if (null == ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt())
+			flatMsg.setAmount(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());	
 			
 		flatMsg.setCurrency(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getCcy());
 		
@@ -221,10 +222,10 @@ public class FlattenIsoMessageService {
 			if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr().getId())) {
 
 				if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId()))
-					flatMsg.setDebtorOrgId(ct.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());
+					flatMsg.setDebtorId(ct.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());
 	
 				if (!(null == ct.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId()))
-					flatMsg.setDebtorPrvId(ct.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
+					flatMsg.setDebtorId(ct.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
 
 			}
 		}
@@ -247,10 +248,10 @@ public class FlattenIsoMessageService {
 			if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr().getId())) {
 
 				if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId()))
-					flatMsg.setCreditorOrgId(ct.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
+					flatMsg.setCreditorId(ct.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
 	
 				if (!(null == ct.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId()))
-					flatMsg.setCreditorPrvId(ct.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+					flatMsg.setCreditorId(ct.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
 
 			}
 		}

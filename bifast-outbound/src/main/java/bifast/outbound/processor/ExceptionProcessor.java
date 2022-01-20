@@ -31,8 +31,8 @@ public class ExceptionProcessor implements Processor {
 		String faultClassName = exception.getClass().getName();
 		FaultClass fc = faultClassRepo.findByExceptionClass(faultClassName).orElse(new FaultClass());
 		
-		System.out.println("faultClass: " + faultClassName);
-		System.out.println("REASON: " + fc.getReason());
+//		System.out.println("faultClass: " + faultClassName);
+//		System.out.println("REASON: " + fc.getReason());
 		
 		String reason = "";
 		try {

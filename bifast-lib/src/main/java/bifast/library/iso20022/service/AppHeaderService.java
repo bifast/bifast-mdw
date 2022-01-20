@@ -1,7 +1,6 @@
 package bifast.library.iso20022.service;
 
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -9,10 +8,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import bifast.library.config.LibConfig;
 import bifast.library.iso20022.head001.BranchAndFinancialInstitutionIdentification5;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.head001.FinancialInstitutionIdentification8;
@@ -20,14 +17,8 @@ import bifast.library.iso20022.head001.GenericFinancialIdentification1;
 import bifast.library.iso20022.head001.Party9Choice;
 
 
-
 @Service
 public class AppHeaderService {
-
-	@Autowired
-	private LibConfig config;
-	
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 	public BusinessApplicationHeaderV01 getAppHdr(String bicTo, String msgType, String bizMsgId) {
 		

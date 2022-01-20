@@ -39,11 +39,9 @@ public class CTCorebankRequestProcessor implements Processor {
 		cbRequest.setCreditorAccountNumber(biReq.getCreditorAccountNo());
 		cbRequest.setCreditorAccountType(biReq.getCreditorAccountType());
 
-		if (null != biReq.getCreditorPrvId())
-			cbRequest.setCreditorId(biReq.getCreditorPrvId());
-		else 
-			cbRequest.setCreditorId(biReq.getCreditorOrgId());
-			
+		if (null != biReq.getCreditorId())
+			cbRequest.setCreditorId(biReq.getCreditorId());
+
 		cbRequest.setCreditorName(biReq.getCreditorName());
 		
 		if (null != biReq.getCreditorAccountProxyId()) {
@@ -57,10 +55,8 @@ public class CTCorebankRequestProcessor implements Processor {
 		
 		cbRequest.setDebtorAccountNumber(biReq.getDebtorAccountNo());
 		cbRequest.setDebtorAccountType(biReq.getDebtorAccountType());
-		if (null != biReq.getDebtorPrvId())
-			cbRequest.setDebtorId(biReq.getDebtorPrvId());
-		else
-			cbRequest.setDebtorId(biReq.getDebtorOrgId());
+		if (null != biReq.getDebtorId())
+			cbRequest.setDebtorId(biReq.getDebtorId());
 			
 		cbRequest.setDebtorName(biReq.getDebtorName());
 		cbRequest.setDebtorResidentStatus(biReq.getDebtorResidentialStatus());

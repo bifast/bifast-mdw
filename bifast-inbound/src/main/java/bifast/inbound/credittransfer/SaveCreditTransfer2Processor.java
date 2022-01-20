@@ -68,10 +68,8 @@ public class SaveCreditTransfer2Processor implements Processor {
 		if (null!=flatReq.getCreditorType()) 
 			ct.setCreditorType(flatReq.getCreditorType());
 
-		if (!(null==flatReq.getCreditorPrvId()))
-			ct.setCreditorId(flatReq.getCreditorPrvId());
-		else
-			ct.setCreditorId(flatReq.getCreditorOrgId());
+		if (!(null==flatReq.getCreditorId()))
+			ct.setCreditorId(flatReq.getCreditorId());
 				
 		ct.setCreateDt(LocalDateTime.now());
 		
@@ -81,10 +79,8 @@ public class SaveCreditTransfer2Processor implements Processor {
 		if (null != flatReq.getDebtorType())
 				ct.setDebtorType(flatReq.getDebtorType());
 
-		if (!(null==flatReq.getDebtorPrvId()))
-			ct.setDebtorId(flatReq.getDebtorPrvId());
-		else
-			ct.setDebtorId(flatReq.getDebtorOrgId());
+		if (!(null==flatReq.getDebtorId()))
+			ct.setDebtorId(flatReq.getDebtorId());
 
 		if (processData.getInbMsgName().equals("CrdTrn"))
 			ct.setMsgType("Credit Transfer");

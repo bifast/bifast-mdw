@@ -8,6 +8,9 @@
 
 package bifast.library.iso20022.prxy006;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -74,8 +77,10 @@ public class ProxyEnquiryInformation1 {
     protected XMLGregorianCalendar regnDtTm;
     @XmlElement(name = "PreAuthrsd")
     protected Boolean preAuthrsd;
+//    @XmlElement(name = "SplmtryData")
+//    protected List<BISupplementaryDataEnvelope1> splmtryData;
     @XmlElement(name = "SplmtryData")
-    protected BISupplementaryData1 splmtryData;
+    protected List<BISupplementaryData1> splmtryData;
 
     /**
      * Gets the value of the regnId property.
@@ -277,20 +282,12 @@ public class ProxyEnquiryInformation1 {
      *     {@link BISupplementaryData1 }
      *     
      */
-    public BISupplementaryData1 getSplmtryData() {
+    public List<BISupplementaryData1> getSplmtryData() {
+        if (splmtryData == null) {
+        	splmtryData = new ArrayList<BISupplementaryData1>();
+        }
         return splmtryData;
     }
 
-    /**
-     * Sets the value of the splmtryData property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BISupplementaryData1 }
-     *     
-     */
-    public void setSplmtryData(BISupplementaryData1 value) {
-        this.splmtryData = value;
-    }
 
 }

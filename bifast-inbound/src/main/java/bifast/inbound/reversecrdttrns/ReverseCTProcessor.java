@@ -1,7 +1,5 @@
 package bifast.inbound.reversecrdttrns;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -17,19 +15,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
-import bifast.inbound.corebank.pojo2.DebitTransferRequest;
-import bifast.inbound.model.ChannelTransaction;
 import bifast.inbound.model.CorebankTransaction;
 import bifast.inbound.model.CreditTransfer;
-import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.repository.ChannelTransactionRepository;
 import bifast.inbound.repository.CorebankTransactionRepository;
 import bifast.inbound.repository.CreditTransferRepository;
-import bifast.inbound.reversecrdttrns.pojo.ChnlCreditTransferRequestPojo;
 import bifast.inbound.reversecrdttrns.pojo.DebitReversalRequestPojo;
-import bifast.inbound.service.TransRef;
 
 @Component
 public class ReverseCTProcessor implements Processor {

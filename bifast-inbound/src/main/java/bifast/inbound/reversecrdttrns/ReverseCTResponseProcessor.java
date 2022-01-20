@@ -68,10 +68,8 @@ public class ReverseCTResponseProcessor implements Processor {
 		resp.setCreditorResidentialStatus(flatRequest.getCreditorResidentialStatus());  // 01 RESIDENT
 		resp.setCreditorTown(flatRequest.getCreditorTownName());  
 		resp.setCreditorType(flatRequest.getCreditorType());
-		if (null != flatRequest.getCreditorPrvId())
-			resp.setCreditorId(flatRequest.getCreditorPrvId());
-		else
-			resp.setCreditorId(flatRequest.getCreditorOrgId());
+		if (null != flatRequest.getCreditorId())
+			resp.setCreditorId(flatRequest.getCreditorId());
 		if (!(null == flatRequest.getCreditorName())) 
 			resp.setCreditorName(flatRequest.getCreditorName());
 

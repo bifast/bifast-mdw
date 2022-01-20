@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
-import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
@@ -99,10 +98,8 @@ public class CreditTransferProcessor implements Processor {
 		resp.setCreditorResidentialStatus(flatRequest.getCreditorResidentialStatus());  // 01 RESIDENT
 		resp.setCreditorTown(flatRequest.getCreditorTownName());  
 		resp.setCreditorType(flatRequest.getCreditorType());
-		if (null != flatRequest.getCreditorPrvId())
-			resp.setCreditorId(flatRequest.getCreditorPrvId());
-		else
-			resp.setCreditorId(flatRequest.getCreditorOrgId());
+		if (null != flatRequest.getCreditorId())
+			resp.setCreditorId(flatRequest.getCreditorId());
 			
 		if (!(null == biReq.getCdtr().getNm())) 
 			resp.setCreditorName(biReq.getCdtr().getNm());

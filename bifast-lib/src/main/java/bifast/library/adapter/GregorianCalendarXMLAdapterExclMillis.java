@@ -8,11 +8,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class GregorianCalendarXMLAdapterExclMillis extends XmlAdapter<String, XMLGregorianCalendar> {
-	private static Logger logger = LoggerFactory.getLogger(GregorianCalendarXMLAdapterExclMillis.class);
+//	private static Logger logger = LoggerFactory.getLogger(GregorianCalendarXMLAdapterExclMillis.class);
 
 	@Override
 	public XMLGregorianCalendar unmarshal(String v) throws Exception  {

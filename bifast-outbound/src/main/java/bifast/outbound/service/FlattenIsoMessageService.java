@@ -205,9 +205,15 @@ public class FlattenIsoMessageService {
 		flatMsg.setOrgnlMsgName(data.getOrgnlGrpInf().getOrgnlMsgNmId());
 		flatMsg.setOrgnlRegistrationType(data.getRegnRspn().getOrgnlRegnTp().value());
 
-		flatMsg.setRegistrationId(data.getRegnRspn().getPrxyRegn().get(0).getRegnId());
-		flatMsg.setRegisterBank(data.getRegnRspn().getPrxyRegn().get(0).getAgt().getFinInstnId().getOthr().getId());
+		if (data.getRegnRspn().getPrxyRegn().size()>0) {
+			if (null != data.getRegnRspn().getPrxyRegn().get(0).getRegnId())
+				flatMsg.setRegistrationId(data.getRegnRspn().getPrxyRegn().get(0).getRegnId());
+		
+			if (null != data.getRegnRspn().getPrxyRegn().get(0).getAgt())
+				flatMsg.setRegisterBank(data.getRegnRspn().getPrxyRegn().get(0).getAgt().getFinInstnId().getOthr().getId());
 
+		}
+		
 		if ((null != data.getSplmtryData()) && 
 			(data.getSplmtryData().size() > 0)) {
 
@@ -295,20 +301,20 @@ public class FlattenIsoMessageService {
 				flatMsgAlias.setProxyValue(data.getPrxyInf().getVal());
 				flatMsgAlias.setProxySatus(data.getPrxyInf().getSts());
 				
-				if (data.getSplmtryData() != null) {
-
-					if (null != data.getSplmtryData() .getEnvlp().getCstmr().getTp())
-						flatMsgAlias.setCustomerType(data.getSplmtryData() .getEnvlp().getCstmr().getTp());
+				if (data.getSplmtryData().size() >0 ) {
+					if (data.getSplmtryData().get(0).getEnvlp().size() >0) {
+						if (null != data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getTp())
+							flatMsgAlias.setCustomerType(data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getTp());
+					
+						if (null != data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getId())
+							flatMsgAlias.setCustomerId(data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getId());
+						
+						if (null != data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getRsdntSts())
+							flatMsgAlias.setResidentialStatus(data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getRsdntSts());
 				
-					if (null != data.getSplmtryData() .getEnvlp().getCstmr().getId())
-						flatMsgAlias.setCustomerId(data.getSplmtryData() .getEnvlp().getCstmr().getId());
-					
-					if (null != data.getSplmtryData() .getEnvlp().getCstmr().getRsdntSts())
-						flatMsgAlias.setResidentialStatus(data.getSplmtryData() .getEnvlp().getCstmr().getRsdntSts());
-			
-					if (null != data.getSplmtryData() .getEnvlp().getCstmr().getTwnNm())
-						flatMsgAlias.setTownName(data.getSplmtryData().getEnvlp().getCstmr().getTwnNm());
-					
+						if (null != data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getTwnNm())
+							flatMsgAlias.setTownName(data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getTwnNm());
+					}
 				}
 				aliasList.add(flatMsgAlias);
 			}

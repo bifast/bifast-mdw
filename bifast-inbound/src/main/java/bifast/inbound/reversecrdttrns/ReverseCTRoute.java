@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.reversecrdttrns.pojo.AccountCustInfoRequestPojo;
 import bifast.inbound.reversecrdttrns.processor.CbAcctCustInfoRequestProcessor;
+import bifast.inbound.reversecrdttrns.processor.SaveReversalCTProcessor;
 import bifast.inbound.service.JacksonDataFormatService;
 
 
@@ -16,6 +17,7 @@ public class ReverseCTRoute extends RouteBuilder {
 	@Autowired private ReverseCTResponseProcessor responseProcessor;
 	@Autowired private CbAcctCustInfoRequestProcessor cbAcctCustInfoRequestProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
+	@Autowired private SaveReversalCTProcessor saveRCTProcessor;
 	
 	@Override
 	public void configure() throws Exception {
@@ -32,31 +34,25 @@ public class ReverseCTRoute extends RouteBuilder {
 			.to("seda:isoadpt")
 			
 			.log("${body.status}")
-			// jika sukses siapkan response ACTC
 			
 			.choice()
 				.when(simple("${body.status} == 'ACTC'"))
 					.log("karena sukses")
+					// jika sukses siapkan simpan ke table crdt_transfer unt diproses saf klo sudah settlement
+					.process(saveRCTProcessor)
+					// lalu siapan response
 				.otherwise()
 					.log("tidak sukses")
+					// jika gagal siapkan repsonse REJECT, 
+					//TODO lalu lapor ke admin
 			.end()
 
 			.stop()
 
-			// lalu save ke table credit transfer unt diproses setelah ada settlement
 			
-			// jika gagal siapkan repsonse REJECT, 
-			//TODO lalu lapor ke admin
 			
 //			.process(reverseCTProcessor)
 			
-//			.log("${body.class}")
-//			.filter().simple("${body.class} endsWith 'DebitReversalRequestPojo' ")
-//				.log("akan call cb debit_reversal")
-//				.to("direct:cbdebitreversal")
-//				.log("selesai call cb debit_reversal ${body}")
-//				
-//			.end()
 //			
 //			.to("seda:save_ct")
 //

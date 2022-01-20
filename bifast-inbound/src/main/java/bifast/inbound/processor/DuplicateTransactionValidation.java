@@ -68,10 +68,8 @@ public class DuplicateTransactionValidation implements Processor{
 		seed.setCreditorAccountIdType(request.getCreditorAccountType());
 		seed.setCreditorAccountNo(request.getCreditorAccountNo());
 		
-		if (null != request.getCreditorPrvId())
-			seed.setCreditorId(request.getCreditorPrvId());
-		else 
-			seed.setCreditorId(request.getCreditorOrgId());
+		if (null != request.getCreditorId())
+			seed.setCreditorId(request.getCreditorId());
 		
 		seed.setCreditorName(request.getCreditorName());
 		seed.setCreditorResidentialStatus(request.getCreditorResidentialStatus());

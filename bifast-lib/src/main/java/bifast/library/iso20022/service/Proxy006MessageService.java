@@ -21,6 +21,7 @@ import bifast.library.iso20022.prxy006.GenericAccountIdentification1;
 import bifast.library.iso20022.prxy006.BIAddtlCstmrInf;
 import bifast.library.iso20022.prxy006.BISupplementaryData1;
 import bifast.library.iso20022.prxy006.BISupplementaryDataEnvelope1;
+import bifast.library.iso20022.prxy006.BISupplementaryDetail1;
 import bifast.library.iso20022.prxy006.BranchAndFinancialInstitutionIdentification5;
 import bifast.library.iso20022.prxy006.FinancialInstitutionIdentification8;
 import bifast.library.iso20022.prxy006.GenericFinancialIdentification1;
@@ -153,14 +154,15 @@ public class Proxy006MessageService {
 					
 					///
 					BISupplementaryDataEnvelope1 biSupplementaryDataEnvelope1 =  new BISupplementaryDataEnvelope1();
-					biSupplementaryDataEnvelope1.setCstmr(bIAddtlCstmrInf);
-					
+					biSupplementaryDataEnvelope1.setDtl(new BISupplementaryDetail1 ());
+					biSupplementaryDataEnvelope1.getDtl().setCstmr(bIAddtlCstmrInf);
+
 					///
 					BISupplementaryData1 biSupplementaryData1 = new BISupplementaryData1();
-					biSupplementaryData1.setEnvlp(biSupplementaryDataEnvelope1);
-					
+					biSupplementaryData1.getEnvlp().add(biSupplementaryDataEnvelope1);
 					///
-					proxyEnquiryInformation1.setSplmtryData(biSupplementaryData1);
+					proxyEnquiryInformation1.getSplmtryData().add(new BISupplementaryData1());
+					proxyEnquiryInformation1.getSplmtryData().get(0).getEnvlp().add(biSupplementaryDataEnvelope1);
 					proxyEnquiryInformation1.setAcctInf(AcctInf);
 					Rspn.add(proxyEnquiryInformation1);
 			 }

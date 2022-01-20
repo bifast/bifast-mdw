@@ -1,6 +1,7 @@
 package bifast.inbound.pojo.flat;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -19,16 +20,17 @@ public class FlatPacs008Pojo extends FlatMessageBase {
 	private String chargeBearer;
 	
 	private String debtorName;
-	private String debtorOrgId;
-	private String debtorPrvId;
+	private String debtorId;
+//	private String debtorOrgId;
+//	private String debtorPrvId;
 	
 	private String debtorAccountNo;
 	private String debtorAccountType;
 	private String debtorAgentId;
 	private String creditorAgentId;
 	private String creditorName;
-	private String creditorPrvId;
-	private String creditorOrgId;
+	private String creditorId;
+//	private String creditorOrgId;
 	
 	private String creditorAccountNo;
 	private String creditorAccountType;
@@ -106,23 +108,23 @@ public class FlatPacs008Pojo extends FlatMessageBase {
 		this.chargeBearer = chargeBearer;
 	}
 	public String getDebtorName() {
-		return debtorName;
+		return Optional.ofNullable(debtorName).orElse("") ;
 	}
 	public void setDebtorName(String debtorName) {
 		this.debtorName = debtorName;
 	}
-	public String getDebtorOrgId() {
-		return debtorOrgId;
+	public String getDebtorId() {
+		return Optional.ofNullable(debtorId).orElse("") ;
 	}
-	public void setDebtorOrgId(String debtorOrgId) {
-		this.debtorOrgId = debtorOrgId;
+	public void setDebtorId(String debtorId) {
+		this.debtorId = debtorId;
 	}
-	public String getDebtorPrvId() {
-		return debtorPrvId;
-	}
-	public void setDebtorPrvId(String debtorPrvId) {
-		this.debtorPrvId = debtorPrvId;
-	}
+//	public String getDebtorPrvId() {
+//		return debtorPrvId;
+//	}
+//	public void setDebtorPrvId(String debtorPrvId) {
+//		this.debtorPrvId = debtorPrvId;
+//	}
 	public String getDebtorAccountNo() {
 		return debtorAccountNo;
 	}
@@ -153,18 +155,18 @@ public class FlatPacs008Pojo extends FlatMessageBase {
 	public void setCreditorName(String creditorName) {
 		this.creditorName = creditorName;
 	}
-	public String getCreditorPrvId() {
-		return creditorPrvId;
+	public String getCreditorId() {
+		return creditorId;
 	}
-	public void setCreditorPrvId(String creditorPrvId) {
-		this.creditorPrvId = creditorPrvId;
+	public void setCreditorId(String creditorId) {
+		this.creditorId = creditorId;
 	}
-	public String getCreditorOrgId() {
-		return creditorOrgId;
-	}
-	public void setCreditorOrgId(String creditorOrgId) {
-		this.creditorOrgId = creditorOrgId;
-	}
+//	public String getCreditorOrgId() {
+//		return creditorOrgId;
+//	}
+//	public void setCreditorOrgId(String creditorOrgId) {
+//		this.creditorOrgId = creditorOrgId;
+//	}
 	public String getCreditorAccountNo() {
 		return creditorAccountNo;
 	}

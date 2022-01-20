@@ -8,6 +8,9 @@
 
 package bifast.library.iso20022.prxy006;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -35,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "BI_SupplementaryData1", propOrder = {
+@XmlType(name = "BISupplementaryData1", propOrder = {
     "plcAndNm",
     "envlp"
 })
@@ -44,7 +47,7 @@ public class BISupplementaryData1 {
     @XmlElement(name = "PlcAndNm")
     protected String plcAndNm;
     @XmlElement(name = "Envlp", required = true)
-    protected BISupplementaryDataEnvelope1 envlp;
+    protected List<BISupplementaryDataEnvelope1> envlp;
 
     /**
      * Gets the value of the plcAndNm property.
@@ -70,7 +73,14 @@ public class BISupplementaryData1 {
         this.plcAndNm = value;
     }
 
-    /**
+    public List<BISupplementaryDataEnvelope1> getEnvlp() {
+        if (envlp == null) {
+        	envlp = new ArrayList<BISupplementaryDataEnvelope1>();
+        }
+        return this.envlp;
+	}
+
+	/**
      * Gets the value of the envlp property.
      * 
      * @return
@@ -78,20 +88,20 @@ public class BISupplementaryData1 {
      *     {@link BISupplementaryDataEnvelope1 }
      *     
      */
-    public BISupplementaryDataEnvelope1 getEnvlp() {
-        return envlp;
-    }
-
-    /**
-     * Sets the value of the envlp property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BISupplementaryDataEnvelope1 }
-     *     
-     */
-    public void setEnvlp(BISupplementaryDataEnvelope1 value) {
-        this.envlp = value;
-    }
+//    public BISupplementaryDataEnvelope1 getEnvlp() {
+//        return envlp;
+//    }
+//
+//    /**
+//     * Sets the value of the envlp property.
+//     * 
+//     * @param value
+//     *     allowed object is
+//     *     {@link BISupplementaryDataEnvelope1 }
+//     *     
+//     */
+//    public void setEnvlp(BISupplementaryDataEnvelope1 value) {
+//        this.envlp = value;
+//    }
 
 }

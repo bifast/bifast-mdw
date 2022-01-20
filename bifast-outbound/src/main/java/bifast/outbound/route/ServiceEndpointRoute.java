@@ -11,7 +11,7 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
+import bifast.outbound.exception.DuplicateIdException;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.ChnlRequestWrapper;
@@ -57,6 +57,15 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	    	.handled(true)
  		;
 		
+		onException(DuplicateIdException.class).routeId("komi.endpointRoute.duplikatException")
+			.process(exceptionProcessor)
+			.marshal(chnlResponseJDF)
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] "
+					+ " Response: ${body}")
+			.removeHeaders("*")
+			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
+	    	.handled(true)
+		;
 		
 		restConfiguration().component("servlet");
 		

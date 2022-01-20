@@ -115,10 +115,10 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 
 			data.setProxy_regn_opr(regnReq.getRegistrationType());
 
-			if (null == rmw.getChnlProxyRegistrationRequest())
-				data.setBifast_trx_no(rmw.getProxyResolutionRequest().getAppHdr().getBizMsgIdr());
-			else
+			if (null != rmw.getProxyRegistrationRequest())
 				data.setBifast_trx_no(rmw.getProxyRegistrationRequest().getAppHdr().getBizMsgIdr());
+			else
+				data.setBifast_trx_no(rmw.getProxyResolutionRequest().getAppHdr().getBizMsgIdr());
 
 			data.setProxy_alias(regnReq.getProxyValue());
 			data.setProxy_type(regnReq.getProxyType());
