@@ -16,13 +16,14 @@ import bifast.inbound.pojo.flat.FlatPacs002Pojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.pojo.flat.FlatPrxy901Pojo;
 import bifast.inbound.service.FlattenIsoMessageService;
+import bifast.inbound.service.RefUtils;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
 public class CheckRequestMsgProcessor implements Processor {
-	@Autowired private UtilService utilService;
 	@Autowired private FlattenIsoMessageService flatMsgService;
+	
 	
 	private static Logger logger = LoggerFactory.getLogger(FlattenIsoMessageService.class);
 
@@ -79,7 +80,7 @@ public class CheckRequestMsgProcessor implements Processor {
 		processData.setStartTime(Instant.now());
 //		processData.setInbMesgType(trnType);
 //		processData.setKomiCounter(null);
-		processData.setKomiTrnsId(utilService.genKomiTrnsId());
+		processData.setKomiTrnsId(RefUtils.genKomiTrnsId());
 		processData.setReceivedDt(LocalDateTime.now());
 //		processData.setTextDataReceived(null);
 

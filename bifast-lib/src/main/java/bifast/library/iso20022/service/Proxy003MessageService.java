@@ -64,7 +64,7 @@ public class Proxy003MessageService {
 		proxy003.setLookUp(new ProxyLookUpChoice1());
 		proxy003.getLookUp().setPrxyOnly(new ProxyLookUp11());
 
-		proxy003.getLookUp().getPrxyOnly().setLkUpTp(ProxyLookUpType1Code.PXRS);
+		proxy003.getLookUp().getPrxyOnly().setLkUpTp(seed.getLookupType()); 
 		proxy003.getLookUp().getPrxyOnly().setId(seed.getId());
 		
 		// Lookup / PrxyOnly /PrxyRtrvl

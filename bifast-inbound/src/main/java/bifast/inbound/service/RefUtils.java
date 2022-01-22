@@ -20,7 +20,7 @@ public class RefUtils {
 
     private synchronized static int nextKomiTrnsId() {
     	komiSeq++;
-        if (komiSeq > 999) komiSeq = 1;
+        if (komiSeq > 999) komiSeq = 0;
         return komiSeq;
     }
 
