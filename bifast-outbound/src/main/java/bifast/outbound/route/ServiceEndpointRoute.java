@@ -127,7 +127,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				.when().simple("${header.hdr_request_list.msgName} == 'PSReq'")
 					.to("direct:pschnl")
 
-				.when().simple("${header.hdr_request_list.msgName} == 'PrxRegnReq'")
+				.when().simple("${header.hdr_request_list.msgName} == 'PrxRegn'")
 					.to("direct:prxyrgst")
 
 				.when().simple("${header.hdr_request_list.msgName} == 'ProxyResolution'")
@@ -147,7 +147,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.to("seda:savetablechannel?exchangePattern=InOnly")
 			
-			.filter().simple("${header.hdr_request_list.msgName} in 'AEReq,CTReq,PrxRegnReq' ")
+			.filter().simple("${header.hdr_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
 				.to("seda:logportal?exchangePattern=InOnly")
 			.end()
 			

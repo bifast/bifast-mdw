@@ -3,12 +3,16 @@ package bifast.inbound.service;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class RefUtils {
 
-    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-	static DecimalFormat df = new DecimalFormat("00000000");
+    static DateTimeFormatter dayfm = DateTimeFormatter.ofPattern("yyyyMMdd");
+//    static DateTimeFormatter timefm = DateTimeFormatter.ofPattern("HHmmss");
+	static DecimalFormat df = new DecimalFormat("000");
+	static DecimalFormat secondOfDayFm = new DecimalFormat("00000");
 
     private static int seq = 0;
 
@@ -16,7 +20,7 @@ public class RefUtils {
 
     private synchronized static int nextKomiTrnsId() {
     	komiSeq++;
-        if (komiSeq > 99999999) komiSeq = 1;
+        if (komiSeq > 999) komiSeq = 1;
         return komiSeq;
     }
 
@@ -27,9 +31,12 @@ public class RefUtils {
     }
 
 	public static String genKomiTrnsId () {
-		String strToday = LocalDate.now().format(formatter);
+		int secofday = LocalTime.now(ZoneId.systemDefault()).toSecondOfDay() ;
+		String strSecofday = secondOfDayFm.format(secofday);
+		
+		String strToday = LocalDate.now().format(dayfm);
 		int cnt = nextKomiTrnsId();
-		return (strToday + "R" + df.format(cnt));
+		return (strToday + "R" + strSecofday + df.format(cnt));
 	}
 
     public static class Ref {

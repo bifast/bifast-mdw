@@ -51,7 +51,7 @@ public class ValidateProcessor implements Processor  {
 		List<ChannelTransaction> lChnlTrns = chnlTrnsRepo.findByChannelIdAndChannelRefId(channelid, noref); 
 		if ((msgType.equals("AEReq")) ||
 		 	(msgType.equals("CTReq")) || 
-		 	(msgType.equals("PrxRegnReq")) ) 
+		 	(msgType.equals("PrxRegn")) ) 
 		{
 			if (lChnlTrns.size()>0) 
 				throw new DuplicateIdException("Nomor RefId duplikat");
@@ -82,7 +82,7 @@ public class ValidateProcessor implements Processor  {
 			validationService.validateCreditTransferRequest(req);
 		}
 
-		else if (msgType.equals("PrxRegnReq")) {
+		else if (msgType.equals("PrxRegn")) {
 			ChnlProxyRegistrationRequestPojo proxyReq = rmw.getChnlProxyRegistrationRequest();
 			try {
 				@SuppressWarnings("unused")

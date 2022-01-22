@@ -19,6 +19,8 @@ import bifast.library.iso20022.prxy901.ProxyAccount1;
 @Service
 public class FlattenIsoMessageService {
 
+//	private static Logger logger = LoggerFactory.getLogger(FlattenIsoMessageService.class);
+
 	public FlatPacs002Pojo flatteningPacs002 (BusinessMessage busMsg) {
 
 		FlatPacs002Pojo flatMsg = new FlatPacs002Pojo();
@@ -207,9 +209,10 @@ public class FlattenIsoMessageService {
 			
 //		DecimalFormat df = new DecimalFormat("#############.00");
 //		flatMsg.setAmount(df.format(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue()));	
-		if (null == ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt())
+
+		if (null != ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt())
 			flatMsg.setAmount(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());	
-			
+				
 		flatMsg.setCurrency(ct.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getCcy());
 		
 		flatMsg.setChargeBearer(ct.getCdtTrfTxInf().get(0).getChrgBr().value());
@@ -339,29 +342,38 @@ public class FlattenIsoMessageService {
 		flat.setMsgDefIdr(busMsg.getAppHdr().getMsgDefIdr());
 		flat.setMsgId(busMsg.getDocument().getPrxyNtfctn().getGrpHdr().getMsgId());
 		
+		flat.setOrgnlProxyValue(busMsg.getDocument().getPrxyNtfctn().getNtfctn().getOrgnlPrxy().getVal());
+		flat.setOrgnlProxyType(busMsg.getDocument().getPrxyNtfctn().getNtfctn().getOrgnlPrxy().getTp());
+
 		ProxyAccount1 newAccount = busMsg.getDocument().getPrxyNtfctn().getNtfctn().getNewAcct();
 		flat.setNewAccountName(newAccount.getAcct().getNm());
 		flat.setNewAccountNumber(newAccount.getAcct().getId().getOthr().getId());
 		flat.setNewAccountType(newAccount.getAcct().getTp().getPrtry());
 		flat.setNewBankId(newAccount.getAgt().getFinInstnId().getOthr().getId());
-		flat.setNewCustomerId(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
-		flat.setNewCustomerType(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
 		flat.setNewDisplayName(newAccount.getDsplNm());
 		flat.setNewRegistrationId(newAccount.getRegnId());
-		flat.setNewResidentStatus(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
-		flat.setNewTownName(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
+
+		if (newAccount.getSplmtryData().size()>0) {
+			flat.setNewCustomerId(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
+			flat.setNewCustomerType(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
+			flat.setNewResidentStatus(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
+			flat.setNewTownName(newAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
+		}
 		
 		ProxyAccount1 orgnlAccount = busMsg.getDocument().getPrxyNtfctn().getNtfctn().getOrgnlAcct();
 		flat.setOrgnlAccountName(orgnlAccount.getAcct().getNm());
 		flat.setOrgnlAccountNumber(orgnlAccount.getAcct().getId().getOthr().getId());
 		flat.setOrgnlAccountType(orgnlAccount.getAcct().getTp().getPrtry());
 		flat.setOrgnlBankId(orgnlAccount.getAgt().getFinInstnId().getOthr().getId());
-		flat.setOrgnlCustomerId(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
-		flat.setOrgnlCustomerType(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
 		flat.setOrgnlDisplayName(orgnlAccount.getDsplNm());
 		flat.setOrgnlRegistrationId(orgnlAccount.getRegnId());
-		flat.setOrgnlResidentStatus(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
-		flat.setOrgnlTownName(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
+
+		if (orgnlAccount.getSplmtryData().size()>0) {
+			flat.setOrgnlCustomerId(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
+			flat.setOrgnlCustomerType(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
+			flat.setOrgnlResidentStatus(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
+			flat.setOrgnlTownName(orgnlAccount.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
+		}
 		
 		flat.setRecipientBank(busMsg.getDocument().getPrxyNtfctn().getGrpHdr().getMsgRcpt().getAgt().getFinInstnId().getOthr().getId());
 		flat.setToBic(busMsg.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());

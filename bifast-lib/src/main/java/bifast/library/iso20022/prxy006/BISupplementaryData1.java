@@ -47,7 +47,7 @@ public class BISupplementaryData1 {
     @XmlElement(name = "PlcAndNm")
     protected String plcAndNm;
     @XmlElement(name = "Envlp", required = true)
-    protected List<BISupplementaryDataEnvelope1> envlp;
+    protected BISupplementaryDataEnvelope1 envlp;
 
     /**
      * Gets the value of the plcAndNm property.
@@ -73,12 +73,12 @@ public class BISupplementaryData1 {
         this.plcAndNm = value;
     }
 
-    public List<BISupplementaryDataEnvelope1> getEnvlp() {
-        if (envlp == null) {
-        	envlp = new ArrayList<BISupplementaryDataEnvelope1>();
-        }
-        return this.envlp;
-	}
+//    public List<BISupplementaryDataEnvelope1> getEnvlp() {
+//        if (envlp == null) {
+//        	envlp = new ArrayList<BISupplementaryDataEnvelope1>();
+//        }
+//        return this.envlp;
+//	}
 
 	/**
      * Gets the value of the envlp property.
@@ -88,20 +88,20 @@ public class BISupplementaryData1 {
      *     {@link BISupplementaryDataEnvelope1 }
      *     
      */
-//    public BISupplementaryDataEnvelope1 getEnvlp() {
-//        return envlp;
-//    }
-//
-//    /**
-//     * Sets the value of the envlp property.
-//     * 
-//     * @param value
-//     *     allowed object is
-//     *     {@link BISupplementaryDataEnvelope1 }
-//     *     
-//     */
-//    public void setEnvlp(BISupplementaryDataEnvelope1 value) {
-//        this.envlp = value;
-//    }
+    public BISupplementaryDataEnvelope1 getEnvlp() {
+        return envlp;
+    }
+
+    /**
+     * Sets the value of the envlp property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BISupplementaryDataEnvelope1 }
+     *     
+     */
+    public void setEnvlp(BISupplementaryDataEnvelope1 value) {
+        this.envlp = value;
+    }
 
 }

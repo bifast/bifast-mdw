@@ -159,10 +159,10 @@ public class Proxy006MessageService {
 
 					///
 					BISupplementaryData1 biSupplementaryData1 = new BISupplementaryData1();
-					biSupplementaryData1.getEnvlp().add(biSupplementaryDataEnvelope1);
+					biSupplementaryData1.setEnvlp(biSupplementaryDataEnvelope1);
 					///
 					proxyEnquiryInformation1.getSplmtryData().add(new BISupplementaryData1());
-					proxyEnquiryInformation1.getSplmtryData().get(0).getEnvlp().add(biSupplementaryDataEnvelope1);
+					proxyEnquiryInformation1.getSplmtryData().get(0).setEnvlp(biSupplementaryDataEnvelope1);
 					proxyEnquiryInformation1.setAcctInf(AcctInf);
 					Rspn.add(proxyEnquiryInformation1);
 			 }

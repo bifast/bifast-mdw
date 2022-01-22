@@ -21,13 +21,13 @@ public class ValidationService {
 	@Autowired private Config config;
 
 	public void validateAccountEnquiryRequest (ChnlAccountEnquiryRequestPojo aeReq) throws Exception {
-		try {
-			@SuppressWarnings("unused")
-			DomainCode domain = domainCodeRepo.findByGrpAndKey("CATEGORY.PURPOSE", aeReq.getCategoryPurpose()).orElseThrow();
-		}
-		catch(NoSuchElementException ne) {
-			throw new InputValidationException ("Category Purpose type error");
-		}
+//		try {
+//			@SuppressWarnings("unused")
+//			DomainCode domain = domainCodeRepo.findByGrpAndKey("CATEGORY.PURPOSE", aeReq.getCategoryPurpose()).orElseThrow();
+//		}
+//		catch(NoSuchElementException ne) {
+//			throw new InputValidationException ("Category Purpose type error");
+//		}
 
 		if ((null == aeReq.getCreditorAccountNumber() || aeReq.getCreditorAccountNumber().isBlank())) {
 			if ((null == aeReq.getProxyId() || aeReq.getProxyId().isBlank()))

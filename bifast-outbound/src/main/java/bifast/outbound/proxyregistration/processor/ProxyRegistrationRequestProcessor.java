@@ -2,6 +2,8 @@ package bifast.outbound.proxyregistration.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,7 @@ import bifast.library.iso20022.service.Proxy001MessageService;
 import bifast.library.iso20022.service.Proxy001Seed;
 import bifast.outbound.config.Config;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.proxyregistration.ProxyEnrichmentAggregator;
 import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.service.UtilService;
 
@@ -29,6 +32,8 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 	private Proxy001MessageService proxy001MessageService;
 	@Autowired
 	private UtilService utilService;
+
+	private static Logger logger = LoggerFactory.getLogger(ProxyRegistrationRequestProcessor.class);
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -53,8 +58,10 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		seedProxyRegis.setRegistrationType(chnReq.getRegistrationType());
 		seedProxyRegis.setProxyType(chnReq.getProxyType());
 		seedProxyRegis.setProxyValue(chnReq.getProxyValue());
+		seedProxyRegis.setRegistrationId(msgId);
 		
-		if (null != chnReq.getRegistrationId())
+		logger.debug("Registration ID: " + chnReq.getRegistrationId());
+		if (null != chnReq.getRegistrationId()) 
 			seedProxyRegis.setRegistrationId(chnReq.getRegistrationId());
 		
 		seedProxyRegis.setRegisterDisplayName(chnReq.getDisplayName());

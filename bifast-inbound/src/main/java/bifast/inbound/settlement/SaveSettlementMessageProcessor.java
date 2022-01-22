@@ -75,8 +75,6 @@ public class SaveSettlementMessageProcessor implements Processor {
 			ct.setSettlementConfBizMsgIdr(flatSttl.getBizMsgIdr());
 			ct.setLastUpdateDt(LocalDateTime.now());
 			
-			logger.debug("iya");
-
 			if (sttl.getCrdtBank().equals(config.getBankcode())) {
 				logger.debug("nggak");
 				ct.setCbStatus("READY");

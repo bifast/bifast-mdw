@@ -52,7 +52,15 @@ public class ProxyResolutionRequestProcessor implements Processor {
 		
 		seedProxyResolution.setTrnType(trxType);
 		
-		seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
+		if (null==chnReq.getLookUpType())
+			seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
+		else if (chnReq.getLookUpType().equals("CHCK"))
+			seedProxyResolution.setLookupType(ProxyLookUpType1Code.CHCK);
+		else if (chnReq.getLookUpType().equals("NMEQ"))
+			seedProxyResolution.setLookupType(ProxyLookUpType1Code.NMEQ);
+		else 
+			seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
+				
 		
 		seedProxyResolution.setProxyType(chnReq.getProxyType());
 		seedProxyResolution.setProxyValue(chnReq.getProxyValue());

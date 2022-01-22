@@ -16,6 +16,7 @@ import bifast.inbound.service.JacksonDataFormatService;
 public class NotificationRoute extends RouteBuilder{
 	@Autowired private AEPortalLogProcessor portalLogProcessor;
 	@Autowired private EventNotificationProcessor eventNotifProcessor;
+	@Autowired private ProxyNotifProcessor proxyNotifProc;
 	@Autowired private JacksonDataFormatService jdfService;
 
 	@Override
@@ -23,6 +24,12 @@ public class NotificationRoute extends RouteBuilder{
 
 		JacksonDataFormat portalJdf = jdfService.wrapRoot(PortalApiPojo.class);
 		
+		from("direct:proxynotif").routeId("komi.prxnotif")
+			.log("Proxy Port Notification")
+			.process(proxyNotifProc)
+		
+		;
+
 		from("direct:eventnotif").routeId("komi.eventnotif")
 			.log("Ada notifikasi")
 			.process(eventNotifProcessor)

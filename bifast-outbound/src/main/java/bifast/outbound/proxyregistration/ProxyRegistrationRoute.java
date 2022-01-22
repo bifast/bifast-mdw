@@ -1,5 +1,7 @@
 package bifast.outbound.proxyregistration;
 
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -8,7 +10,9 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.model.Proxy;
 import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.proxyinquiry.processor.ProxyResolutionRequestProcessor;
@@ -16,6 +20,7 @@ import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.proxyregistration.processor.ProxyRegistrationRequestProcessor;
 import bifast.outbound.proxyregistration.processor.ProxyRegistrationResponseProcessor;
 import bifast.outbound.proxyregistration.processor.StoreProxyRegistrationProcessor;
+import bifast.outbound.repository.ProxyRepository;
 
 @Component
 public class ProxyRegistrationRoute extends RouteBuilder {
@@ -28,9 +33,8 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 	private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
 	@Autowired
 	private StoreProxyRegistrationProcessor saveProxyRegnProc;
-
-	@Autowired
-	private ProxyEnrichmentAggregator prxyAggrStrg;
+	@Autowired ProxyEnrichmentAggregator prxyAggrStrg;
+	@Autowired ProxyRepository proxyRepo;	
 	
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
@@ -44,11 +48,32 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 		// Untuk Proses Proxy Registration Request
 
 		from("direct:prxyrgst").routeId("komi.prxyrgst")
-			.log(LoggingLevel.INFO, "komi.prxy.prxyrgst", "[ChRefId:${header.hdr_chnlRefId}] Proxy started.")
+			.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Proxy started.")
 			
-			// jika bukan NEWR, siapkan data request unt Proxy Resolution unt ambil RegistrationID
+			// jika bukan NEWR, siapkan data request unt ambil RegistrationID
+			.log("${body.registrationType}")
 			.filter().simple("${body.registrationType} != 'NEWR'")
-				.log(LoggingLevel.INFO, "komi.prxy.prxyrgst", "[ChRefId:${header.hdr_chnlRefId}] Proxy Resolution dulu.")
+				.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
+						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Cari registrationID.")
+				.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						RequestMessageWrapper rmw = exchange.getIn().getHeader("hdr_request_list", RequestMessageWrapper.class);
+						ChnlProxyRegistrationRequestPojo regnsReq = rmw.getChnlProxyRegistrationRequest();
+						Optional<Proxy> oPrxy = proxyRepo.getByProxyTypeAndProxyValue(regnsReq.getProxyType(), regnsReq.getProxyValue());
+						if (oPrxy.isPresent()) {
+							regnsReq.setRegistrationId(oPrxy.get().getRegistrationId());
+							rmw.setChnlProxyRegistrationRequest(regnsReq);
+							exchange.getMessage().setHeader("hdr_request_list", rmw);
+							exchange.getMessage().setBody(regnsReq);
+							System.out.println("RegId " + regnsReq.getRegistrationId());
+						}
+					}})
+			.end()	
+
+			.filter().simple("${body.registrationType} != 'NEWR' && ${body.registrationId} == null ")
+				.log(LoggingLevel.DEBUG, "komi.prxyrgst", 
+						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Akan call Proxy Resolution")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						RequestMessageWrapper rmw = exchange.getIn().getHeader("hdr_request_list", RequestMessageWrapper.class);
@@ -64,13 +89,15 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 				})
 				.process(proxyResolutionRequestProcessor)
 				.enrich("direct:call-cihub", prxyAggrStrg)
+
 			.end()
-			
-			
+
 			.filter().simple("${body.class} endsWith 'ChnlProxyRegistrationRequestPojo'")
+				
 				.process(proxyRegistrationRequestProcessor)
 				.to("direct:call-cihub")
-				.log(LoggingLevel.INFO, "komi.prxy.prxyrgst", "[ChRefId:${header.hdr_chnlRefId}] Dari call-cihub berupa ${body}")
+				.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
+						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Dari call-cihub berupa ${body}")
 				.process(saveProxyRegnProc)
 			.end()
 

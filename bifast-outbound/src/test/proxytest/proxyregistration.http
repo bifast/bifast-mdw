@@ -6,10 +6,10 @@ Authorization: Basic CMS:password
 
 {
     "ProxyRegistrationRequest": {
-        "NoRef": "1123352",
+        "NoRef": "TES1123352{{$randomInt 1000 9999}}",
         "RegistrationType": "NEWR",
         "ProxyType": "02",
-        "ProxyValue": "bams111@gmail.com",
+        "ProxyValue": "bams13@gmail.com",
         "DisplayName": "JOHN SMITH",
         "AccountNumber": "112222334",
         "AccountType": "CACC",

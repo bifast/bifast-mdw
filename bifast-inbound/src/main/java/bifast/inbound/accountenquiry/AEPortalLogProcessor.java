@@ -7,8 +7,6 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +22,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 public class AEPortalLogProcessor implements Processor{
 	@Autowired StatusReasonRepository statusReasonRepo;
 	
-	private static Logger logger = LoggerFactory.getLogger(AEPortalLogProcessor.class);
+//	private static Logger logger = LoggerFactory.getLogger(AEPortalLogProcessor.class);
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -32,8 +30,6 @@ public class AEPortalLogProcessor implements Processor{
 		String msgName = processData.getInbMsgName();
 		BusinessMessage resp = processData.getBiResponseMsg();
 		
-//		String msgType = exchange.getMessage().getHeader("hdr_msgType", String.class);
-
 		FlatPacs008Pojo req = (FlatPacs008Pojo) processData.getBiRequestFlat();
 		
 		PortalApiPojo logMsg = new PortalApiPojo();
@@ -49,9 +45,11 @@ public class AEPortalLogProcessor implements Processor{
 		data.setReason_code(reasonCode);
 		data.setReason_message(stsRsn.getDescription());
 
-		data.setRecipient_account_name(req.getCreditorName());
-		data.setSender_account_name(req.getDebtorName());
-		logger.debug("Sender : " + req.getCreditorName() + " Rec: " + req.getCreditorName());
+		if (null != resp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getCdtr())
+			data.setRecipient_account_name(resp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getCdtr().getPty().getNm());
+
+		if (null != resp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtr())
+			data.setSender_account_name(resp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getOrgnlTxRef().getDbtr().getPty().getNm());
 		
 		data.setKomi_trx_no(processData.getKomiTrnsId());
 		data.setKomi_unique_id(req.getEndToEndId());

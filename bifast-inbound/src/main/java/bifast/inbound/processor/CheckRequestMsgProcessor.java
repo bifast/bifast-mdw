@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,8 @@ public class CheckRequestMsgProcessor implements Processor {
 	@Autowired private UtilService utilService;
 	@Autowired private FlattenIsoMessageService flatMsgService;
 	
+	private static Logger logger = LoggerFactory.getLogger(FlattenIsoMessageService.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		BusinessMessage inputMsg = exchange.getMessage().getBody(BusinessMessage.class);
@@ -44,6 +48,7 @@ public class CheckRequestMsgProcessor implements Processor {
 
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901")) {
 			trnType = "PROXYNOTIF";
+			logger.debug("Akan flattening proxy notif");
 			FlatPrxy901Pojo flat = flatMsgService.flatteningPrxy901(inputMsg);
 			processData.setBiRequestFlat(flat);
 			processData.setInbMsgName("PrxNtf");

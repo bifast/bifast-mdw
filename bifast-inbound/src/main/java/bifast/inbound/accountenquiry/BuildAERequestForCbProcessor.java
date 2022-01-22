@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,8 @@ import bifast.inbound.repository.CorebankTransactionRepository;
 public class BuildAERequestForCbProcessor implements Processor {
 	@Autowired CorebankTransactionRepository cbTransactionRepo;
 	
+	private static Logger logger = LoggerFactory.getLogger(AEPortalLogProcessor.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 

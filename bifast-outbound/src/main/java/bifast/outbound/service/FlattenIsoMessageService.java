@@ -302,18 +302,18 @@ public class FlattenIsoMessageService {
 				flatMsgAlias.setProxySatus(data.getPrxyInf().getSts());
 				
 				if (data.getSplmtryData().size() >0 ) {
-					if (data.getSplmtryData().get(0).getEnvlp().size() >0) {
-						if (null != data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getTp())
-							flatMsgAlias.setCustomerType(data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getTp());
+					if (null != data.getSplmtryData().get(0).getEnvlp()) {
+						if (null != data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp())
+							flatMsgAlias.setCustomerType(data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTp());
 					
-						if (null != data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getId())
-							flatMsgAlias.setCustomerId(data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getId());
+						if (null != data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId())
+							flatMsgAlias.setCustomerId(data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
 						
-						if (null != data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getRsdntSts())
-							flatMsgAlias.setResidentialStatus(data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getRsdntSts());
+						if (null != data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts())
+							flatMsgAlias.setResidentialStatus(data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
 				
-						if (null != data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getTwnNm())
-							flatMsgAlias.setTownName(data.getSplmtryData().get(0).getEnvlp().get(0).getDtl().getCstmr().getTwnNm());
+						if (null != data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm())
+							flatMsgAlias.setTownName(data.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getTwnNm());
 					}
 				}
 				aliasList.add(flatMsgAlias);

@@ -59,7 +59,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		else if (!(null == req.getChnlProxyRegistrationRequest())) {
 			rmw.setChnlProxyRegistrationRequest(req.getChnlProxyRegistrationRequest());
 			rmw.setChannelRequest(req.getChnlProxyRegistrationRequest());
-			rmw.setMsgName("PrxRegnReq");
+			rmw.setMsgName("PrxRegn");
 			rmw.setRequestId(req.getChnlProxyRegistrationRequest().getChannelRefId());
 			exchange.getMessage().setBody(req.getChnlProxyRegistrationRequest());
 		}

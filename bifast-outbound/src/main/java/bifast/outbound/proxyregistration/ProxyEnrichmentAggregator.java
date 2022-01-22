@@ -2,6 +2,8 @@ package bifast.outbound.proxyregistration;
 
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.pojo.FaultPojo;
@@ -13,6 +15,8 @@ import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 @Component
 public class ProxyEnrichmentAggregator implements AggregationStrategy {
 
+	private static Logger logger = LoggerFactory.getLogger(ProxyEnrichmentAggregator.class);
+
 	@Override
 	public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 		
@@ -21,101 +25,41 @@ public class ProxyEnrichmentAggregator implements AggregationStrategy {
 
 		Object oPxrxResltn = newExchange.getMessage().getBody(Object.class);
 		
+		logger.debug("ProxyResolution class : " + oPxrxResltn.getClass().getSimpleName());
 		FlatPrxy004Pojo pxrxResltn = null;
 		
 
 		if (oPxrxResltn.getClass().getSimpleName().equals("FlatPrxy004Pojo")) {
 			pxrxResltn = newExchange.getMessage().getBody(FlatPrxy004Pojo.class);
+			logger.debug("ProxyResolution response : " + pxrxResltn.getReasonCode());
+
+			if (pxrxResltn.getReasonCode().equals("U000")) {
 			
-			ResponseMessageCollection rmc = oldExchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
-			rmc.setProxyResolutionResponse(pxrxResltn);
-			oldExchange.getMessage().setHeader("hdr_response_list", rmc);
-
-			if (regnReq.getRegistrationType().equals("NEWR"))
-				regnReq.setRegistrationId("");
-			else {
+				ResponseMessageCollection rmc = oldExchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+				rmc.setProxyResolutionResponse(pxrxResltn);
+				oldExchange.getMessage().setHeader("hdr_response_list", rmc);
+	
 				regnReq.setRegistrationId(pxrxResltn.getRegistrationId());
+				rmw.setChnlProxyRegistrationRequest(regnReq);
+				oldExchange.getMessage().setHeader("hdr_request_list", rmw);
+				oldExchange.getMessage().setBody(regnReq);
+				logger.debug("Dapat registration ID: " + regnReq.getRegistrationId());
 			}
-
+			
+			else {  // result selain U000
+				FaultPojo fault = new FaultPojo();
+				fault.setCallStatus("ERROR");
+				fault.setResponseCode(pxrxResltn.getResponseCode());
+				fault.setReasonCode(pxrxResltn.getReasonCode());
+				oldExchange.getMessage().setBody(fault);
+			}
 		}
 		
-		if (oPxrxResltn.getClass().getSimpleName().equals("FaultPojo")) {
+		else if (oPxrxResltn.getClass().getSimpleName().equals("FaultPojo")) {
 			FaultPojo fault = (FaultPojo) oPxrxResltn;
 			oldExchange.getMessage().setBody(fault);
 		}
 
-		// jika mau activate dan dari resolution status SUSP
-		else if ((regnReq.getRegistrationType().equals("ACTV")) &&
-			(pxrxResltn.getReasonCode().equals("U805")) ) {
-			
-			regnReq.setRegisterBic(pxrxResltn.getRegisterBank());
-			
-			if (null == regnReq.getDisplayName()) 
-				regnReq.setDisplayName(pxrxResltn.getDisplayName());
-
-			if (null == regnReq.getAccountNumber()) 
-				regnReq.setAccountNumber(pxrxResltn.getAccountNumber());
-
-			if (null == regnReq.getAccountType()) 
-				regnReq.setAccountType(pxrxResltn.getAccountType());
-			
-			if (null == regnReq.getAccountName()) 
-				regnReq.setAccountName(pxrxResltn.getAccountName());
-
-			if (null == regnReq.getCustomerType()) 
-				regnReq.setCustomerType(pxrxResltn.getCustomerType());
-
-			if (null == regnReq.getCustomerId()) 
-				regnReq.setCustomerId(pxrxResltn.getCustomerId());
-
-			if (null == regnReq.getResidentialStatus()) 
-				regnReq.setResidentialStatus(pxrxResltn.getResidentialStatus());
-
-			if (null == regnReq.getTownName()) 
-				regnReq.setTownName(pxrxResltn.getTownName());
-			
-			rmw.setChnlProxyRegistrationRequest(regnReq);
-			oldExchange.getMessage().setHeader("hdr_request_list", rmw);
-			oldExchange.getMessage().setBody(regnReq);
-
-		}
-			
-		else if (pxrxResltn.getResponseCode().equals("RJCT")) {
-			oldExchange.getMessage().setBody(pxrxResltn);
-		}
-		
-		else {		
-		
-			regnReq.setRegisterBic(pxrxResltn.getRegisterBank());
-			
-			if (null == regnReq.getDisplayName()) 
-				regnReq.setDisplayName(pxrxResltn.getDisplayName());
-
-			if (null == regnReq.getAccountNumber()) 
-				regnReq.setAccountNumber(pxrxResltn.getAccountNumber());
-
-			if (null == regnReq.getAccountType()) 
-				regnReq.setAccountType(pxrxResltn.getAccountType());
-			
-			if (null == regnReq.getAccountName()) 
-				regnReq.setAccountName(pxrxResltn.getAccountName());
-
-			if (null == regnReq.getCustomerType()) 
-				regnReq.setCustomerType(pxrxResltn.getCustomerType());
-
-			if (null == regnReq.getCustomerId()) 
-				regnReq.setCustomerId(pxrxResltn.getCustomerId());
-
-			if (null == regnReq.getResidentialStatus()) 
-				regnReq.setResidentialStatus(pxrxResltn.getResidentialStatus());
-
-			if (null == regnReq.getTownName()) 
-				regnReq.setTownName(pxrxResltn.getTownName());
-			
-			rmw.setChnlProxyRegistrationRequest(regnReq);
-			oldExchange.getMessage().setHeader("hdr_request_list", rmw);
-			oldExchange.getMessage().setBody(regnReq);
-		}
 		
 		return oldExchange;
 	}

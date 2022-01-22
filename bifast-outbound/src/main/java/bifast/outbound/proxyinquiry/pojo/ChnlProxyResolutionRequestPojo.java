@@ -9,6 +9,7 @@ public class ChnlProxyResolutionRequestPojo {
 
 	private String channelRefId;
 	private String senderAccountNumber;
+	private String lookUpType;
 	private String proxyType;
 	private String proxyValue;
 	
@@ -20,12 +21,14 @@ public class ChnlProxyResolutionRequestPojo {
 	public ChnlProxyResolutionRequestPojo (
 		@JsonProperty(value="NoRef", required=true) String channelRefId,
 		@JsonProperty(value="SenderAccountNumber", required=true) String senderAccountNumber,
+		@JsonProperty(value="LookUpType") String lookUpType,
 		@JsonProperty(value="ProxyType", required=true) String proxyType,
 		@JsonProperty(value="ProxyValue", required=true) String proxyValue
 		)
 	{
 		this.channelRefId = channelRefId;
 		this.senderAccountNumber = senderAccountNumber;
+		this.lookUpType = lookUpType;
 		this.proxyType = proxyType;
 		this.proxyValue = proxyValue;
 	}
@@ -44,6 +47,14 @@ public class ChnlProxyResolutionRequestPojo {
 
 	public void setSenderAccountNumber(String senderAccountNumber) {
 		this.senderAccountNumber = senderAccountNumber;
+	}
+
+	public String getLookUpType() {
+		return lookUpType;
+	}
+
+	public void setLookUpType(String lookUpType) {
+		this.lookUpType = lookUpType;
 	}
 
 	public String getProxyType() {

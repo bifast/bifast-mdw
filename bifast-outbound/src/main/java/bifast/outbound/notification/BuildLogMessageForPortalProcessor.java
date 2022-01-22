@@ -109,7 +109,7 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 			
 		}
 		
-		else if (rmw.getMsgName().equals("PrxRegnReq")) {
+		else if (rmw.getMsgName().equals("PrxRegn")) {
 			logMsg.setCodelog("PR");
 			ChnlProxyRegistrationRequestPojo regnReq = rmw.getChnlProxyRegistrationRequest();
 

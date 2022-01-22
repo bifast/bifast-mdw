@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
-import bifast.outbound.accountenquiry.processor.SaveAccountEnquiryProcessor;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.ExceptionProcessor;
@@ -54,7 +53,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			
 			// akan panggil Proxy Resolution
 			.filter().simple("${body.creditorAccountNumber} == null || ${body.creditorAccountNumber} == '' ")
-				.log(LoggingLevel.DEBUG, "komi.acctenq", "[ChnlReq:${header.hdr_request_list.requestId}][AE] akan panggil ProxyResolution.")
+				.log(LoggingLevel.DEBUG, "komi.acctenq", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}][AE] akan panggil ProxyResolution.")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
