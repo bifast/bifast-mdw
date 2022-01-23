@@ -69,14 +69,13 @@ public class SaveSettlementMessageProcessor implements Processor {
 		}
 
 		String settlment_ctType = "Outbound";
-		logger.debug(sttl.getCrdtBank() + " vs " + config.getBankcode());
+//		logger.debug(sttl.getCrdtBank() + " vs " + config.getBankcode());
 		
 		if (null != ct) {
 			ct.setSettlementConfBizMsgIdr(flatSttl.getBizMsgIdr());
 			ct.setLastUpdateDt(LocalDateTime.now());
 			
 			if (sttl.getCrdtBank().equals(config.getBankcode())) {
-				logger.debug("nggak");
 				ct.setCbStatus("READY");
 				settlment_ctType = "Inbound";
 			}

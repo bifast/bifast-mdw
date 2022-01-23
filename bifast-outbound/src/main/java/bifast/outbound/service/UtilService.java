@@ -24,7 +24,16 @@ public class UtilService {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 	DecimalFormat df = new DecimalFormat("00000000");
 
+    private static int komiSeq = 0;
 
+    private synchronized static int nextKomiTrnsId() {
+    	komiSeq++;
+        if (komiSeq > 999) komiSeq = 0;
+        return komiSeq;
+    }
+
+	
+	
 	public String genKomiTrnsId () {
 		
 		LocalTime now = LocalTime.now(ZoneId.systemDefault());

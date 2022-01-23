@@ -15,7 +15,6 @@ public class CiAccountEnquiryRequestPojo {
 	private String senderAccountNumber;
 	
 	private String amount; 
-	private String currency;
 
 	private String recptBank; 
 	
@@ -31,7 +30,6 @@ public class CiAccountEnquiryRequestPojo {
 			@JsonProperty(value="RecipientBank") String recptBank,
 			@JsonProperty(value="SenderAccountNumber", required=true) String senderAccountNumber,
 			@JsonProperty(value="Amount", required=true) String amount,
-			@JsonProperty(value="Currencty") String currency,
 			@JsonProperty("RecipientAccountNumber") String creditorAccountNumber,
 			@JsonProperty("ProxyId") String proxyId,
 			@JsonProperty("ProxyType") String proxyType) 
@@ -40,7 +38,6 @@ public class CiAccountEnquiryRequestPojo {
 		this.categoryPurpose = categoryPurpose;
 		this.recptBank = recptBank;
 		this.senderAccountNumber = senderAccountNumber;
-		this.currency = currency;
 		this.amount = amount;
 		this.creditorAccountNumber = creditorAccountNumber;
 		this.proxyId = proxyId;
@@ -69,14 +66,6 @@ public class CiAccountEnquiryRequestPojo {
 
 	public void setSenderAccountNumber(String senderAccountNumber) {
 		this.senderAccountNumber = senderAccountNumber;
-	}
-
-	public String getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(String currency) {
-		this.currency = currency;
 	}
 
 	public String getAmount() {

@@ -36,8 +36,7 @@ public class SettlementRoute extends RouteBuilder {
 				.otherwise()
 					.process(settlementProcessor)
 					.to("direct:post_credit_cb")
-			 		.log(LoggingLevel.DEBUG, "komi.settlement", 
-			 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Selesai posting settlement")
+			 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Selesai posting settlement")
 			.end()
 
 		;
