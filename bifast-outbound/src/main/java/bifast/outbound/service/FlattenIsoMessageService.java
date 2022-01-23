@@ -244,11 +244,14 @@ public class FlattenIsoMessageService {
 		
 		if (null != prxResp.getLkUpRspn().getRegnRspn().getRegn()) {
 			flatMsg.setDisplayName(prxResp.getLkUpRspn().getRegnRspn().getRegn().getDsplNm());
-			flatMsg.setAccountType(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getTp().getPrtry());
-			flatMsg.setAccountNumber(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getId().getOthr().getId());
+
 			flatMsg.setRegisterBank(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAgt().getFinInstnId().getOthr().getId());
 			flatMsg.setRegistrationId(prxResp.getLkUpRspn().getRegnRspn().getRegn().getRegnId());
 
+			if (null!= prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getTp())
+				flatMsg.setAccountType(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getTp().getPrtry());
+			if (null!= prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getId())
+				flatMsg.setAccountNumber(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getId().getOthr().getId());
 			if (null != prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getNm())
 				flatMsg.setAccountName(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getNm());
 		}
