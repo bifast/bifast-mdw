@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 	,"dbtrAccountType"
 	,"dbtrResidentialStatus"
 	,"dbtrTownName"
+	,"currency"
 	,"amount"
 	,"feeTransfer"
 	,"recptBank"
@@ -60,6 +61,8 @@ public class ChnlCreditTransferRequestPojo {
 	private String dbtrResidentialStatus;
 	@JsonProperty("DebtorTownName")
 	private String dbtrTownName;
+	@JsonProperty("Currency")
+	private String currency; 
 	@JsonProperty("Amount")
 	private String amount; 
 	
@@ -103,6 +106,7 @@ public class ChnlCreditTransferRequestPojo {
 			@JsonProperty(value="DebtorAccountType", required=true) String dbtrAccountType,
 			@JsonProperty(value="DebtorResidentialStatus", required=true) String dbtrResidentialStatus,
 			@JsonProperty(value="DebtorTownName", required=true) String dbtrTownName,
+			@JsonProperty(value="Currency") String currency, 
 			@JsonProperty(value="Amount", required=true) String amount, 
 			@JsonProperty(value="FeeTransfer") String feeTransfer, 
 			@JsonProperty(value="RecipientBank", required=true) String recptBank, 
@@ -230,6 +234,14 @@ public class ChnlCreditTransferRequestPojo {
 
 	public void setDbtrTownName(String dbtrTownName) {
 		this.dbtrTownName = dbtrTownName;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 
 	public String getAmount() {

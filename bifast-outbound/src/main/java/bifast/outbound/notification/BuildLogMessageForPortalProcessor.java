@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,8 @@ import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 public class BuildLogMessageForPortalProcessor implements Processor {
 	@Autowired private Config config;
 	
+	private static Logger logger = LoggerFactory.getLogger(BuildLogMessageForPortalProcessor.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class );
@@ -88,6 +92,7 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 		}
 		
 		else if (rmw.getMsgName().equals("AEReq")) {
+//			logger.debug(rmw.getAccountEnquiryRequest());
 			logMsg.setCodelog("AE");
 			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 			

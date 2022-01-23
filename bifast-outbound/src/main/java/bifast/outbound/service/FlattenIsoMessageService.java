@@ -241,12 +241,18 @@ public class FlattenIsoMessageService {
 		
 		FlatPrxy004Pojo flatMsg = new FlatPrxy004Pojo();
 		ProxyLookUpResponseV01 prxResp = busMsg.getDocument().getPrxyLookUpRspn();
-		
+
+		flatMsg.setProxyType(prxResp.getLkUpRspn().getOrgnlPrxyRtrvl().getTp());
+		flatMsg.setProxyValue(prxResp.getLkUpRspn().getOrgnlPrxyRtrvl().getVal());
+
 		if (null != prxResp.getLkUpRspn().getRegnRspn().getRegn()) {
 			flatMsg.setDisplayName(prxResp.getLkUpRspn().getRegnRspn().getRegn().getDsplNm());
 
 			flatMsg.setRegisterBank(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAgt().getFinInstnId().getOthr().getId());
 			flatMsg.setRegistrationId(prxResp.getLkUpRspn().getRegnRspn().getRegn().getRegnId());
+
+			flatMsg.setProxyType(prxResp.getLkUpRspn().getRegnRspn().getPrxy().getTp());
+			flatMsg.setProxyValue(prxResp.getLkUpRspn().getRegnRspn().getPrxy().getVal());
 
 			if (null!= prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getTp())
 				flatMsg.setAccountType(prxResp.getLkUpRspn().getRegnRspn().getRegn().getAcct().getTp().getPrtry());
@@ -259,8 +265,6 @@ public class FlattenIsoMessageService {
 		flatMsg.setResponseCode(prxResp.getLkUpRspn().getRegnRspn().getPrxRspnSts().value());
 		flatMsg.setReasonCode(prxResp.getLkUpRspn().getRegnRspn().getStsRsnInf().getPrtry());
 		
-		flatMsg.setProxyType(prxResp.getLkUpRspn().getOrgnlPrxyRtrvl().getTp());
-		flatMsg.setProxyValue(prxResp.getLkUpRspn().getOrgnlPrxyRtrvl().getVal());
 
 		if (prxResp.getSplmtryData().size() > 0 ) {
 
