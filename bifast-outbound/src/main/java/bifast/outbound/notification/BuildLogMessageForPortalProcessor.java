@@ -91,7 +91,7 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 			logMsg.setCodelog("AE");
 			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 			
-			if ((null != aeReq.getCreditorAccountNumber()) || aeReq.getCreditorAccountNumber().isBlank()) 
+			if ((null != aeReq.getCreditorAccountNumber()) || !(aeReq.getCreditorAccountNumber().isBlank())) 
 				data.setBifast_trx_no(rmw.getAccountEnquiryRequest().getAppHdr().getBizMsgIdr());
 			else
 				data.setBifast_trx_no(rmw.getProxyResolutionRequest().getAppHdr().getBizMsgIdr());
