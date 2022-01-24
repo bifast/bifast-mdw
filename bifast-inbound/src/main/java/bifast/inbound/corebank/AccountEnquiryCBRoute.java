@@ -13,8 +13,8 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.pojo2.AccountEnquiryInboundRequest;
-import bifast.inbound.corebank.pojo2.AccountEnquiryInboundResponse;
+import bifast.inbound.corebank.isopojo.AccountEnquiryInboundRequest;
+import bifast.inbound.corebank.isopojo.AccountEnquiryInboundResponse;
 import bifast.inbound.model.CorebankTransaction;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;

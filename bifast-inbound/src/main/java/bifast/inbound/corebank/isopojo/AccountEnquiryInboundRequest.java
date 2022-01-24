@@ -1,4 +1,4 @@
-package bifast.inbound.corebank.pojo2;
+package bifast.inbound.corebank.isopojo;
 
 public class AccountEnquiryInboundRequest extends BaseInboundRequestDTO {
 

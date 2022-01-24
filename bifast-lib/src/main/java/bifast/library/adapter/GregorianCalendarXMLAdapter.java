@@ -17,11 +17,15 @@ public class GregorianCalendarXMLAdapter extends XmlAdapter<String, XMLGregorian
 	@Override
 	public XMLGregorianCalendar unmarshal(String v) throws Exception {
 		GregorianCalendar cal = new GregorianCalendar();
-		if (v.length() == 23)
+		if (v.length() == 19)
+			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(v));
+		else if (v.length() == 20)
+			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(v));
+		else if (v.length() == 23)
 			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(v));
-		else 
+		else if (v.length() == 24)
 			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(v));
-
+		
         XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar( cal);
 		return calendar;
 	}

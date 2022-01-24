@@ -6,11 +6,16 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.accountenquiry.AccountEnquiryResponseProcessor;
 import bifast.inbound.accountenquiry.BuildAERequestForCbProcessor;
+import bifast.inbound.accountenquiry.IsoAERequestPrc;
+import bifast.inbound.accountenquiry.IsoAEResponsePrc;
 import bifast.inbound.corebank.CbCallFaultProcessor;
+import bifast.inbound.corebank.isopojo.AccountEnquiryInboundRequest;
+import bifast.inbound.corebank.isopojo.AccountEnquiryInboundResponse;
 import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
 import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
 import bifast.inbound.processor.CheckRequestMsgProcessor;
@@ -23,22 +28,21 @@ public class TestRoute extends RouteBuilder{
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private CheckRequestMsgProcessor checkRequestMsgProcessor;
 	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
-	@Autowired private AccountEnquiryResponseProcessor aeResponseProcessor;
+	@Autowired private IsoAEResponsePrc aeResponseProcessor;
 	@Autowired private CbCallFaultProcessor cbFaultProcessor;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
+	@Autowired private IsoAERequestPrc isoAERequestPrc;
 
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat jsonBusinessMessageDataFormat = jdfService.wrapUnwrapRoot(BusinessMessage.class);
-		JacksonDataFormat accountEnquiryJDF = jdfService.wrapRoot(CbAccountEnquiryRequestPojo.class);
-		JacksonDataFormat accountEnquiryResponseJDF = jdfService.basic(CbAccountEnquiryResponsePojo.class);
+		JacksonDataFormat accountEnquiryReqJDF = jdfService.basic(AccountEnquiryInboundRequest.class);
+		JacksonDataFormat accountEnquiryResponseJDF = jdfService.basic(AccountEnquiryInboundResponse.class);
 
 
 		from("direct:testae")
 			.convertBodyTo(String.class)
-		
-			.setHeader("hdr_inputformat", constant("json"))
-
+			
 			.log(LoggingLevel.DEBUG,"komi.jsonEndpoint", "-------****------")
 			.log(LoggingLevel.DEBUG,"komi.jsonEndpoint", "Terima: ${body}")
 
@@ -49,6 +53,7 @@ public class TestRoute extends RouteBuilder{
 			.marshal().base64()
 			.setHeader("hdr_frBI_jsonzip", simple("${body}"))
 			.setBody(simple("${header.hdr_tmp}"))
+			.removeHeader("hdr_tmp")
 			
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
 			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
@@ -61,50 +66,48 @@ public class TestRoute extends RouteBuilder{
 			.setHeader("ae_obj_birequest", simple("${body}"))
 			
 			// prepare untuk request ke corebank
-			.process(buildAccountEnquiryRequestProcessor)
+			.process(isoAERequestPrc)
 	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Akan call AE corebank")
 
 //			.to("seda:callcb")
-			.delay(simple("{{test.delay}}"))
+//			.delay(simple("{{test.delay}}"))
 
 	 		// CorebankRoute
 			.log(LoggingLevel.DEBUG,"komi.corebank", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Terima di corebank: ${body}")
 			.setHeader("cb_requestName", constant("accountinquiry"))
-			.marshal(accountEnquiryJDF)
+			.marshal(accountEnquiryReqJDF)
 	 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}]"
 						+ " CB Request: ${body}")
 
-	 		.removeHeaders("*")
-	 		.stop()
-	 		
-	 		.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					CbAccountEnquiryResponsePojo aeResponse = new CbAccountEnquiryResponsePojo();
-					aeResponse.setAccountNumber(null);
-				}
-	 		})
-			.unmarshal(accountEnquiryResponseJDF)
+	 		.doTry()
+				.setHeader("HttpMethod", constant("POST"))
+				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
+//				.process(new Processor() {
+//					public void process(Exchange exchange) throws Exception {
+//			            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+//					}
+//				})
 
-//	 		.doTry()
-//				.setHeader("HttpMethod", constant("POST"))
-//				.enrich()
-//					.simple("{{komi.url.corebank}}?"
-//						+ "socketTimeout=10000&" 
-//						+ "bridgeEndpoint=true")
-//					.aggregationStrategy(enrichmentAggregator)
-//				.convertBodyTo(String.class)
-//		 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] CB Response: ${body}")
-//
-// 				.unmarshal(accountEnquiryResponseJDF)
-//
-//	 		.endDoTry()
-//	    	.doCatch(Exception.class)
-//				.log(LoggingLevel.ERROR, "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Call CB Error.")
-//		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-//		    	.process(cbFaultProcessor)
-//	    	.end()
+				.log("${headers}")
+				.enrich()
+					.simple("{{komi.url.isoadapter.accountinquiry}}?"
+						+ "socketTimeout=10000&" 
+						+ "bridgeEndpoint=true")
+					.aggregationStrategy(enrichmentAggregator)
+				.convertBodyTo(String.class)
+		 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] CB Response: ${body}")
 
-	 		
+ 				.unmarshal(accountEnquiryResponseJDF)
+
+	 		.endDoTry()
+	    	.doCatch(Exception.class)
+				.log(LoggingLevel.ERROR, "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Call CB Error.")
+		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+		    	.process(cbFaultProcessor)
+	    	.end()
+
+//	 		.removeHeaders("*")
+//	 		.stop()
 	 		
 	 		// kembali ke AERoute
 	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] selesai call AE corebank")

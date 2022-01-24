@@ -8,6 +8,7 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.corebank.isopojo.AccountEnquiryInboundRequest;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.corebank.pojo.CbSettlementRequestPojo;
 import bifast.inbound.corebank.pojo.CbSettlementResponsePojo;
@@ -30,6 +31,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 	public void configure() throws Exception {
 		JacksonDataFormat aciRequestJDF = jdfService.wrapRoot(AccountCustInfoRequestPojo.class);
 		JacksonDataFormat aciResponseJDF = jdfService.basic(AccountCustInfoResponsePojo.class);
+		JacksonDataFormat aeRequestJDF = jdfService.wrapRoot(AccountEnquiryInboundRequest.class);
 		JacksonDataFormat creditResponseJDF = jdfService.basic(CbCreditResponsePojo.class);
 		JacksonDataFormat settlementJDF = jdfService.wrapRoot(CbSettlementRequestPojo.class);
 		JacksonDataFormat settlementResponseJDF = jdfService.basic(CbSettlementResponsePojo.class);
@@ -45,6 +47,9 @@ public class IsoAdapterRoute extends RouteBuilder{
 				.when().simple("${body.class} endsWith 'CustomerAccountInfoInboundRequest'")
 					.setHeader("cb_requestName", constant("accountcustinfo"))
 					.marshal(aciRequestJDF)
+				.when().simple("${body.class} endsWith 'AccountEnquiryInboundRequest'")
+					.setHeader("cb_requestName", constant("accountenquiry"))
+					.marshal(aeRequestJDF)
 				.when().simple("${body.class} endsWith 'DebitReversalRequestPojo'")
 					.setHeader("cb_requestName", constant("debitreversal"))
 					.marshal(debitReversalReqJDF)

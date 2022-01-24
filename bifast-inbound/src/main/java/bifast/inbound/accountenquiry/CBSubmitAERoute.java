@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.CbCallFaultProcessor;
+import bifast.inbound.corebank.isopojo.AccountEnquiryInboundRequest;
+import bifast.inbound.corebank.isopojo.AccountEnquiryInboundResponse;
 import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
-import bifast.inbound.corebank.pojo2.AccountEnquiryInboundRequest;
-import bifast.inbound.corebank.pojo2.AccountEnquiryInboundResponse;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.inbound.service.TransRef;

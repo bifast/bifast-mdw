@@ -1,4 +1,4 @@
-package bifast.inbound.corebank.pojo2;
+package bifast.inbound.corebank.isopojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
