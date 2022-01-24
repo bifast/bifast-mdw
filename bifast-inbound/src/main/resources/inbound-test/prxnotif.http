@@ -17,7 +17,7 @@ Content-Type: application/json
         "FIId": {
           "FinInstnId": {
             "Othr": {
-              "Id": "AGTBIDJA"
+              "Id": "SIHBIDJA"
             }
           }
         }
@@ -46,8 +46,8 @@ Content-Type: application/json
         },
         "Ntfctn": {
           "OrgnlPrxy": {
-            "Tp": "01",
-            "Val": "626842899"
+            "Tp": "02",
+            "Val": "andilala@gmail.com"
           },
           "OrgnlId": "20210705AGTBIDJA72002991091",
           "OrgnlAcct": {
@@ -56,7 +56,7 @@ Content-Type: application/json
             "Agt": {
               "FinInstnId": {
                 "Othr": {
-                  "Id": "AGTBIDJA"
+                  "Id": "SIHBIDJA"
                 }
               }
             },

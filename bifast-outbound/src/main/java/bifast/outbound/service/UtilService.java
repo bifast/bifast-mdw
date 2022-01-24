@@ -22,7 +22,8 @@ public class UtilService {
 	@Autowired private ChannelTransactionRepository channelTrnsRepo;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-	DecimalFormat df = new DecimalFormat("00000000");
+	DecimalFormat df = new DecimalFormat("000");
+	static DecimalFormat secondOfDayFm = new DecimalFormat("00000");
 
     private static int komiSeq = 0;
 
@@ -31,17 +32,19 @@ public class UtilService {
         if (komiSeq > 999) komiSeq = 0;
         return komiSeq;
     }
-
-	
 	
 	public String genKomiTrnsId () {
 		
 		LocalTime now = LocalTime.now(ZoneId.systemDefault());
-		int secofday = now.toSecondOfDay() ;
+//		int secofday = now.toSecondOfDay() ;
 
+		int secofday = LocalTime.now(ZoneId.systemDefault()).toSecondOfDay() ;
+		String strSecofday = secondOfDayFm.format(secofday);
+		
 		String strToday = LocalDate.now().format(formatter);
-		Long cnt = channelTrnsRepo.getKomiSequence();
-		return (strToday + "O" + df.format(cnt));
+//		Long cnt = channelTrnsRepo.getKomiSequence();
+		int cnt = nextKomiTrnsId();
+		return (strToday + "O" + strSecofday + df.format(cnt));
 	}
 
 	public String genBusMsgId (String trxType, RequestMessageWrapper rmw) {

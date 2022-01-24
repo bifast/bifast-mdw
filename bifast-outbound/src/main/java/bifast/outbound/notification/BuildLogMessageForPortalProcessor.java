@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -96,7 +97,8 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 			logMsg.setCodelog("AE");
 			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 			
-			if ((null != aeReq.getCreditorAccountNumber()) || !(aeReq.getCreditorAccountNumber().isBlank())) 
+			logger.debug("CreditorAccountNumber: " + Optional.ofNullable(aeReq.getCreditorAccountNumber()).orElse(""));
+			if (null != rmw.getAccountEnquiryRequest())
 				data.setBifast_trx_no(rmw.getAccountEnquiryRequest().getAppHdr().getBizMsgIdr());
 			else
 				data.setBifast_trx_no(rmw.getProxyResolutionRequest().getAppHdr().getBizMsgIdr());

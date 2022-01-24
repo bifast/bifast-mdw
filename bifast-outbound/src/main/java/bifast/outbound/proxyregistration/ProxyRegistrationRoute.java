@@ -53,7 +53,7 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 			
 			// jika bukan NEWR, siapkan data request unt ambil RegistrationID
 			.log("${body.registrationType}")
-			.filter().simple("${body.registrationType} != 'NEWR'")
+			.filter().simple("${body.registrationType} != 'NEWR' && ${body.registrationId} == null")
 				.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
 						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Cari registrationID.")
 				.process(new Processor() {
@@ -95,6 +95,7 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 			.filter().simple("${body.class} endsWith 'ChnlProxyRegistrationRequestPojo'")
 				
 				.process(proxyRegistrationRequestProcessor)
+				
 				.to("direct:call-cihub")
 				.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
 						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Dari call-cihub berupa ${body}")

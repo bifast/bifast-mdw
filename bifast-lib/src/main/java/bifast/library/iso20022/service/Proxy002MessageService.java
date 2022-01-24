@@ -88,6 +88,8 @@ public class Proxy002MessageService {
 		
 		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("SUSP"))
 			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.SUSP);
+		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("SUSB"))
+			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.SUSB);
 
 		else if (orgnlMessage.getDocument().getPrxyRegn().getRegn().getRegnTp().value().equals("ACTV"))
 			proxy002.getRegnRspn().setOrgnlRegnTp(ProxyRegistrationType1Code.ACTV);

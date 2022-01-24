@@ -80,6 +80,8 @@ public class Proxy001MessageService {
 			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.DEAC);
 		else if (seed.getRegistrationType().equals("SUSP"))
 			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.SUSP);
+		else if (seed.getRegistrationType().equals("SUSB"))
+			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.SUSB);
 		else if (seed.getRegistrationType().equals("ACTV"))
 			proxy001.getRegn().setRegnTp(ProxyRegistrationType1Code.ACTV);
 		else if (seed.getRegistrationType().equals("PORT"))

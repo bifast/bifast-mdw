@@ -41,9 +41,11 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		else if (regType.equals("AMND")) {
 			seed = proxyRegService.amnd(msg);
 		}
-		else if (regType.equals("SUSP")) {
+		else if (regType.equals("SUSP")) 
 			seed = proxyRegService.susp(msg);			
-		}
+		else if (regType.equals("SUSB")) 
+			seed = proxyRegService.susp(msg);			
+		
 		else if (regType.equals("DEAC")) {
 			seed = proxyRegService.deac(msg);			
 

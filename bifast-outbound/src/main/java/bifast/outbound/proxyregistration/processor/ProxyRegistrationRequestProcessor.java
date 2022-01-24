@@ -60,6 +60,7 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		seedProxyRegis.setProxyValue(chnReq.getProxyValue());
 		seedProxyRegis.setRegistrationId(msgId);
 		
+		logger.debug("Registration Type: " + chnReq.getRegistrationType());
 		logger.debug("Registration ID: " + chnReq.getRegistrationId());
 		if (null != chnReq.getRegistrationId()) 
 			seedProxyRegis.setRegistrationId(chnReq.getRegistrationId());

@@ -23,7 +23,7 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20220101CITYIDJA510O0100000001",
+      "BizMsgIdr": "20220101CITYIDJA510O0100000002",
       "MsgDefIdr": "pacs.008.001.08",
       "CreDt": "2021-12-28T08:43:33Z"
     },

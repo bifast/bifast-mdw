@@ -9,7 +9,7 @@ Authorization: Basic CMS:password
         "NoRef" : "211256{{$randomInt 10 1000}}",
         "SenderAccountNumber" : "7732004021",
         "ScndIdType" : "01",
-        "ScndIdValue" : "25666057"
+        "ScndIdValue" : "256000012121"
     }
 }
 
@@ -43,8 +43,9 @@ Authorization: Basic CMS:password
 
 {
     "ProxyRegistrationRequest" : {
-        "NoRef" : "1511652",
-        "RegistrationType" : "NEWR",
+        "NoRef" : "FRN1511652{{$randomInt 1000 9999}}",
+        "RegistrationType" : "SUSB",
+        "RegistrationId" : "403056",
         "ProxyType" : "02",
         "ProxyValue" : "bams@gmail.com",
         "DisplayName" : "JOHN SMITH",

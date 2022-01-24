@@ -41,6 +41,7 @@ public enum ProxyRegistrationType1Code {
     DEAC,
     NEWR,
     SUSP,
+    SUSB,
     ACTV,
     PORT;
 
