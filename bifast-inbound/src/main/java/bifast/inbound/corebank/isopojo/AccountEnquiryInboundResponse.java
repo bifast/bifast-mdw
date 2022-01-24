@@ -3,7 +3,7 @@ package bifast.inbound.corebank.isopojo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class AccountEnquiryInboundResponse {
+public class AccountEnquiryInboundResponse extends BaseInboundRequestDTO{
 
     private String status;
     

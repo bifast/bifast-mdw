@@ -2,22 +2,17 @@ package bifast.inbound.route;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.accountenquiry.AccountEnquiryResponseProcessor;
-import bifast.inbound.accountenquiry.BuildAERequestForCbProcessor;
 import bifast.inbound.accountenquiry.IsoAERequestPrc;
 import bifast.inbound.accountenquiry.IsoAEResponsePrc;
 import bifast.inbound.corebank.CbCallFaultProcessor;
 import bifast.inbound.corebank.isopojo.AccountEnquiryInboundRequest;
 import bifast.inbound.corebank.isopojo.AccountEnquiryInboundResponse;
-import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
-import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
 import bifast.inbound.processor.CheckRequestMsgProcessor;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.service.JacksonDataFormatService;
@@ -27,7 +22,6 @@ import bifast.library.iso20022.custom.BusinessMessage;
 public class TestRoute extends RouteBuilder{
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private CheckRequestMsgProcessor checkRequestMsgProcessor;
-	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired private IsoAEResponsePrc aeResponseProcessor;
 	@Autowired private CbCallFaultProcessor cbFaultProcessor;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
@@ -45,7 +39,6 @@ public class TestRoute extends RouteBuilder{
 			
 			.log(LoggingLevel.DEBUG,"komi.jsonEndpoint", "-------****------")
 			.log(LoggingLevel.DEBUG,"komi.jsonEndpoint", "Terima: ${body}")
-
 
 			// simpan msg inbound compressed
 			.setHeader("hdr_tmp", simple("${body}"))
@@ -79,21 +72,19 @@ public class TestRoute extends RouteBuilder{
 	 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}]"
 						+ " CB Request: ${body}")
 
+			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
+
+	 		.removeHeaders("*")
 	 		.doTry()
 				.setHeader("HttpMethod", constant("POST"))
 				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
-//				.process(new Processor() {
-//					public void process(Exchange exchange) throws Exception {
-//			            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-//					}
-//				})
 
 				.log("${headers}")
-				.enrich()
-					.simple("{{komi.url.isoadapter.accountinquiry}}?"
+				.enrich("http://10.11.100.116:9003/komi/api/v1/adapter/accountinquiry?"
 						+ "socketTimeout=10000&" 
-						+ "bridgeEndpoint=true")
-					.aggregationStrategy(enrichmentAggregator)
+//						+ "copyHeaders=false&"
+						+ "bridgeEndpoint=true", enrichmentAggregator)
+//					.aggregationStrategy(enrichmentAggregator)
 				.convertBodyTo(String.class)
 		 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] CB Response: ${body}")
 
@@ -106,14 +97,14 @@ public class TestRoute extends RouteBuilder{
 		    	.process(cbFaultProcessor)
 	    	.end()
 
+			.setHeader("hdr_process_data", exchangeProperty("bkp_hdr_process_data"))
+
 //	 		.removeHeaders("*")
 //	 		.stop()
 	 		
 	 		// kembali ke AERoute
 	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] selesai call AE corebank")
 			.process(aeResponseProcessor)
-
-			.removeHeaders("ae_*")
 
 			// kembali ke InboundRoute
 			.setHeader("hdr_tmpbody", simple("${body}"))
