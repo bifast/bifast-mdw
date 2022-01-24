@@ -27,6 +27,10 @@ public class InboundJsonRoute extends RouteBuilder {
 			.post("/service")
 				.consumes("application/json")
 				.to("direct:parsejson")
+
+			.post("/test")
+				.consumes("application/json")
+				.to("direct:testae")
 		;
 
 
