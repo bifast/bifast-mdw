@@ -14,12 +14,16 @@ public class GregorianCalendarXMLAdapterExclMillis extends XmlAdapter<String, XM
 	@Override
 	public XMLGregorianCalendar unmarshal(String v) throws Exception  {
 		GregorianCalendar cal = new GregorianCalendar();
-        try {
+		
+		if (v.length() == 19)
+			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(v));
+		else if (v.length() == 20)
 			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(v));
-		} catch (ParseException e) {
+		else if (v.length() == 23)
+			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").parse(v));
+		else if (v.length() == 24)
 			cal.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(v));
-			e.printStackTrace();
-		}
+		
         XMLGregorianCalendar calendar = DatatypeFactory.newInstance().newXMLGregorianCalendar( cal);
 		return calendar;
 	}

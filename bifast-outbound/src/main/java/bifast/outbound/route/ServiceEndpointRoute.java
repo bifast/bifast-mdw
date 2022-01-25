@@ -147,9 +147,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.to("seda:savetablechannel?exchangePattern=InOnly")
 			
-			.filter().simple("${header.hdr_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
-				.to("seda:logportal?exchangePattern=InOnly")
-			.end()
+//			.filter().simple("${header.hdr_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
+//				.to("seda:logportal?exchangePattern=InOnly")
+//			.end()
 			
 			.marshal(chnlResponseJDF)
 			.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Response: ${body}")
