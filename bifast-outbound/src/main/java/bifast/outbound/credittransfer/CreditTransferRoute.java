@@ -47,7 +47,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	    	.handled(true)
 	    ;
 	    
-		from("seda:credittrns").routeId("komi.ct")
+		from("direct:credittrns").routeId("komi.ct")
 			
 			.setHeader("ct_progress", constant("Start"))
 			
@@ -120,7 +120,7 @@ public class CreditTransferRoute extends RouteBuilder {
 		;
 		
 		
-		from("seda:savecredittransfer")
+		from("seda:savecredittransfer?concurrentConsumers=20").routeId("komi.ct.savedb")
 			.process(saveCrdtTrnsProcessor)
 		;
 		

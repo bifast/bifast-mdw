@@ -122,7 +122,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					.to("direct:acctenqr")
 					
 				.when().simple("${header.hdr_request_list.msgName} == 'CTReq'")
-					.to("seda:credittrns?timeout=0")
+					.to("direct:credittrns?timeout=0")
 
 				.when().simple("${header.hdr_request_list.msgName} == 'PSReq'")
 					.to("direct:pschnl")
@@ -157,7 +157,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 		;
 		
-		from("seda:savetablechannel").routeId("komi.savechnltrns")
+		from("seda:savetablechannel?concurrentConsumers=30").routeId("komi.savechnltrns")
 			.log(LoggingLevel.DEBUG, "komi.savechnltrns", 
 					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Save table channel_transaction.")
 			.process(saveChannelTransactionProcessor)

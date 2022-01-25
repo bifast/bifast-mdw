@@ -25,7 +25,7 @@ public class NotificationRoute extends RouteBuilder {
 		JacksonDataFormat portalLogJDF = jdfService.wrapRoot(PortalApiPojo.class);
 		JacksonDataFormat custNotifJDF = jdfService.wrapRoot(CustomerNotificationPojo.class);
 		
-		from("seda:logportal").routeId("komi.notif.portal")
+		from("seda:logportal?concurrentConsumers=10").routeId("komi.notif.portal")
 			.process(buildLogMessage)
 			.marshal(portalLogJDF)
 
