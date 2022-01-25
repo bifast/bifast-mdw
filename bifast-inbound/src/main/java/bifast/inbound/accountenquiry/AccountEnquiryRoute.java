@@ -8,8 +8,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class AccountEnquiryRoute extends RouteBuilder {
 
-	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired private AccountEnquiryResponseProcessor aeResponseProcessor;
+	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
+	@Autowired private IsoAERequestPrc isoAERequestPrc;
+	@Autowired private IsoAEResponsePrc isoAEResponsePrc;
 
 	@Override
 	public void configure() throws Exception {
@@ -19,15 +21,17 @@ public class AccountEnquiryRoute extends RouteBuilder {
 			.setHeader("ae_obj_birequest", simple("${body}"))
 										
 			// prepare untuk request ke corebank
-			.process(buildAccountEnquiryRequestProcessor)
+//			.process(buildAccountEnquiryRequestProcessor)
+			.process(isoAERequestPrc)
 
 	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Akan call AE corebank")
 
-			//TODO call corebank Account Enquiry
-			.to("seda:callcb")
+//			.to("seda:callcb")
+			.to("seda:isoadpt")
 
 	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] selesai call AE corebank")
-			.process(aeResponseProcessor)
+			.process(isoAEResponsePrc)
+//			.process(aeResponseProcessor)
 
 					
 			.removeHeaders("ae_*")
