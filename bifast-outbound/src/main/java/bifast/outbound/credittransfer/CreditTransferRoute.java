@@ -58,7 +58,7 @@ public class CreditTransferRoute extends RouteBuilder {
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
 				.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] call Corebank")
-				.to("seda:callcb")
+				.to("direct:callcb")
 			.end()
 		
 			// periksa hasil debit-account. Jika failure raise exception

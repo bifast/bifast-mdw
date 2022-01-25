@@ -51,7 +51,7 @@ public class AcctCustInfoRoute extends RouteBuilder{
 			})
 			
 			// call ke corebank
-			.to("seda:callcb")
+			.to("direct:callcb")
 	
 			.log(LoggingLevel.DEBUG, "komi.acctcustinfo", "After callcb: ${body}")
 			.process(new Processor() {

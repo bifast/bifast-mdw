@@ -40,7 +40,7 @@ public class CorebankRoute extends RouteBuilder{
 		JacksonDataFormat customerInfoResponseJDF = jdfService.basic(CbCustomerInfoResponsePojo.class);
 	
 		// ROUTE CALLCB 
-		from("seda:callcb").routeId("komi.corebank")
+		from("direct:callcb").routeId("komi.corebank")
 		
 			.log(LoggingLevel.DEBUG, "komi.corebank", 
 					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] call Corebank")
