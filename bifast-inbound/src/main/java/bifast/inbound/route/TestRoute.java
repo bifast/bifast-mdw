@@ -62,46 +62,40 @@ public class TestRoute extends RouteBuilder{
 			.process(isoAERequestPrc)
 	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Akan call AE corebank")
 
-//			.to("seda:callcb")
-//			.delay(simple("{{test.delay}}"))
+			.to("direct:isoadpt")
 
-	 		// CorebankRoute
-			.log(LoggingLevel.DEBUG,"komi.corebank", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Terima di corebank: ${body}")
-			.setHeader("cb_requestName", constant("accountinquiry"))
-			.marshal(accountEnquiryReqJDF)
-	 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}]"
-						+ " CB Request: ${body}")
-
-			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
-	 		.removeHeaders("*")
-
-	 		.doTry()
-				.setHeader("HttpMethod", constant("POST"))
-				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
-
-				.log("${headers}")
-				.enrich("http://10.11.100.116:9003/komi/api/v1/adapter/accountinquiry?"
-						+ "socketTimeout=10000&" 
-//						+ "copyHeaders=false&"
-						+ "bridgeEndpoint=true", enrichmentAggregator)
-//					.aggregationStrategy(enrichmentAggregator)
-				.convertBodyTo(String.class)
-		 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] CB Response: ${body}")
-
- 				.unmarshal(accountEnquiryResponseJDF)
-
-	 		.endDoTry()
-	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Call CB Error.")
-		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-		    	.process(cbFaultProcessor)
-	    	.end()
-
-			.setHeader("hdr_process_data", exchangeProperty("bkp_hdr_process_data"))
-
+//	 		// CorebankRoute
+//			.log(LoggingLevel.DEBUG,"komi.corebank", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Terima di corebank: ${body}")
+//			.setHeader("cb_requestName", constant("accountinquiry"))
+//			.marshal(accountEnquiryReqJDF)
+//	 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}]"
+//						+ " CB Request: ${body}")
+//
+//			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
 //	 		.removeHeaders("*")
-//	 		.stop()
-	 		
+//
+//	 		.doTry()
+//				.setHeader("HttpMethod", constant("POST"))
+//				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
+//
+//				.log("${headers}")
+//				.enrich("http://10.11.100.116:9003/komi/api/v1/adapter/accountinquiry?"
+//						+ "socketTimeout=10000&" 
+//						+ "bridgeEndpoint=true", enrichmentAggregator)
+//				.convertBodyTo(String.class)
+//		 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] CB Response: ${body}")
+//
+// 				.unmarshal(accountEnquiryResponseJDF)
+//
+//	 		.endDoTry()
+//	    	.doCatch(Exception.class)
+//				.log(LoggingLevel.ERROR, "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Call CB Error.")
+//		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+//		    	.process(cbFaultProcessor)
+//	    	.end()
+//
+//			.setHeader("hdr_process_data", exchangeProperty("bkp_hdr_process_data"))
+ 		
 	 		// kembali ke AERoute
 	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] selesai call AE corebank")
 			.process(aeResponseProcessor)

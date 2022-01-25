@@ -27,7 +27,7 @@ public class AccountEnquiryRoute extends RouteBuilder {
 	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Akan call AE corebank")
 
 //			.to("seda:callcb")
-			.to("seda:isoadpt")
+			.to("direct:isoadpt")
 
 	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] selesai call AE corebank")
 			.process(isoAEResponsePrc)

@@ -42,7 +42,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponsePojo.class);
 
 		// ROUTE CALLCB 
-		from("seda:isoadpt").routeId("komi.iso.adapter")
+		from("direct:isoadpt").routeId("komi.iso.adapter")
 			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
 			.removeHeaders("*")
 
