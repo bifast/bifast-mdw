@@ -73,8 +73,8 @@ public class TestRoute extends RouteBuilder{
 						+ " CB Request: ${body}")
 
 			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
-
 	 		.removeHeaders("*")
+
 	 		.doTry()
 				.setHeader("HttpMethod", constant("POST"))
 				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))

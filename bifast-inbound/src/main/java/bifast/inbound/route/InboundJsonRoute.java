@@ -39,7 +39,7 @@ public class InboundJsonRoute extends RouteBuilder {
 			.setHeader("hdr_inputformat", constant("json"))
 
 			.log(LoggingLevel.DEBUG,"komi.jsonEndpoint", "-------****------")
-			.log(LoggingLevel.DEBUG,"komi.jsonEndpoint", "Terima: ${body}")
+			.log("Terima: ${body}")
 			
 			// simpan msg inbound compressed
 			.setHeader("hdr_tmp", simple("${body}"))

@@ -43,12 +43,14 @@ public class IsoAdapterRoute extends RouteBuilder{
 
 		// ROUTE CALLCB 
 		from("seda:isoadpt").routeId("komi.iso.adapter")
-			.log("isoadapter")
-			.log(LoggingLevel.DEBUG,"komi.iso.adapter", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Terima di corebank: ${body}")
-
 			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
 			.removeHeaders("*")
 
+			.setHeader("cb_msgname", simple("${exchangeProperty[bkp_hdr_process_data.inbMsgName]}"))
+			.setHeader("cb_e2eid", simple("${exchangeProperty[bkp_hdr_process_data.endToEndId]}"))
+			
+			.log(LoggingLevel.DEBUG,"komi.iso.adapter", "[${header.cb_msgname}:${header.cb_e2eid}] Terima di corebank: ${body}")
+					
 			.choice()
 				.when().simple("${body.class} endsWith 'CustomerAccountInfoInboundRequest'")
 					.setHeader("cb_requestName", constant("accountcustinfo"))
@@ -65,8 +67,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 		 			.log("Akan kirim settlment: ${body.class}")
 			.end()
 					
-	 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}]"
-	 														+ " CB Request: ${body}")
+	 		.log("[${header.cb_msgname}:${header.cb_e2eid}] CB Request: ${body}")
 
 			
 	 		.doTry()
@@ -78,7 +79,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 					.aggregationStrategy(enrichmentAggregator)
 					.convertBodyTo(String.class)
 				
-				.log("Corebank response: ${body}")
+				.log("[${header.cb_msgname}:${header.cb_e2eid}] Corebank response: ${body}")
 
 		    	.choice()
 		 			.when().simple("${header.cb_requestName} == 'accountcustinfo'")
@@ -98,28 +99,27 @@ public class IsoAdapterRoute extends RouteBuilder{
 		 		.end()
 
 				.filter().simple("${header.cb_response} != 'ACTC' ")
-				.process(new Processor() {
-					public void process(Exchange exchange) throws Exception {
-						FaultPojo fault = new FaultPojo();
-						String cbResponse = exchange.getMessage().getHeader("cb_response", String.class);
-						String cbReason = exchange.getMessage().getHeader("cb_reason", String.class);
-						fault.setResponseCode(cbResponse);
-						fault.setReasonCode(cbReason);
-						exchange.getMessage().setBody(fault);
-					}
-				})
-				.setHeader("hdr_process_data", exchangeProperty("bkp_hdr_process_data"))
-
-//			.end()
+					.process(new Processor() {
+						public void process(Exchange exchange) throws Exception {
+							FaultPojo fault = new FaultPojo();
+							String cbResponse = exchange.getMessage().getHeader("cb_response", String.class);
+							String cbReason = exchange.getMessage().getHeader("cb_reason", String.class);
+							fault.setResponseCode(cbResponse);
+							fault.setReasonCode(cbReason);
+							exchange.getMessage().setBody(fault);
+							}
+						})
+				.end()
+				
 
 	 		.endDoTry()
 	    	.doCatch(Exception.class)
-			.setHeader("hdr_process_data", exchangeProperty("bkp_hdr_process_data"))
-				.log(LoggingLevel.ERROR, "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Call CB Error.")
+				.log(LoggingLevel.ERROR, "[${header.cb_msgname}:${header.cb_e2eid}] Call CB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(cbFaultProcessor)
 	    	.end()
 
+			.setHeader("hdr_process_data", exchangeProperty("bkp_hdr_process_data"))
 			.removeHeaders("cb_*")
 
 		;
