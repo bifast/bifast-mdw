@@ -86,7 +86,7 @@ public class CihubRoute extends RouteBuilder {
 						+ "sisa waktu ${header.hdr_remain_time}")
 
 				.enrich()
-					.simple("http:{{komi.url.ciconnector}}?"
+					.simple("{{komi.url.ciconnector}}?"
 						+ "socketTimeout=${header.hdr_remain_time}&" 
 						+ "bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)

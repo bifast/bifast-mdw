@@ -115,7 +115,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			})
 			
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] start process.")
+					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Mulai proses.")
 
 			.choice()
 				.when().simple("${header.hdr_request_list.msgName} == 'AEReq'")
@@ -145,7 +145,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
 					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] process complete.")
 
-			.to("seda:savetablechannel?exchangePattern=InOnly")
+//			.to("seda:savetablechannel?exchangePattern=InOnly")
 			
 //			.filter().simple("${header.hdr_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
 //				.to("seda:logportal?exchangePattern=InOnly")
