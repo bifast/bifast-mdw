@@ -63,7 +63,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] "
 					+ " Response: ${body}")
 			.removeHeaders("*")
-			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
+//			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
 		;
 		
@@ -145,7 +145,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
 					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] process complete.")
 
-//			.to("seda:savetablechannel?exchangePattern=InOnly")
+			.to("seda:savetablechannel?exchangePattern=InOnly")
 			
 //			.filter().simple("${header.hdr_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
 //				.to("seda:logportal?exchangePattern=InOnly")
@@ -157,7 +157,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 		;
 		
-		from("seda:savetablechannel?concurrentConsumers=30").routeId("komi.savechnltrns")
+		from("seda:savetablechannel?concurrentConsumers=10&blockWhenFull=true")
+			.routeId("komi.savechnltrns")
+			.delay(20000)
 			.log(LoggingLevel.DEBUG, "komi.savechnltrns", 
 					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Save table channel_transaction.")
 			.process(saveChannelTransactionProcessor)

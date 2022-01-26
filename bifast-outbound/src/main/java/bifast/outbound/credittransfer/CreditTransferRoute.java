@@ -110,7 +110,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.filter().simple("${header.ct_progress} in 'REJECT,ERROR' && ${header.hdr_request_list.merchantType} != '6010'")
 				.log(LoggingLevel.DEBUG, "komi.ct", 
 						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] akan reversal")
-				.to("seda:debitreversal")
+				.to("direct:debitreversal")
 			.end()
 	
 			.process(crdtTransferResponseProcessor)		

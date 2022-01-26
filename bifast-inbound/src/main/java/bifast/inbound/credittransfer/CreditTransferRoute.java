@@ -109,13 +109,13 @@ public class CreditTransferRoute extends RouteBuilder {
 				.end()
 			.end()
 	
-			.to("seda:save_ct")
+			.to("seda:save_ct?exchangePattern=InOnly")
 		
 			.removeHeaders("ct_*")
 
 		;
 	
-		from("seda:save_ct?concurrentConsumers=2").routeId("savect")
+		from("seda:save_ct?concurrentConsumers=5").routeId("savect")
 			.setExchangePattern(ExchangePattern.InOnly)
 			.log("Akan save ${header.hdr_process_data.inbMsgName}")
 			.process(saveCreditTransferProcessor)

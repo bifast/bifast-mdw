@@ -43,7 +43,7 @@ public class DebitReversalRoute extends RouteBuilder{
 		JacksonDataFormat debitReversalRequestJDF = jdfService.basic(DebitReversalRequestPojo.class);
 		JacksonDataFormat debitReversalResponseJDF = jdfService.wrapRoot(DebitReversalResponsePojo.class);
 
-		from("seda:debitreversal").routeId("komi.reverse_ct")
+		from("direct:debitreversal").routeId("komi.reverse_ct")
 			
 			.log(LoggingLevel.DEBUG, "komi.reverse_ct", 
 					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Akan debit-reversal")
@@ -149,7 +149,7 @@ public class DebitReversalRoute extends RouteBuilder{
 			
 		;
 		
-		from("seda:savecbdebitrevr?concurrentConsumers=3").routeId("komi.savecbdebitrevr")
+		from("seda:savecbdebitrevr?concurrentConsumers=10").routeId("komi.savecbdebitrevr")
 			.log(LoggingLevel.DEBUG, "komi.savecbdebitrevr", 
 				"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] akan save Debit Reversal ke CB-log")
 			
