@@ -474,6 +474,9 @@ public class FlattenIsoMessageService {
 				if (!(null == ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm() )) 
 					flatMsg.setCreditorTownName(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
 			}
+			
+			if (null != ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getRltdEndToEndId()) 
+				flatMsg.setReverseEndToEndId(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getRltdEndToEndId());
 
 		}
 

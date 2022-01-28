@@ -32,7 +32,7 @@ public class GregorianCalendarXMLAdapter extends XmlAdapter<String, XMLGregorian
 
 	@Override
 	public String marshal(XMLGregorianCalendar v) throws Exception {
-		String strTime = String.format("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", 
+		String strTime = String.format("%04d-%02d-%02dT%02d:%02d:%02d.%03d", 
 							v.getYear(),v.getMonth(), v.getDay(),
 							v.getHour(), v.getMinute(), v.getSecond(), v.getMillisecond());
 		

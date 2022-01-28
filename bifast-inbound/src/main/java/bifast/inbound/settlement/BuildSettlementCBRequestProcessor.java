@@ -31,7 +31,7 @@ public class BuildSettlementCBRequestProcessor implements Processor {
 		sttlRequest.setKomiTrnsId(processData.getKomiTrnsId());
 		
 		sttlRequest.setBizMsgId(flatSttl.getBizMsgIdr());
-		sttlRequest.setMsgId(flatSttl.getMsgId());	
+		sttlRequest.setMsgId(flatSttl.getOrgnlEndToEndId());	
 		
 			
 		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatSttl.getOrgnlEndToEndId());

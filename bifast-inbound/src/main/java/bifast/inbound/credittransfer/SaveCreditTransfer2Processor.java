@@ -59,7 +59,8 @@ public class SaveCreditTransfer2Processor implements Processor {
 //		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
 		
 		ct.setAmount(flatReq.getAmount());
-		ct.setCrdtTrnRequestBizMsgIdr(flatReq.getEndToEndId());
+		ct.setCrdtTrnRequestBizMsgIdr(flatReq.getBizMsgIdr());
+		ct.setEndToEndId(flatReq.getEndToEndId());
 		ct.setCreditorAccountNumber(flatReq.getCreditorAccountNo());
 
 		if (!(null == flatReq.getCreditorAccountType()))

@@ -43,6 +43,7 @@ public enum ProxyRegistrationType1Code {
     SUSP,
     SUSB,
     ACTV,
+    ACTB,
     PORT;
 
     public String value() {

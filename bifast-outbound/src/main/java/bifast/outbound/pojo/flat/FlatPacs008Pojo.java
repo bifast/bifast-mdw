@@ -43,6 +43,8 @@ public class FlatPacs008Pojo extends FlatMessageBase {
 	private String creditorResidentialStatus;
 	private String creditorTownName;
 	
+	private String reverseEndToEndId;
+	
 	public String getMsgId() {
 		return msgId;
 	}
@@ -228,6 +230,12 @@ public class FlatPacs008Pojo extends FlatMessageBase {
 	}
 	public void setCreditorTownName(String creditorTownName) {
 		this.creditorTownName = creditorTownName;
+	}
+	public String getReverseEndToEndId() {
+		return reverseEndToEndId;
+	}
+	public void setReverseEndToEndId(String reverseEndToEndId) {
+		this.reverseEndToEndId = reverseEndToEndId;
 	}
 	
 	

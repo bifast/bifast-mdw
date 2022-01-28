@@ -44,6 +44,7 @@ public class StoreCreditTransferProcessor implements Processor {
 			ct.setCihubRequestDT(LocalDateTime.now());
 			ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
 			ct.setCrdtTrnRequestBizMsgIdr(biRequest.getAppHdr().getBizMsgIdr());
+			ct.setEndToEndId(creditTransferReq.getCdtTrfTxInf().get(0).getPmtId().getEndToEndId());
 			ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 			ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
 			ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
@@ -58,7 +59,7 @@ public class StoreCreditTransferProcessor implements Processor {
 				ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		
 			
 			ct.setOriginatingBank(biRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
-			ct.setRecipientBank(biRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
+			ct.setRecipientBank(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getOthr().getId());
 			
 			creditTransferRepo.save(ct);
 

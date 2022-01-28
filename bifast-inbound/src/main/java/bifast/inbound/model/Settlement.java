@@ -26,6 +26,9 @@ public class Settlement {
 	private String settlBizMsgId;
 	@Column(name="ORGNL_CT_BIZMSGID", length=50)
 	private String orgnlCTBizMsgId;
+	@Column(name="E2E_ID", length=50)
+	private String orgnlEndToEndId;
+
 
 	@Column(length=35)
 	private String crdtAccountNo;
@@ -77,6 +80,14 @@ public class Settlement {
 
 	public void setOrgnlCTBizMsgId(String orgnlCTBizMsgId) {
 		this.orgnlCTBizMsgId = orgnlCTBizMsgId;
+	}
+
+	public String getOrgnlEndToEndId() {
+		return orgnlEndToEndId;
+	}
+
+	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
+		this.orgnlEndToEndId = orgnlEndToEndId;
 	}
 
 	public String getCrdtAccountNo() {

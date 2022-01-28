@@ -59,6 +59,9 @@ public class CreditTransfer {
 	@Column(name="STTL_BIZMSGID", length=50)
 	private String settlementConfBizMsgIdr;
 
+	@Column(name="E2E_ID", length=50)
+	private String endToEndId;
+
 	@Column(name="CIHUB_REQ_TIME")
 	private LocalDateTime cihubRequestDT;
 	
@@ -192,6 +195,12 @@ public class CreditTransfer {
 	}
 	public void setSettlementConfBizMsgIdr(String settlementConfBizMsgIdr) {
 		this.settlementConfBizMsgIdr = settlementConfBizMsgIdr;
+	}
+	public String getEndToEndId() {
+		return endToEndId;
+	}
+	public void setEndToEndId(String endToEndId) {
+		this.endToEndId = endToEndId;
 	}
 	public LocalDateTime getCihubRequestDT() {
 		return cihubRequestDT;

@@ -38,8 +38,9 @@ public class SaveSettlementMessageProcessor implements Processor {
 		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
 		
 		Settlement sttl = new Settlement();
-		sttl.setOrgnlCTBizMsgId(flatSttl.getOrgnlEndToEndId());
+//		sttl.setOrgnlCTBizMsgId(flatSttl.getOrgnlEndToEndId());
 		sttl.setSettlBizMsgId(flatSttl.getBizMsgIdr());
+		sttl.setOrgnlEndToEndId(flatSttl.getOrgnlEndToEndId());
 		
 		sttl.setDbtrBank(flatSttl.getDbtrAgtFinInstnId());
 		sttl.setCrdtBank(flatSttl.getCdtrAgtFinInstnId());

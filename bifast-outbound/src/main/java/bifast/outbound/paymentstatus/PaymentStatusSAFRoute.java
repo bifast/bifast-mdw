@@ -41,20 +41,23 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 		;
 		
 		
-		from("sql:select ct.id, cht.channel_ref_id, ct.req_bizmsgid, ct.komi_trns_id as komi_id, chnl.channel_type, "
+		from("sql:select ct.id, cht.channel_ref_id, ct.req_bizmsgid, ct.komi_trns_id as komi_id, "
+				+ "ct.e2e_id, chnl.channel_type, "
 				+ "ct.recpt_bank, cht.request_time  "
 				+ "from kc_credit_transfer ct "
 				+ "join kc_channel_transaction cht on ct.komi_trns_id = cht.komi_trns_id "
 				+ "join kc_channel chnl on chnl.channel_id = cht.channel_id "
-				+ " where ct.call_status = 'TIMEOUT'"
-				+ "?delay=10000"
+				+ "where ct.call_status = 'TIMEOUT' "
+				+ "order by ps_counter "
+				+ "limit 5"
+				+ "?delay=15000"
 				+ "&sendEmptyMessageWhenIdle=true"
 				)
 			.routeId("komi.ps.saf")
 //			.autoStartup(false)
 						
 			.setHeader("ps_qryresult", simple("${body}"))
-			.log("[CTReq:${header.ps_qryresult[channel_ref_id]}] PymtStsSAF started.")
+			.log("[CTReq:${header.ps_qryresult[e2e_id]}] PymtStsSAF started.")
 
 			// selesai dan matikan router jika tidak ada lagi SAF
 			.filter().simple("${body} == null")

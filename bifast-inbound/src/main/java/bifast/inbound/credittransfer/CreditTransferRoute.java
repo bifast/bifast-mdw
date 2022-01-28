@@ -60,12 +60,12 @@ public class CreditTransferRoute extends RouteBuilder {
 			// if SAF = NO/NEW --> call CB, set CBSTS = ACTC/RJCT
 			.filter().simple("${header.ct_saf} in 'NO,NEW'")
 				.log(LoggingLevel.DEBUG, "komi.ct", 
-						"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Akan call CB")
+						"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Akan call CB")
 
 				.process(buildAccountEnquiryRequestProcessor)
 				
 				.marshal(accountEnqRequestJDF)
-				.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] ${body}")
+				.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] ${body}")
 				.unmarshal(accountEnqRequestJDF)
 				
 				.setHeader("ct_cbrequest", simple("${body}"))
@@ -92,18 +92,18 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setBody(simple("${header.ct_tmpbody}"))
 
 			.log(LoggingLevel.DEBUG, "komi.ct", 
-					"[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] saf ${header.ct_saf}, cb_sts ${header.ct_cbsts}")
+					"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] saf ${header.ct_saf}, cb_sts ${header.ct_cbsts}")
 
 			//if SAF=old/new and CBSTS=RJCT --> reversal
 			//jika saf dan corebank error, ct proses harus diulang: reversal = UNDEFINED
 			.filter().simple("${header.ct_saf} != 'NO'")
 				.choice()
 					.when().simple("${header.ct_cbsts} == 'RJCT'")
-						.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Harus CT Reversal.")
+						.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Harus CT Reversal.")
 						.setHeader("hdr_reversal", constant("YES"))
 					.endChoice()
 					.when().simple("${header.ct_cbsts} == 'ERROR'")
-						.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_frBIobj.appHdr.bizMsgIdr}] Apakah CT Reversal?")
+						.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Apakah CT Reversal?")
 						.setHeader("hdr_reversal", constant("UNDEFINED"))
 					.endChoice()
 				.end()

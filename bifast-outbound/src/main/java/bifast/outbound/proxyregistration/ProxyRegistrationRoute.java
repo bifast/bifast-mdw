@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.Proxy;
 import bifast.outbound.pojo.ChannelResponseWrapper;
-import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.proxyinquiry.processor.ProxyResolutionRequestProcessor;

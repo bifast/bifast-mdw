@@ -237,18 +237,24 @@ public class Pacs008MessageService {
 		if (!(null==seed.getCrdtName()))
 			pacs008.getCdtTrfTxInf().get(0).getCdtr().setNm(seed.getCrdtName());
 		
-		pacs008.getCdtTrfTxInf().get(0).getCdtr().setId(new Party38Choice());
+		if (!(null!=seed.getCrdtId()) || (!(seed.getCrdtId().isBlank()))) {
+			pacs008.getCdtTrfTxInf().get(0).getCdtr().setId(new Party38Choice());
 		
-		if (seed.getCrdtType().equals("01")) {
-			pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().setPrvtId(new PersonIdentification13());
-			pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().add(new GenericPersonIdentification1());
-			pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).setId(seed.getCrdtId());
+			System.out.println("Iddddd: " + seed.getCrdtId());
+			if (null != seed.getCrdtType()) {
+				if (seed.getCrdtType().equals("01")) {
+					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().setPrvtId(new PersonIdentification13());
+					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().add(new GenericPersonIdentification1());
+					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).setId(seed.getCrdtId());
+				}
+				else {
+					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().setOrgId(new OrganisationIdentification29());
+					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().add(new GenericOrganisationIdentification1());
+					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).setId(seed.getCrdtId());
+				} 
+			}
+		
 		}
-		else {
-			pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().setOrgId(new OrganisationIdentification29());
-			pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().add(new GenericOrganisationIdentification1());
-			pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).setId(seed.getCrdtId());
-		} 
 		
 		// CdtTrfTxInf / CdtrAcct
 		pacs008.getCdtTrfTxInf().get(0).setCdtrAcct(new CashAccount38());

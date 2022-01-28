@@ -28,7 +28,7 @@ public class CreditTransfer {
 	private String originatingBank;
 	@Column(name="RECPT_BANK", length=10)
 	private String recipientBank;
-	
+
 	@Column(name="DEBTOR_ACCT_NO", length=50)
 	private String debtorAccountNumber;
 	@Column(name="DEBTOR_ACCT_TYPE", length=10)
@@ -52,6 +52,9 @@ public class CreditTransfer {
 	
 	@Column(name="REQ_BIZMSGID", length=50)
 	private String crdtTrnRequestBizMsgIdr;
+
+	@Column(name="E2E_ID", length=50)
+	private String endToEndId;
 
 	@Column(name="RESP_BIZMSGID", length=50)
 	private String crdtTrnResponseBizMsgIdr;
@@ -182,6 +185,12 @@ public class CreditTransfer {
 	}
 	public void setCrdtTrnRequestBizMsgIdr(String crdtTrnRequestBizMsgIdr) {
 		this.crdtTrnRequestBizMsgIdr = crdtTrnRequestBizMsgIdr;
+	}
+	public String getEndToEndId() {
+		return endToEndId;
+	}
+	public void setEndToEndId(String endToEndId) {
+		this.endToEndId = endToEndId;
 	}
 	public String getCrdtTrnResponseBizMsgIdr() {
 		return crdtTrnResponseBizMsgIdr;
