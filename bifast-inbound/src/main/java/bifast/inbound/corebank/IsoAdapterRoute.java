@@ -11,9 +11,10 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.isopojo.AccountEnquiryInboundRequest;
 import bifast.inbound.corebank.isopojo.AccountEnquiryInboundResponse;
-import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
-import bifast.inbound.corebank.pojo.CbSettlementRequestPojo;
-import bifast.inbound.corebank.pojo.CbSettlementResponsePojo;
+import bifast.inbound.corebank.isopojo.CreditRequest;
+import bifast.inbound.corebank.isopojo.CreditResponse;
+import bifast.inbound.corebank.isopojo.SettlementRequest;
+import bifast.inbound.corebank.isopojo.SettlementResponse;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.processor.EnrichmentAggregator;
@@ -29,6 +30,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private CbCallFaultProcessor cbFaultProcessor;
+	@Autowired private SaveCBTransactionProc saveCBTransactionProc;
 
 	@Override
 	public void configure() throws Exception {
@@ -36,47 +38,55 @@ public class IsoAdapterRoute extends RouteBuilder{
 		JacksonDataFormat aciResponseJDF = jdfService.basic(AccountCustInfoResponsePojo.class);
 		JacksonDataFormat aeRequestJDF = jdfService.basic(AccountEnquiryInboundRequest.class);
 		JacksonDataFormat aeResponseJDF = jdfService.basic(AccountEnquiryInboundResponse.class);
-		JacksonDataFormat creditResponseJDF = jdfService.basic(CbCreditResponsePojo.class);
-		JacksonDataFormat settlementJDF = jdfService.basic(CbSettlementRequestPojo.class);
-		JacksonDataFormat settlementResponseJDF = jdfService.basic(CbSettlementResponsePojo.class);
+		JacksonDataFormat creditRequestJDF = jdfService.basic(CreditRequest.class);
+		JacksonDataFormat creditResponseJDF = jdfService.basic(CreditResponse.class);
+		JacksonDataFormat settlementJDF = jdfService.basic(SettlementRequest.class);
+		JacksonDataFormat settlementResponseJDF = jdfService.basic(SettlementResponse.class);
 		JacksonDataFormat debitReversalReqJDF = jdfService.basic(DebitReversalRequestPojo.class);
 		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponsePojo.class);
 
 		// ROUTE CALLCB 
 		from("direct:isoadpt").routeId("komi.iso.adapter")
 			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
-//			.setProperty("bkp_hdr_frBI_jsonzip").header("hdr_frBI_jsonzip")
-//			.setProperty("bkp_hdr_frBIobj").header("hdr_frBIobj")
 
 			.removeHeaders("*")
 
 			.setHeader("cb_msgname", simple("${exchangeProperty[bkp_hdr_process_data.inbMsgName]}"))
 			.setHeader("cb_e2eid", simple("${exchangeProperty[bkp_hdr_process_data.endToEndId]}"))
+//			.setHeader("cb_request", simple("${body}"))
+			.setProperty("cb_request", simple("${body}"))
 			
 			.log(LoggingLevel.DEBUG,"komi.iso.adapter", "[${header.cb_msgname}:${header.cb_e2eid}] Terima di corebank: ${body}")
 					
 			.choice()
 				.when().simple("${body.class} endsWith 'CustomerAccountInfoInboundRequest'")
 					.setHeader("cb_requestName", constant("accountcustinfo"))
+					.setHeader("cb_url", simple("{{komi.url.isoadapter.customerinfo}}"))
 					.marshal(aciRequestJDF)
 				.when().simple("${body.class} endsWith 'AccountEnquiryInboundRequest'")
 					.setHeader("cb_requestName", constant("accountenquiry"))
 					.setHeader("cb_url", simple("{{komi.url.isoadapter.accountinquiry}}"))
 					.marshal(aeRequestJDF)
-				.when().simple("${body.class} endsWith 'CreditTransferInboundRequest'")
-					.setHeader("cb_requestName", constant("credittransfer"))
+				.when().simple("${body.class} endsWith 'CreditRequest'")
+					.setHeader("cb_requestName", constant("credit"))
 					.setHeader("cb_url", simple("{{komi.url.isoadapter.credit}}"))
-					.marshal(aeRequestJDF)
+					.marshal(creditRequestJDF)
 				.when().simple("${body.class} endsWith 'DebitReversalRequestPojo'")
 					.setHeader("cb_requestName", constant("debitreversal"))
 					.marshal(debitReversalReqJDF)
+				.when().simple("${body.class} endsWith 'SettlementRequest'")
+					.setHeader("cb_requestName", constant("settlement"))
+					.setHeader("cb_url", simple("{{komi.url.isoadapter.settlement}}"))
+					.marshal(settlementJDF)
 
 				.otherwise()
-		 			.log("Akan kirim settlment: ${body.class}")
+		 			.log("Akan kirim : ${body.class}")
 			.end()
-					
+			
+			.setProperty("cb_request_str", simple("${body}"))
+			
 	 		.log("[${header.cb_msgname}:${header.cb_e2eid}] CB Request: ${body}")
-
+	 		.log("${header.cb_url}")
 			
 	 		.doTry()
 				.setHeader("HttpMethod", constant("POST"))
@@ -89,15 +99,18 @@ public class IsoAdapterRoute extends RouteBuilder{
 				
 				.log("[${header.cb_msgname}:${header.cb_e2eid}] Corebank response: ${body}")
 
+ 				.setHeader("cb_response", simple("${body.status}"))
+ 				.setHeader("cb_reason", simple("${body.reason}"))
+
 		    	.choice()
 		 			.when().simple("${header.cb_requestName} == 'accountcustinfo'")
 		 				.unmarshal(aciResponseJDF)
 	 				.endChoice()
 		 			.when().simple("${header.cb_requestName} == 'accountenquiry'")
 		 				.unmarshal(aeResponseJDF)
-		 				.setHeader("cb_response", simple("${body.status}"))
-		 				.setHeader("cb_reason", simple("${body.reason}"))
 	 				.endChoice()
+		 			.when().simple("${header.cb_requestName} == 'credit'")
+		 				.unmarshal(creditResponseJDF)
 		 			.when().simple("${header.cb_requestName} == 'debitreversal'")
 	 					.unmarshal(debitReversalResponseJDF)
 	 				.endChoice()
@@ -129,7 +142,6 @@ public class IsoAdapterRoute extends RouteBuilder{
 
 			.setHeader("hdr_process_data", exchangeProperty("bkp_hdr_process_data"))
 			.process(new Processor() {
-
 				@Override
 				public void process(Exchange exchange) throws Exception {
 					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
@@ -137,13 +149,18 @@ public class IsoAdapterRoute extends RouteBuilder{
 					processData.setCorebankResponse(cbResponse);
 					exchange.getMessage().setHeader("hdr_process_data", processData);
 				}
-				
 			})
+			
+			.to("direct:save_cb_trns")
 			.removeHeaders("cb_*")
-
 		;
 		
 		
+		from("direct:save_cb_trns")
+			.log("Akan simpan table corebank_transaction")
+			.process(saveCBTransactionProc)
+			
+		;
 	}
 
 }

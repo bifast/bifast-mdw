@@ -1,0 +1,91 @@
+# Proxy Register  from channel
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+    "ProxyRegistrationRequest": {
+        "NoRef": "TES1123352{{$randomInt 1000 9999}}",
+        "RegistrationType": "NEWR",
+        "ProxyType": "02",
+        "ProxyValue": "bams13@gmail.com",
+        "DisplayName": "JOHN SMITH",
+        "AccountNumber": "112222334",
+        "AccountType": "CACC",
+        "AccountName": "JOHN SMITH ",
+        "SecondaryIdType": "01",
+        "SecondaryIdValue": "KTP-222044001",
+        "CustomerType": "01",
+        "CustomerId": "KTP-220440201",
+        "ResidentialStatus": "01",
+        "TownName": "0300"
+    }
+}
+
+###
+{
+    "ProxyRegistrationRequest" : {
+        "NoRef" : "4111242",
+        "RegistrationType" : "NEWR",
+        "ProxyType" : "01",
+        "ProxyValue" : "08111755666",
+        "DisplayName" : "AJI",
+        "AccountNumber" : "45115246235",
+        "AccountType" : "CACC",
+        "AccountName" : "Aji Kurnia Amino ",
+        "SecondaryIdType" : "01",
+        "SecondaryIdValue" : "K162042",
+        "CustomerType" : "01",
+        "CustomerId" : "KTP-24124020",
+        "ResidentialStatus" : "01",
+        "TownName" : "0300"
+    }
+}
+
+###
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+    "ProxyRegistrationRequest": {
+        "NoRef": "15562202",
+        "RegistrationType": "AMND",
+        "ProxyType" : "02",
+        "ProxyValue" : "frans.mazhar@gmail.com",
+        "DisplayName" : "Frans Mazhar",
+        "AccountName" : "Fras Manse",
+        "SecondaryIdType" : "01",
+        "SecondaryIdValue" : "44443333",
+        "CustomerType" : "01",
+        "CustomerId" : "2200111022",
+        "ResidentialStatus" : "01",
+        "TownName" : "0300"
+    }
+}
+
+###
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+    "ProxyRegistrationRequest" : {
+        "NoRef" : "1511652",
+        "RegistrationType" : "NEWR",
+        "ProxyType" : "02",
+        "ProxyValue" : "bams@gmail.com",
+        "DisplayName" : "JOHN SMITH",
+        "AccountNumber" : "2040606090112 ",
+        "AccountType" : "CACC",
+        "AccountName" : "JOHN SMITH ",
+        "SecondaryIdType" : "01",
+        "SecondaryIdValue" : "KTP-222044020",
+        "CustomerType" : "01",
+        "CustomerId" : "KTP-222044020",
+        "ResidentialStatus" : "01",
+        "TownName" : "0300"
+    }
+}

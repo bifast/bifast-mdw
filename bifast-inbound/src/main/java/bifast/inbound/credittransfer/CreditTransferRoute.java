@@ -12,7 +12,7 @@ import bifast.inbound.accountenquiry.IsoAERequestPrc;
 import bifast.inbound.credittransfer.processor.CheckSAFStatusProcessor;
 import bifast.inbound.credittransfer.processor.CreditTransferProcessor;
 import bifast.inbound.credittransfer.processor.JobWakeupProcessor;
-import bifast.inbound.credittransfer.processor.SaveCreditTransfer2Processor;
+import bifast.inbound.credittransfer.processor.SaveCreditTransferProcessor;
 import bifast.inbound.processor.DuplicateTransactionValidation;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -24,7 +24,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private DuplicateTransactionValidation duplicationTrnsValidation;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private JobWakeupProcessor jobWakeupProcessor;
-	@Autowired private SaveCreditTransfer2Processor saveCreditTransferProcessor;
+	@Autowired private SaveCreditTransferProcessor saveCreditTransferProcessor;
 	@Autowired private IsoAERequestPrc isoAERequestPrc;
 
 	@Override

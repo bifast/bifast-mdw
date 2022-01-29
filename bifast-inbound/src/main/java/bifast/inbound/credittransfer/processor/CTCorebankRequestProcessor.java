@@ -6,16 +6,28 @@ import java.util.HashMap;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.config.Config;
-import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
+import bifast.inbound.corebank.isopojo.CreditRequest;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
+import bifast.inbound.service.RefUtils;
+import bifast.inbound.service.TransRef;
 
 @Component
 public class CTCorebankRequestProcessor implements Processor {
 	@Autowired Config config;
+
+	@Value("${komi.isoadapter.merchant}")
+	String merchant;
+
+	@Value("${komi.isoadapter.terminal}")
+	String terminal;
+
+	@Value("${komi.isoadapter.txid}")
+	String txid;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -27,10 +39,20 @@ public class CTCorebankRequestProcessor implements Processor {
 		@SuppressWarnings("unchecked")
 		HashMap<String, Object> arr = exchange.getMessage().getHeader("ctsaf_qryresult", HashMap.class);
 
-		CbCreditRequestPojo cbRequest = new CbCreditRequestPojo();
+		CreditRequest cbRequest = new CreditRequest();
 
-		cbRequest.setKomiTrnsId(String.valueOf(arr.get("komi_trns_id")));
+		RefUtils.Ref ref = RefUtils.newRef();
+
 		cbRequest.setRecipientBank(config.getBankcode());
+		
+		cbRequest.setDateTime(ref.getDateTime());
+		cbRequest.setNoRef(ref.getNoRef());
+		cbRequest.setOriginalNoRef(ref.getNoRef());
+		cbRequest.setOriginalDateTime(ref.getDateTime());
+		
+		cbRequest.setMerchantType(merchant);
+		cbRequest.setTerminalId(terminal);
+		cbRequest.setTransactionId(txid);
 		
 		DecimalFormat df = new DecimalFormat("#############.00");
 		cbRequest.setAmount(df.format(biReq.getAmount()));
@@ -65,7 +87,6 @@ public class CTCorebankRequestProcessor implements Processor {
 		
 		cbRequest.setFeeTransfer("0.00");
 
-		
 		if (!(null == biReq.getPaymentInfo()))
 			cbRequest.setPaymentInformation(biReq.getPaymentInfo());
 				

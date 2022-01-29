@@ -1,0 +1,62 @@
+# Proxy Register  from channel
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+    "ProxyRegistrationInquiry" : {
+        "NoRef" : "211256{{$randomInt 10 1000}}",
+        "SenderAccountNumber" : "7732004021",
+        "ScndIdType" : "01",
+        "ScndIdValue" : "256000012121"
+    }
+}
+
+###
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+    "ProxyRegistrationRequest": {
+        "NoRef": "15562202",
+        "RegistrationType": "AMND",
+        "ProxyType" : "02",
+        "ProxyValue" : "frans.mazhar@gmail.com",
+        "DisplayName" : "Frans Mazhar",
+        "AccountName" : "Fras Manse",
+        "SecondaryIdType" : "01",
+        "SecondaryIdValue" : "44443333",
+        "CustomerType" : "01",
+        "CustomerId" : "2200111022",
+        "ResidentialStatus" : "01",
+        "TownName" : "0300"
+    }
+}
+
+###
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+    "ProxyRegistrationRequest" : {
+        "NoRef" : "FRN1511652{{$randomInt 1000 9999}}",
+        "RegistrationType" : "SUSB",
+        "RegistrationId" : "403056",
+        "ProxyType" : "02",
+        "ProxyValue" : "bams@gmail.com",
+        "DisplayName" : "JOHN SMITH",
+        "AccountNumber" : "2040606090112 ",
+        "AccountType" : "CACC",
+        "AccountName" : "JOHN SMITH ",
+        "SecondaryIdType" : "01",
+        "SecondaryIdValue" : "KTP-222044020",
+        "CustomerType" : "01",
+        "CustomerId" : "KTP-222044020",
+        "ResidentialStatus" : "01",
+        "TownName" : "0300"
+    }
+}

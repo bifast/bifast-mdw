@@ -27,7 +27,7 @@ public class InitiateCTJobProcessor implements Processor{
 		FlatPacs008Pojo flat008 = flatMsgService.flatteningPacs008(orgnlCTRequest); 
 		
 		processData.setBiRequestFlat(flat008);
-		
+	
 		processData.setBiRequestMsg(orgnlCTRequest);
 		processData.setStartTime(Instant.now());
 		processData.setInbMsgName("CrdTrn");

@@ -1,6 +1,6 @@
 package bifast.inbound.corebank.isopojo;
 
-public class DebitTransferRequest extends BaseInboundRequestDTO{
+public class DebitTransferRequest extends BaseRequestDTO{
 
     private String originalNoRef;
     private String originalDateTime;
@@ -25,6 +25,7 @@ public class DebitTransferRequest extends BaseInboundRequestDTO{
     private String creditorProxyId;
     private String creditorProxyType;
     private String paymentInformation;
+    
 	public String getOriginalNoRef() {
 		return originalNoRef;
 	}

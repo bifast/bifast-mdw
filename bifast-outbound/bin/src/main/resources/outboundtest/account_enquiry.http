@@ -1,0 +1,42 @@
+# Account Enquiry Request from channel on generic endpoint
+# Account Number 77xxxx TIMEOUT
+# Account Number 9x   reject U102
+# Account Number 99xx reject admi002
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+  "AccountEnquiryRequest" : {
+    "NoRef" : "FRN667885{{$randomInt 1000 9999}}",
+    "SenderAccountNumber": "143952442",
+    "RecipientBank" : "BRINIDJA",
+    "Amount" : "24520024.10",
+    "CategoryPurpose" : "01",
+    "RecipientAccountNumber" : "112211777"
+ }
+}
+
+###
+#  dengan proxy
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic CMS:password
+
+{
+  "AccountEnquiryRequest" : {
+    "NoRef" : "55573642",
+    "SenderAccountNumber": "54130",
+    "Amount" : "245000.00",
+    "CategoryPurpose" : "01",
+    "ProxyType" : "01",
+    "ProxyId" : "22330021"
+ }
+}
+
+###
+    "RecipientAccountNumber" : "464589"
+    "ProxyType" : "012",
+    "ProxyId" : "20033002"
+

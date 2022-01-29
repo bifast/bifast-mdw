@@ -37,7 +37,7 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 		;
 		
 		from("sql:select kct.id , kct.komi_trns_id, kct.req_bizmsgid, kct.response_code, "
-				+ "kct.full_request_msg ct_msg, sttl.full_message sttl_msg "
+				+ "kct.full_request_msg ct_msg, sttl.full_message sttl_msg, sttl.e2e_id "
 				+ "from kc_credit_transfer kct "
 				+ "join kc_settlement sttl on sttl.e2e_id = kct.e2e_id "
 				+ "where kct.cb_status = 'READY' "
@@ -54,7 +54,7 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 			// ***************** //
 			
 			.setHeader("ctsaf_qryresult", simple("${body}"))
-			.log("[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] Submit CreditTransfer started.")
+			.log("[CTSAF:${header.ctsaf_qryresult[e2e_id]}] Submit CreditTransfer started.")
 
 			.setBody(simple("${header.ctsaf_qryresult[CT_MSG]}"))
 			.unmarshal().base64().unmarshal().zipDeflater()
@@ -73,9 +73,10 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 
 			.process(ctRequestProcessor)
 			// send ke corebank
-			.to("direct:post_credit_cb")
+//			.to("direct:post_credit_cb")
+			.to("direct:isoadpt")
 			
-			.log("selesai call post_credit")
+			.log("selesai call credit account")
 			
 			.choice()
 				.when().simple("${body.status} == 'RJCT'")
@@ -85,14 +86,14 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 				.endChoice()
 				.when().simple("${body.status} == 'ERROR'")
 					//TODO harus report ke admin
-					.log(LoggingLevel.ERROR, "[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] error submit credit-account ke cbs")
+					.log(LoggingLevel.ERROR, "[CTSAF:${header.ctsaf_qryresult[e2e_id]}] error submit credit-account ke cbs")
 					.to("sql:update kc_credit_transfer "
 							+ "set cb_status = 'ERROR' "
 							+ "where id = :#${header.ctsaf_qryresult[id]}")
 				.endChoice()
 				.when().simple("${body.status} == 'TIMEOUT'")
 					//TODO harus report ke admin
-					.log(LoggingLevel.ERROR, "[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] TIMEOUT submit credit-account ke cbs")
+					.log(LoggingLevel.ERROR, "[CTSAF:${header.ctsaf_qryresult[e2e_id]}] TIMEOUT submit credit-account ke cbs")
 					.to("sql:update kc_credit_transfer "
 							+ "set cb_status = 'TIMEOUT' "
 							+ "where id = :#${header.ctsaf_qryresult[id]}")
@@ -106,7 +107,7 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 			.end()
 
 			.filter().simple("${header.ctsaf_settlement} == 'YES'")
-				.log(LoggingLevel.DEBUG,"komi.ct.saf", "[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] akan submit Settlement")
+				.log(LoggingLevel.DEBUG,"komi.ct.saf", "[CTSAF:${header.ctsaf_qryresult[e2e_id]}] akan submit Settlement")
 				.to("direct:post_settlement")
 			.end()
 			

@@ -24,8 +24,6 @@ public class SettlementRoute extends RouteBuilder {
 	 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Terima settlement")
 
 			.process(saveSettlement)
-	 		.log(LoggingLevel.DEBUG, "komi.settlement", 
-				"${header.sttl_transfertype}")
 			
 			.choice()
 				.when().simple("${header.sttl_transfertype} == 'Inbound'")
