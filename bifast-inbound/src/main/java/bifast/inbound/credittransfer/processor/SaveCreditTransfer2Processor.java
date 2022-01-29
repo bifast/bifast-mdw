@@ -35,10 +35,10 @@ public class SaveCreditTransfer2Processor implements Processor {
 		ct.setKomiTrnsId(processData.getKomiTrnsId());
 		
 //		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
+//		String fullRespMsg = exchange.getMessage().getHeader("hdr_toBI_jsonzip",String.class);
 		String fullReqMsg = exchange.getProperty("prop_frBI_jsonzip",String.class);
-		String fullRespMsg = exchange.getMessage().getHeader("hdr_toBI_jsonzip",String.class);
+		String fullRespMsg = exchange.getProperty("prop_toBI_jsonzip",String.class);
 		
-		System.out.println(fullReqMsg);
 		ct.setFullRequestMessage(fullReqMsg);
 		ct.setFullResponseMsg(fullRespMsg);
 		

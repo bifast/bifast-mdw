@@ -19,7 +19,7 @@ import bifast.inbound.settlement.BuildSettlementCBRequestProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
-public class CreditTransferSubmissionRoute extends RouteBuilder {
+public class CreditTransferSAFRoute extends RouteBuilder {
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private CTCorebankRequestProcessor ctRequestProcessor;
 	@Autowired private BuildSettlementCBRequestProcessor buildSettlementRequest;
@@ -39,7 +39,7 @@ public class CreditTransferSubmissionRoute extends RouteBuilder {
 		from("sql:select kct.id , kct.komi_trns_id, kct.req_bizmsgid, kct.response_code, "
 				+ "kct.full_request_msg ct_msg, sttl.full_message sttl_msg "
 				+ "from kc_credit_transfer kct "
-				+ "join kc_settlement sttl on sttl.orgnl_ct_bizmsgid = kct.req_bizmsgid "
+				+ "join kc_settlement sttl on sttl.e2e_id = kct.e2e_id "
 				+ "where kct.cb_status = 'READY' "
 				+ "?delay=10000"
 				+ "&sendEmptyMessageWhenIdle=true"

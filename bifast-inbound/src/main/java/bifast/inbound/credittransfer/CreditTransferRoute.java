@@ -8,9 +8,7 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.accountenquiry.BuildAERequestForCbProcessor;
 import bifast.inbound.accountenquiry.IsoAERequestPrc;
-import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
 import bifast.inbound.credittransfer.processor.CheckSAFStatusProcessor;
 import bifast.inbound.credittransfer.processor.CreditTransferProcessor;
 import bifast.inbound.credittransfer.processor.JobWakeupProcessor;
@@ -21,7 +19,6 @@ import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
 public class CreditTransferRoute extends RouteBuilder {
-	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired private CheckSAFStatusProcessor checkSafStatus;
 	@Autowired private CreditTransferProcessor creditTransferProcessor;
 	@Autowired private DuplicateTransactionValidation duplicationTrnsValidation;
@@ -33,7 +30,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat businessMessageJDF = jdfService.wrapRoot(BusinessMessage.class);
-		JacksonDataFormat accountEnqRequestJDF = jdfService.basic(CbAccountEnquiryRequestPojo.class);
+//		JacksonDataFormat accountEnqRequestJDF = jdfService.basic(CbAccountEnquiryRequestPojo.class);
 
 		
 		onException(Exception.class)
@@ -43,9 +40,9 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setHeader("hdr_tmp", simple("${body}"))
 			.marshal().zipDeflater()
 			.marshal().base64()
-			.setHeader("hdr_toBI_jsonzip", simple("${body}"))
+			.setProperty("prop_toBI_jsonzip", simple("${body}"))
 			.setBody(simple("${header.hdr_tmp}"))
-			.log("${body}")
+			.log(LoggingLevel.DEBUG,"komi.ct","${body}")
 			.handled(true)
 			.to("seda:save_ct?exchangePattern=InOnly")
 			.removeHeaders("*")
@@ -68,13 +65,9 @@ public class CreditTransferRoute extends RouteBuilder {
 //				.log(LoggingLevel.DEBUG, "komi.ct", 
 //						"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Corebank request")
 
-//				.process(buildAccountEnquiryRequestProcessor)
 				.process(isoAERequestPrc)
 
-				
-				.setHeader("ct_cbrequest", simple("${body}"))
 				// send ke corebank
-//				.to("seda:callcb")
 				.to("direct:isoadpt")
 		
 				.choice()
@@ -93,7 +86,8 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setHeader("ct_tmpbody", simple("${body}"))
 			.marshal(businessMessageJDF)
 			.marshal().zipDeflater().marshal().base64()
-			.setHeader("hdr_toBI_jsonzip", simple("${body}"))
+//			.setHeader("hdr_toBI_jsonzip", simple("${body}"))
+			.setProperty("prop_toBI_jsonzip", simple("${body}"))
 			.setBody(simple("${header.ct_tmpbody}"))
 
 			.log(LoggingLevel.DEBUG, "komi.ct", 
@@ -122,9 +116,8 @@ public class CreditTransferRoute extends RouteBuilder {
 	
 		from("seda:save_ct?concurrentConsumers=5").routeId("savect")
 			.setExchangePattern(ExchangePattern.InOnly)
-			.log("Akan save ${header.hdr_process_data.inbMsgName}")
 			.process(saveCreditTransferProcessor)
-			.process(jobWakeupProcessor)
+//			.process(jobWakeupProcessor)
 		;
 
 	}

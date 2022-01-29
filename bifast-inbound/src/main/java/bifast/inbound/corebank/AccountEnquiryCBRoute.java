@@ -82,7 +82,6 @@ public class AccountEnquiryCBRoute extends RouteBuilder {
 		;
 	
 		from("seda:savecbaccenqr?concurrentConsumers=3")
-			.log("akan save Account Enquiry ke CB-log")
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);

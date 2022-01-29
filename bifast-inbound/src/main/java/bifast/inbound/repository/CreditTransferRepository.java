@@ -14,6 +14,7 @@ public interface CreditTransferRepository extends JpaRepository<CreditTransfer, 
 
 	public List<CreditTransfer> findAllByCrdtTrnRequestBizMsgIdr (String msgId);
 	public List<CreditTransfer> findAllByCrdtTrnRequestBizMsgIdrAndResponseCode (String msgId, String responseCode);
+	public List<CreditTransfer> findAllByEndToEndId (String endToEndId);
 	
 //	public Optional<CreditTransfer> findByCrdtTrnRequestBizMsgIdr (String msgId);
 
