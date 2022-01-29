@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer;
+package bifast.inbound.credittransfer.processor;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -34,9 +34,11 @@ public class SaveCreditTransfer2Processor implements Processor {
 
 		ct.setKomiTrnsId(processData.getKomiTrnsId());
 		
-		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
+//		String fullReqMsg = exchange.getMessage().getHeader("hdr_frBI_jsonzip",String.class);
+		String fullReqMsg = exchange.getProperty("prop_frBI_jsonzip",String.class);
 		String fullRespMsg = exchange.getMessage().getHeader("hdr_toBI_jsonzip",String.class);
 		
+		System.out.println(fullReqMsg);
 		ct.setFullRequestMessage(fullReqMsg);
 		ct.setFullResponseMsg(fullRespMsg);
 		
@@ -51,10 +53,11 @@ public class SaveCreditTransfer2Processor implements Processor {
 		}
 		
 		ct.setCihubRequestDT(processData.getReceivedDt());
-		ct.setLastUpdateDt(LocalDateTime.now());
 		long timeElapsed = Duration.between(processData.getStartTime(), Instant.now()).toMillis();
 		ct.setCihubElapsedTime(timeElapsed);
 
+		ct.setCreateDt(LocalDateTime.now());
+		ct.setLastUpdateDt(LocalDateTime.now());
 
 //		FIToFICustomerCreditTransferV08 creditTransferReq = rcvBi.getDocument().getFiToFICstmrCdtTrf();
 		
@@ -72,7 +75,6 @@ public class SaveCreditTransfer2Processor implements Processor {
 		if (!(null==flatReq.getCreditorId()))
 			ct.setCreditorId(flatReq.getCreditorId());
 				
-		ct.setCreateDt(LocalDateTime.now());
 		
 		ct.setDebtorAccountNumber(flatReq.getDebtorAccountNo());
 		ct.setDebtorAccountType(flatReq.getDebtorAccountType());

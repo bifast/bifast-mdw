@@ -9,7 +9,7 @@ Authorization: Basic CMS:password
 
 {
   "AccountEnquiryRequest" : {
-    "NoRef" : "66755675",
+    "NoRef" : "FRN667885{{$randomInt 1000 9999}}",
     "SenderAccountNumber": "143952442",
     "RecipientBank" : "BRINIDJA",
     "Amount" : "24520024.10",

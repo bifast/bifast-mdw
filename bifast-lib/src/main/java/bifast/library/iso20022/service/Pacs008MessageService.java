@@ -240,7 +240,6 @@ public class Pacs008MessageService {
 		if (!(null!=seed.getCrdtId()) || (!(seed.getCrdtId().isBlank()))) {
 			pacs008.getCdtTrfTxInf().get(0).getCdtr().setId(new Party38Choice());
 		
-			System.out.println("Iddddd: " + seed.getCrdtId());
 			if (null != seed.getCrdtType()) {
 				if (seed.getCrdtType().equals("01")) {
 					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().setPrvtId(new PersonIdentification13());

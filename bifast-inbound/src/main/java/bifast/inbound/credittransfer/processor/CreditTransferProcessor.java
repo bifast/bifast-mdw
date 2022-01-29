@@ -1,29 +1,26 @@
-package bifast.inbound.credittransfer;
+package bifast.inbound.credittransfer.processor;
 
 import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
+import bifast.inbound.corebank.isopojo.AccountEnquiryInboundResponse;
 import bifast.inbound.pojo.FaultPojo;
+import bifast.inbound.pojo.Pacs002Seed;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
+import bifast.inbound.service.AppHeaderService;
+import bifast.inbound.service.Pacs002MessageService;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
-import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs002MessageService;
-import bifast.library.iso20022.service.Pacs002Seed;
 
 @Component
-@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
 public class CreditTransferProcessor implements Processor {
 
 	@Autowired private AppHeaderService appHdrService;
@@ -36,23 +33,24 @@ public class CreditTransferProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 
-		String saf = exchange.getMessage().getHeader("ct_saf", String.class);
+//		String saf = exchange.getMessage().getHeader("ct_saf", String.class);
+		String saf = exchange.getProperty("ct_saf", String.class);
 		
-		CbAccountEnquiryResponsePojo cbResponse = null;
+		AccountEnquiryInboundResponse cbResponse = null;
 		FaultPojo fault = null;
 
 		Object oCbResp = processData.getCorebankResponse();
 		if (null != oCbResp) {
-			if (oCbResp.getClass().getSimpleName().equals("CbAccountEnquiryResponsePojo"))
-				cbResponse = (CbAccountEnquiryResponsePojo) oCbResp;
+			if (oCbResp.getClass().getSimpleName().equals("AccountEnquiryInboundResponse"))
+				cbResponse = (AccountEnquiryInboundResponse) oCbResp;
 			else if (oCbResp.getClass().getSimpleName().equals("FaultPojo"))
 				fault = (FaultPojo) oCbResp;
 		}
 		
 		FlatPacs008Pojo flatRequest = (FlatPacs008Pojo) processData.getBiRequestFlat();
 		
-		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("hdr_frBIobj", BusinessMessage.class);
-		CreditTransferTransaction39 biReq =  reqBusMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
+		BusinessMessage reqBusMesg = exchange.getProperty("prop_frBIobj", BusinessMessage.class);
+//		CreditTransferTransaction39 biReq =  reqBusMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
 
 		String msgType = processData.getBiRequestMsg().getAppHdr().getBizMsgIdr().substring(16, 19);
 
@@ -101,14 +99,15 @@ public class CreditTransferProcessor implements Processor {
 		if (null != flatRequest.getCreditorId())
 			resp.setCreditorId(flatRequest.getCreditorId());
 			
-		if (!(null == biReq.getCdtr().getNm())) 
-			resp.setCreditorName(biReq.getCdtr().getNm());
+		if (null != flatRequest.getCreditorName())
+			resp.setCreditorName(flatRequest.getCreditorName());
 		
 		FIToFIPaymentStatusReportV10 respMsg = pacs002Service.creditTransferRequestResponse(resp, reqBusMesg);
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(respMsg);
 		
-		String orignBank = reqBusMesg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
+		String orignBank = flatRequest.getDebtorAgentId();
+
 		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr(orignBank, "pacs.002.001.10", bizMsgId);
 		appHdr.setBizSvc("CLEAR");
 		

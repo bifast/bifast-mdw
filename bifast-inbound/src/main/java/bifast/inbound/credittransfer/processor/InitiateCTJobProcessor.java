@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer;
+package bifast.inbound.credittransfer.processor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

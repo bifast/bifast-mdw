@@ -9,7 +9,7 @@ Content-Type: application/json
         "FIId": {
           "FinInstnId": {
             "Othr": {
-              "Id": "CITYIDJA"
+              "Id": "FASTIDJA"
             }
           }
         }
@@ -23,7 +23,7 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20220101CITYIDJA510O0100000002",
+      "BizMsgIdr": "20220101FASTIDJA510O01000000{{$randomInt 100 999}}",
       "MsgDefIdr": "pacs.008.001.08",
       "CreDt": "2021-12-28T08:43:33Z"
     },
@@ -40,7 +40,7 @@ Content-Type: application/json
         "CdtTrfTxInf": [
           {
             "PmtId": {
-              "EndToEndId": "20211103CITYIDJA510O0100000023",
+              "EndToEndId": "20220101FASTIDJA510O01000000{{$randomInt 100 999}}",
               "TxId": "20211103CITYIDJA51000000007"
             },
             "PmtTpInf": {

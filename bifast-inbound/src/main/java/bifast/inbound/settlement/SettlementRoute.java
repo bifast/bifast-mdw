@@ -5,7 +5,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.credittransfer.JobWakeupProcessor;
+import bifast.inbound.credittransfer.processor.JobWakeupProcessor;
 
 @Component
 public class SettlementRoute extends RouteBuilder {

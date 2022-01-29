@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer;
+package bifast.inbound.credittransfer.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

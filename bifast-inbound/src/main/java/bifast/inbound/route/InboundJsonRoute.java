@@ -46,11 +46,12 @@ public class InboundJsonRoute extends RouteBuilder {
 			.marshal().zipDeflater()
 			.marshal().base64()
 			.setHeader("hdr_frBI_jsonzip", simple("${body}"))
+			.setProperty("prop_frBI_jsonzip", simple("${body}"))
 			.setBody(simple("${header.hdr_tmp}"))
 			
 			.unmarshal(jsonBusinessMessageDataFormat)  // ubah ke pojo BusinessMessage
 			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
-
+			.setProperty("prop_frBIobj", simple("${body}"))
 			.to("direct:receive")
 			
 			.filter().simple("${header.hdr_process_data.inbMsgName} !in 'Settl, PrxNtf'")

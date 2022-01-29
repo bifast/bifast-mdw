@@ -12,6 +12,7 @@ import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.corebank.pojo.CbSettlementRequestPojo;
 import bifast.inbound.corebank.pojo.CbSettlementResponsePojo;
+import bifast.inbound.credittransfer.processor.CbCallExceptionProcessor;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.service.JacksonDataFormatService;
 
@@ -24,8 +25,6 @@ public class CbSubmitCreditRoute extends RouteBuilder {
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat accountEnquiryJDF = jdfService.wrapRoot(CbAccountEnquiryRequestPojo.class);
-		JacksonDataFormat accountEnquiryResponseJDF = jdfService.basic(CbAccountEnquiryResponsePojo.class);
 		JacksonDataFormat creditJDF = jdfService.wrapRoot(CbCreditRequestPojo.class);
 		JacksonDataFormat creditResponseJDF = jdfService.basic(CbCreditResponsePojo.class);
 		JacksonDataFormat settlementJDF = jdfService.wrapRoot(CbSettlementRequestPojo.class);
@@ -34,10 +33,6 @@ public class CbSubmitCreditRoute extends RouteBuilder {
 		from("direct:post_credit_cb").routeId("post_cbs")
 			
 			.choice()
-				.when().simple("${body.class} endsWith 'CbAccountEnquiryRequestPojo'")
-					.setHeader("cb_requestName", constant("accountinquiry"))
-					.marshal(accountEnquiryJDF)
-	
 				.when().simple("${body.class} endsWith 'CbCreditRequestPojo'")
 					.setHeader("cb_requestName", constant("credit"))
 					.marshal(creditJDF)
@@ -61,8 +56,6 @@ public class CbSubmitCreditRoute extends RouteBuilder {
 		 		.log("CB Response: ${body}")
 		 		
 				.choice()
-					.when().simple("${header.cb_requestName} == 'accountinquiry'")
-						.unmarshal(accountEnquiryResponseJDF)
 					.when().simple("${header.cb_requestName} == 'credit'")
 						.unmarshal(creditResponseJDF)
 					.when().simple("${header.cb_requestName} == 'settlement'")

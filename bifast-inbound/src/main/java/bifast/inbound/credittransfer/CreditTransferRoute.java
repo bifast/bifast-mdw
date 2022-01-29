@@ -9,7 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.accountenquiry.BuildAERequestForCbProcessor;
+import bifast.inbound.accountenquiry.IsoAERequestPrc;
 import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
+import bifast.inbound.credittransfer.processor.CheckSAFStatusProcessor;
+import bifast.inbound.credittransfer.processor.CreditTransferProcessor;
+import bifast.inbound.credittransfer.processor.JobWakeupProcessor;
+import bifast.inbound.credittransfer.processor.SaveCreditTransfer2Processor;
 import bifast.inbound.processor.DuplicateTransactionValidation;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -23,7 +28,8 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private JobWakeupProcessor jobWakeupProcessor;
 	@Autowired private SaveCreditTransfer2Processor saveCreditTransferProcessor;
-	
+	@Autowired private IsoAERequestPrc isoAERequestPrc;
+
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat businessMessageJDF = jdfService.wrapRoot(BusinessMessage.class);
@@ -59,19 +65,18 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			// if SAF = NO/NEW --> call CB, set CBSTS = ACTC/RJCT
 			.filter().simple("${header.ct_saf} in 'NO,NEW'")
-				.log(LoggingLevel.DEBUG, "komi.ct", 
-						"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Akan call CB")
+//				.log(LoggingLevel.DEBUG, "komi.ct", 
+//						"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Corebank request")
 
-				.process(buildAccountEnquiryRequestProcessor)
-				
-				.marshal(accountEnqRequestJDF)
-				.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] ${body}")
-				.unmarshal(accountEnqRequestJDF)
+//				.process(buildAccountEnquiryRequestProcessor)
+				.process(isoAERequestPrc)
+
 				
 				.setHeader("ct_cbrequest", simple("${body}"))
 				// send ke corebank
-				.to("seda:callcb")
-							
+//				.to("seda:callcb")
+				.to("direct:isoadpt")
+		
 				.choice()
 					.when().simple("${body.class} endsWith 'FaultPojo'")
 						.setHeader("ct_cbsts", constant("ERROR"))

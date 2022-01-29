@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer;
+package bifast.inbound.credittransfer.processor;
 
 import java.lang.reflect.Method;
 

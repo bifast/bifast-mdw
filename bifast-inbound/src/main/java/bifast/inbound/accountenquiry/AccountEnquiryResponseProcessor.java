@@ -7,15 +7,15 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
 import bifast.inbound.pojo.FaultPojo;
+import bifast.inbound.pojo.Pacs002Seed;
 import bifast.inbound.pojo.ProcessDataPojo;
+import bifast.inbound.service.AppHeaderService;
+import bifast.inbound.service.Pacs002MessageService;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs002MessageService;
-import bifast.library.iso20022.service.Pacs002Seed;
 
 @Component
 public class AccountEnquiryResponseProcessor implements Processor {

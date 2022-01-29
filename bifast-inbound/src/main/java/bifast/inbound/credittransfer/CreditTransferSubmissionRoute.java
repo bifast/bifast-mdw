@@ -7,6 +7,9 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import bifast.inbound.credittransfer.processor.CTCorebankRequestProcessor;
+import bifast.inbound.credittransfer.processor.InitiateCTJobProcessor;
 import bifast.inbound.exception.CTSAFException;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;

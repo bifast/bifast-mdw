@@ -57,7 +57,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 //			.autoStartup(false)
 						
 			.setHeader("ps_qryresult", simple("${body}"))
-			.log("[CTReq:${header.ps_qryresult[e2e_id]}] PymtStsSAF started.")
+//			.log("[CTReq:${header.ps_qryresult[e2e_id]}] PymtStsSAF started.")
 
 			// selesai dan matikan router jika tidak ada lagi SAF
 			.filter().simple("${body} == null")
@@ -70,7 +70,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.unmarshal().base64()
 			.unmarshal().zipDeflater()
 			
-			.log(LoggingLevel.DEBUG, "komi.ps.saf", "[CTReq:${header.ps_request.channelNoref}] Original request: ${body}")
+//			.log(LoggingLevel.DEBUG, "komi.ps.saf", "[CTReq:${header.ps_request.channelNoref}] Original request: ${body}")
 
 			.unmarshal(businessMessageJDF)
 			.process(new Processor() {
@@ -85,10 +85,10 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.to("direct:caristtl")
 			// selesai check settlement
 
-			.log("hdr_settlement: ${header.hdr_settlement}")
+//			.log("hdr_settlement: ${header.hdr_settlement}")
 			.filter().simple("${header.hdr_settlement} == 'NOTFOUND'")	// jika tidak ada settlement
-				.log(LoggingLevel.DEBUG, "komi.ps.saf", 
-						"[CTReq:${header.ps_qryresult[channel_ref_id]}]Tidak ada settlement, build PS Request")
+//				.log(LoggingLevel.DEBUG, "komi.ps.saf", 
+//						"[CTReq:${header.ps_qryresult[channel_ref_id]}]Tidak ada settlement, build PS Request")
 				.process(buildPSRequest)
 				.to("direct:call-cihub")				
 			.end()
@@ -97,14 +97,14 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.filter().simple("${header.hdr_settlement} == 'NOTFOUND' "
 						+ "&& ${body.class} endsWith 'FlatPacs002Pojo' "
 						+ "&& ${body.transactionStatus} == 'ACSC' ")
-				.log(LoggingLevel.DEBUG, "komi.ps.saf", "Terima settlement dari CIHUB harus kirim ke Inbound Service")
+//				.log(LoggingLevel.DEBUG, "komi.ps.saf", "Terima settlement dari CIHUB harus kirim ke Inbound Service")
 				.to("seda:fwd_settlement?exchangePattern=InOnly")
 			.end()
 
-			.log(LoggingLevel.DEBUG, "komi.ps.saf", "Akan proses response SAF")
+//			.log(LoggingLevel.DEBUG, "komi.ps.saf", "Akan proses response SAF")
 			.process(psResponseProcessor)
 
-			.log(LoggingLevel.DEBUG, "komi.ps.saf", "Akan update status Credit Transfer SAF")
+//			.log(LoggingLevel.DEBUG, "komi.ps.saf", "Akan update status Credit Transfer SAF")
 			.process(updateStatusProcessor)
 			
 			.log("[CTReq:${header.ps_request.channelNoref}] PymtStsSAF result: ${body.psStatus}")
@@ -123,7 +123,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.filter().simple("${body.psStatus} != 'UNDEFINED'")
 				.process(logPortalProcessor)
 				.marshal(portalLogJDF)
-				.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
+//				.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
 			    .removeHeaders("CamelHttp*")
 				.to("rest:post:?host={{komi.url.portalapi}}")
 			.end()

@@ -54,6 +54,9 @@ public class CreditTransferResponseProcessor implements Processor{
     	map4ctreq.setSerializationInclusion(Include.NON_NULL);
     	String strCTReq = map4ctreq.writeValueAsString(objRequest);
 
+		System.out.println(objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().size());
+		System.out.println(strCTReq);
+    	
     	String addInfo = null;
 		if (null != objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf()) 
 			addInfo = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0);
@@ -136,8 +139,13 @@ public class CreditTransferResponseProcessor implements Processor{
 			(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().size() > 0))
 				seed.setAdditionalInfo(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0));
 		
-		seed.setCreditorType("01");
-		seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+		String crdtType = bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp();
+		seed.setCreditorType(crdtType);
+		if (crdtType.equals("01"))
+			seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+		else
+			seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
+		
 		seed.setCreditorResidentialStatus("01");
 		seed.setCreditorTown(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
 

@@ -1,7 +1,6 @@
 package bifast.mock.processor;
 
 import java.util.Optional;
-import java.util.Random;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -82,6 +81,9 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
 									"pacs.002.001.10", bizMsgId);
+		
+		hdr.getFr().getFIId().getFinInstnId().getOthr().setId("FASTIDJA");
+		hdr.getTo().getFIId().getFinInstnId().getOthr().setId("SIHBIDJ1");
 		
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);

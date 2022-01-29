@@ -16,6 +16,33 @@ Authorization: Basic MB:password
 
 {
 	"CreditTransferRequest": {
+		"NoRef": "FRN2201152{{$randomInt 1000 9999}}",
+		"TerminalId": "MOBILE0001",
+		"CategoryPurpose": "01",
+		"CreditorAccountNumber": "KSEI1PLC100156",
+		"CreditorAccountType": "SVGS",
+		"CreditorId": "018029520054000",
+		"CreditorType": "02",
+		"CreditorName": "REKENING DANA INVESTASI NOSTRO",
+		"CreditorResidentialStatus": "01",
+		"CreditorTownName": "0300",
+		"Amount": "60500.24",
+		"FeeTransfer": "0.00",
+		"RecipientBank": "KSEIIDJ1",
+		"DebtorAccountNumber": "0002107551117",
+		"DebtorAccountType": "SVGS",
+		"DebtorId": "5171026206690001",
+		"DebtorResidentialStatus": "01",
+		"DebtorType": "01",
+		"DebtorTownName": "0191",
+		"DebtorName": "MURYATI",
+		"PaymentInformation": "Test mantap "
+	}
+}
+
+###
+{
+	"CreditTransferRequest": {
 		"NoRef": "MOB211214110{{$randomInt 1000 9999}}",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
@@ -45,37 +72,12 @@ Authorization: Basic MB:password
 ###
 POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
-Authorization: Basic MB:password
+Authorization: Basic CB:password
 
-{
-  "CreditTransferRequest" : {
-		"NoRef": "MOB211212110620255",
-		"TerminalId": "GATEUSER",
-		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "221211999",
-		"CreditorAccountType": "CACC",
-		"CreditorId": "KTP-205772715",
-		"CreditorType": "01",
-		"CreditorName": "Joko Susilo",
-		"CreditorResidentialStatus": "01",
-		"CreditorTownName": "0300",
-		"CreditorProxyId": "",
-		"CreditorProxyType": "",
-		"Amount": "120000.57",
-		"FeeTransfer": "0.00",
-		"RecipientBank": "BSMDIDJA",
-		"DebtorAccountNumber": "104794259",
-		"DebtorAccountType": "SVGS",
-		"DebtorId": "7555444443333",
-		"DebtorResidentialStatus": "01",
-		"DebtorType": "01",
-		"DebtorTownName": "0300",
-		"DebtorName": "Purnama Erwin",
-		"PaymentInformation": "TIMEOUT"
-  }
-}
+{"CreditTransferRequest":{"NoRef":"MF280122120{{$randomInt 100 999}}","TerminalId":"QA0002","CategoryPurpose":"99","DebtorName":"DEWI SUHARTINI","DebtorType":"01","DebtorId":"3174016005650012","DebtorAccountNumber":"2012107552327","DebtorAccountType":"SVGS","DebtorResidentialStatus":"01","DebtorTownName":"0394","Amount":"25000.00","FeeTransfer":"2500.00","RecipientBank":"ROYBIDJ1","CreditorName":"","CreditorType":"01","CreditorId":"","CreditorAccountNumber":"000000000464","CreditorAccountType":"CACC","CreditorResidentialStatus":"01","CreditorTownName":"0191","CreditorProxyId":"RAV123@BCAD.COM","CreditorProxyType":"02","PaymentInformation":"TEST BIFAST"}}
 
 ###
 
-
+creditTransferReq
+###
 {"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"BizMsgIdr":"20210928SIHBIDJ1010O0100000026","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-09-28T21:34:20"},"Document":{"FitoFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20210928SIHBIDJ101000000027","CreDtTm":"2021-09-28T21:34:20","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20210928SIHBIDJ1010O0100000026","TxId":"20210928SIHBIDJ101000000027"},"PmtTpInf":{"LclInstrm":{"Prtry":"01"},"CtgyPurp":{"Prtry":"01"}},"IntrBkSttlmAmt":{"Value":"438417.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{"Nm":"Andrea Suo","Id":{"PrvtId":{"Othr":[{"Id":"64145"}]}}},"DbtrAcct":{"Id":{"Othr":{"Id":"7744404"}},"Tp":{"Prtry":"CACC"}},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"Cdtr":{"Nm":"FARHAN AI","Id":{"OrgId":{"Othr":[{"Id":"C224403"}]}}},"CdtrAcct":{"Id":{"Othr":{"Id":"8071551"}},"Tp":{"Prtry":"SVGS"}},"SplmtryData":[{"Envlp":{"Dbtr":{"Tp":"01"},"Cdtr":{"Tp":"02"}}}]}]}}}}

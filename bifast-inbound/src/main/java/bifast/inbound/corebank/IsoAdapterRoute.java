@@ -15,6 +15,7 @@ import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.corebank.pojo.CbSettlementRequestPojo;
 import bifast.inbound.corebank.pojo.CbSettlementResponsePojo;
 import bifast.inbound.pojo.FaultPojo;
+import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.reversecrdttrns.pojo.AccountCustInfoResponsePojo;
 import bifast.inbound.reversecrdttrns.pojo.AccountCustInfoRequestPojo;
@@ -44,6 +45,9 @@ public class IsoAdapterRoute extends RouteBuilder{
 		// ROUTE CALLCB 
 		from("direct:isoadpt").routeId("komi.iso.adapter")
 			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
+//			.setProperty("bkp_hdr_frBI_jsonzip").header("hdr_frBI_jsonzip")
+//			.setProperty("bkp_hdr_frBIobj").header("hdr_frBIobj")
+
 			.removeHeaders("*")
 
 			.setHeader("cb_msgname", simple("${exchangeProperty[bkp_hdr_process_data.inbMsgName]}"))
@@ -58,6 +62,10 @@ public class IsoAdapterRoute extends RouteBuilder{
 				.when().simple("${body.class} endsWith 'AccountEnquiryInboundRequest'")
 					.setHeader("cb_requestName", constant("accountenquiry"))
 					.setHeader("cb_url", simple("{{komi.url.isoadapter.accountinquiry}}"))
+					.marshal(aeRequestJDF)
+				.when().simple("${body.class} endsWith 'CreditTransferInboundRequest'")
+					.setHeader("cb_requestName", constant("credittransfer"))
+					.setHeader("cb_url", simple("{{komi.url.isoadapter.credit}}"))
 					.marshal(aeRequestJDF)
 				.when().simple("${body.class} endsWith 'DebitReversalRequestPojo'")
 					.setHeader("cb_requestName", constant("debitreversal"))
@@ -120,6 +128,17 @@ public class IsoAdapterRoute extends RouteBuilder{
 	    	.end()
 
 			.setHeader("hdr_process_data", exchangeProperty("bkp_hdr_process_data"))
+			.process(new Processor() {
+
+				@Override
+				public void process(Exchange exchange) throws Exception {
+					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+					Object cbResponse = exchange.getMessage().getBody(Object.class);
+					processData.setCorebankResponse(cbResponse);
+					exchange.getMessage().setHeader("hdr_process_data", processData);
+				}
+				
+			})
 			.removeHeaders("cb_*")
 
 		;

@@ -10,7 +10,7 @@ Content-Type: application/json
         "FIId": {
           "FinInstnId": {
             "Othr": {
-              "Id": "BMNDIDJA"
+              "Id": "FASTIDJA"
             }
           }
         }
@@ -24,7 +24,7 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20211228BMNDIDJA010O0100000056",
+      "BizMsgIdr": "20220128FASTIDJA010O01000{{$randomInt 1000 9999}}",
       "MsgDefIdr": "pacs.008.001.08",
       "CreDt": "2021-11-03T14:50:22Z"
     },

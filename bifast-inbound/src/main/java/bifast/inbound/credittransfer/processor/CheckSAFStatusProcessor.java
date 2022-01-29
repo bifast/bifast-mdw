@@ -1,4 +1,4 @@
-package bifast.inbound.credittransfer;
+package bifast.inbound.credittransfer.processor;
 
 import java.util.List;
 
@@ -45,6 +45,7 @@ public class CheckSAFStatusProcessor implements Processor{
 		}				
 		exchange.getMessage().setHeader("ct_saf", saf);
 		exchange.getMessage().setHeader("ct_cbsts", cbSts);
+		exchange.setProperty("ct_saf", saf);
 		exchange.getMessage().setBody(flat);
 				
 	}
