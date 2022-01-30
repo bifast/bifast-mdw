@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.isopojo.CreditRequest;
+import bifast.inbound.corebank.isopojo.SettlementRequest;
 import bifast.inbound.model.CorebankTransaction;
 import bifast.inbound.repository.CorebankTransactionRepository;
 
@@ -36,8 +37,6 @@ public class SaveCBTransactionProc implements Processor {
 		corebankTrans.setReason(reason);
 		corebankTrans.setResponse(response);
 
-		DecimalFormat df = new DecimalFormat("#############.00");
-
 		if (oCbRequest.getClass().getSimpleName().equals("CreditRequest")) {
 			CreditRequest req = (CreditRequest) oCbRequest;
 			
@@ -55,15 +54,18 @@ public class SaveCBTransactionProc implements Processor {
 			corebankTrans.setOrgnlDateTime(req.getOriginalDateTime());
 						
 			corebankTrans.setTransactionType("Credit");
-			
 		}
 		
 		else if (oCbRequest.getClass().getSimpleName().equals("Settlement")) {
+			SettlementRequest req = (SettlementRequest) oCbRequest;
 			
+			corebankTrans.setDateTime(req.getDateTime());
+			corebankTrans.setKomiNoref(req.getNoRef());
+			corebankTrans.setKomiTrnsId(req.getTransactionId());
+			corebankTrans.setOrgnlChnlNoref(req.getOriginalNoRef());
+						
+			corebankTrans.setTransactionType("Settlement");
 		}
-		
-		
-		
 		
 		cbRepo.save(corebankTrans);
 	}

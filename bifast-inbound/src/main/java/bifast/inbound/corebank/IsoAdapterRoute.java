@@ -151,16 +151,11 @@ public class IsoAdapterRoute extends RouteBuilder{
 				}
 			})
 			
-			.to("direct:save_cb_trns")
+			.process(saveCBTransactionProc)
 			.removeHeaders("cb_*")
 		;
 		
 		
-		from("direct:save_cb_trns")
-			.log("Akan simpan table corebank_transaction")
-			.process(saveCBTransactionProc)
-			
-		;
 	}
 
 }
