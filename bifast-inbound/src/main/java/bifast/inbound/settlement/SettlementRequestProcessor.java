@@ -52,7 +52,7 @@ public class SettlementRequestProcessor implements Processor {
 		sttlRequest.setBizMsgId(flatSttl.getBizMsgIdr());
 		sttlRequest.setMsgId(flatSttl.getOrgnlEndToEndId());	
 		
-		if (flatSttl.getCdtrAgtAcctId().equals(config.getBankcode()))
+		if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
 			sttlRequest.setCounterParty(flatSttl.getDbtrAgtFinInstnId());
 		else
 			sttlRequest.setCounterParty(flatSttl.getCdtrAgtFinInstnId());			

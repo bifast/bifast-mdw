@@ -64,11 +64,6 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 			.unmarshal(businessMessageJDF)
 			.setHeader("ctsaf_orgnCdTrns", simple("${body}"))
 
-			.setBody(simple("${exchangeProperty.ctsaf_qryresult[STTL_MSG]}"))
-			.unmarshal().base64().unmarshal().zipDeflater()
-			.unmarshal(businessMessageJDF)
-			.setHeader("ctsaf_orgnSttl", simple("${body}"))
-
 			.log(LoggingLevel.DEBUG,"komi.ct.saf", 
 					"[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] akan initiate data.")
 
@@ -125,14 +120,21 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 					
 		;
 
-		from ("direct:post_settlement").routeId("post_settlement")
-			.log(LoggingLevel.DEBUG,"post_settlement", "Akan post settlement")
+		from ("direct:post_settlement").routeId("komi.post_settlement")
+			.log(LoggingLevel.DEBUG,"komi.post_settlement", "Akan post settlement")
+			.setBody(simple("${exchangeProperty.ctsaf_qryresult[STTL_MSG]}"))
+			.unmarshal().base64().unmarshal().zipDeflater()
+			.unmarshal(businessMessageJDF)
+//			.setHeader("ctsaf_orgnSttl", simple("${body}"))
+//			.setProperty("ctsaf_orgnSttl", simple("${body}"))
+
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					BusinessMessage settlementMsg = exchange.getMessage().getHeader("ctsaf_orgnSttl", BusinessMessage.class);
+					BusinessMessage settlementMsg = exchange.getMessage().getBody(BusinessMessage.class);
 					FlatPacs002Pojo flatMsg = flatMessageService.flatteningPacs002(settlementMsg);
 					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
 					processData.setBiRequestFlat(flatMsg);
+					exchange.getMessage().setHeader("hdr_process_data", processData);
 				}
 			})
 //			.process(buildSettlementRequest)

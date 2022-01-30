@@ -1,6 +1,6 @@
 package bifast.inbound.corebank.isopojo;
 
-public class SettlementResponse {
+public class SettlementResponse extends BaseResponseDTO{
     private String status;
     
     private String reason;

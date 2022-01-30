@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class AccountEnquiryRoute extends RouteBuilder {
 
-//	@Autowired private AccountEnquiryResponseProcessor aeResponseProcessor;
-//	@Autowired private BuildAERequestForCbProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired private IsoAERequestPrc isoAERequestPrc;
 	@Autowired private IsoAEResponsePrc isoAEResponsePrc;
 	@Autowired private SaveAccountEnquiryProcessor saveAEPrc;

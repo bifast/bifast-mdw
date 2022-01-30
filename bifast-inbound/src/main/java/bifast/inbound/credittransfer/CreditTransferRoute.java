@@ -29,8 +29,6 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat businessMessageJDF = jdfService.wrapRoot(BusinessMessage.class);
-//		JacksonDataFormat accountEnqRequestJDF = jdfService.basic(CbAccountEnquiryRequestPojo.class);
-
 		
 		onException(Exception.class)
 			.log("Route level onException")
@@ -50,8 +48,6 @@ public class CreditTransferRoute extends RouteBuilder {
 		from("direct:crdttransfer").routeId("komi.ct")
 			.process(duplicationTrnsValidation)
 			
-//			.log("KOMI_ID : ${header.hdr_process_data.komiTrnsId}")
-
 			// cek apakah SAF atau bukan
 			// check saf
 			.process(checkSafStatus)
