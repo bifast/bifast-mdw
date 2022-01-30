@@ -5,15 +5,15 @@
 
 	<parent>
 		<groupId>fransmz</groupId>
-		<artifactId>bifast-parent</artifactId>
-		<version>2.3-SNAPSHOT</version>
+		<artifactId>komi-parent</artifactId>
+		<version>2.4</version>
 		<relativePath>../pom.xml</relativePath> 
 	</parent>
 
 	<groupId>fransmz</groupId>
-	<artifactId>bifast-mock</artifactId>
+	<artifactId>komi-mock</artifactId>
 	<version>2.3-SNAPSHOT</version>
-	<name>bifast-mock</name>
+	<name>komi-mock</name>
 	<description>BI FAST Mock</description>
 	
 	<properties>

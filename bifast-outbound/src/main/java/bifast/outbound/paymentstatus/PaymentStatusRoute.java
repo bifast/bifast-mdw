@@ -40,23 +40,23 @@ public class PaymentStatusRoute extends RouteBuilder {
 		
 		from("direct:pschnl").routeId("komi.ps.chnl")
 			.log(LoggingLevel.DEBUG, "komi.ps.chnl", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] PaymentStatus inquiry")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] PaymentStatus inquiry")
 			
 			//find CT
 			.process(checkSAFResult)
 
 //			.log(LoggingLevel.DEBUG, "komi.ps.chnl", "check result: ${body}")
 			.log(LoggingLevel.DEBUG, "komi.ps.chnl", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] check result: ${body}")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check result: ${body}")
 
-			.filter().simple("${header.hdr_response_list.reasonCode} == 'U000'")
+			.filter().simple("${exchangeProperty.prop_response_list.reasonCode} == 'U000'")
 				.unmarshal(ctRequestJDF)
 			.end()
 			
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);				
-					ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);				
+					ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 					
 					ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
 					channelResponseWr.setResponseCode(rmc.getResponseCode());

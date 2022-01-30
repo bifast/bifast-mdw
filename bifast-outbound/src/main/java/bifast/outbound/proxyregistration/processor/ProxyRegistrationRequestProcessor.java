@@ -37,7 +37,7 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		RequestMessageWrapper rmw = exchange.getIn().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlProxyRegistrationRequestPojo chnReq = rmw.getChnlProxyRegistrationRequest();
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
@@ -95,7 +95,7 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 		busMsg.setDocument(doc);
 	
 		rmw.setProxyRegistrationRequest(busMsg);
-		exchange.getMessage().setHeader("hdr_request_list", rmw);
+		exchange.setProperty("prop_request_list", rmw);
 		exchange.getIn().setBody(busMsg);
 		
 	}

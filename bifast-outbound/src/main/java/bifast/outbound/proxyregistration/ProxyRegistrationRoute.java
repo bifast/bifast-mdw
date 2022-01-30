@@ -48,34 +48,33 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 
 		from("direct:prxyrgst").routeId("komi.prxyrgst")
 			.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Proxy started.")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Proxy started.")
 			
 			// jika bukan NEWR, siapkan data request unt ambil RegistrationID
 			.log("${body.registrationType}")
 			.filter().simple("${body.registrationType} != 'NEWR' && ${body.registrationId} == null")
 				.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
-						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Cari registrationID.")
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Cari registrationID.")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
-						RequestMessageWrapper rmw = exchange.getIn().getHeader("hdr_request_list", RequestMessageWrapper.class);
+						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 						ChnlProxyRegistrationRequestPojo regnsReq = rmw.getChnlProxyRegistrationRequest();
 						Optional<Proxy> oPrxy = proxyRepo.getByProxyTypeAndProxyValue(regnsReq.getProxyType(), regnsReq.getProxyValue());
 						if (oPrxy.isPresent()) {
 							regnsReq.setRegistrationId(oPrxy.get().getRegistrationId());
 							rmw.setChnlProxyRegistrationRequest(regnsReq);
-							exchange.getMessage().setHeader("hdr_request_list", rmw);
+							exchange.setProperty("prop_request_list", rmw);
 							exchange.getMessage().setBody(regnsReq);
-							System.out.println("RegId " + regnsReq.getRegistrationId());
 						}
 					}})
 			.end()	
 
 			.filter().simple("${body.registrationType} != 'NEWR' && ${body.registrationId} == null ")
 				.log(LoggingLevel.DEBUG, "komi.prxyrgst", 
-						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Akan call Proxy Resolution")
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Akan call Proxy Resolution")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
-						RequestMessageWrapper rmw = exchange.getIn().getHeader("hdr_request_list", RequestMessageWrapper.class);
+						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 						ChnlProxyRegistrationRequestPojo regnsReq = rmw.getChnlProxyRegistrationRequest();
 						ChnlProxyResolutionRequestPojo rsltReq = new ChnlProxyResolutionRequestPojo();
 						rsltReq.setChannelRefId(null);
@@ -83,7 +82,7 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 						rsltReq.setProxyType(regnsReq.getProxyType());
 						rsltReq.setProxyValue(regnsReq.getProxyValue());
 						rmw.setChnlProxyResolutionRequest(rsltReq);
-						exchange.getMessage().setHeader("hdr_request_list", rmw);
+						exchange.setProperty("prop_request_list", rmw);
 					}					
 				})
 				.process(proxyResolutionRequestProcessor)
@@ -97,7 +96,7 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 				
 				.to("direct:call-cihub")
 				.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
-						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Dari call-cihub berupa ${body}")
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Dari call-cihub berupa ${body}")
 				.process(saveProxyRegnProc)
 			.end()
 

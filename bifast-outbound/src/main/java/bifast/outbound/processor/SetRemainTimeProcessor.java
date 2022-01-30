@@ -19,7 +19,7 @@ public class SetRemainTimeProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		long sla = 0;
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		
 		long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
 
@@ -33,7 +33,8 @@ public class SetRemainTimeProcessor implements Processor {
 
 		String sisa = Long.toString(sla - timeElapsed);
 
-		exchange.getMessage().setHeader("hdr_remain_time", sisa);
+//		exchange.getMessage().setHeader("hdr_remain_time", sisa);
+		exchange.setProperty("prop_remain_time", sisa);
 	}
 
 }

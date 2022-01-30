@@ -16,7 +16,7 @@ public class AEProxyEnrichmentProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+		ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 
 		Object oResp = exchange.getMessage().getBody(Object.class);
 
@@ -35,8 +35,7 @@ public class AEProxyEnrichmentProcessor implements Processor{
 			rmc.setReasonCode(prx004.getReasonCode());
 			rmc.setProxyResolutionResponse(prx004);
 			
-			System.out.println(prx004.getRegisterBank());
-			exchange.getMessage().setHeader("hdr_response_list", rmc);
+			exchange.setProperty("prop_response_list", rmc);
 
 			RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
@@ -46,7 +45,7 @@ public class AEProxyEnrichmentProcessor implements Processor{
 			}
 
 			rmw.setChnlAccountEnquiryRequest(aeReq);
-			exchange.getMessage().setHeader("hdr_request_list", rmw);
+			exchange.setProperty("prop_request_list", rmw);
 			
 			if (prx004.getResponseCode().equals("ACTC"))
 				exchange.getMessage().setBody(aeReq);

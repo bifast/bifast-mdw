@@ -88,6 +88,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		}
 
 		exchange.getMessage().setHeader("hdr_request_list", rmw);
+		exchange.setProperty("prop_request_list", rmw);
 
 	}
 

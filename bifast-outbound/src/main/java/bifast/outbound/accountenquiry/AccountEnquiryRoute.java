@@ -45,7 +45,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 					ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
 					exchange.getMessage().setBody(chnReq);
 				}	
@@ -53,10 +53,12 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			
 			// akan panggil Proxy Resolution
 			.filter().simple("${body.creditorAccountNumber} == null || ${body.creditorAccountNumber} == '' ")
-				.log(LoggingLevel.DEBUG, "komi.acctenq", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}][AE] akan panggil ProxyResolution.")
+				.log(LoggingLevel.DEBUG, "komi.acctenq", "[${exchangeProperty.prop_request_list.msgName}:"
+						+ "${exchangeProperty.prop_request_list.requestId}][AE] akan panggil ProxyResolution.")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
-						RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+//						RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 						ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 						ChnlProxyResolutionRequestPojo prxRes = new ChnlProxyResolutionRequestPojo();
 						
@@ -65,7 +67,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 						prxRes.setProxyValue(aeReq.getProxyId());
 						prxRes.setSenderAccountNumber(aeReq.getSenderAccountNumber());
 						rmw.setChnlProxyResolutionRequest(prxRes);
-						exchange.getMessage().setHeader("hdr_request_list", rmw);
+						exchange.setProperty("prop_request_list", rmw);
 						exchange.getMessage().setBody(prxRes);
 					}
 				})
@@ -76,11 +78,11 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.end()
 			// selesai panggil Proxy Resolution
 			.log(LoggingLevel.DEBUG, "komi.acctenq", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] ${body.class}")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] ${body.class}")
 
 			.filter().simple("${body.class} endsWith 'ChnlAccountEnquiryRequestPojo'")
 				.log(LoggingLevel.DEBUG, "komi.acctenq", 
-						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Akan bikin AE Request msg")
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Akan bikin AE Request msg")
 				.process(buildAccountEnquiryRequestProcessor)					
 				.to("direct:call-cihub")
 			.end()

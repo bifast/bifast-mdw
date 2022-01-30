@@ -37,7 +37,7 @@ public class CreditTransferResponseProcessor implements Processor {
 		chnlResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 		chnlResponseWr.setResponses(new ArrayList<>());
 		
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlCreditTransferRequestPojo chnRequest = rmw.getChnlCreditTransferRequest();
 
 		ChnlCreditTransferResponsePojo chnResponse = new ChnlCreditTransferResponsePojo();

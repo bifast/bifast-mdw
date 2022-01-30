@@ -32,7 +32,7 @@ public class CBExceptionToFaultProcessor implements Processor {
 		
 		fault.setLocation("Corebank");
 	
-		ResponseMessageCollection responseCol = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+		ResponseMessageCollection responseCol = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 		
 		int statusCode = 500;
 		fault.setCallStatus("ERROR");
@@ -84,7 +84,7 @@ public class CBExceptionToFaultProcessor implements Processor {
 
 		responseCol.setFault(fault);
 		responseCol.setLastError(description);
-		exchange.getMessage().setHeader("hdr_response_list", responseCol);
+		exchange.setProperty("prop_response_list", responseCol);
 
 		exchange.getMessage().setBody(fault, FaultPojo.class);
 	}

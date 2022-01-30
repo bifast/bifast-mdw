@@ -1,7 +1,6 @@
 package bifast.outbound.paymentstatus;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -76,9 +75,9 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 					rmw.setCreditTransferRequest(bm);
-					exchange.getMessage().setHeader("hdr_request_list", rmw);
+					exchange.setProperty("prop_request_list", rmw);
 				}
 				
 			})
@@ -136,7 +135,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.setHeader("ps_tmpbody", simple("${body}"))
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+					ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 					exchange.getMessage().setBody(rmc.getCihubResponse(), BusinessMessage.class);
 				}
 			})

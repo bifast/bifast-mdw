@@ -79,21 +79,25 @@ public class CihubRoute extends RouteBuilder {
 			.process(setRemainTime)
 			.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] request CIHUB: ${body}")
 			
+			.removeHeaders("*")
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
 				.log(LoggingLevel.DEBUG, "komi.call-cihub", 
-						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] "
-						+ "sisa waktu ${header.hdr_remain_time}")
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] "
+						+ "sisa waktu ${exchangeProperty.prop_remain_time}")
 
 				.enrich()
 					.simple("{{komi.url.ciconnector}}?"
-						+ "socketTimeout=${header.hdr_remain_time}&" 
+						+ "socketTimeout=${exchangeProperty.prop_remain_time}&" 
 						+ "bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)
 				
 				.convertBodyTo(String.class)				
-				.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] CIHUB response: ${body}")
+				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CIHUB response: ${body}")
 	
+				.setHeader("hdr_request_list", simple("${exchangeProperty.prop_request_list}"))
+				.setHeader("hdr_response_list", simple("${exchangeProperty.prop_response_list}"))
+						
 				.setHeader("tmp_body", simple("${body}"))
 				.marshal().zipDeflater()
 				.marshal().base64()
@@ -113,9 +117,11 @@ public class CihubRoute extends RouteBuilder {
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
-						ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+//						ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+						ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 						rmc.setCihubResponse(bm);
 						exchange.getMessage().setHeader("hdr_response_list", rmc);
+						exchange.setProperty("prop_response_list", rmc);
 					}
 				})
 								
@@ -127,10 +133,11 @@ public class CihubRoute extends RouteBuilder {
 			
 			.endDoTry()
 			.doCatch(java.net.SocketTimeoutException.class)
-				.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] CI-HUB TIMEOUT.")
+				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CI-HUB TIMEOUT.")
+//		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultMap)
 			.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Call CI-HUB Error.")
+				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultMap)
 			.end()

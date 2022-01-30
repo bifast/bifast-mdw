@@ -41,7 +41,8 @@ public class CreditTransferRoute extends RouteBuilder {
 	    	.process(exceptionResponseProcessor)
 			.to("seda:logportal?exchangePattern=InOnly")
 	    	.marshal(chnlResponseJDF)
-	    	.log(LoggingLevel.ERROR, "komi.ct", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Debit account gagal.")
+	    	.log(LoggingLevel.ERROR, "komi.ct", 
+	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Debit account gagal.")
 	    	.log(LoggingLevel.ERROR, "komi.ct", "${body}")
 	    	.removeHeaders("*")
 	    	.handled(true)
@@ -52,12 +53,12 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setHeader("ct_progress", constant("Start"))
 			
 			// FILTER-A debit-account di cbs dulu donk untuk e-Channel
-			.filter().simple("${header.hdr_request_list.merchantType} != '6010' ")
+			.filter().simple("${exchangeProperty.prop_request_list.merchantType} != '6010' ")
 				.log(LoggingLevel.DEBUG, "komi.ct", 
-						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] selain dari Teller")
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] selain dari Teller")
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
-				.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] call Corebank")
+				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] call Corebank")
 				.to("direct:callcb")
 			.end()
 		
@@ -72,7 +73,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.end()
 
 			.log(LoggingLevel.DEBUG, "komi.ct", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] "
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] "
 					+ "setelah corebank, ${header.ct_progress}.")
 		
 			// lanjut submit ke BI
@@ -84,7 +85,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.to("direct:call-cihub?timeout=0")
 			
 			.log(LoggingLevel.DEBUG, "komi.ct", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] response class dari cihub: ${body}")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] response class dari cihub: ${body}")
 			.to("seda:savecredittransfer?exchangePattern=InOnly")   // update data
 
 
@@ -103,13 +104,13 @@ public class CreditTransferRoute extends RouteBuilder {
 			.end()
 			
 			.log(LoggingLevel.DEBUG, "komi.ct", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] hasil cihub, ${header.ct_progress}.")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] hasil cihub, ${header.ct_progress}.")
 
 			// jika response RJCT/ERROR, harus reversal ke corebanking
 			// unt Teller tidak dilakukan KOMI tapi oleh Teller langsung
-			.filter().simple("${header.ct_progress} in 'REJECT,ERROR' && ${header.hdr_request_list.merchantType} != '6010'")
+			.filter().simple("${header.ct_progress} in 'REJECT,ERROR' && ${exchangeProperty.prop_request_list.merchantType} != '6010'")
 				.log(LoggingLevel.DEBUG, "komi.ct", 
-						"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] akan reversal")
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
 				.to("direct:debitreversal")
 			.end()
 	

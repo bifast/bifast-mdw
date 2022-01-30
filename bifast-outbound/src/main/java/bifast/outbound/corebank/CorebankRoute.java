@@ -45,10 +45,10 @@ public class CorebankRoute extends RouteBuilder{
 
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 					Object req = exchange.getMessage().getBody(Object.class);
 					rmw.setCorebankRequest(req);
-					exchange.getMessage().setHeader("hdr_request_list", rmw);
+					exchange.setProperty("prop_request_list", rmw);
 				}
 			})
 							
@@ -65,7 +65,7 @@ public class CorebankRoute extends RouteBuilder{
 			.end()
 			
 	 		.log(LoggingLevel.DEBUG, "komi.corebank", 
-	 				"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] CB Request: ${body}")
+	 				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CB Request: ${body}")
 
 			.doTry()
 
@@ -78,7 +78,7 @@ public class CorebankRoute extends RouteBuilder{
 
 				.convertBodyTo(String.class)
 				
-		 		.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}]"
+		 		.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}]"
 							+ " CB Response: ${body}")
 
 				.choice()
@@ -92,7 +92,8 @@ public class CorebankRoute extends RouteBuilder{
 
 			.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Call Corebank Error.")
+				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:"
+						+ "${exchangeProperty.prop_request_list.requestId}] Call Corebank Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultProcessor)
 	
@@ -101,7 +102,8 @@ public class CorebankRoute extends RouteBuilder{
 					
 			.choice()
 				.when().simple("${body.class} endsWith 'FaultPojo'")
-		 			.log(LoggingLevel.DEBUG, "komi.corebank", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Fault")
+		 			.log(LoggingLevel.DEBUG, "komi.corebank", 
+		 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Fault")
 				.when().simple("${body.status} == 'RJCT'")
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
@@ -116,7 +118,7 @@ public class CorebankRoute extends RouteBuilder{
 							fault.setReasonCode(reason);
 							rmc.setCorebankResponse(fault);
 							rmc.setFault(fault);
-							exchange.getMessage().setHeader("hdr_response_list", rmc);
+							exchange.setProperty("prop_response_list", rmc);
 							exchange.getMessage().setBody(fault);
 						}
 			 		})
@@ -126,9 +128,9 @@ public class CorebankRoute extends RouteBuilder{
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
 							Object response = exchange.getMessage().getBody(Object.class);
-							ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+							ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 							rmc.setCorebankResponse(response);
-							exchange.getMessage().setHeader("hdr_response_list", rmc);
+							exchange.setProperty("prop_response_list", rmc);
 							}
 			 			})
 		 		.endChoice()

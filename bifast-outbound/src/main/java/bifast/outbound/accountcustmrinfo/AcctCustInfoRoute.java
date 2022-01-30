@@ -38,7 +38,7 @@ public class AcctCustInfoRoute extends RouteBuilder{
 			// build request msg
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 					ChnlAccountCustomerInfoRequestPojo chnlReq = (ChnlAccountCustomerInfoRequestPojo) rmw.getChannelRequest();
 					CbCustomerInfoRequestPojo aciReq = new CbCustomerInfoRequestPojo();
 					aciReq.setAccountNumber(chnlReq.getAccountNumber());
@@ -56,7 +56,7 @@ public class AcctCustInfoRoute extends RouteBuilder{
 			.log(LoggingLevel.DEBUG, "komi.acctcustinfo", "After callcb: ${body}")
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 
 					ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
 					channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));

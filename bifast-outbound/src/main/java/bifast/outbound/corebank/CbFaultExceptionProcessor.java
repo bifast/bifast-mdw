@@ -36,7 +36,7 @@ public class CbFaultExceptionProcessor implements Processor {
 		
 		fault.setLocation("COREBANK");
 	
-		ResponseMessageCollection responseCol = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+		ResponseMessageCollection responseCol = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 		
 		System.out.println(responseCol.getCallStatus());
 		logger.debug("response: " + responseCol.getCallStatus());
@@ -91,7 +91,7 @@ public class CbFaultExceptionProcessor implements Processor {
 
 		responseCol.setFault(fault);
 		responseCol.setLastError(description);
-		exchange.getMessage().setHeader("hdr_response_list", responseCol);
+		exchange.setProperty("prop_response_list", responseCol);
 
 		exchange.getMessage().setBody(fault, FaultPojo.class);
 	}

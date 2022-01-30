@@ -38,7 +38,7 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 		channelResponseWr.setResponses(new ArrayList<>());
 
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class);
 		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
 		
 		ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();

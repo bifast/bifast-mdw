@@ -27,7 +27,7 @@ public class CheckSettlementRoute extends RouteBuilder{
 	    JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 
 		from("direct:caristtl").routeId("komi.findsttl")
-			.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] sedang cari settlement.")
+			.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${exchangeProperty.prop_request_list.requestId}][CTReq] sedang cari settlement.")
 			.setHeader("tmp_body", simple("${body}"))
 	
 			.process(findingSettlementProcessor)
@@ -35,7 +35,7 @@ public class CheckSettlementRoute extends RouteBuilder{
 			.filter().simple("${body} != null")
 				.unmarshal().base64()
 				.unmarshal().zipDeflater()
-				.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] Ketemu settlement: ${body}")
+				.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${exchangeProperty.prop_request_list.requestId}][CTReq] Ketemu settlement: ${body}")
 	
 				.unmarshal(businessMessageJDF)
 				
@@ -44,10 +44,10 @@ public class CheckSettlementRoute extends RouteBuilder{
 						BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
 						FlatPacs002Pojo pacs002 = flattenIsoMessage.flatteningPacs002(bm);
 						exchange.getMessage().setBody(pacs002);
-						ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list",ResponseMessageCollection.class);
+						ResponseMessageCollection rmc = exchange.getProperty("prop_response_list",ResponseMessageCollection.class);
 						rmc.setFault(null);
 						rmc.setSettlement(pacs002);
-						exchange.getMessage().setHeader("hdr_response_list", rmc);
+						exchange.setProperty("prop_response_list", rmc);
 					}
 				})
 			.end()
@@ -55,7 +55,8 @@ public class CheckSettlementRoute extends RouteBuilder{
 			.setHeader("hdr_settlement", constant("FOUND"))
 
 			.filter().simple("${body} == null")
-				.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${header.hdr_request_list.requestId}][CTReq] Tidak ketemu settlement.")
+				.log(LoggingLevel.DEBUG, "komi.findsttl", 
+						"[ChnlReq:${exchangeProperty.prop_request_list.requestId}][CTReq] Tidak ketemu settlement.")
 				.setHeader("hdr_settlement", constant("NOTFOUND"))
 				.setBody(simple("${header.tmp_body}"))
 			.end()

@@ -37,7 +37,7 @@ public class ExceptionToFaultProcessor implements Processor {
 		
 		fault.setLocation("CI-HUB");
 	
-		ResponseMessageCollection responseCol = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+		ResponseMessageCollection responseCol = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 		
 		int statusCode = 500;
 		fault.setCallStatus("ERROR");
@@ -89,7 +89,7 @@ public class ExceptionToFaultProcessor implements Processor {
 
 		responseCol.setFault(fault);
 		responseCol.setLastError(description);
-		exchange.getMessage().setHeader("hdr_response_list", responseCol);
+		exchange.setProperty("prop_response_list", responseCol);
 
 		exchange.getMessage().setBody(fault, FaultPojo.class);
 	}

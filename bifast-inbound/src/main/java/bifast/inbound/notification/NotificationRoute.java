@@ -42,7 +42,7 @@ public class NotificationRoute extends RouteBuilder{
 			
 			.process(portalLogProcessor)
 			.marshal(portalJdf)
-			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Notif ke portal: ${body}")
+//			.log(LoggingLevel.DEBUG, "komi.portalnotif", "Notif ke portal: ${body}")
 			//TODO notifikasi ke customer
 			.removeHeaders("hdr_*")
 			
@@ -60,7 +60,7 @@ public class NotificationRoute extends RouteBuilder{
 			.endDoTry()
 	    	.doCatch(Exception.class)
 	    		.log(LoggingLevel.ERROR, "komi.portalnotif", "Error Log-notif ${body}")
-//	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 			.end()
 
 

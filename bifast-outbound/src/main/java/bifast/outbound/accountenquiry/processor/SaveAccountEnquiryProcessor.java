@@ -30,7 +30,7 @@ public class SaveAccountEnquiryProcessor implements Processor {
 
 		AccountEnquiry ae = new AccountEnquiry();
 		
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		
 		ChnlAccountEnquiryRequestPojo chnlRequest = rmw.getChnlAccountEnquiryRequest();
 		

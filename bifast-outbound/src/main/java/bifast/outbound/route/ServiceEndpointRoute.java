@@ -111,39 +111,40 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				public void process(Exchange exchange) throws Exception {
 					ResponseMessageCollection rmc = new ResponseMessageCollection();
 					exchange.getMessage().setHeader("hdr_response_list", rmc);
+					exchange.setProperty("prop_response_list" , rmc);
 				}
 			})
 			
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Mulai proses.")
+					"[${exchangeProperty.prop_request_list.msgName}:$exchangeProperty.prop_request_list.requestId}] Mulai proses.")
 
 			.choice()
-				.when().simple("${header.hdr_request_list.msgName} == 'AEReq'")
+				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'AEReq'")
 					.to("direct:acctenqr")
 					
-				.when().simple("${header.hdr_request_list.msgName} == 'CTReq'")
+				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'CTReq'")
 					.to("direct:credittrns?timeout=0")
 
-				.when().simple("${header.hdr_request_list.msgName} == 'PSReq'")
+				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'PSReq'")
 					.to("direct:pschnl")
 
-				.when().simple("${header.hdr_request_list.msgName} == 'PrxRegn'")
+				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'PrxRegn'")
 					.to("direct:prxyrgst")
 
-				.when().simple("${header.hdr_request_list.msgName} == 'ProxyResolution'")
+				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'ProxyResolution'")
 					.to("direct:proxyresolution")
 					
-				.when().simple("${header.hdr_request_list.msgName} == 'PrxRegnInquiryReq'")
+				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'PrxRegnInquiryReq'")
 					.to("direct:prxyrgstinquiry")
 
-				.when().simple("${header.hdr_request_list.msgName} == 'ACReq'")
+				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'ACReq'")
 					.to("direct:acctcustmrinfo")
 
 			.end()
 			
 
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] process complete.")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] process complete.")
 
 			.to("seda:savetablechannel?exchangePattern=InOnly")
 			
@@ -152,7 +153,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 //			.end()
 			
 			.marshal(chnlResponseJDF)
-			.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Response: ${body}")
+			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
 
 		;
@@ -161,7 +162,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.routeId("komi.savechnltrns")
 			.delay(20000)
 			.log(LoggingLevel.DEBUG, "komi.savechnltrns", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Save table channel_transaction.")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Save table channel_transaction.")
 			.process(saveChannelTransactionProcessor)
 		;		
 

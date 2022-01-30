@@ -20,7 +20,7 @@ public class ProxyEnrichmentAggregator implements AggregationStrategy {
 	@Override
 	public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 		
-		RequestMessageWrapper rmw = oldExchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = oldExchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlProxyRegistrationRequestPojo regnReq = rmw.getChnlProxyRegistrationRequest();
 
 		Object oPxrxResltn = newExchange.getMessage().getBody(Object.class);
@@ -35,13 +35,13 @@ public class ProxyEnrichmentAggregator implements AggregationStrategy {
 
 			if (pxrxResltn.getReasonCode().equals("U000")) {
 			
-				ResponseMessageCollection rmc = oldExchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+				ResponseMessageCollection rmc = oldExchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 				rmc.setProxyResolutionResponse(pxrxResltn);
-				oldExchange.getMessage().setHeader("hdr_response_list", rmc);
+				oldExchange.setProperty("prop_response_list", rmc);
 	
 				regnReq.setRegistrationId(pxrxResltn.getRegistrationId());
 				rmw.setChnlProxyRegistrationRequest(regnReq);
-				oldExchange.getMessage().setHeader("hdr_request_list", rmw);
+				oldExchange.setProperty("prop_request_list", rmw);
 				oldExchange.getMessage().setBody(regnReq);
 				logger.debug("Dapat registration ID: " + regnReq.getRegistrationId());
 			}

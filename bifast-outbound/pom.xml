@@ -5,15 +5,14 @@
 	
 	<parent>
 		<groupId>fransmz</groupId>
-		<artifactId>bifast-parent</artifactId>
-		<version>2.3-SNAPSHOT</version>
+		<artifactId>komi-parent</artifactId>
+		<version>2.4</version>
 		<relativePath>../pom.xml</relativePath> 
 	</parent>
 	
-	<groupId>fransmz</groupId>
-	<artifactId>bifast-outbound</artifactId>
+	<artifactId>komi-outbound</artifactId>
 	<version>2.3-SNAPSHOT</version>
-	<name>bifast-outbound</name>
+	<name>komi-outbound</name>
 	<description>BI FAST Outbound</description>
 	<packaging>jar</packaging>
 	
