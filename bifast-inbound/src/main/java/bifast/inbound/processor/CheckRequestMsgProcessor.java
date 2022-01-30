@@ -85,7 +85,7 @@ public class CheckRequestMsgProcessor implements Processor {
 
 
 		exchange.getMessage().setHeader("hdr_process_data", processData);
-
+		exchange.setProperty("prop_process_data", processData);
 	
 	}
 	

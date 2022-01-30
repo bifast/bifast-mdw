@@ -31,7 +31,7 @@ public class ReverseCTRoute extends RouteBuilder {
 			// lakukan accountCustomerInfo
 			.process(cbAcctCustInfoRequestProcessor)
 //			.log("ACI: ${body}")
-			.to("seda:isoadpt")
+			.to("direct:isoadpt")
 			
 			.log("${body.status}")
 			

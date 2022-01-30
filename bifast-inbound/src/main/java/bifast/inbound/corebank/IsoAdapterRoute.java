@@ -47,13 +47,13 @@ public class IsoAdapterRoute extends RouteBuilder{
 
 		// ROUTE CALLCB 
 		from("direct:isoadpt").routeId("komi.isoadapter")
-			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
+//			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
 
 			.removeHeaders("*")
 
-			.setHeader("cb_msgname", simple("${exchangeProperty[bkp_hdr_process_data.inbMsgName]}"))
-			.setHeader("cb_e2eid", simple("${exchangeProperty[bkp_hdr_process_data.endToEndId]}"))
-//			.setHeader("cb_request", simple("${body}"))
+			.setHeader("cb_msgname", simple("${exchangeProperty[prop_process_data.inbMsgName]}"))
+			.setHeader("cb_e2eid", simple("${exchangeProperty[prop_process_data.endToEndId]}"))
+
 			.setProperty("cb_request", simple("${body}"))
 			
 			.log(LoggingLevel.DEBUG,"komi.isoadapter", "[${header.cb_msgname}:${header.cb_e2eid}] Terima di corebank: ${body}")
@@ -140,7 +140,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 		    	.process(cbFaultProcessor)
 	    	.end()
 
-			.setHeader("hdr_process_data", exchangeProperty("bkp_hdr_process_data"))
+			.setHeader("hdr_process_data", exchangeProperty("prop_process_data"))
 			.process(new Processor() {
 				@Override
 				public void process(Exchange exchange) throws Exception {
