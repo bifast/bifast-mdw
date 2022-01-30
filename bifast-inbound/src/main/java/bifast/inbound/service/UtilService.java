@@ -14,8 +14,7 @@ import bifast.inbound.config.Config;
 @Service
 public class UtilService {
 
-	@Autowired
-	private Config config;
+	@Autowired	private Config config;
 
 	DecimalFormat df = new DecimalFormat("00000000");
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
