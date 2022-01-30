@@ -1,7 +1,6 @@
 package bifast.inbound.service;
 
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -11,28 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.inbound.config.Config;
-import bifast.inbound.repository.CorebankTransactionRepository;
-
-
 
 @Service
 public class UtilService {
 
 	@Autowired
 	private Config config;
-	@Autowired
-	private CorebankTransactionRepository cbTransactionRepository;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 	DecimalFormat df = new DecimalFormat("00000000");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-	public String genKomiTrnsId () {
-		String strToday = LocalDate.now().format(formatter);
-		Long cnt = cbTransactionRepository.getKomiSequence();
-		return (strToday + "R" + df.format(cnt));
-	}
+//	public String genKomiTrnsId () {
+//		String strToday = LocalDate.now().format(formatter);
+//		Long cnt = cbTransactionRepository.getKomiSequence();
+//		return (strToday + "R" + df.format(cnt));
+//	}
 
 	public String genRfiBusMsgId (String trxType, String komiTrnsId) {
+
 		String komiId = komiTrnsId.substring(9);
 		String strToday = LocalDateTime.now().format(formatter);
 		String msgId = strToday + config.getBankcode() + trxType + "R99" +komiId;

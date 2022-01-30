@@ -6,8 +6,6 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.pojo.CbAccountEnquiryRequestPojo;
-import bifast.inbound.corebank.pojo.CbAccountEnquiryResponsePojo;
 import bifast.inbound.corebank.pojo.CbCreditRequestPojo;
 import bifast.inbound.corebank.pojo.CbCreditResponsePojo;
 import bifast.inbound.corebank.pojo.CbSettlementRequestPojo;

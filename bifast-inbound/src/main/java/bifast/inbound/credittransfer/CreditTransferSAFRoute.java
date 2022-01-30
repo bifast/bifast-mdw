@@ -15,17 +15,19 @@ import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;
 import bifast.inbound.service.FlattenIsoMessageService;
 import bifast.inbound.service.JacksonDataFormatService;
-import bifast.inbound.settlement.BuildSettlementCBRequestProcessor;
+import bifast.inbound.settlement.SettlementRequestProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
 public class CreditTransferSAFRoute extends RouteBuilder {
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private CTCorebankRequestProcessor ctRequestProcessor;
-	@Autowired private BuildSettlementCBRequestProcessor buildSettlementRequest;
+//	@Autowired private BuildSettlementCBRequestProcessor buildSettlementRequest;
+	@Autowired private SettlementRequestProcessor settlementRequestPrc;
 	@Autowired private InitiateCTJobProcessor initCTJobProcessor;
 	@Autowired private FlattenIsoMessageService flatMessageService;
-
+	
+	
 	@Override
 	public void configure() throws Exception {
 		
@@ -53,21 +55,22 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 
 			// ***************** //
 			
-			.setHeader("ctsaf_qryresult", simple("${body}"))
-			.log("[CTSAF:${header.ctsaf_qryresult[e2e_id]}] Submit CreditTransfer started.")
+//			.setHeader("ctsaf_qryresult", simple("${body}"))
+			.setProperty("ctsaf_qryresult", simple("${body}"))
+			.log("[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] Submit CreditTransfer started.")
 
-			.setBody(simple("${header.ctsaf_qryresult[CT_MSG]}"))
+			.setBody(simple("${exchangeProperty.ctsaf_qryresult[CT_MSG]}"))
 			.unmarshal().base64().unmarshal().zipDeflater()
 			.unmarshal(businessMessageJDF)
 			.setHeader("ctsaf_orgnCdTrns", simple("${body}"))
 
-			.setBody(simple("${header.ctsaf_qryresult[STTL_MSG]}"))
+			.setBody(simple("${exchangeProperty.ctsaf_qryresult[STTL_MSG]}"))
 			.unmarshal().base64().unmarshal().zipDeflater()
 			.unmarshal(businessMessageJDF)
 			.setHeader("ctsaf_orgnSttl", simple("${body}"))
 
 			.log(LoggingLevel.DEBUG,"komi.ct.saf", 
-					"[CTSAF:${header.ctsaf_qryresult[komi_trns_id]}] akan initiate data.")
+					"[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] akan initiate data.")
 
 			.process(initCTJobProcessor)  // hdr_process_data
 
@@ -76,38 +79,44 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 //			.to("direct:post_credit_cb")
 			.to("direct:isoadpt")
 			
-			.log("selesai call credit account")
+			.log(LoggingLevel.DEBUG, "komi.ct.saf", "Selesai call credit account")
 			
 			.choice()
+				.when().simple("${body.class} endsWith 'FaultPojo'")
+					.to("sql:update kc_credit_transfer "
+							+ "set cb_status = 'DONE', reversal = 'PENDING' "
+							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
+				.endChoice()
 				.when().simple("${body.status} == 'RJCT'")
 					.to("sql:update kc_credit_transfer "
 							+ "set cb_status = 'DONE', reversal = 'PENDING' "
-							+ "where id = :#${header.ctsaf_qryresult[id]}")
+							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
 				.endChoice()
 				.when().simple("${body.status} == 'ERROR'")
 					//TODO harus report ke admin
-					.log(LoggingLevel.ERROR, "[CTSAF:${header.ctsaf_qryresult[e2e_id]}] error submit credit-account ke cbs")
+					.log(LoggingLevel.ERROR, "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] error submit credit-account ke cbs")
 					.to("sql:update kc_credit_transfer "
 							+ "set cb_status = 'ERROR' "
-							+ "where id = :#${header.ctsaf_qryresult[id]}")
+							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
 				.endChoice()
 				.when().simple("${body.status} == 'TIMEOUT'")
 					//TODO harus report ke admin
-					.log(LoggingLevel.ERROR, "[CTSAF:${header.ctsaf_qryresult[e2e_id]}] TIMEOUT submit credit-account ke cbs")
+					.log(LoggingLevel.ERROR, "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] TIMEOUT submit credit-account ke cbs")
 					.to("sql:update kc_credit_transfer "
 							+ "set cb_status = 'TIMEOUT' "
-							+ "where id = :#${header.ctsaf_qryresult[id]}")
+							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
 				.endChoice()
 				.when().simple("${body.status} == 'ACTC'")
-					.setHeader("ctsaf_settlement", constant("YES"))
+//					.setHeader("ctsaf_settlement", constant("YES"))
+					.setProperty("ctsaf_settlement", constant("YES"))
 					.to("sql:update kc_credit_transfer "
 							+ "set cb_status = 'DONE' "
-							+ "where id = :#${header.ctsaf_qryresult[id]}")
+							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
 				.endChoice()
 			.end()
 
-			.filter().simple("${header.ctsaf_settlement} == 'YES'")
-				.log(LoggingLevel.DEBUG,"komi.ct.saf", "[CTSAF:${header.ctsaf_qryresult[e2e_id]}] akan submit Settlement")
+			.filter().simple("${exchangeProperty.ctsaf_settlement} == 'YES'")
+				.log(LoggingLevel.DEBUG,"komi.ct.saf", "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] akan submit Settlement")
 				.to("direct:post_settlement")
 			.end()
 			
@@ -126,9 +135,11 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 					processData.setBiRequestFlat(flatMsg);
 				}
 			})
-			.process(buildSettlementRequest)
-			.to("direct:post_credit_cb")
-
+//			.process(buildSettlementRequest)
+//			.to("direct:post_credit_cb")
+			.process(settlementRequestPrc)
+			.to("direct:isoadpt")
+			
 		;
 
 	}

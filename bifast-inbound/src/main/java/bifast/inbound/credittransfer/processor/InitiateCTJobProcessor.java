@@ -21,7 +21,8 @@ public class InitiateCTJobProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		@SuppressWarnings("unchecked")
-		HashMap<String, Object> arr = exchange.getMessage().getHeader("ctsaf_qryresult",HashMap.class);
+		HashMap<String, Object> arr = exchange.getProperty("ctsaf_qryresult",HashMap.class);
+
 		BusinessMessage orgnlCTRequest = exchange.getMessage().getHeader("ctsaf_orgnCdTrns", BusinessMessage.class);
 		ProcessDataPojo processData = new ProcessDataPojo();
 		FlatPacs008Pojo flat008 = flatMsgService.flatteningPacs008(orgnlCTRequest); 

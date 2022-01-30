@@ -17,7 +17,6 @@ import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.pojo.flat.FlatPrxy901Pojo;
 import bifast.inbound.service.FlattenIsoMessageService;
 import bifast.inbound.service.RefUtils;
-import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component

@@ -1,7 +1,6 @@
 package bifast.inbound.credittransfer.processor;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -14,7 +13,6 @@ import bifast.inbound.corebank.isopojo.CreditRequest;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.service.RefUtils;
-import bifast.inbound.service.TransRef;
 
 @Component
 public class CTCorebankRequestProcessor implements Processor {
@@ -36,13 +34,15 @@ public class CTCorebankRequestProcessor implements Processor {
 		FlatPacs008Pojo biReq = (FlatPacs008Pojo) processData.getBiRequestFlat();
 
 
-		@SuppressWarnings("unchecked")
-		HashMap<String, Object> arr = exchange.getMessage().getHeader("ctsaf_qryresult", HashMap.class);
+//		@SuppressWarnings("unchecked")
+//		HashMap<String, Object> arr = exchange.getProperty("ctsaf_qryresult", HashMap.class);
 
 		CreditRequest cbRequest = new CreditRequest();
 
 		RefUtils.Ref ref = RefUtils.newRef();
 
+		exchange.setProperty("cb_noref", ref.getNoRef());
+		
 		cbRequest.setRecipientBank(config.getBankcode());
 		
 		cbRequest.setDateTime(ref.getDateTime());

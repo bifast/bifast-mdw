@@ -1,7 +1,5 @@
 package bifast.inbound.settlement;
 
-import java.util.List;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +8,14 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.config.Config;
 import bifast.inbound.corebank.isopojo.SettlementRequest;
-import bifast.inbound.corebank.pojo.CbSettlementRequestPojo;
-import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;
-import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.service.RefUtils;
 
 @Component
 public class SettlementRequestProcessor implements Processor {
 	@Autowired private Config config;
-	@Autowired private CreditTransferRepository ctRepo;
+//	@Autowired private CorebankTransactionRepository cbTrnsRepo;
 
 	@Value("${komi.isoadapter.merchant}")
 	String merchant;
@@ -49,8 +44,8 @@ public class SettlementRequestProcessor implements Processor {
 		sttlRequest.setMerchantType(merchant);
 		sttlRequest.setNoRef(ref.getNoRef());
 		sttlRequest.setOriginalNoRef(null);
-		sttlRequest.setReason(null);
-		sttlRequest.setStatus(null);
+		sttlRequest.setReason("U000");
+		sttlRequest.setStatus("ACSC");
 		sttlRequest.setTerminalId(terminal);
 		sttlRequest.setTransactionId(txid);
 		
@@ -61,24 +56,20 @@ public class SettlementRequestProcessor implements Processor {
 			sttlRequest.setCounterParty(flatSttl.getDbtrAgtFinInstnId());
 		else
 			sttlRequest.setCounterParty(flatSttl.getCdtrAgtFinInstnId());			
-			
-		String orgnlNoRef = "";
-		
-		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatSttl.getOrgnlEndToEndId());
-		for (CreditTransfer runningCT : lCrdtTrns) {
-			if ((runningCT.getResponseCode().equals("ACTC")) ||
-				(runningCT.getResponseCode().equals("ACSC"))) {
-//				runningCT.get
-				break;
-			}
-		}
-
+				
+		String ctNoref = exchange.getProperty("cb_noref", String.class);
+		sttlRequest.setOriginalNoRef(ctNoref);
+//		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flatSttl.getOrgnlEndToEndId());
+//		for (CreditTransfer runningCT : lCrdtTrns) {
+//			if ((runningCT.getResponseCode().equals("ACTC")) ||
+//				(runningCT.getResponseCode().equals("ACSC"))) {
+////				runningCT.get
+//				break;
+//			}
+//		}
 
 		exchange.getMessage().setBody(sttlRequest);
-
-		
-		
-				
+	
 	}
 
 }

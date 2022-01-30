@@ -88,7 +88,7 @@ public class SaveSettlementMessageProcessor implements Processor {
 		
 		exchange.getMessage().setHeader("sttl_transfertype", settlment_ctType);
 
-		if (settlment_ctType.equals("Inbound")) {
+		if ((settlment_ctType.equals("Inbound")) && (null != ct)) {
 			Optional<ChannelTransaction> oChnlTrns = chnlRepo.findByKomiTrnsId(ct.getKomiTrnsId());
 			if (oChnlTrns.isPresent())
 				exchange.getMessage().setHeader("sttl_orgnRef", oChnlTrns.get().getChannelRefId());

@@ -44,12 +44,16 @@ public class SaveCreditTransferProcessor implements Processor {
 		
 		if (null != processData.getBiResponseMsg()) {
 			BusinessMessage respBi = processData.getBiResponseMsg();
+			String responseCode = respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts();
 
-			ct.setResponseCode(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts());
+			ct.setResponseCode(responseCode);
 			ct.setCrdtTrnResponseBizMsgIdr(respBi.getAppHdr().getBizMsgIdr());
 			ct.setReasonCode(respBi.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry());
 			ct.setCallStatus("SUCCESS");
-			ct.setCbStatus("PENDING");
+			if (responseCode.equals("ACTC")) {
+				ct.setCbStatus("PENDING");
+				ct.setSettlementConfBizMsgIdr("WAITING");
+			}
 		}
 		
 		ct.setCihubRequestDT(processData.getReceivedDt());
@@ -93,7 +97,6 @@ public class SaveCreditTransferProcessor implements Processor {
 		ct.setOriginatingBank(flatReq.getDebtorAgentId());
 		ct.setRecipientBank(flatReq.getCreditorAgentId());
 
-		ct.setSettlementConfBizMsgIdr("WAITING");
 		
 		String reversal = exchange.getMessage().getHeader("hdr_reversal",String.class);
 		ct.setReversal(reversal);

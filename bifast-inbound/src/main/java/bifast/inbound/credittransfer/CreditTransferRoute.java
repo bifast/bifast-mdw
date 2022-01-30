@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import bifast.inbound.accountenquiry.IsoAERequestPrc;
 import bifast.inbound.credittransfer.processor.CheckSAFStatusProcessor;
 import bifast.inbound.credittransfer.processor.CreditTransferProcessor;
-import bifast.inbound.credittransfer.processor.JobWakeupProcessor;
 import bifast.inbound.credittransfer.processor.SaveCreditTransferProcessor;
 import bifast.inbound.processor.DuplicateTransactionValidation;
 import bifast.inbound.service.JacksonDataFormatService;
@@ -23,7 +22,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private CreditTransferProcessor creditTransferProcessor;
 	@Autowired private DuplicateTransactionValidation duplicationTrnsValidation;
 	@Autowired private JacksonDataFormatService jdfService;
-	@Autowired private JobWakeupProcessor jobWakeupProcessor;
+//	@Autowired private JobWakeupProcessor jobWakeupProcessor;
 	@Autowired private SaveCreditTransferProcessor saveCreditTransferProcessor;
 	@Autowired private IsoAERequestPrc isoAERequestPrc;
 

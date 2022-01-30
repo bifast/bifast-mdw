@@ -1,20 +1,14 @@
 package bifast.inbound.route;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.accountenquiry.IsoAERequestPrc;
 import bifast.inbound.accountenquiry.IsoAEResponsePrc;
-import bifast.inbound.corebank.CbCallFaultProcessor;
-import bifast.inbound.corebank.isopojo.AccountEnquiryInboundRequest;
-import bifast.inbound.corebank.isopojo.AccountEnquiryInboundResponse;
 import bifast.inbound.processor.CheckRequestMsgProcessor;
-import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
@@ -23,15 +17,15 @@ public class TestRoute extends RouteBuilder{
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private CheckRequestMsgProcessor checkRequestMsgProcessor;
 	@Autowired private IsoAEResponsePrc aeResponseProcessor;
-	@Autowired private CbCallFaultProcessor cbFaultProcessor;
-	@Autowired private EnrichmentAggregator enrichmentAggregator;
+//	@Autowired private CbCallFaultProcessor cbFaultProcessor;
+//	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private IsoAERequestPrc isoAERequestPrc;
 
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat jsonBusinessMessageDataFormat = jdfService.wrapUnwrapRoot(BusinessMessage.class);
-		JacksonDataFormat accountEnquiryReqJDF = jdfService.basic(AccountEnquiryInboundRequest.class);
-		JacksonDataFormat accountEnquiryResponseJDF = jdfService.basic(AccountEnquiryInboundResponse.class);
+//		JacksonDataFormat accountEnquiryReqJDF = jdfService.basic(AccountEnquiryInboundRequest.class);
+//		JacksonDataFormat accountEnquiryResponseJDF = jdfService.basic(AccountEnquiryInboundResponse.class);
 
 
 		from("direct:testae")

@@ -46,7 +46,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponsePojo.class);
 
 		// ROUTE CALLCB 
-		from("direct:isoadpt").routeId("komi.iso.adapter")
+		from("direct:isoadpt").routeId("komi.isoadapter")
 			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
 
 			.removeHeaders("*")
@@ -56,7 +56,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 //			.setHeader("cb_request", simple("${body}"))
 			.setProperty("cb_request", simple("${body}"))
 			
-			.log(LoggingLevel.DEBUG,"komi.iso.adapter", "[${header.cb_msgname}:${header.cb_e2eid}] Terima di corebank: ${body}")
+			.log(LoggingLevel.DEBUG,"komi.isoadapter", "[${header.cb_msgname}:${header.cb_e2eid}] Terima di corebank: ${body}")
 					
 			.choice()
 				.when().simple("${body.class} endsWith 'CustomerAccountInfoInboundRequest'")
@@ -85,8 +85,8 @@ public class IsoAdapterRoute extends RouteBuilder{
 			
 			.setProperty("cb_request_str", simple("${body}"))
 			
+	 		.log(LoggingLevel.DEBUG, "komi.isoadapter", "POST ${header.cb_url}")
 	 		.log("[${header.cb_msgname}:${header.cb_e2eid}] CB Request: ${body}")
-	 		.log("${header.cb_url}")
 			
 	 		.doTry()
 				.setHeader("HttpMethod", constant("POST"))
@@ -97,10 +97,8 @@ public class IsoAdapterRoute extends RouteBuilder{
 					.aggregationStrategy(enrichmentAggregator)
 					.convertBodyTo(String.class)
 				
-				.log("[${header.cb_msgname}:${header.cb_e2eid}] Corebank response: ${body}")
+				.log("[${header.cb_msgname}:${header.cb_e2eid}] CB response: ${body}")
 
- 				.setHeader("cb_response", simple("${body.status}"))
- 				.setHeader("cb_reason", simple("${body.reason}"))
 
 		    	.choice()
 		 			.when().simple("${header.cb_requestName} == 'accountcustinfo'")
@@ -119,6 +117,9 @@ public class IsoAdapterRoute extends RouteBuilder{
 	 				.endChoice()
 		 		.end()
 
+ 				.setHeader("cb_response", simple("${body.status}"))
+ 				.setHeader("cb_reason", simple("${body.reason}"))
+
 				.filter().simple("${header.cb_response} != 'ACTC' ")
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
@@ -132,7 +133,6 @@ public class IsoAdapterRoute extends RouteBuilder{
 						})
 				.end()
 				
-
 	 		.endDoTry()
 	    	.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[${header.cb_msgname}:${header.cb_e2eid}] Call CB Error.")
