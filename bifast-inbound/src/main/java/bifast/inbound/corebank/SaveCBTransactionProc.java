@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,8 @@ import bifast.inbound.repository.CorebankTransactionRepository;
 public class SaveCBTransactionProc implements Processor {
 	@Autowired private CorebankTransactionRepository cbRepo;
 	
+	private static Logger logger = LoggerFactory.getLogger(SaveCBTransactionProc.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
@@ -36,6 +40,8 @@ public class SaveCBTransactionProc implements Processor {
 		corebankTrans.setReason(reason);
 		corebankTrans.setResponse(response);
 
+		logger.debug("Akan save " + oCbRequest.getClass().getSimpleName());
+		
 		if (oCbRequest.getClass().getSimpleName().equals("CreditRequest")) {
 			CreditRequest req = (CreditRequest) oCbRequest;
 			
@@ -55,7 +61,7 @@ public class SaveCBTransactionProc implements Processor {
 			corebankTrans.setTransactionType("Credit");
 		}
 		
-		else if (oCbRequest.getClass().getSimpleName().equals("Settlement")) {
+		else if (oCbRequest.getClass().getSimpleName().equals("SettlementRequest")) {
 			SettlementRequest req = (SettlementRequest) oCbRequest;
 			
 			corebankTrans.setDateTime(req.getDateTime());
