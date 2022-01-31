@@ -108,7 +108,7 @@ public class CorebankRoute extends RouteBuilder{
 			 		.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
 							Object oResponse = exchange.getMessage().getBody(Object.class);
-							ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+							ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 							FaultPojo fault = new FaultPojo();
 							fault.setCallStatus("REJECT-CB");
 							Method mthStatus = oResponse.getClass().getMethod("getStatus");

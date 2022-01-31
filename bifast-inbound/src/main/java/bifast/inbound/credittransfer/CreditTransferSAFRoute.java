@@ -71,7 +71,6 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 
 			.process(ctRequestProcessor)
 			// send ke corebank
-//			.to("direct:post_credit_cb")
 			.to("direct:isoadpt")
 			
 			.log(LoggingLevel.DEBUG, "komi.ct.saf", "Selesai call credit account")
@@ -132,13 +131,12 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 				public void process(Exchange exchange) throws Exception {
 					BusinessMessage settlementMsg = exchange.getMessage().getBody(BusinessMessage.class);
 					FlatPacs002Pojo flatMsg = flatMessageService.flatteningPacs002(settlementMsg);
-					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 					processData.setBiRequestFlat(flatMsg);
-					exchange.getMessage().setHeader("hdr_process_data", processData);
+					exchange.setProperty("prop_process_data", processData);
 				}
 			})
 //			.process(buildSettlementRequest)
-//			.to("direct:post_credit_cb")
 			.process(settlementRequestPrc)
 			.to("direct:isoadpt")
 			

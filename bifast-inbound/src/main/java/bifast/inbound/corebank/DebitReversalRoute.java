@@ -85,7 +85,7 @@ public class DebitReversalRoute extends RouteBuilder {
 			.log("akan save Debit Reversal ke CB-log")
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 					String komiTrnsId = processData.getKomiTrnsId();
 					DebitReversalResponsePojo cbResponse = exchange.getMessage().getBody(DebitReversalResponsePojo.class);
 					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("cbrev_objRequest", DebitReversalRequestPojo.class);

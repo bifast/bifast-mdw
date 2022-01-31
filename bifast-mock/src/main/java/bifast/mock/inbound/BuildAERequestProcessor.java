@@ -10,11 +10,10 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.service.Pacs008MessageService;
-import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.mock.inbound.pojo.AERequestPojo;
-import bifast.mock.inbound.pojo.PaymentRequestPojo;
 import bifast.mock.isoservice.MsgHeaderService;
+import bifast.mock.isoservice.Pacs008MessageService;
+import bifast.mock.isoservice.Pacs008Seed;
 import bifast.mock.processor.UtilService;
 
 
@@ -35,7 +34,7 @@ public class BuildAERequestProcessor implements Processor {
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
-		hdr = appHeaderService.getAppHdr("BMNDIDJA", "SIHBIDJ1", "pacs.008.001.08", bizMsgId);
+		hdr = appHeaderService.getAppHdr("pacs.008.001.08", bizMsgId);
 
 		Pacs008Seed seedAcctEnquiry = new Pacs008Seed();
 		

@@ -68,16 +68,16 @@ public class CihubRoute extends RouteBuilder {
 			// daftarkan encrypted dan startTime ke rmw
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 					String encrMsg = exchange.getMessage().getHeader("cihubroute_encr_request", String.class);
 					rmw.setCihubEncriptedRequest(encrMsg);
 					rmw.setCihubStart(Instant.now());
-					exchange.getMessage().setHeader("hdr_request_list", rmw);
+					exchange.setProperty("prop_request_list", rmw);
 				}
 			})
 			
 			.process(setRemainTime)
-			.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] request CIHUB: ${body}")
+			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] request CIHUB: ${body}")
 			
 			.removeHeaders("*")
 			.doTry()
@@ -95,9 +95,6 @@ public class CihubRoute extends RouteBuilder {
 				.convertBodyTo(String.class)				
 				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CIHUB response: ${body}")
 	
-				.setHeader("hdr_request_list", simple("${exchangeProperty.prop_request_list}"))
-				.setHeader("hdr_response_list", simple("${exchangeProperty.prop_response_list}"))
-						
 				.setHeader("tmp_body", simple("${body}"))
 				.marshal().zipDeflater()
 				.marshal().base64()
@@ -106,9 +103,9 @@ public class CihubRoute extends RouteBuilder {
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						String body = exchange.getMessage().getBody(String.class);
-						RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 						rmw.setCihubEncriptedResponse(body);
-						exchange.getMessage().setHeader("hdr_request_list", rmw);
+						exchange.setProperty("prop_request_list", rmw);
 					}
 				})
 				
@@ -117,10 +114,8 @@ public class CihubRoute extends RouteBuilder {
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
-//						ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
 						ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 						rmc.setCihubResponse(bm);
-						exchange.getMessage().setHeader("hdr_response_list", rmc);
 						exchange.setProperty("prop_response_list", rmc);
 					}
 				})
@@ -128,7 +123,7 @@ public class CihubRoute extends RouteBuilder {
 				.process(flatResponseProcessor)
 				
 				.filter().simple("${body.class} endsWith 'FaultPojo'")
-					.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] CI-HUB Response: ${header.tmp_body}")
+					.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CI-HUB Response: ${header.tmp_body}")
 		    	.end()
 			
 			.endDoTry()

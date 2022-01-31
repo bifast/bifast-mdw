@@ -75,10 +75,10 @@ public class ProcessQuerySAFProcessor implements Processor{
 		
 		rmw.setChnlCreditTransferRequest(chnlCTReq);
 		
-		exchange.getMessage().setHeader("hdr_request_list", rmw);	
+		exchange.setProperty("prop_request_list", rmw);	
 
 		ResponseMessageCollection rmc = new ResponseMessageCollection();
-		exchange.getMessage().setHeader("hdr_response_list", rmc);	
+		exchange.setProperty("prop_response_list", rmc);	
 		
 		// request message asli untuk keperluan cari settlement harus di unzip dulu
 		exchange.getMessage().setBody(creditTransfer.getFullRequestMessage());

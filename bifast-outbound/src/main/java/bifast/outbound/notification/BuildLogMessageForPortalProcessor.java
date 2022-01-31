@@ -32,9 +32,9 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class );
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class );
 		ChannelResponseWrapper responseWr = exchange.getMessage().getBody(ChannelResponseWrapper.class);
-		ResponseMessageCollection respColl = exchange.getMessage().getHeader("hdr_response_list",ResponseMessageCollection.class );
+		ResponseMessageCollection respColl = exchange.getProperty("prop_response_list",ResponseMessageCollection.class );
 
 		PortalApiPojo logMsg = new PortalApiPojo();
 		LogDataPojo data = new LogDataPojo();

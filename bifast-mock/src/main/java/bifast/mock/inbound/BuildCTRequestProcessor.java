@@ -13,17 +13,17 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.PaymentTransaction110;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs008MessageService;
-import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.mock.inbound.pojo.PaymentRequestPojo;
+import bifast.mock.isoservice.MsgHeaderService;
+import bifast.mock.isoservice.Pacs008MessageService;
+import bifast.mock.isoservice.Pacs008Seed;
 import bifast.mock.processor.UtilService;
 
 @Component
 public class BuildCTRequestProcessor implements Processor {
 
 	@Autowired
-	private AppHeaderService appHeaderService;
+	private MsgHeaderService appHeaderService;
 	@Autowired
 	private Pacs008MessageService pacs008MessageService;
 	@Autowired
@@ -85,7 +85,7 @@ public class BuildCTRequestProcessor implements Processor {
 		
 		BusinessMessage busMsg = new BusinessMessage();
 
-		hdr = appHeaderService.getAppHdr("SIHBIDJ1", "pacs.008.001.08", bizMsgId);
+		hdr = appHeaderService.getAppHdr("pacs.008.001.08", bizMsgId);
 		busMsg.setAppHdr(hdr);
 
 		Document doc = new Document();

@@ -19,7 +19,7 @@ public class ProxyNotifProcessor implements Processor {
 	
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 
 		FlatPrxy901Pojo prxReq = (FlatPrxy901Pojo) processData.getBiRequestFlat();
 

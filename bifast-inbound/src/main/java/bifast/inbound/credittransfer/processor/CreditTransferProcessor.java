@@ -31,7 +31,7 @@ public class CreditTransferProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 
 //		String saf = exchange.getMessage().getHeader("ct_saf", String.class);
 		String saf = exchange.getProperty("ct_saf", String.class);
@@ -116,7 +116,7 @@ public class CreditTransferProcessor implements Processor {
 		respBusMesg.setDocument(doc);
 		
 		processData.setBiResponseMsg(respBusMesg);
-		exchange.getMessage().setHeader("hdr_process_data", processData);
+		exchange.getProperty("prop_process_data", processData);
 		exchange.getIn().setBody(respBusMesg);
 
 	}

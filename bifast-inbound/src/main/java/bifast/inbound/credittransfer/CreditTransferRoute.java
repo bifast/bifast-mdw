@@ -53,12 +53,12 @@ public class CreditTransferRoute extends RouteBuilder {
 			.process(checkSafStatus)
 			
 			.log(LoggingLevel.DEBUG,"komi.ct", 
-					"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Status SAF: ${header.ct_saf}")
+					"[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Status SAF: ${header.ct_saf}")
 			
 			// if SAF = NO/NEW --> call CB, set CBSTS = ACTC/RJCT
 			.filter().simple("${header.ct_saf} in 'NO,NEW'")
 //				.log(LoggingLevel.DEBUG, "komi.ct", 
-//						"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Corebank request")
+//						"[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Corebank request")
 
 				.process(isoAERequestPrc)
 
@@ -86,18 +86,18 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setBody(simple("${header.ct_tmpbody}"))
 
 			.log(LoggingLevel.DEBUG, "komi.ct", 
-					"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] saf ${header.ct_saf}, cb_sts ${header.ct_cbsts}")
+					"[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] saf ${header.ct_saf}, cb_sts ${header.ct_cbsts}")
 
 			//if SAF=old/new and CBSTS=RJCT --> reversal
 			//jika saf dan corebank error, ct proses harus diulang: reversal = UNDEFINED
 			.filter().simple("${header.ct_saf} != 'NO'")
 				.choice()
 					.when().simple("${header.ct_cbsts} == 'RJCT'")
-						.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Harus CT Reversal.")
+						.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Harus CT Reversal.")
 						.setHeader("hdr_reversal", constant("YES"))
 					.endChoice()
 					.when().simple("${header.ct_cbsts} == 'ERROR'")
-						.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Apakah CT Reversal?")
+						.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Apakah CT Reversal?")
 						.setHeader("hdr_reversal", constant("UNDEFINED"))
 					.endChoice()
 				.end()

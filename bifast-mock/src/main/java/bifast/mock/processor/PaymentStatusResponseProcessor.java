@@ -17,9 +17,9 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs002MessageService;
-import bifast.library.iso20022.service.Pacs002Seed;
+import bifast.mock.isoservice.MsgHeaderService;
+import bifast.mock.isoservice.Pacs002MessageService;
+import bifast.mock.isoservice.Pacs002Seed;
 import bifast.mock.persist.MockPacs002;
 import bifast.mock.persist.MockPacs002Repository;
 
@@ -31,7 +31,7 @@ public class PaymentStatusResponseProcessor implements Processor{
 	@Autowired
 	private UtilService utilService;
 	@Autowired
-	private AppHeaderService hdrService;
+	private MsgHeaderService hdrService;
 	@Autowired
 	private Pacs002MessageService pacs002Service;
 
@@ -87,8 +87,7 @@ public class PaymentStatusResponseProcessor implements Processor{
 			response = pacs002Service.notFoundPaymentStatusResponse(seed, psRequest);
 
 			BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-			hdr = hdrService.getAppHdr(psRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-										"pacs.002.001.10", bizMsgId);
+			hdr = hdrService.getAppHdr("pacs.002.001.10", bizMsgId);
 			hdr.setBizSvc("CLEAR");
 			
 			Document doc = new Document();

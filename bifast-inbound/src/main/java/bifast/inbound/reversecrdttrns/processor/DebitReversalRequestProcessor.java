@@ -16,7 +16,7 @@ public class DebitReversalRequestProcessor implements Processor{
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		ProcessDataPojo rmw = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		ProcessDataPojo rmw = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 //		ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
 		
 		DebitReversalRequestPojo reversalReq = new DebitReversalRequestPojo();

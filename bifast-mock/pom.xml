@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>fransmz</groupId>
 		<artifactId>komi-parent</artifactId>
-		<version>2.4</version>
+		<version>2.4-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> 
 	</parent>
 
 	<groupId>fransmz</groupId>
 	<artifactId>komi-mock</artifactId>
-	<version>2.3-SNAPSHOT</version>
+	<version>2.4-SNAPSHOT</version>
 	<name>komi-mock</name>
 	<description>BI FAST Mock</description>
 	
@@ -24,7 +24,7 @@
 	
 		<dependency>
 			<groupId>fransmz</groupId>
-			<artifactId>bifast-lib</artifactId>
+			<artifactId>komi-lib</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		

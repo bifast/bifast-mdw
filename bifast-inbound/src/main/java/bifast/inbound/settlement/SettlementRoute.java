@@ -9,7 +9,8 @@ import bifast.inbound.credittransfer.processor.JobWakeupProcessor;
 
 @Component
 public class SettlementRoute extends RouteBuilder {
-	@Autowired private BuildSettlementCBRequestProcessor settlementProcessor;
+//	@Autowired private BuildSettlementCBRequestProcessor settlementProcessor;
+	@Autowired private SettlementRequestProcessor settlementProcessor;
 	@Autowired private SaveSettlementMessageProcessor saveSettlement;
 	@Autowired private JobWakeupProcessor jobWakeupProcessor;
 
@@ -21,20 +22,21 @@ public class SettlementRoute extends RouteBuilder {
 			// prepare untuk request ke corebank
 
 	 		.log(LoggingLevel.DEBUG, "komi.settlement", 
-	 				"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Terima settlement")
+	 				"[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Terima settlement")
 
 			.process(saveSettlement)
 			
 			.choice()
 				.when().simple("${header.sttl_transfertype} == 'Inbound'")
 		 			.log(LoggingLevel.DEBUG, "komi.settlement", 
-		 					"[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] activate credit-posting job")
+		 					"[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] activate credit-posting job")
 
 					.process(jobWakeupProcessor)
 				.otherwise()
 					.process(settlementProcessor)
-					.to("direct:post_credit_cb")
-			 		.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Selesai posting settlement")
+//					.to("direct:post_credit_cb")
+					.to("direct:isoadpt")
+			 		.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Selesai posting settlement")
 			.end()
 
 		;

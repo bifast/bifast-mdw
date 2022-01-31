@@ -33,7 +33,6 @@ public class SetRemainTimeProcessor implements Processor {
 
 		String sisa = Long.toString(sla - timeElapsed);
 
-//		exchange.getMessage().setHeader("hdr_remain_time", sisa);
 		exchange.setProperty("prop_remain_time", sisa);
 	}
 

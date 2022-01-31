@@ -37,7 +37,7 @@ public class ProxyResolutionResponseProcessor implements Processor {
 		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 		channelResponseWr.setResponses(new ArrayList<>());
 
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlProxyResolutionRequestPojo chnRequest = rmw.getChnlProxyResolutionRequest();
 
 		ChnlProxyResolutionResponsePojo chnResponse = new ChnlProxyResolutionResponsePojo();

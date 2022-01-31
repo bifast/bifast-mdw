@@ -37,7 +37,7 @@ public class AEProxyEnrichmentProcessor implements Processor{
 			
 			exchange.setProperty("prop_response_list", rmc);
 
-			RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+			RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 			if (prx004.getResponseCode().equals("ACTC")) {
 				aeReq.setCreditorAccountNumber(prx004.getAccountNumber());

@@ -5,25 +5,23 @@ import java.util.Optional;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs002MessageService;
-import bifast.library.iso20022.service.Pacs002Seed;
+import bifast.mock.isoservice.MsgHeaderService;
+import bifast.mock.isoservice.Pacs002MessageService;
+import bifast.mock.isoservice.Pacs002Seed;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
 
 @Component
-@ComponentScan(basePackages = {"bifast.library.iso20022.service", "bifast.library.config"} )
 public class AccountEnquiryResponseProcessor implements Processor {
 	@Autowired AccountProxyRepository accountRepo;
 	@Autowired
-	private AppHeaderService hdrService;
+	private MsgHeaderService hdrService;
 	@Autowired
 	private Pacs002MessageService pacs002Service;
 	@Autowired
@@ -52,14 +50,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		if (oAcct.isPresent()) {
 			account = oAcct.get();
 			
-//			if (account.getAccountStatus().equals("ACTV")) {
-				seed.setStatus("ACTC");
-				seed.setReason("U000");				
-//			}
-//			else {
-//				seed.setStatus("RJCT");
-//				seed.setReason("U102");				
-//			}
+			seed.setStatus("ACTC");
+			seed.setReason("U000");				
 			
 			seed.setCreditorName(account.getAccountName());
 			seed.setCreditorAccountIdType(account.getAccountType());
@@ -79,12 +71,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		FIToFIPaymentStatusReportV10 response = pacs002Service.accountEnquiryResponse(seed, msg);
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", bizMsgId);
-		
-		hdr.getFr().getFIId().getFinInstnId().getOthr().setId("FASTIDJA");
-		hdr.getTo().getFIId().getFinInstnId().getOthr().setId("SIHBIDJ1");
-		
+		hdr = hdrService.getAppHdr("pacs.002.001.10", bizMsgId);
+
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(response);
 		

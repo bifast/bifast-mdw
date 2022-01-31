@@ -44,13 +44,6 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
 		chnResp.setOrignReffId(chnReq.getChannelRefId());
 
-//		ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
-//		if (null == chnReq.getRecptBank()) {
-//			chnResp.setRecipientBank(rmc.getProxyResolutionResponse().getRegisterBank());
-//		}
-//		else 
-//			chnResp.setRecipientBank(chnReq.getRecptBank());
-
 		Object objBody = exchange.getMessage().getBody(Object.class);
 		if (objBody.getClass().getSimpleName().equals("FaultPojo")) {
 			FaultPojo fault = (FaultPojo)objBody;

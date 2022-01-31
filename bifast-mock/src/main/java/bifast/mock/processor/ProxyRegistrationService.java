@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
-import bifast.library.iso20022.service.Proxy002Seed;
+import bifast.mock.isoservice.Proxy002Seed;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
 
@@ -297,12 +297,16 @@ public class ProxyRegistrationService {
 		else {
 			System.out.println("ketemu");
 			AccountProxy proxy = oAccountProxy.get();
-			String orgnBank = bm.getDocument().getPrxyRegn().getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
+			String orgnBank = prxyRegn.getRegn().getPrxyRegn().getAgt().getFinInstnId().getOthr().getId();
 
 			// beda bank
 			if (!(proxy.getRegisterBank().equals(orgnBank)) ) {
+				if (proxy.getAccountStatus().equals("ICTV")) 
+					seed.setReason("U804");
+				else
+					seed.setReason("U809");
+				
 				seed.setStatus("RJCT");
-				seed.setReason("U809");
 			}
 			
 			else if (proxy.getAccountStatus().equals("ACTV")) {
@@ -316,18 +320,34 @@ public class ProxyRegistrationService {
 			}			
 
 			else if (proxy.getAccountStatus().equals("SUSP")) {
-				
-				seed.setStatus("ACTC");
-				seed.setReason("U000");
-				proxy.setAccountStatus("ACTV");
-				proxyRepo.save(proxy);
+				if (prxyRegn.getRegn().getRegnTp().value().equals("ACTB")) {
+					seed.setStatus("RJCT");
+					seed.setReason("U805");
+				}
+				else {
+					seed.setStatus("ACTC");
+					seed.setReason("U000");
+					proxy.setAccountStatus("ACTV");
+					proxyRepo.save(proxy);
+				}
+			}	
+			else if (proxy.getAccountStatus().equals("SUSB")) {
+
+				if (prxyRegn.getRegn().getRegnTp().value().equals("ACTV")) {
+					seed.setStatus("RJCT");
+					seed.setReason("U811");
+				}
+				else {
+					seed.setStatus("ACTC");
+					seed.setReason("U000");
+					proxy.setAccountStatus("ACTV");
+					proxyRepo.save(proxy);
+				}
 			}
-					
 
 			seed.setRegnId(prxyRegn.getRegn().getPrxyRegn().getRegnId());
 			seed.setCstmrId(prxyRegn.getRegn().getPrxyRegn().getScndId().getVal());
-			
-			
+					
 			seed.setAgtId(proxy.getRegisterBank());
 			seed.setCstmrId(proxy.getCstmrId());
 			seed.setCstmrRsdntSts(proxy.getCstmrRsdntSts());

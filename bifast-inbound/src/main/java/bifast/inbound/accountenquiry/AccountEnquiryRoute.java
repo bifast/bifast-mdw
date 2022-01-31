@@ -24,12 +24,12 @@ public class AccountEnquiryRoute extends RouteBuilder {
 //			.process(buildAccountEnquiryRequestProcessor)
 			.process(isoAERequestPrc)
 
-	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Akan call AE corebank")
+	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Akan call AE corebank")
 
 //			.to("seda:callcb")
 			.to("direct:isoadpt")
 
-	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] selesai call AE corebank")
+	 		.log(LoggingLevel.DEBUG, "komi.accountenq", "[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] selesai call AE corebank")
 			.process(isoAEResponsePrc)
 			
 			.to("seda:save_ae?exchangePattern=InOnly")
@@ -45,7 +45,7 @@ public class AccountEnquiryRoute extends RouteBuilder {
 			.setHeader("hdr_toBI_jsonzip", simple("${body}"))
 			.setBody(simple("${header.tmp_body}"))
 			.process(saveAEPrc)
-			.log(LoggingLevel.DEBUG, "komi.saveae", "Recorded ${header.hdr_process_data.inbMsgName}")
+			.log(LoggingLevel.DEBUG, "komi.saveae", "${exchangeProperty.prop_process_data.inbMsgName} saved")
 		;
 
 	}

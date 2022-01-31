@@ -31,7 +31,7 @@ public class ReverseCTJobProcessor implements Processor {
 		
 		Pacs002Seed resp = new Pacs002Seed();
 		
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 		FlatPacs008Pojo flatRequest = (FlatPacs008Pojo) processData.getBiRequestFlat();
 
 		String msgId = utilService.genMsgId("011", processData.getKomiTrnsId());
@@ -91,7 +91,7 @@ public class ReverseCTJobProcessor implements Processor {
 		respBusMesg.setDocument(doc);
 
 		processData.setBiResponseMsg(respBusMesg);
-		exchange.getMessage().setHeader("hdr_process_data", processData);
+		exchange.setProperty("prop_process_data", processData);
 		exchange.getIn().setBody(respBusMesg);
 
 	}

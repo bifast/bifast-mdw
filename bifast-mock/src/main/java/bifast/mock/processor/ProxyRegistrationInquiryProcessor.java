@@ -12,10 +12,10 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.prxy006.ProxyEnquiryResponseV01;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Proxy006MessageService;
-import bifast.library.iso20022.service.Proxy006Seed;
-import bifast.library.iso20022.service.Proxy006SeedAccount;
+import bifast.mock.isoservice.MsgHeaderService;
+import bifast.mock.isoservice.Proxy006MessageService;
+import bifast.mock.isoservice.Proxy006Seed;
+import bifast.mock.isoservice.Proxy006SeedAccount;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
 
@@ -23,7 +23,7 @@ import bifast.mock.persist.AccountProxyRepository;
 public class ProxyRegistrationInquiryProcessor implements Processor{
 
 	@Autowired
-	private AppHeaderService hdrService;
+	private MsgHeaderService hdrService;
 	@Autowired
 	private Proxy006MessageService proxy006MessageService;
 	@Autowired
@@ -98,8 +98,7 @@ public class ProxyRegistrationInquiryProcessor implements Processor{
 		ProxyEnquiryResponseV01 response = proxy006MessageService.proxyRegistrationInquiryResponse(seed, msg);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"prxy.006.001.01", bizMsgId);
+		hdr = hdrService.getAppHdr("prxy.006.001.01", bizMsgId);
 		Document doc = new Document();
 		doc.setPrxyNqryRspn(response);
 		BusinessMessage busMesg = new BusinessMessage();

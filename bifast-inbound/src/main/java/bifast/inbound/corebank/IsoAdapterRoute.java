@@ -140,14 +140,13 @@ public class IsoAdapterRoute extends RouteBuilder{
 		    	.process(cbFaultProcessor)
 	    	.end()
 
-			.setHeader("hdr_process_data", exchangeProperty("prop_process_data"))
 			.process(new Processor() {
 				@Override
 				public void process(Exchange exchange) throws Exception {
-					ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 					Object cbResponse = exchange.getMessage().getBody(Object.class);
 					processData.setCorebankResponse(cbResponse);
-					exchange.getMessage().setHeader("hdr_process_data", processData);
+					exchange.setProperty("prop_process_data", processData);
 				}
 			})
 			

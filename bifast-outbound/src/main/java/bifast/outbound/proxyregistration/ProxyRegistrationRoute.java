@@ -91,7 +91,9 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 			.end()
 
 			.filter().simple("${body.class} endsWith 'ChnlProxyRegistrationRequestPojo'")
-				
+				.log(LoggingLevel.DEBUG, "komi.prxyrgst", 
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Prepare Prx Regn msg.")
+
 				.process(proxyRegistrationRequestProcessor)
 				
 				.to("direct:call-cihub")

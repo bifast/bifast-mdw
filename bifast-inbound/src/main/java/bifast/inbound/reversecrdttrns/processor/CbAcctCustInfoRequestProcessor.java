@@ -27,7 +27,7 @@ public class CbAcctCustInfoRequestProcessor implements Processor{
 	public void process(Exchange exchange) throws Exception {
 		
 		AccountCustInfoRequestPojo aciRequest = new AccountCustInfoRequestPojo();
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);		
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);		
 		FlatPacs008Pojo revRequest = (FlatPacs008Pojo) processData.getBiRequestFlat();
 
 		aciRequest.setAccountNumber(revRequest.getCreditorAccountNo());

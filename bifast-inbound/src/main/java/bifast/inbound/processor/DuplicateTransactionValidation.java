@@ -32,24 +32,32 @@ public class DuplicateTransactionValidation implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 
 		FlatPacs008Pojo flat008 = (FlatPacs008Pojo)processData.getBiRequestFlat();
 
 		List<CreditTransfer> lCreditTransfer = ctRepo.findAllByCrdtTrnRequestBizMsgIdr(flat008.getBizMsgIdr());	
-
 		String saf = Optional.ofNullable(flat008.getCpyDplct()).orElse("");
 
-			if ((lCreditTransfer.size()>0) && (!(saf.equals("DUPL")))) {
-				BusinessMessage response = ctResponse (processData);
-				exchange.getMessage().setBody(response);
-	
-				exchange.getMessage().setBody(response);
-	
-				processData.setBiResponseMsg(response);
-				exchange.getMessage().setHeader("hdr_process_data", processData);
-				throw new DuplicateTransactionException("Nomor BizMsgIdr duplikat");
-			}
+		if ((lCreditTransfer.size()>0) && (!(saf.equals("DUPL")))) {
+			BusinessMessage response = ctResponse (processData);
+			exchange.getMessage().setBody(response);
+
+			processData.setBiResponseMsg(response);
+			exchange.setProperty("prop_process_data", processData);
+			throw new DuplicateTransactionException("Nomor BizMsgIdr duplikat");
+		}
+
+		List<CreditTransfer> lCreditTransfer2 = ctRepo.findAllByEndToEndId(flat008.getEndToEndId());	
+		if ((lCreditTransfer2.size()>0)) {
+			BusinessMessage response = ctResponse (processData);
+			exchange.getMessage().setBody(response);
+
+			processData.setBiResponseMsg(response);
+			exchange.setProperty("prop_process_data", processData);
+			throw new DuplicateTransactionException("Nomor EndToEndID sudah pernah diterima");
+		}
+
 	}
 	
 	private BusinessMessage ctResponse (ProcessDataPojo processData) throws Exception {

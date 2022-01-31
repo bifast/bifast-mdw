@@ -24,7 +24,7 @@ public class CheckSAFResultProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlPaymentStatusRequestPojo chnReq = rmw.getChnlPaymentStatusRequest();
 		
 //		List<ChannelTransaction> lCT = channelRequestRepo.findByChannelIdAndChannelRefId(rmw.getChannelId(), chnReq.getOrgnlRefId());	
@@ -39,20 +39,20 @@ public class CheckSAFResultProcessor implements Processor {
 			}
 		}
 
-		ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+		ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 
 		if (null != crdtTrnsf) {
 			rmc.setCallStatus(channelTrns.getCallStatus());
 			rmc.setResponseCode(crdtTrnsf.getResponseCode());
 			rmc.setReasonCode(crdtTrnsf.getReasonCode());
-			exchange.getMessage().setHeader("hdr_response_list", rmc);
+			exchange.setProperty("prop_response_list", rmc);
 			exchange.getMessage().setBody(channelTrns.getTextMessage());
 		}
 		else {
 			rmc.setCallStatus("ERROR");
 			rmc.setResponseCode("OTHR");
 			rmc.setReasonCode("U106");
-			exchange.getMessage().setHeader("hdr_response_list", rmc);
+			exchange.setProperty("prop_response_list", rmc);
 		}
 				
 	}

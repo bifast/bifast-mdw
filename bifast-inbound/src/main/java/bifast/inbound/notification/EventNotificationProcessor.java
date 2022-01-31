@@ -26,7 +26,7 @@ public class EventNotificationProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 		FlatAdmi004Pojo flat = (FlatAdmi004Pojo) processData.getBiRequestFlat();
 		
 		String bizMsgId = utilService.genRfiBusMsgId("000", processData.getKomiTrnsId());
@@ -53,7 +53,7 @@ public class EventNotificationProcessor implements Processor{
 		respBusMesg.setDocument(doc);
 		
 		processData.setBiResponseMsg(respBusMesg);
-		exchange.getMessage().setHeader("hdr_process_data", processData);
+		exchange.setProperty("prop_process_data", processData);
 		exchange.getIn().setBody(respBusMesg);
 
 	}

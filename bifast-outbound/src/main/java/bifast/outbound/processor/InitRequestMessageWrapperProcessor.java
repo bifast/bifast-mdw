@@ -36,7 +36,7 @@ public class InitRequestMessageWrapperProcessor implements Processor {
 		rmw.setKomiTrxId(komiTrnsId);
 		rmw.setKomiStart(Instant.now());
 		
-		exchange.getMessage().setHeader("hdr_request_list", rmw);
+		exchange.setProperty("prop_request_list", rmw);
 	}
 
 }

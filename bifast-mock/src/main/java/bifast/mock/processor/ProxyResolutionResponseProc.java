@@ -11,9 +11,9 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.prxy004.ProxyLookUpResponseV01;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Proxy004MessageService;
-import bifast.library.iso20022.service.Proxy004Seed;
+import bifast.mock.isoservice.MsgHeaderService;
+import bifast.mock.isoservice.Proxy004MessageService;
+import bifast.mock.isoservice.Proxy004Seed;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
 
@@ -22,7 +22,7 @@ import bifast.mock.persist.AccountProxyRepository;
 public class ProxyResolutionResponseProc implements Processor{
 
 	@Autowired
-	private AppHeaderService hdrService;
+	private MsgHeaderService hdrService;
 	@Autowired
 	private Proxy004MessageService proxy004MessageService;
 	
@@ -88,7 +88,7 @@ public class ProxyResolutionResponseProc implements Processor{
 		ProxyLookUpResponseV01 response = proxy004MessageService.proxyResolutionResponse(seed, msg);
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.getAppHdr(seed.getRegisterBank(), "prxy.004.001.01", bizMsgId);
+		hdr = hdrService.getAppHdr("prxy.004.001.01", bizMsgId);
 		
 		Document doc = new Document();
 		doc.setPrxyLookUpRspn(response);

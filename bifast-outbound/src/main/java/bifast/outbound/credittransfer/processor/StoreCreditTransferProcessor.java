@@ -29,7 +29,7 @@ public class StoreCreditTransferProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		BusinessMessage biRequest = rmw.getCreditTransferRequest();
 		FIToFICustomerCreditTransferV08 creditTransferReq = biRequest.getDocument().getFiToFICstmrCdtTrf();
 		
@@ -76,7 +76,7 @@ public class StoreCreditTransferProcessor implements Processor {
 				ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
 			
 			
-			ResponseMessageCollection rmc = exchange.getMessage().getHeader("hdr_response_list", ResponseMessageCollection.class);
+			ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 			ct.setErrorMessage(rmc.getLastError());
 
 			ct.setSettlementConfBizMsgIdr("WAITING");

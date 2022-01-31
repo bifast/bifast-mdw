@@ -50,8 +50,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 			.process(exceptionProcessor)
 			.marshal(chnlResponseJDF)
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] "
-					+ " Response: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${exchangeProperty.prop_request_list.msgName}:"
+					+ "${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
 			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
@@ -60,8 +60,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		onException(DuplicateIdException.class).routeId("komi.endpointRoute.duplikatException")
 			.process(exceptionProcessor)
 			.marshal(chnlResponseJDF)
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] "
-					+ " Response: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${exchangeProperty.prop_request_list.msgName}:"
+					+ "${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
 //			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
@@ -84,7 +84,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.process(initRmwProcessor)
 	
 			.log("=====*****=====")
-			.log("Terima dari ${header.hdr_request_list.channelId}: ${header.hdr_fulltextinput}")
+			.log("Terima dari ${exchangeProperty.prop_request_list.channelId}: ${header.hdr_fulltextinput}")
 
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
 
@@ -94,7 +94,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					ChannelTransaction chnlTrns = new ChannelTransaction();
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list",RequestMessageWrapper.class );
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class );
 					String fullTextInput = exchange.getMessage().getHeader("hdr_fulltextinput", String.class);
 					chnlTrns.setChannelRefId(rmw.getRequestId());
 					chnlTrns.setKomiTrnsId(rmw.getKomiTrxId());
@@ -110,7 +110,6 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					ResponseMessageCollection rmc = new ResponseMessageCollection();
-					exchange.getMessage().setHeader("hdr_response_list", rmc);
 					exchange.setProperty("prop_response_list" , rmc);
 				}
 			})
@@ -148,7 +147,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.to("seda:savetablechannel?exchangePattern=InOnly")
 			
-//			.filter().simple("${header.hdr_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
+//			.filter().simple("${exchangeProperty.prop_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
 //				.to("seda:logportal?exchangePattern=InOnly")
 //			.end()
 			

@@ -20,7 +20,7 @@ public class FindingSettlementProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		String orglBizMsgId = rmw.getCreditTransferRequest().getAppHdr().getBizMsgIdr();
 		Optional<Settlement> oSettlement = settlementRepo.findByOrgnlCTBizMsgId(orglBizMsgId);
 		
@@ -29,7 +29,7 @@ public class FindingSettlementProcessor implements Processor {
 			exchange.getMessage().setBody(strSettlement);
 			
 			rmw.setCihubEncriptedResponse(strSettlement);
-			exchange.getMessage().setHeader("hdr_request_list", rmw);
+			exchange.setProperty("prop_request_list", rmw);
 		}
 		
 		else

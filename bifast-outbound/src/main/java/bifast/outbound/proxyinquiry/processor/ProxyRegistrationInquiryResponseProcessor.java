@@ -40,7 +40,7 @@ public class ProxyRegistrationInquiryResponseProcessor implements Processor {
 		channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 		channelResponseWr.setResponses(new ArrayList<>());
 
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlProxyRegistrationInquiryRequestPojo chnRequest = rmw.getChnlProxyRegistrationInquiryRequest();
 
 		Object objBody = exchange.getMessage().getBody(Object.class);

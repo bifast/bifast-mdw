@@ -39,7 +39,7 @@ public class IsoAEResponsePrc implements Processor {
 		else
 			fault = (FaultPojo) oResp;
 		
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 
 		String msgId = utilService.genMsgId("510", processData.getKomiTrnsId());
 		BusinessMessage msg = processData.getBiRequestMsg();
@@ -96,7 +96,7 @@ public class IsoAEResponsePrc implements Processor {
 		busMesg.setDocument(doc);
 		
 		processData.setBiResponseMsg(busMesg);
-		exchange.getMessage().setHeader("hdr_process_data", processData);
+		exchange.setProperty("prop_process_data", processData);
 		
 		exchange.getMessage().setBody(busMesg);
 

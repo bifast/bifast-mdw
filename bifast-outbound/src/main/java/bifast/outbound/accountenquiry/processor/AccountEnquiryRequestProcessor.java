@@ -33,7 +33,6 @@ public class AccountEnquiryRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-//		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
 		

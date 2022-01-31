@@ -27,7 +27,7 @@ public class SaveCreditTransferProcessor implements Processor {
 //		BusinessMessage rcvBi = exchange.getMessage().getHeader("hdr_frBIobj",BusinessMessage.class);
 //		BusinessApplicationHeaderV01 hdr = rcvBi.getAppHdr();
 
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 		FlatPacs008Pojo flatReq = (FlatPacs008Pojo)processData.getBiRequestFlat();
 		
 		CreditTransfer ct = new CreditTransfer();

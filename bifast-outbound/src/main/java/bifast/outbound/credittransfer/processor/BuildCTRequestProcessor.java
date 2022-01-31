@@ -33,7 +33,7 @@ public class BuildCTRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
 
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
@@ -111,7 +111,7 @@ public class BuildCTRequestProcessor implements Processor {
 		busMsg.setDocument(doc);
 
 		rmw.setCreditTransferRequest(busMsg);
-		exchange.getMessage().setHeader("hdr_request_list", rmw);
+		exchange.setProperty("prop_request_list", rmw);
 
 		exchange.getIn().setBody(busMsg);
 		

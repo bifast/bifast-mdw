@@ -24,7 +24,7 @@ public class BuildSettlementCBRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		ProcessDataPojo processData = exchange.getMessage().getHeader("hdr_process_data", ProcessDataPojo.class);
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 		FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
 
 		CbSettlementRequestPojo sttlRequest = new CbSettlementRequestPojo();

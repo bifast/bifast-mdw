@@ -24,9 +24,12 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs002MessageService;
-import bifast.library.iso20022.service.Pacs002Seed;
+import bifast.mock.isoservice.MsgHeaderService;
+import bifast.mock.isoservice.Pacs002MessageService;
+import bifast.mock.isoservice.Pacs002Seed;
+//import bifast.library.iso20022.service.AppHeaderService;
+//import bifast.library.iso20022.service.Pacs002MessageService;
+//import bifast.library.iso20022.service.Pacs002Seed;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
 import bifast.mock.persist.MockPacs002;
@@ -35,7 +38,7 @@ import bifast.mock.persist.MockPacs002Repository;
 @Component
 public class CreditTransferResponseProcessor implements Processor{
 	@Autowired private AccountProxyRepository accountRepo;
-	@Autowired private AppHeaderService hdrService;
+	@Autowired private MsgHeaderService hdrService;
     @Autowired private MockPacs002Repository mockPacs002Repo;
 	@Autowired private Pacs002MessageService pacs002Service;
 	@Autowired private UtilService utilService;
@@ -156,10 +159,8 @@ public class CreditTransferResponseProcessor implements Processor{
 		response.getTxInfAndSts().get(0).getOrgnlTxRef().setIntrBkSttlmDt(xcal);
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.getAppHdr(bmInput.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", bizMsgId);
+		hdr = hdrService.getAppHdr("pacs.002.001.10", bizMsgId);
 		hdr.setBizSvc("CLEAR");
-		hdr.getFr().getFIId().getFinInstnId().getOthr().setId(bmInput.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId());
 
 		BusinessMessage busMesg = new BusinessMessage();
 		Document doc = new Document();

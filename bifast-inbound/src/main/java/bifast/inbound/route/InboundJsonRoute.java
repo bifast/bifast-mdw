@@ -54,9 +54,9 @@ public class InboundJsonRoute extends RouteBuilder {
 			.setProperty("prop_frBIobj", simple("${body}"))
 			.to("direct:receive")
 			
-			.filter().simple("${header.hdr_process_data.inbMsgName} !in 'Settl, PrxNtf'")
+			.filter().simple("${exchangeProperty.prop_process_data.inbMsgName} !in 'Settl, PrxNtf'")
 				.marshal(jsonBusinessMessageDataFormat) 
-				.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] Response: ${body}")
+				.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Response: ${body}")
 				// simpan outbound compress
 				.setHeader("hdr_tmp", simple("${body}"))
 //				.marshal().zipDeflater()
@@ -68,7 +68,7 @@ public class InboundJsonRoute extends RouteBuilder {
 //			.setExchangePattern(ExchangePattern.InOnly)
 //			.to("seda:logandsave")
 	
-			.log("[${header.hdr_process_data.inbMsgName}:${header.hdr_process_data.endToEndId}] completed.")
+			.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] completed.")
 			
 			.removeHeaders("*")
 

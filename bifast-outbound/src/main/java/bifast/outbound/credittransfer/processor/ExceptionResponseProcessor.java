@@ -28,7 +28,7 @@ public class ExceptionResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 //		DebitException exception = (DebitException) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		
 		ChnlCreditTransferRequestPojo chnlReq = rmw.getChnlCreditTransferRequest();
 		

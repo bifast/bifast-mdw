@@ -57,7 +57,6 @@ public class AccountEnquiryRoute extends RouteBuilder{
 						+ "${exchangeProperty.prop_request_list.requestId}][AE] akan panggil ProxyResolution.")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
-//						RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
 						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 						ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 						ChnlProxyResolutionRequestPojo prxRes = new ChnlProxyResolutionRequestPojo();

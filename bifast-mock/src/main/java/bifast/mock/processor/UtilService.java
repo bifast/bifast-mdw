@@ -10,7 +10,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import bifast.library.config.LibConfig;
+import bifast.mock.isoservice.LibConfig;
 import bifast.mock.persist.MockNames;
 import bifast.mock.persist.MockNamesRepository;
 

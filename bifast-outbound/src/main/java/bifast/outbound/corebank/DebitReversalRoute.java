@@ -46,7 +46,7 @@ public class DebitReversalRoute extends RouteBuilder{
 		from("direct:debitreversal").routeId("komi.reverse_ct")
 			
 			.log(LoggingLevel.DEBUG, "komi.reverse_ct", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Akan debit-reversal")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Akan debit-reversal")
 
 			.setHeader("ct_progress", constant("REVERSAL"))
 			.setHeader("revct_tmpbody", simple("${body}"))
@@ -90,16 +90,12 @@ public class DebitReversalRoute extends RouteBuilder{
 		
 		from("direct:postcreditreversal").routeId("komi.postcrdtrev")
 			.log(LoggingLevel.DEBUG, "komi.postcrdtrev", 
-					"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Akan kirim reversal")
-
-			.setProperty("bkp_hdr_request_list").header("hdr_request_list")
-			.setProperty("bkp_hdr_response_list").header("hdr_response_list")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Akan kirim reversal")
 
 			.removeHeaders("hdr_*")
-			.setHeader("hdr_request_list", exchangeProperty("bkp_hdr_request_list"))
 
 			.doTry()
-				.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Request ISOAdapter: ${body}")
+				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Request ISOAdapter: ${body}")
 		
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
@@ -116,7 +112,7 @@ public class DebitReversalRoute extends RouteBuilder{
 	
 				.convertBodyTo(String.class)
 				
-				.log("[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Response ISOAdapter: ${body}")
+				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Response ISOAdapter: ${body}")
 	
 				.unmarshal(debitReversalResponseJDF)
 				
@@ -131,18 +127,13 @@ public class DebitReversalRoute extends RouteBuilder{
 						}
 					})
 					.log(LoggingLevel.DEBUG, "komi.reverse_ct", 
-							"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Fault")
+							"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Fault")
 				.end()
-
-				.setHeader("hdr_request_list", exchangeProperty("bkp_hdr_request_list"))
-				.setHeader("hdr_response_list", exchangeProperty("bkp_hdr_response_list"))
 
 			.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] Call Corebank Error.")
+				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Call Corebank Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-				.setHeader("hdr_request_list", exchangeProperty("bkp_hdr_request_list"))
-				.setHeader("hdr_response_list", exchangeProperty("bkp_hdr_response_list"))
 		    	.process(cbFaultProcessor)
 			.end()
 			
@@ -151,11 +142,11 @@ public class DebitReversalRoute extends RouteBuilder{
 		
 		from("seda:savecbdebitrevr?concurrentConsumers=10").routeId("komi.savecbdebitrevr")
 			.log(LoggingLevel.DEBUG, "komi.savecbdebitrevr", 
-				"[${header.hdr_request_list.msgName}:${header.hdr_request_list.requestId}] akan save Debit Reversal ke CB-log")
+				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save Debit Reversal ke CB-log")
 			
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 					String komiTrnsId = rmw.getKomiTrxId();
 					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("revct_revRequest",DebitReversalRequestPojo.class);
 	

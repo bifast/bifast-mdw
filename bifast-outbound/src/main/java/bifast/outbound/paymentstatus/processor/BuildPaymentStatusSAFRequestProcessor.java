@@ -28,7 +28,7 @@ public class BuildPaymentStatusSAFRequestProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		RequestMessageWrapper rmw = exchange.getMessage().getHeader("hdr_request_list", RequestMessageWrapper.class);
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 
 		UndefinedCTPojo req = exchange.getMessage().getHeader("ps_request", UndefinedCTPojo.class);
 			
