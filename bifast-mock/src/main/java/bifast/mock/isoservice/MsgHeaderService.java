@@ -9,6 +9,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.head001.BranchAndFinancialInstitutionIdentification5;
@@ -16,15 +17,18 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.head001.FinancialInstitutionIdentification8;
 import bifast.library.iso20022.head001.GenericFinancialIdentification1;
 import bifast.library.iso20022.head001.Party9Choice;
+import bifast.mock.processor.UtilService;
 
 
 
 @Service
 public class MsgHeaderService {
-
+	@Autowired private LibConfig config;
+	@Autowired private UtilService utilService;
+	
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-	public BusinessApplicationHeaderV01 getAppHdr(String msgType, String bizMsgId) {
+	public BusinessApplicationHeaderV01 appHdr(String msgType, String bizMsgId) {
 		
         		
 		BusinessApplicationHeaderV01 appHdr = new BusinessApplicationHeaderV01();
@@ -33,14 +37,14 @@ public class MsgHeaderService {
 		fr.setFIId(new BranchAndFinancialInstitutionIdentification5());
 		fr.getFIId().setFinInstnId(new FinancialInstitutionIdentification8());
 		fr.getFIId().getFinInstnId().setOthr(new GenericFinancialIdentification1());
-		fr.getFIId().getFinInstnId().getOthr().setId("FASTIDJA");
+		fr.getFIId().getFinInstnId().getOthr().setId(config.getBicode());
 		appHdr.setFr(fr);
 
 		Party9Choice to = new Party9Choice();
 		to.setFIId(new BranchAndFinancialInstitutionIdentification5());
 		to.getFIId().setFinInstnId(new FinancialInstitutionIdentification8());
 		to.getFIId().getFinInstnId().setOthr(new GenericFinancialIdentification1());
-		to.getFIId().getFinInstnId().getOthr().setId("SIHBIDJ1");
+		to.getFIId().getFinInstnId().getOthr().setId(config.getBankcode());
 		appHdr.setTo(to);
 
 		appHdr.setMsgDefIdr(msgType);
@@ -63,5 +67,24 @@ public class MsgHeaderService {
 	}
 
 
+	public BusinessApplicationHeaderV01 getAppHdr(String msgType, String bizMsgId) {
+		
+		BusinessApplicationHeaderV01 appHdr = appHdr( msgType,  bizMsgId);
+		return appHdr;
+	}
 
+	public BusinessApplicationHeaderV01 genAppHdr(String isoMsgCode, String msgType, String instRole) {
+		
+		String bizmsgid = "";
+		
+		if (instRole.equals("H")) {
+			bizmsgid = utilService.genHubBusMsgId(msgType);
+			
+		}
+
+		BusinessApplicationHeaderV01 appHdr = getAppHdr( msgType,  bizmsgid);
+		return appHdr;
+	}
+
+	
 }

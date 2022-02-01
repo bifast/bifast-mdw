@@ -1,4 +1,4 @@
-package bifast.mock.processor;
+package bifast.mock.proxy;
 
 import java.util.Optional;
 
@@ -16,6 +16,7 @@ import bifast.mock.isoservice.Proxy004MessageService;
 import bifast.mock.isoservice.Proxy004Seed;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
+import bifast.mock.processor.UtilService;
 
 
 @Component

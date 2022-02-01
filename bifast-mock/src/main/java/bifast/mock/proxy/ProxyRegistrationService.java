@@ -1,4 +1,4 @@
-package bifast.mock.processor;
+package bifast.mock.proxy;
 
 import java.util.Optional;
 import java.util.Random;
@@ -11,6 +11,7 @@ import bifast.library.iso20022.prxy001.ProxyRegistrationV01;
 import bifast.mock.isoservice.Proxy002Seed;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
+import bifast.mock.processor.UtilService;
 
 @Service
 public class ProxyRegistrationService {

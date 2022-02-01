@@ -1,4 +1,4 @@
-package bifast.mock.processor;
+package bifast.mock.proxy;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -12,9 +12,10 @@ import bifast.library.iso20022.prxy002.ProxyRegistrationResponseV01;
 import bifast.mock.isoservice.MsgHeaderService;
 import bifast.mock.isoservice.Proxy002MessageService;
 import bifast.mock.isoservice.Proxy002Seed;
+import bifast.mock.processor.UtilService;
 
 @Component
-public class ProxyRegistrationResponseProcessor implements Processor{
+public class ProxyRegistrationProcessor implements Processor{
 
 	@Autowired private MsgHeaderService hdrService;
 	@Autowired private Proxy002MessageService proxy002MessageService;
