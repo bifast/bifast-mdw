@@ -85,20 +85,18 @@ public class IsoAdapterRoute extends RouteBuilder{
 			
 			.setProperty("cb_request_str", simple("${body}"))
 			
-	 		.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${header.cb_msgname}:${header.cb_e2eid}] POST ${header.cb_url}")
+	 		.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${header.cb_msgname}:${exchangeProperty.end2endid}] POST ${header.cb_url}")
 	 		.log("[${header.cb_msgname}:${header.cb_e2eid}] CB Request: ${body}")
 			
 	 		.doTry()
 				.setHeader("HttpMethod", constant("POST"))
 				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON))
 				.enrich().simple("${header.cb_url}?bridgeEndpoint=true")
-//						+ "bridgeEndpoint=true")
 					
-					.aggregationStrategy(enrichmentAggregator)
-					.convertBodyTo(String.class)
+				.aggregationStrategy(enrichmentAggregator)
+				.convertBodyTo(String.class)
 				
 				.log("[${header.cb_msgname}:${header.cb_e2eid}] CB response: ${body}")
-
 
 		    	.choice()
 		 			.when().simple("${header.cb_requestName} == 'accountcustinfo'")
@@ -150,7 +148,11 @@ public class IsoAdapterRoute extends RouteBuilder{
 				}
 			})
 			
-			.process(saveCBTransactionProc)
+			.filter().simple("${header.cb_requestName} in 'credit,settlement'")
+				.log("akan simpan ${header.cb_requestName}")
+				.process(saveCBTransactionProc)
+			.end()
+			
 			.removeHeaders("cb_*")
 		;
 		

@@ -1,5 +1,8 @@
 package bifast.inbound.settlement;
 
+import java.util.HashMap;
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,16 +11,18 @@ import org.springframework.stereotype.Component;
 
 import bifast.inbound.config.Config;
 import bifast.inbound.corebank.isopojo.SettlementRequest;
-import bifast.inbound.pojo.ProcessDataPojo;
+import bifast.inbound.model.CorebankTransaction;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;
 import bifast.inbound.repository.CorebankTransactionRepository;
+import bifast.inbound.service.FlattenIsoMessageService;
 import bifast.inbound.service.RefUtils;
+import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
-public class SettlementRequestProcessor implements Processor {
+public class SettlementCreditProcessor implements Processor {
 	@Autowired private Config config;
-//	@Autowired private CreditTransferRepository crdtTrnsRepo;
 	@Autowired private CorebankTransactionRepository cbRepo;
+	@Autowired private FlattenIsoMessageService flatMessageService;
 
 	@Value("${komi.isoadapter.merchant}")
 	String merchant;
@@ -34,8 +39,12 @@ public class SettlementRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-		FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
+		@SuppressWarnings("unchecked")
+		HashMap<String, Object> arr = exchange.getProperty("ctsaf_qryresult",HashMap.class);
+		String komiTrnsId = String.valueOf(arr.get("komi_trns_id"));
+
+		BusinessMessage settlementMsg = exchange.getMessage().getBody(BusinessMessage.class);
+		FlatPacs002Pojo flatMsg = flatMessageService.flatteningPacs002(settlementMsg);
 
 		SettlementRequest sttlRequest = new SettlementRequest();
 
@@ -50,16 +59,20 @@ public class SettlementRequestProcessor implements Processor {
 		sttlRequest.setTerminalId(terminal);
 		sttlRequest.setTransactionId(txid);
 		
-		sttlRequest.setBizMsgId(flatSttl.getBizMsgIdr());
-		sttlRequest.setMsgId(flatSttl.getOrgnlEndToEndId());	
+		sttlRequest.setBizMsgId(flatMsg.getBizMsgIdr());
+		sttlRequest.setMsgId(flatMsg.getOrgnlEndToEndId());	
 		
-		if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
-			sttlRequest.setCounterParty(flatSttl.getDbtrAgtFinInstnId());
+		if (flatMsg.getCdtrAgtFinInstnId().equals(config.getBankcode()))
+			sttlRequest.setCounterParty(flatMsg.getDbtrAgtFinInstnId());
 		else
-			sttlRequest.setCounterParty(flatSttl.getCdtrAgtFinInstnId());			
+			sttlRequest.setCounterParty(flatMsg.getCdtrAgtFinInstnId());			
 				
-		String orgnlNoref = cbRepo.getOrgnlNorefByEndToEndId(flatSttl.getOrgnlEndToEndId()).orElse("");
-		sttlRequest.setOriginalNoRef(orgnlNoref);
+		String orgnlNoRef = "";
+		Optional<CorebankTransaction> oCorebankTransaction = cbRepo.findByTransactionTypeAndKomiTrnsId("Credit", komiTrnsId);
+		if (oCorebankTransaction.isPresent())
+			orgnlNoRef = oCorebankTransaction.get().getKomiNoref();
+		
+		sttlRequest.setOriginalNoRef(orgnlNoRef);
 		
 		exchange.getMessage().setBody(sttlRequest);
 	

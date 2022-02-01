@@ -116,7 +116,7 @@ public class CreditTransferProcessor implements Processor {
 		respBusMesg.setDocument(doc);
 		
 		processData.setBiResponseMsg(respBusMesg);
-		exchange.getProperty("prop_process_data", processData);
+		exchange.setProperty("prop_process_data", processData);
 		exchange.getIn().setBody(respBusMesg);
 
 	}

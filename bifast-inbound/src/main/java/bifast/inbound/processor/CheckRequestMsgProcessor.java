@@ -44,6 +44,10 @@ public class CheckRequestMsgProcessor implements Processor {
 				processData.setInbMsgName("Settl");
 				processData.setEndToEndId(flat002.getOrgnlEndToEndId());
 			}
+			
+			exchange.setProperty("end2endid", flat002.getOrgnlEndToEndId());
+			System.out.println("end2endid " + flat002.getOrgnlEndToEndId());
+
 		}
 
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("prxy.901")) {
@@ -64,6 +68,8 @@ public class CheckRequestMsgProcessor implements Processor {
 				processData.setInbMsgName("CrdTrn");
 			else if (trnType.equals("011")) 
 				processData.setInbMsgName("RevCT");
+			
+			exchange.setProperty("end2endid", flat008.getEndToEndId());
 		}
 
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("admi.004")) {
@@ -85,6 +91,7 @@ public class CheckRequestMsgProcessor implements Processor {
 
 
 		exchange.setProperty("prop_process_data", processData);
+		exchange.setProperty("komitrnsid", processData.getKomiTrnsId());
 	
 	}
 	

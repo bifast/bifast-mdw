@@ -49,7 +49,7 @@ public class ProxyResolutionResponseProc implements Processor{
 		seed.setOrgnlPrxyRqstrTp(proxyType);
 		seed.setOrgnlPrxyRqstrVal(proxyVal);
 
-		Optional<AccountProxy> oAccountProxy = accountProxyRepository.findByProxyTypeAndProxyVal(proxyType, proxyVal);
+		Optional<AccountProxy> oAccountProxy = accountProxyRepository.getByProxyTypeAndByProxyValAndNotInactive(proxyType, proxyVal);
 		
 		if (oAccountProxy.isEmpty()) {
 			System.out.println("empty");
@@ -60,23 +60,29 @@ public class ProxyResolutionResponseProc implements Processor{
 		else {
 			AccountProxy proxy = oAccountProxy.get();
 
-			seed.setRegnId(proxy.getReginId());
 			seed.setPrxyRtrvlTp(proxy.getProxyType());
 			seed.setPrxyRtrvlVal(proxy.getProxyVal());
-			seed.setDisplayName(proxy.getDisplayName());
-			seed.setRegisterBank(proxy.getRegisterBank());
-			seed.setAccountNumber(proxy.getAccountNumber());
-			seed.setAccountType(proxy.getAccountType());
 
 			if (proxy.getAccountStatus().equals("ACTV")) {
 				seed.setStatus("ACTC");
 				seed.setReason("U000");
 				
+				seed.setDisplayName(proxy.getDisplayName());
+				seed.setRegisterBank(proxy.getRegisterBank());
+				seed.setRegnId(proxy.getReginId());
+				seed.setAccountNumber(proxy.getAccountNumber());
+				seed.setAccountType(proxy.getAccountType());
+
 				seed.setAccountName(proxy.getAccountName());
 				seed.setCstmrId(proxy.getCstmrId());
 				seed.setCstmrTp(proxy.getCstmrTp());
 				seed.setCstmrRsdntSts(proxy.getCstmrRsdntSts());
 				seed.setCstmrTwnNm(proxy.getCstmrTwnNm());
+			}
+			else if (proxy.getAccountStatus().equals("SUSB")) {
+				seed.setStatus("RJCT");
+				seed.setReason("U811");
+
 			}
 			else {
 				seed.setStatus("RJCT");

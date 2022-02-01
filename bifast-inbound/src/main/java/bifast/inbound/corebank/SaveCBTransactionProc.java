@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -25,7 +26,11 @@ public class SaveCBTransactionProc implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-
+		
+		HashMap<String, Object> arr = exchange.getProperty("ctsaf_qryresult",HashMap.class);
+		
+		String komiTrnsId = String.valueOf(arr.get("komi_trns_id"));
+		
 		String strRequest = exchange.getProperty("cb_request_str", String.class);
 		Object oCbRequest = exchange.getProperty("cb_request", Object.class);
 		String response = exchange.getMessage().getHeader("cb_response", String.class);
@@ -36,6 +41,7 @@ public class SaveCBTransactionProc implements Processor {
 		corebankTrans.setUpdateTime(LocalDateTime.now());
 		corebankTrans.setFullTextRequest(strRequest);
 		corebankTrans.setTrnsDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+		corebankTrans.setKomiTrnsId(komiTrnsId);
 
 		corebankTrans.setReason(reason);
 		corebankTrans.setResponse(response);
@@ -54,7 +60,6 @@ public class SaveCBTransactionProc implements Processor {
 			corebankTrans.setFeeAmount(new BigDecimal(req.getFeeTransfer()));
 			
 			corebankTrans.setKomiNoref(req.getNoRef());
-			corebankTrans.setKomiTrnsId(req.getTransactionId());
 			corebankTrans.setOrgnlChnlNoref(req.getOriginalNoRef());
 			corebankTrans.setOrgnlDateTime(req.getOriginalDateTime());
 						
@@ -66,7 +71,6 @@ public class SaveCBTransactionProc implements Processor {
 			
 			corebankTrans.setDateTime(req.getDateTime());
 			corebankTrans.setKomiNoref(req.getNoRef());
-			corebankTrans.setKomiTrnsId(req.getTransactionId());
 			corebankTrans.setOrgnlChnlNoref(req.getOriginalNoRef());
 						
 			corebankTrans.setTransactionType("Settlement");

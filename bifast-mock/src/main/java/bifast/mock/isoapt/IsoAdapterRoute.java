@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
+import bifast.mock.isoapt.pojo.AccountEnquiryRequest;
+import bifast.mock.isoapt.pojo.AccountEnquiryResponse;
 import bifast.mock.isoapt.pojo.CreditRequest;
 import bifast.mock.isoapt.pojo.CreditResponse;
 import bifast.mock.isoapt.pojo.SettlementRequest;
@@ -16,7 +18,11 @@ import bifast.mock.isoapt.pojo.SettlementResponse;
 @Component
 public class IsoAdapterRoute extends RouteBuilder {
 	@Autowired private CreditRequestProcessor creditRequestPrc;
-	
+	@Autowired private AccountEnquiryProcessor accountEnquiryPrc;
+	@Autowired private SettlementRequestProcessor settlementRequestPrc;
+
+	JacksonDataFormat aeRequestJDF = new JacksonDataFormat(AccountEnquiryRequest.class);
+	JacksonDataFormat aeResponseJDF = new JacksonDataFormat(AccountEnquiryResponse.class);
 	JacksonDataFormat creditRequestJDF = new JacksonDataFormat(CreditRequest.class);
 	JacksonDataFormat creditResponseJDF = new JacksonDataFormat(CreditResponse.class);
 	JacksonDataFormat settlementRequestJDF = new JacksonDataFormat(SettlementRequest.class);
@@ -43,6 +49,9 @@ public class IsoAdapterRoute extends RouteBuilder {
 		;
 		
 		rest("/adapter")
+			.post("/accountinquiry")
+				.consumes("application/json")
+				.to("direct:accountenquiry")
 			.post("/credit")
 				.consumes("application/json")
 				.to("direct:credit")
@@ -51,6 +60,13 @@ public class IsoAdapterRoute extends RouteBuilder {
 				.to("direct:settlement")
 		;
 	
+		from("direct:accountenquiry").routeId("accountenquiry")
+			.convertBodyTo(String.class)
+			.unmarshal(aeRequestJDF)
+			.process(accountEnquiryPrc)
+			.marshal(aeResponseJDF)
+			;
+
 		from("direct:credit").routeId("credit")
 			.convertBodyTo(String.class)
 			.unmarshal(creditRequestJDF)
@@ -58,10 +74,10 @@ public class IsoAdapterRoute extends RouteBuilder {
 			.marshal(creditResponseJDF)
 			;
 
-		from("direct:settlement").routeId("settlement")
+		from("direct:settlement").routeId("settlement2")
 			.convertBodyTo(String.class)
 			.unmarshal(settlementRequestJDF)
-			.process(creditRequestPrc)
+			.process(settlementRequestPrc)
 			.marshal(settlementResponseJDF)
 			;
 

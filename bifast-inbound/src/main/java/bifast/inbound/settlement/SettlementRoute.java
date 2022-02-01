@@ -10,7 +10,7 @@ import bifast.inbound.credittransfer.processor.JobWakeupProcessor;
 @Component
 public class SettlementRoute extends RouteBuilder {
 //	@Autowired private BuildSettlementCBRequestProcessor settlementProcessor;
-	@Autowired private SettlementRequestProcessor settlementProcessor;
+	@Autowired private SettlementCreditProcessor settlementProcessor;
 	@Autowired private SaveSettlementMessageProcessor saveSettlement;
 	@Autowired private JobWakeupProcessor jobWakeupProcessor;
 

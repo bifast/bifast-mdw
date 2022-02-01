@@ -8,7 +8,7 @@ import bifast.mock.isoapt.pojo.SettlementRequest;
 import bifast.mock.isoapt.pojo.SettlementResponse;
 
 @Component
-public class SettlementProcessor implements Processor{
+public class SettlementRequestProcessor implements Processor{
 
 	@Override
 	public void process(Exchange exchange) throws Exception {

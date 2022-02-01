@@ -8,6 +8,7 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.corebank.isopojo.SettlementRequest;
 import bifast.inbound.credittransfer.processor.CTCorebankRequestProcessor;
 import bifast.inbound.credittransfer.processor.InitiateCTJobProcessor;
 import bifast.inbound.exception.CTSAFException;
@@ -15,7 +16,7 @@ import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;
 import bifast.inbound.service.FlattenIsoMessageService;
 import bifast.inbound.service.JacksonDataFormatService;
-import bifast.inbound.settlement.SettlementRequestProcessor;
+import bifast.inbound.settlement.SettlementCreditProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
 
 @Component
@@ -23,7 +24,7 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private CTCorebankRequestProcessor ctRequestProcessor;
 //	@Autowired private BuildSettlementCBRequestProcessor buildSettlementRequest;
-	@Autowired private SettlementRequestProcessor settlementRequestPrc;
+	@Autowired private SettlementCreditProcessor settlementRequestPrc;
 	@Autowired private InitiateCTJobProcessor initCTJobProcessor;
 	@Autowired private FlattenIsoMessageService flatMessageService;
 	
@@ -32,6 +33,7 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
+		JacksonDataFormat settlementRequestJDF = jdfService.basic(SettlementRequest.class);
 
 		onException(CTSAFException.class).routeId("ctsaf.onException")
 			.handled(true)
@@ -58,7 +60,7 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 //			.setHeader("ctsaf_qryresult", simple("${body}"))
 			.setProperty("ctsaf_qryresult", simple("${body}"))
 			.log("[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] Submit CreditTransfer started.")
-
+			
 			.setBody(simple("${exchangeProperty.ctsaf_qryresult[CT_MSG]}"))
 			.unmarshal().base64().unmarshal().zipDeflater()
 			.unmarshal(businessMessageJDF)
@@ -124,20 +126,9 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 			.setBody(simple("${exchangeProperty.ctsaf_qryresult[STTL_MSG]}"))
 			.unmarshal().base64().unmarshal().zipDeflater()
 			.unmarshal(businessMessageJDF)
-//			.setHeader("ctsaf_orgnSttl", simple("${body}"))
-//			.setProperty("ctsaf_orgnSttl", simple("${body}"))
 
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					BusinessMessage settlementMsg = exchange.getMessage().getBody(BusinessMessage.class);
-					FlatPacs002Pojo flatMsg = flatMessageService.flatteningPacs002(settlementMsg);
-					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-					processData.setBiRequestFlat(flatMsg);
-					exchange.setProperty("prop_process_data", processData);
-				}
-			})
-//			.process(buildSettlementRequest)
 			.process(settlementRequestPrc)
+			.log("ori noref: ${body.originalNoRef}")
 			.to("direct:isoadpt")
 			
 		;
