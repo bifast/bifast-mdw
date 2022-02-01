@@ -32,7 +32,7 @@ public class BuildSttlProcessor implements Processor {
 		
 		settlementConf.setDocument(new Document());
 		settlementConf.getDocument().setFiToFIPmtStsRpt(sttlBodyService.SettlementConfirmation(msgId, ctReq));
-		
+
 		exchange.getMessage().setBody(settlementConf);
 
 		

@@ -37,7 +37,7 @@ public class BuildCTRequestProcessor implements Processor {
 		logger.info("BuildCTRequestProcessor ");
 
 		PaymentRequestPojo inbRequest = exchange.getMessage().getHeader("hdr_pymtreq", PaymentRequestPojo.class);
-		BusinessMessage aeResponse = exchange.getMessage().getHeader("inb_aeresponse", BusinessMessage.class);
+		BusinessMessage aeResponse = exchange.getProperty("aeresponse", BusinessMessage.class);
 		
 		PaymentTransaction110 crdtInfo = aeResponse.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0);
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
@@ -70,7 +70,7 @@ public class BuildCTRequestProcessor implements Processor {
 		
 		seedCreditTrn.setDbtrAccountNo(inbRequest.getDebtorAccountNo());
 		seedCreditTrn.setDbtrAccountType("SVGS");
-		seedCreditTrn.setDbtrName("ANI");
+		seedCreditTrn.setDbtrName(inbRequest.getDebtorName());
 		seedCreditTrn.setDbtrId("9999333339");
 		seedCreditTrn.setDbtrType("01"); 
 		seedCreditTrn.setDbtrResidentStatus("01");
@@ -80,7 +80,7 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setPaymentInfo("");
 		seedCreditTrn.setRecptBank("SIHBIDJ1");
 		
-			
+		seedCreditTrn.setPaymentInfo(inbRequest.getPaymentInfo());
 		seedCreditTrn.setTrnType("010");
 		
 		BusinessMessage busMsg = new BusinessMessage();

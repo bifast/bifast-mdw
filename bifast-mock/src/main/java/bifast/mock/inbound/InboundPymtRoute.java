@@ -61,12 +61,11 @@ public class InboundPymtRoute extends RouteBuilder{
 			
 			.unmarshal(busMesgJDF)
 			
-			.setHeader("inb_aeresponse", simple("${body}"))
-			.setHeader("inb_respCode", simple("${body.document.fiToFIPmtStsRpt.txInfAndSts[0].txSts}"))
-			.log("${header.inb_respCode}")
+			.setProperty("aeresponse", simple("${body}"))
+			.setProperty("aerespCode", simple("${body.document.fiToFIPmtStsRpt.txInfAndSts[0].txSts}"))
 			
 			.choice()
-				.when().simple("${header.inb_respCode} == 'ACTC'")
+				.when().simple("${exchangeProperty.aerespCode} == 'ACTC'")
 					.log("lanjut dengan CT")
 
 					.to("direct:inb_ct")
@@ -74,6 +73,7 @@ public class InboundPymtRoute extends RouteBuilder{
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
 							BusinessMessage msg = exchange.getMessage().getBody(BusinessMessage.class);
+							msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry();
 							String responseCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getTxSts();
 							String reasonCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry();
 							CTResponsePojo inbResponse = new CTResponsePojo();
@@ -89,8 +89,9 @@ public class InboundPymtRoute extends RouteBuilder{
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
 							BusinessMessage msg = exchange.getMessage().getBody(BusinessMessage.class);
-							String responseCode = exchange.getMessage().getHeader("inb_aeresponse", String.class);
-							String reasonCode = msg.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry();
+							BusinessMessage aeResp = exchange.getProperty("aeresponse", BusinessMessage.class);
+							String responseCode = exchange.getProperty("aerespCode", String.class);
+							String reasonCode = aeResp.getDocument().getFiToFIPmtStsRpt().getTxInfAndSts().get(0).getStsRsnInf().get(0).getRsn().getPrtry();
 							CTResponsePojo inbResponse = new CTResponsePojo();
 							inbResponse.setResponseCode(responseCode);
 							inbResponse.setReasonCode(reasonCode);
@@ -100,6 +101,7 @@ public class InboundPymtRoute extends RouteBuilder{
 			.end()
 
 			.marshal(paymtResponseJDF)
+			.log("response: ${body}")
 		;
 	}
 

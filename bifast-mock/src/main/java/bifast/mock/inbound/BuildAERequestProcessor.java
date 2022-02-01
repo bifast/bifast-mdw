@@ -48,6 +48,7 @@ public class BuildAERequestProcessor implements Processor {
 		seedAcctEnquiry.setOrignBank("BMNDIDJA");
 		seedAcctEnquiry.setRecptBank("SIHBIDJ1");
 		seedAcctEnquiry.setTrnType("510");
+		seedAcctEnquiry.setPaymentInfo(req.getPaymentInfo());
 
 		Document doc = new Document();
 		doc.setFiToFICstmrCdtTrf(pacs008MessageService.accountEnquiryRequest(seedAcctEnquiry));

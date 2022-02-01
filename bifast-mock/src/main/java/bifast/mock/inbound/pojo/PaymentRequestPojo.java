@@ -1,12 +1,13 @@
 package bifast.mock.inbound.pojo;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName("PaymentRequest")
 public class PaymentRequestPojo {
 
 	private String amount;
-	
 	private String debtorName;
 	
 	private String debtorAccountNo;
@@ -14,6 +15,22 @@ public class PaymentRequestPojo {
 	private String creditorAccountNo;
 	private String paymentInfo;
 	
+	@JsonCreator
+	public PaymentRequestPojo(
+			@JsonProperty(value="amount", required=true) String amount,
+			@JsonProperty(value="debtorName") String debtorName,
+			@JsonProperty(value="debtorAccountNo") String debtorAccountNo,
+			@JsonProperty(value="creditorName") String creditorName,
+			@JsonProperty("creditorAccountNo") String creditorAccountNo,
+			@JsonProperty("paymentInfo") String paymentInfo)
+	{
+		this.amount = amount;
+		this.debtorName = debtorName;
+		this.debtorAccountNo = debtorAccountNo;
+		this.creditorName = creditorName;
+		this.creditorAccountNo = creditorAccountNo;
+		this.paymentInfo = paymentInfo;
+	}
 
 	public String getAmount() {
 		return amount;
