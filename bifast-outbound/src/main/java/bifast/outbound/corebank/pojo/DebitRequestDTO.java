@@ -1,17 +1,6 @@
-package bifast.inbound.reversecrdttrns.pojo;
+package bifast.outbound.corebank.pojo;
 
-public class DebitReversalRequestPojo {
-
-    private String transactionId;
-    
-    private String noRef;
-    
-    private String merchantType;
-    
-    private String terminalId;
-    
-    private String dateTime;
-
+public class DebitRequestDTO extends BaseRequestDTO{
 
     private String originalNoRef;
     private String originalDateTime;
@@ -36,36 +25,7 @@ public class DebitReversalRequestPojo {
     private String creditorProxyId;
     private String creditorProxyType;
     private String paymentInformation;
-	public String getTransactionId() {
-		return transactionId;
-	}
-	public void setTransactionId(String transactionId) {
-		this.transactionId = transactionId;
-	}
-	public String getNoRef() {
-		return noRef;
-	}
-	public void setNoRef(String noRef) {
-		this.noRef = noRef;
-	}
-	public String getMerchantType() {
-		return merchantType;
-	}
-	public void setMerchantType(String merchantType) {
-		this.merchantType = merchantType;
-	}
-	public String getTerminalId() {
-		return terminalId;
-	}
-	public void setTerminalId(String terminalId) {
-		this.terminalId = terminalId;
-	}
-	public String getDateTime() {
-		return dateTime;
-	}
-	public void setDateTime(String dateTime) {
-		this.dateTime = dateTime;
-	}
+    
 	public String getOriginalNoRef() {
 		return originalNoRef;
 	}
@@ -206,5 +166,4 @@ public class DebitReversalRequestPojo {
 	}
     
     
-
 }

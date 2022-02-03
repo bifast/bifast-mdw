@@ -83,8 +83,7 @@ public class IsoAEResponsePrc implements Processor {
 		
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.getAppHdr(msg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId(), 
-									"pacs.002.001.10", bizMsgId);
+		hdr = hdrService.getAppHdr(	"pacs.002.001.10", bizMsgId);
 
 		FIToFIPaymentStatusReportV10 response = pacs002Service.accountEnquiryResponse(seed, msg);
 		

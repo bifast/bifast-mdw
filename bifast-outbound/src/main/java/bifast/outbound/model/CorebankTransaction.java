@@ -2,6 +2,7 @@ package bifast.outbound.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -196,7 +197,7 @@ public class CorebankTransaction {
 	}
 
 	public Integer getRetryCounter() {
-		return retryCounter;
+		return Optional.ofNullable(retryCounter).orElse(0);
 	}
 
 	public void setRetryCounter(Integer retryCounter) {

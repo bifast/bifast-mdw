@@ -9,8 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
-@Entity(name="KC_COREBANK_TRANSACTION")
+@Entity
+@Table(name="KC_COREBANK_TRANSACTION")
 public class CorebankTransaction {
 
 	@Id

@@ -14,13 +14,13 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.corebank.isopojo.DebitReversalRequest;
+import bifast.inbound.corebank.isopojo.DebitReversalResponse;
 import bifast.inbound.model.CorebankTransaction;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.repository.CorebankTransactionRepository;
-import bifast.inbound.reversecrdttrns.pojo.DebitReversalRequestPojo;
-import bifast.inbound.reversecrdttrns.pojo.DebitReversalResponsePojo;
 import bifast.inbound.service.JacksonDataFormatService;
 
 @Component
@@ -33,8 +33,8 @@ public class DebitReversalRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 
-		JacksonDataFormat debitReversalReqJDF = jdfService.basic(DebitReversalRequestPojo.class);
-		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponsePojo.class);
+		JacksonDataFormat debitReversalReqJDF = jdfService.basic(DebitReversalRequest.class);
+		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponse.class);
 
 		from("direct:cbdebitreversal").routeId("komi.cb.debitreversal")
 			.setHeader("cbrev_objRequest", simple("${body}"))
@@ -59,7 +59,7 @@ public class DebitReversalRoute extends RouteBuilder {
 				.filter().simple("${body.status} != 'ACTC' ")
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
-							DebitReversalResponsePojo resp = exchange.getMessage().getBody(DebitReversalResponsePojo.class);
+							DebitReversalResponse resp = exchange.getMessage().getBody(DebitReversalResponse.class);
 							FaultPojo fault = new FaultPojo();
 							fault.setResponseCode(resp.getStatus());
 							fault.setReasonCode(resp.getReason());
@@ -87,8 +87,8 @@ public class DebitReversalRoute extends RouteBuilder {
 				public void process(Exchange exchange) throws Exception {
 					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 					String komiTrnsId = processData.getKomiTrnsId();
-					DebitReversalResponsePojo cbResponse = exchange.getMessage().getBody(DebitReversalResponsePojo.class);
-					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("cbrev_objRequest", DebitReversalRequestPojo.class);
+					DebitReversalResponse cbResponse = exchange.getMessage().getBody(DebitReversalResponse.class);
+					DebitReversalRequest cbRequest = exchange.getMessage().getHeader("cbrev_objRequest", DebitReversalRequest.class);
 					String strRequest = exchange.getMessage().getHeader("cbrev_strRequest", String.class);
 
 					CorebankTransaction cbTrns = new CorebankTransaction();

@@ -61,7 +61,7 @@ public class DebitSAFRoute extends RouteBuilder {
 //			.setHeader("debit_komi_id", simple("${body[KOMI_TRNS_ID]}"))
 			
 			.setBody(simple("${header.debit_qryresult[CHN_MSG]}"))
-			.unmarshal().base64().unmarshal().zipDeflater()
+//			.unmarshal().base64().unmarshal().zipDeflater()
 			.unmarshal(chnRequestJdf)
 			.setHeader("debit_chreq", simple("${body}"))
 			
@@ -88,7 +88,7 @@ public class DebitSAFRoute extends RouteBuilder {
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					HashMap<String, Object> arr = exchange.getMessage().getHeader("debit_qryresult", HashMap.class);
-					Long cbTrnsId = Long.valueOf((String) arr.get("cbt_id"));
+					Long cbTrnsId = (Long) arr.get("cbt_id");
 					String komiId = String.valueOf(arr.get("komi_trns_id"));
 					Object objResponse = exchange.getMessage().getBody(Object.class);
 

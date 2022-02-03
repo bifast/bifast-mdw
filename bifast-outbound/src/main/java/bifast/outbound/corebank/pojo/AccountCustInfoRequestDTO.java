@@ -1,8 +1,8 @@
-package bifast.inbound.reversecrdttrns.pojo;
+package bifast.outbound.corebank.pojo;
 
 import java.util.Optional;
 
-public class AccountCustInfoRequestPojo {
+public class AccountCustInfoRequestDTO {
     private String transactionId;
     
     private String noRef;

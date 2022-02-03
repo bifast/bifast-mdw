@@ -46,7 +46,10 @@ public class ProxyResolutionResponseProc implements Processor{
 		
 		String proxyType = msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getPrxyRtrvl().getTp();
 		String proxyVal =  msg.getDocument().getPrxyLookUp().getLookUp().getPrxyOnly().getPrxyRtrvl().getVal();
+		if (proxyType.equals("02"))
+			proxyVal = proxyVal.toUpperCase();
 
+		
 		seed.setOrgnlPrxyRqstrTp(proxyType);
 		seed.setOrgnlPrxyRqstrVal(proxyVal);
 

@@ -20,7 +20,8 @@ import bifast.library.iso20022.head001.Party9Choice;
 @Service
 public class AppHeaderService {
 
-	public BusinessApplicationHeaderV01 getAppHdr(String bicTo, String msgType, String bizMsgId) {
+//	public BusinessApplicationHeaderV01 getAppHdr(String bicTo, String msgType, String bizMsgId) {
+	public BusinessApplicationHeaderV01 getAppHdr(String msgType, String bizMsgId) {
 		
         		
 		BusinessApplicationHeaderV01 appHdr = new BusinessApplicationHeaderV01();

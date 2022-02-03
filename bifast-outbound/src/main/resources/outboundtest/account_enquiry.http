@@ -3,18 +3,18 @@
 # Account Number 9x   reject U102
 # Account Number 99xx reject admi002
 
-POST http://localhost:9002/komi-outbound/service HTTP/1.1
+POST http://10.11.100.96:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
-Authorization: Basic CMS:password
+Authorization: Basic CB:password
 
 {
   "AccountEnquiryRequest" : {
     "NoRef" : "FRN667885{{$randomInt 1000 9999}}",
     "SenderAccountNumber": "143952442",
-    "RecipientBank" : "BRINIDJA",
-    "Amount" : "24520024.10",
+    "RecipientBank" : "MEDHIDS1",
+    "Amount" : "245024.10",
     "CategoryPurpose" : "01",
-    "RecipientAccountNumber" : "112211777"
+    "RecipientAccountNumber" : "20100463010"
  }
 }
 

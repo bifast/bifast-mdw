@@ -1,6 +1,6 @@
-package bifast.inbound.reversecrdttrns.pojo;
+package bifast.inbound.corebank.isopojo;
 
-public class DebitReversalResponsePojo {
+public class DebitReversalResponse {
 
     private String transactionId;
     private String noRef;

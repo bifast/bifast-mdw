@@ -58,44 +58,56 @@ public class SaveSettlementMessageProcessor implements Processor {
 		settlementRepo.save(sttl);
 		
 ///////////////////////		
-		
-		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByEndToEndId(flatSttl.getOrgnlEndToEndId());
-		CreditTransfer ct = null;
-		for (CreditTransfer runningCT : lCrdtTrns) {
-			if ((runningCT.getResponseCode().equals("ACTC")) ||
-				(runningCT.getResponseCode().equals("ACSC"))) {
-				ct = runningCT;
-				break;
-			}
-		}
-
 
 		String settlment_ctType = "Outbound";
 		if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
 			settlment_ctType = "Inbound";
 
-		if (null != ct) {
+		Optional<CreditTransfer> oCT = ctRepo.getSuccessByEndToEndId(flatSttl.getOrgnlEndToEndId());
+		if (oCT.isPresent()) {
+			CreditTransfer ct = oCT.get();
 			ct.setSettlementConfBizMsgIdr(flatSttl.getBizMsgIdr());
 			ct.setLastUpdateDt(LocalDateTime.now());
-			
 			if (settlment_ctType.equals("Inbound")) 
-				ct.setCbStatus("READY");
-			
+				ct.setCbStatus("READY");			
 			ctRepo.save(ct);
 		}
+		
+		
+//		List<CreditTransfer> lCrdtTrns = ctRepo.findAllByEndToEndId(flatSttl.getOrgnlEndToEndId());
+//		CreditTransfer ct = null;
+//		for (CreditTransfer runningCT : lCrdtTrns) {
+//			if ((runningCT.getResponseCode().equals("ACTC")) ||
+//				(runningCT.getResponseCode().equals("ACSC"))) {
+//				ct = runningCT;
+//				break;
+//			}
+//		}
+
+
+
+//		if (null != ct) {
+//			ct.setSettlementConfBizMsgIdr(flatSttl.getBizMsgIdr());
+//			ct.setLastUpdateDt(LocalDateTime.now());
+//			
+//			if (settlment_ctType.equals("Inbound")) 
+//				ct.setCbStatus("READY");
+//			
+//			ctRepo.save(ct);
+//		}
 
 		
 		
 		exchange.getMessage().setHeader("sttl_transfertype", settlment_ctType);
 
-		if ((settlment_ctType.equals("Inbound")) && (null != ct)) {
-			Optional<ChannelTransaction> oChnlTrns = chnlRepo.findByKomiTrnsId(ct.getKomiTrnsId());
-			if (oChnlTrns.isPresent())
-				exchange.getMessage().setHeader("sttl_orgnRef", oChnlTrns.get().getChannelRefId());
-			else
-				exchange.getMessage().setHeader("sttl_orgnRef", flatSttl.getOrgnlEndToEndId());
-				
-		}
+//		if ((settlment_ctType.equals("Inbound")) && (null != ct)) {
+//			Optional<ChannelTransaction> oChnlTrns = chnlRepo.findByKomiTrnsId(ct.getKomiTrnsId());
+//			if (oChnlTrns.isPresent())
+//				exchange.getMessage().setHeader("sttl_orgnRef", oChnlTrns.get().getChannelRefId());
+//			else
+//				exchange.getMessage().setHeader("sttl_orgnRef", flatSttl.getOrgnlEndToEndId());
+//				
+//		}
 		
 
 	}

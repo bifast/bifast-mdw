@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.isopojo.CreditRequest;
+import bifast.inbound.corebank.isopojo.DebitReversalRequest;
 import bifast.inbound.corebank.isopojo.SettlementRequest;
 import bifast.inbound.model.CorebankTransaction;
 import bifast.inbound.repository.CorebankTransactionRepository;
@@ -27,12 +28,12 @@ public class SaveCBTransactionProc implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		HashMap<String, Object> arr = exchange.getProperty("ctsaf_qryresult",HashMap.class);
 		
-		String komiTrnsId = String.valueOf(arr.get("komi_trns_id"));
+		String komiTrnsId = exchange.getProperty("pr_komitrnsid", String.class);
 		
 		String strRequest = exchange.getProperty("cb_request_str", String.class);
 		Object oCbRequest = exchange.getProperty("cb_request", Object.class);
+		
 		String response = exchange.getMessage().getHeader("cb_response", String.class);
 		String reason = exchange.getMessage().getHeader("cb_reason", String.class);
 		
@@ -75,6 +76,17 @@ public class SaveCBTransactionProc implements Processor {
 						
 			corebankTrans.setTransactionType("Settlement");
 		}
+		
+		else if (oCbRequest.getClass().getSimpleName().equals("DebitReversalRequest")) {
+			DebitReversalRequest req = (DebitReversalRequest) oCbRequest;
+			
+			corebankTrans.setDateTime(req.getDateTime());
+			corebankTrans.setKomiNoref(req.getNoRef());
+			corebankTrans.setOrgnlChnlNoref(req.getOriginalNoRef());
+						
+			corebankTrans.setTransactionType("DebitReversal");
+		}
+
 		
 		cbRepo.save(corebankTrans);
 	}

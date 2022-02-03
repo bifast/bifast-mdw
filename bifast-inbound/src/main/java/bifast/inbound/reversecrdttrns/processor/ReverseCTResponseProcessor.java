@@ -1,15 +1,15 @@
-package bifast.inbound.reversecrdttrns;
+package bifast.inbound.reversecrdttrns.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.corebank.isopojo.DebitReversalResponse;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.Pacs002Seed;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
-import bifast.inbound.reversecrdttrns.pojo.DebitReversalResponsePojo;
 import bifast.inbound.service.AppHeaderService;
 import bifast.inbound.service.Pacs002MessageService;
 import bifast.inbound.service.UtilService;
@@ -19,7 +19,7 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 
 @Component
-public class ReverseCTJobProcessor implements Processor {
+public class ReverseCTResponseProcessor implements Processor {
 	@Autowired private AppHeaderService appHdrService;
 	@Autowired private Pacs002MessageService pacs002Service;
 	@Autowired private UtilService utilService;
@@ -41,9 +41,9 @@ public class ReverseCTJobProcessor implements Processor {
 
 
 		FaultPojo fault = new FaultPojo();
-		DebitReversalResponsePojo cbResponse = new DebitReversalResponsePojo();
+		DebitReversalResponse cbResponse = new DebitReversalResponse();
 		if (oResp.getClass().getSimpleName().equals("DebitReversalResponsePojo")) {
-			cbResponse = (DebitReversalResponsePojo) oResp;
+			cbResponse = (DebitReversalResponse) oResp;
 			resp.setStatus(cbResponse.getStatus());
 			resp.setReason(cbResponse.getReason());				
 			resp.setAdditionalInfo(cbResponse.getAdditionalInfo());
@@ -70,6 +70,8 @@ public class ReverseCTJobProcessor implements Processor {
 		resp.setCreditorType(flatRequest.getCreditorType());
 		if (null != flatRequest.getCreditorId())
 			resp.setCreditorId(flatRequest.getCreditorId());
+		if (!(null == flatRequest.getCreditorName())) 
+			resp.setCreditorName(flatRequest.getCreditorName());
 
 
 		//////////
@@ -82,8 +84,7 @@ public class ReverseCTJobProcessor implements Processor {
 		doc.setFiToFIPmtStsRpt(respMsg);
 
 		String bizMsgId = utilService.genRfiBusMsgId("011", processData.getKomiTrnsId());
-		String orignBank = reqBusMesg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
-		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr(orignBank, "pacs.002.001.10", bizMsgId);
+		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr("pacs.002.001.10", bizMsgId);
 		appHdr.setBizSvc("CLEAR");
 
 		BusinessMessage respBusMesg = new BusinessMessage();

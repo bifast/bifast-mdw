@@ -88,7 +88,7 @@ public class DuplicateTransactionValidation implements Processor{
 		seed.setStatus("RJCT");
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
-		hdr = hdrService.getAppHdr(request.getFrBic(), "pacs.002.001.10", bizMsgId);
+		hdr = hdrService.getAppHdr("pacs.002.001.10", bizMsgId);
 
 		BusinessMessage bmResponse = new BusinessMessage();
 		bmResponse.setAppHdr(hdr);
