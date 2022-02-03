@@ -108,7 +108,9 @@ public class ProxyRegistrationService {
 
 				proxy.setAccountName(prxyRegn.getRegn().getPrxyRegn().getAcct().getNm());
 				proxy.setAccountNumber(prxyRegn.getRegn().getPrxyRegn().getAcct().getId().getOthr().getId());
-				proxy.setAccountType(prxyRegn.getRegn().getPrxyRegn().getAcct().getTp().getPrtry());
+				
+				if (null != prxyRegn.getRegn().getPrxyRegn().getAcct().getTp())
+					proxy.setAccountType(prxyRegn.getRegn().getPrxyRegn().getAcct().getTp().getPrtry());
 				
 				proxy.setCstmrId(prxyRegn.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getId());
 				proxy.setCstmrRsdntSts(prxyRegn.getSplmtryData().get(0).getEnvlp().getDtl().getCstmr().getRsdntSts());
