@@ -10,8 +10,8 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.credittransfer.processor.BuildCBDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
+import bifast.outbound.credittransfer.processor.BuildDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
 import bifast.outbound.credittransfer.processor.ExceptionResponseProcessor;
 import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
@@ -23,7 +23,8 @@ import bifast.outbound.service.JacksonDataFormatService;
 @Component
 public class CreditTransferRoute extends RouteBuilder {
 
-	@Autowired private BuildCBDebitRequestProcessor buildDebitRequestProcessor;
+//	@Autowired private BuildCBDebitRequestProcessor buildDebitRequestProcessor;
+	@Autowired private BuildDebitRequestProcessor buildDebitRequestProcessor;
 	@Autowired private BuildCTRequestProcessor crdtTransferProcessor;
 	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
 	@Autowired private ExceptionResponseProcessor exceptionResponseProcessor;
@@ -59,7 +60,8 @@ public class CreditTransferRoute extends RouteBuilder {
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
 				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] call Corebank")
-				.to("direct:callcb")
+//				.to("direct:callcb")
+				.to("direct:isoadpt")
 			.end()
 		
 			// periksa hasil debit-account. Jika failure raise exception

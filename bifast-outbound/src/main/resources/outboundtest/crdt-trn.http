@@ -19,7 +19,7 @@ Authorization: Basic MB:password
 		"NoRef": "FRN2201152{{$randomInt 1000 9999}}",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "KSEI1PLC100156",
+		"CreditorAccountNumber": "112211333",
 		"CreditorAccountType": "SVGS",
 		"CreditorId": "018029520054000",
 		"CreditorType": "02",
@@ -28,7 +28,7 @@ Authorization: Basic MB:password
 		"CreditorTownName": "0300",
 		"Amount": "60500.24",
 		"FeeTransfer": "0.00",
-		"RecipientBank": "KSEIIDJ1",
+		"RecipientBank": "CENAIDJA",
 		"DebtorAccountNumber": "0002107551117",
 		"DebtorAccountType": "SVGS",
 		"DebtorId": "5171026206690001",
@@ -78,6 +78,9 @@ Authorization: Basic CB:password
 
 ###
 
-creditTransferReq
+
 ###
-{"BusMsg":{"AppHdr":{"Fr":{"Fiid":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"Fiid":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"BizMsgIdr":"20210928SIHBIDJ1010O0100000026","MsgDefIdr":"pacs.008.001.08","CreDt":"2021-09-28T21:34:20"},"Document":{"FitoFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20210928SIHBIDJ101000000027","CreDtTm":"2021-09-28T21:34:20","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20210928SIHBIDJ1010O0100000026","TxId":"20210928SIHBIDJ101000000027"},"PmtTpInf":{"LclInstrm":{"Prtry":"01"},"CtgyPurp":{"Prtry":"01"}},"IntrBkSttlmAmt":{"Value":"438417.00","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{"Nm":"Andrea Suo","Id":{"PrvtId":{"Othr":[{"Id":"64145"}]}}},"DbtrAcct":{"Id":{"Othr":{"Id":"7744404"}},"Tp":{"Prtry":"CACC"}},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"Cdtr":{"Nm":"FARHAN AI","Id":{"OrgId":{"Othr":[{"Id":"C224403"}]}}},"CdtrAcct":{"Id":{"Othr":{"Id":"8071551"}},"Tp":{"Prtry":"SVGS"}},"SplmtryData":[{"Envlp":{"Dbtr":{"Tp":"01"},"Cdtr":{"Tp":"02"}}}]}]}}}}
+POST http://localhost:9006/mock/adapter/debitreversal HTTP/1.1
+Content-Type: application/json
+
+{"transactionId":"000001","noRef":"FRN22011523278","merchantType":"5002","terminalId":"MOBILE0001","dateTime":"2022-02-02T21:26:22.440","originalNoRef":"FRN22011523278","originalDateTime":"2022-02-02T21:26:22.440","categoryPurpose":"01","debtorName":"MURYATI","debtorType":"01","debtorId":"5171026206690001","debtorAccountNumber":"0002107551117","debtorAccountType":"SVGS","debtorResidentStatus":"01","debtorTownName":"0191","amount":"60500.24","feeTransfer":"0.00","recipientBank":"KSEIIDJ1","creditorName":"REKENING DANA INVESTASI NOSTRO","creditorType":"02","creditorId":"018029520054000","creditorAccountNumber":"KSEI1PLC100156","creditorAccountType":"SVGS","creditorResidentStatus":"01","creditorTownName":"0300","paymentInformation":"Test mantap "}

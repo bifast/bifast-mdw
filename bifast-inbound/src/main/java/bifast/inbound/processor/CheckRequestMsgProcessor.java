@@ -38,15 +38,15 @@ public class CheckRequestMsgProcessor implements Processor {
 			
 			FlatPacs002Pojo flat002 = flatMsgService.flatteningPacs002(inputMsg); 
 			processData.setBiRequestFlat(flat002);
+			exchange.setProperty("flatRequest", flat002);
+			exchange.setProperty("end2endid", flat002.getOrgnlEndToEndId());
 			
 			if (inputMsg.getAppHdr().getBizSvc().equals("STTL")) {
 				trnType = "SETTLEMENT";
 				processData.setInbMsgName("Settl");
 				processData.setEndToEndId(flat002.getOrgnlEndToEndId());
+				exchange.setProperty("msgName", "Settl");
 			}
-			
-			exchange.setProperty("end2endid", flat002.getOrgnlEndToEndId());
-			System.out.println("end2endid " + flat002.getOrgnlEndToEndId());
 
 		}
 
@@ -55,28 +55,39 @@ public class CheckRequestMsgProcessor implements Processor {
 			logger.debug("Akan flattening proxy notif");
 			FlatPrxy901Pojo flat = flatMsgService.flatteningPrxy901(inputMsg);
 			processData.setBiRequestFlat(flat);
+			exchange.setProperty("flatRequest", flat);
 			processData.setInbMsgName("PrxNtf");
+			exchange.setProperty("msgName", "PrxNtf");
 		}
 		
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("pacs.008")) {
 			FlatPacs008Pojo flat008 = flatMsgService.flatteningPacs008(inputMsg); 
 			processData.setBiRequestFlat(flat008);
+			exchange.setProperty("flatRequest", flat008);
 			processData.setEndToEndId(flat008.getEndToEndId());
-			if (trnType.equals("510"))
-				processData.setInbMsgName("AccEnq");
-			else if ((trnType.equals("010")) || (trnType.equals("110")))
-				processData.setInbMsgName("CrdTrn");
-			else if (trnType.equals("011")) 
-				processData.setInbMsgName("RevCT");
-			
 			exchange.setProperty("end2endid", flat008.getEndToEndId());
+			if (trnType.equals("510")) {
+				processData.setInbMsgName("AccEnq");
+				exchange.setProperty("msgName", "AccEnq");
+			}
+			else if ((trnType.equals("010")) || (trnType.equals("110"))) {
+				processData.setInbMsgName("CrdTrn");
+				exchange.setProperty("msgName", "CrdTrn");
+			}
+			else if (trnType.equals("011")) {
+				processData.setInbMsgName("RevCT");
+				exchange.setProperty("msgName", "RevCT");
+			}
+			
 		}
 
 		else if (inputMsg.getAppHdr().getMsgDefIdr().startsWith("admi.004")) {
 			FlatAdmi004Pojo flat004 = flatMsgService.flatteningAdmi004(inputMsg);
 			processData.setBiRequestFlat(flat004);
+			exchange.setProperty("flatRequest", flat004);
 			trnType = "EVENTNOTIF";
 			processData.setInbMsgName("EvtNtf");
+			exchange.setProperty("msgName", "EvtNtf");
 		}
 
 //		exchange.getMessage().setHeader("hdr_msgType", trnType);
@@ -89,9 +100,9 @@ public class CheckRequestMsgProcessor implements Processor {
 		processData.setReceivedDt(LocalDateTime.now());
 //		processData.setTextDataReceived(null);
 
-
+		exchange.setProperty("starttime", LocalDateTime.now());
 		exchange.setProperty("prop_process_data", processData);
-		exchange.setProperty("komitrnsid", processData.getKomiTrnsId());
+		exchange.setProperty("pr_komitrnsid", processData.getKomiTrnsId());
 	
 	}
 	

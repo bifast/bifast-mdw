@@ -301,6 +301,10 @@ public class FlattenIsoMessageService {
 					flatMsg.setCreditorTownName(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
 			}
 
+			flatMsg.setOrgnlEndToEndId("");
+			if (null != ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getRltdEndToEndId()) {
+				flatMsg.setOrgnlEndToEndId(ct.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getRltdEndToEndId());
+			}
 		}
 
 		return flatMsg;

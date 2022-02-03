@@ -5,42 +5,56 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.reversecrdttrns.pojo.AccountCustInfoRequestPojo;
+import bifast.inbound.corebank.isopojo.AccountCustInfoRequest;
 import bifast.inbound.reversecrdttrns.processor.CbAcctCustInfoRequestProcessor;
+import bifast.inbound.reversecrdttrns.processor.CheckDebitHistoryProcessor;
+import bifast.inbound.reversecrdttrns.processor.ReverseCTRejectResponseProcessor;
 import bifast.inbound.reversecrdttrns.processor.SaveReversalCTProcessor;
 import bifast.inbound.service.JacksonDataFormatService;
 
 
 @Component
 public class ReverseCTRoute extends RouteBuilder {
-	@Autowired private ReverseCTProcessor reverseCTProcessor;
-	@Autowired private ReverseCTResponseProcessor responseProcessor;
+	@Autowired private CheckDebitHistoryProcessor checkDebitHistoryProcessor;
 	@Autowired private CbAcctCustInfoRequestProcessor cbAcctCustInfoRequestProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private SaveReversalCTProcessor saveRCTProcessor;
+	@Autowired private ReverseCTRejectResponseProcessor rejectResponsePrc;
 	
 	@Override
 	public void configure() throws Exception {
 
-		JacksonDataFormat aciJDF = jdfService.basic(AccountCustInfoRequestPojo.class);
+		JacksonDataFormat aciJDF = jdfService.basic(AccountCustInfoRequest.class);
 		
-		from("direct:reverct").routeId("reversect")
+		from("direct:reverct").routeId("komi.reversect")
 
 			.log("akan reverse Credit Transfer")
 			
-			// lakukan accountCustomerInfo
-			.process(cbAcctCustInfoRequestProcessor)
-//			.log("ACI: ${body}")
-			.to("direct:isoadpt")
+			// cari original transaksi 
+			.process(checkDebitHistoryProcessor)
+			
+			.choice()
+				.when().simple("${exchangeProperty.revCTCheckRsl} == 'AmountMatch'")
+					.log("CT asal ketemu")
+					// lakukan accountCustomerInfo
+					.process(cbAcctCustInfoRequestProcessor)
+					.to("direct:isoadpt")
+					
+				.otherwise()
+					.log("CT asal tidak ketemu")
+					.process(rejectResponsePrc)
+			.end()
+			
 			
 			.log("${body.status}")
 			
 			.choice()
 				.when(simple("${body.status} == 'ACTC'"))
 					.log("karena sukses")
-					// jika sukses siapkan simpan ke table crdt_transfer unt diproses saf klo sudah settlement
+					// siapkan response
+					// simpan ke table crdt_transfer unt diproses saf klo sudah settlement
 					.process(saveRCTProcessor)
-					// lalu siapan response
+					
 				.otherwise()
 					.log("tidak sukses")
 					// jika gagal siapkan repsonse REJECT, 

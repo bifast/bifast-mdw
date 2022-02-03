@@ -9,19 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.corebank.isopojo.AccountCustInfoRequest;
+import bifast.inbound.corebank.isopojo.AccountCustInfoResponse;
 import bifast.inbound.corebank.isopojo.AccountEnquiryInboundRequest;
 import bifast.inbound.corebank.isopojo.AccountEnquiryInboundResponse;
 import bifast.inbound.corebank.isopojo.CreditRequest;
 import bifast.inbound.corebank.isopojo.CreditResponse;
+import bifast.inbound.corebank.isopojo.DebitReversalRequest;
+import bifast.inbound.corebank.isopojo.DebitReversalResponse;
 import bifast.inbound.corebank.isopojo.SettlementRequest;
 import bifast.inbound.corebank.isopojo.SettlementResponse;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.processor.EnrichmentAggregator;
-import bifast.inbound.reversecrdttrns.pojo.AccountCustInfoResponsePojo;
-import bifast.inbound.reversecrdttrns.pojo.AccountCustInfoRequestPojo;
-import bifast.inbound.reversecrdttrns.pojo.DebitReversalRequestPojo;
-import bifast.inbound.reversecrdttrns.pojo.DebitReversalResponsePojo;
 import bifast.inbound.service.JacksonDataFormatService;
 
 
@@ -34,16 +34,16 @@ public class IsoAdapterRoute extends RouteBuilder{
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat aciRequestJDF = jdfService.basic(AccountCustInfoRequestPojo.class);
-		JacksonDataFormat aciResponseJDF = jdfService.basic(AccountCustInfoResponsePojo.class);
+		JacksonDataFormat aciRequestJDF = jdfService.basic(AccountCustInfoRequest.class);
+		JacksonDataFormat aciResponseJDF = jdfService.basic(AccountCustInfoResponse.class);
 		JacksonDataFormat aeRequestJDF = jdfService.basic(AccountEnquiryInboundRequest.class);
 		JacksonDataFormat aeResponseJDF = jdfService.basic(AccountEnquiryInboundResponse.class);
 		JacksonDataFormat creditRequestJDF = jdfService.basic(CreditRequest.class);
 		JacksonDataFormat creditResponseJDF = jdfService.basic(CreditResponse.class);
 		JacksonDataFormat settlementJDF = jdfService.basic(SettlementRequest.class);
 		JacksonDataFormat settlementResponseJDF = jdfService.basic(SettlementResponse.class);
-		JacksonDataFormat debitReversalReqJDF = jdfService.basic(DebitReversalRequestPojo.class);
-		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponsePojo.class);
+		JacksonDataFormat debitReversalReqJDF = jdfService.basic(DebitReversalRequest.class);
+		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponse.class);
 
 		// ROUTE CALLCB 
 		from("direct:isoadpt").routeId("komi.isoadapter")
@@ -59,7 +59,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 			.log(LoggingLevel.DEBUG,"komi.isoadapter", "[${header.cb_msgname}:${header.cb_e2eid}] Terima di corebank: ${body}")
 					
 			.choice()
-				.when().simple("${body.class} endsWith 'CustomerAccountInfoInboundRequest'")
+				.when().simple("${body.class} endsWith 'AccountCustInfoRequest'")
 					.setHeader("cb_requestName", constant("accountcustinfo"))
 					.setHeader("cb_url", simple("{{komi.url.isoadapter.customerinfo}}"))
 					.marshal(aciRequestJDF)
@@ -71,7 +71,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 					.setHeader("cb_requestName", constant("credit"))
 					.setHeader("cb_url", simple("{{komi.url.isoadapter.credit}}"))
 					.marshal(creditRequestJDF)
-				.when().simple("${body.class} endsWith 'DebitReversalRequestPojo'")
+				.when().simple("${body.class} endsWith 'DebitReversalRequest'")
 					.setHeader("cb_requestName", constant("debitreversal"))
 					.marshal(debitReversalReqJDF)
 				.when().simple("${body.class} endsWith 'SettlementRequest'")
@@ -148,7 +148,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 				}
 			})
 			
-			.filter().simple("${header.cb_requestName} in 'credit,settlement'")
+			.filter().simple("${header.cb_requestName} in 'credit,settlement,debitreversal'")
 				.log("akan simpan ${header.cb_requestName}")
 				.process(saveCBTransactionProc)
 			.end()

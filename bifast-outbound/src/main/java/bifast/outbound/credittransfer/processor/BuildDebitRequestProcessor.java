@@ -3,33 +3,47 @@ package bifast.outbound.credittransfer.processor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.config.Config;
-import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
+import bifast.outbound.corebank.pojo.DebitRequestDTO;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.service.RefUtils;
 
 @Component
-public class BuildCBDebitRequestProcessor implements Processor{
-	@Autowired
-	private Config config;
+public class BuildDebitRequestProcessor implements Processor{
+	@Autowired private Config config;
 	
+	@Value("${komi.isoadapter.txid}")
+	String txid;
+
+	@Value("${komi.isoadapter.merchant}")
+	String merchant;
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
 		
-		CbDebitRequestPojo debitReq = new CbDebitRequestPojo();	
+		DebitRequestDTO debitReq = new DebitRequestDTO();	
 
-		debitReq.setKomiTrnsId(rmw.getKomiTrxId());
-		debitReq.setCategoryPurpose(chnReq.getCategoryPurpose());
-		debitReq.setMerchantType(rmw.getMerchantType());
-		
-		debitReq.setTerminalId(chnReq.getTerminalId());
-
-		
+//		debitReq.setKomiTrnsId(rmw.getKomiTrxId());
+		debitReq.setTransactionId(txid);
 		debitReq.setNoRef(rmw.getRequestId());
+		debitReq.setMerchantType(merchant);
+		debitReq.setTerminalId(chnReq.getTerminalId());
+		
+		RefUtils.Ref ref = RefUtils.setRef(chnReq.getChannelRefId());
+
+		debitReq.setDateTime(ref.getDateTime());
+		
+		debitReq.setOriginalDateTime(ref.getDateTime());
+		debitReq.setOriginalNoRef(ref.getNoRef());
+		
+		debitReq.setCategoryPurpose(chnReq.getCategoryPurpose());
+		
 		
 		debitReq.setDebtorName(chnReq.getDbtrName());
 		debitReq.setDebtorType(chnReq.getDbtrType());
@@ -57,7 +71,7 @@ public class BuildCBDebitRequestProcessor implements Processor{
 
 		debitReq.setPaymentInformation(chnReq.getPaymentInfo());
 		
-//		rmw.setDebitAccountRequest(debitReq);
+		rmw.setDebitAccountRequest(debitReq);
 		
 		exchange.setProperty("prop_request_list", rmw);
 		exchange.getMessage().setBody(debitReq);

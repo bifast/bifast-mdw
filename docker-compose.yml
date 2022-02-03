@@ -62,9 +62,9 @@ services:
       ports: 
         - "9002:9002"
       environment: 
-        - KOMI.URL.CICONNECTOR=172.18.0.1:9006/mock/cihub
+        - KOMI.URL.CICONNECTOR=http://172.18.0.1:9006/mock/cihub
         - KOMI.URL.COREBANK=172.18.0.1:9007/api/corebank
-        - KOMI.URL.ISOADAPTER=172.18.0.1:9003/komi/api/v1/adapter
+        - KOMI.URL.ISOADAPTER=172.18.0.1:9006/mock/adapter
         - KOMI.URL.PORTALAPI=http://172.18.0.1:9006/mock
         - KOMI.URL.INBOUND=172.18.0.1:9001
         - KOMI.BANKCODE=SIHBIDJ1

@@ -81,7 +81,7 @@ public class IsoAdapterRoute extends RouteBuilder {
 			.marshal(aeResponseJDF)
 			;
 		
-		from("direct:debit").routeId("credit")
+		from("direct:debit").routeId("debit")
 			.convertBodyTo(String.class)
 			.unmarshal(debitRequestJDF)
 			.process(debitRequestPrc)

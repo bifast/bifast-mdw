@@ -8,6 +8,7 @@ import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.corebank.pojo.CbAccountEnquiryRequestPojo;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
+import bifast.outbound.corebank.pojo.DebitRequestDTO;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.paymentstatus.pojo.ChnlPaymentStatusRequestPojo;
 import bifast.outbound.paymentstatus.pojo.PaymentStatusRequestSAFPojo;
@@ -35,7 +36,8 @@ public class RequestMessageWrapper {
 //	private LocalDateTime requestTime;
 
 	@JsonProperty("DebitRequest")
-	private CbDebitRequestPojo debitAccountRequest;
+//	private CbDebitRequestPojo debitAccountRequest;
+	private DebitRequestDTO debitAccountRequest;
 	
 	private Object corebankRequest;
 	
@@ -140,10 +142,10 @@ public class RequestMessageWrapper {
 //	public void setRequestTime(LocalDateTime requestTime) {
 //		this.requestTime = requestTime;
 //	}
-	public CbDebitRequestPojo getDebitAccountRequest() {
+	public DebitRequestDTO getDebitAccountRequest() {
 		return debitAccountRequest;
 	}
-	public void setDebitAccountRequest(CbDebitRequestPojo debitAccountRequest) {
+	public void setDebitAccountRequest(DebitRequestDTO debitAccountRequest) {
 		this.debitAccountRequest = debitAccountRequest;
 	}
 	public ChnlAccountEnquiryRequestPojo getChnlAccountEnquiryRequest() {

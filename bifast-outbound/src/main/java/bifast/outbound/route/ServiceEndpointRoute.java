@@ -115,7 +115,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			})
 			
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
-					"[${exchangeProperty.prop_request_list.msgName}:$exchangeProperty.prop_request_list.requestId}] Mulai proses.")
+					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Mulai proses.")
 
 			.choice()
 				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'AEReq'")

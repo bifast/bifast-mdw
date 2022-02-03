@@ -18,50 +18,40 @@ public class InboundRoute extends RouteBuilder {
 		
 		from("direct:receive").routeId("komi.inboundRoute")
 			.process(checkRequestMsgProcessor) 
-			.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] received.")
+			.log("[${exchangeProperty.msgName}:${exchangeProperty.prop_process_data.endToEndId}] received.")
 		
-			.choice().id("forward_msgtype")
+			.choice().id("komi.dispatcher")
 
-				.when().simple("${exchangeProperty.prop_process_data.inbMsgName} == 'Settl'")   // terima settlement
+				.when().simple("${exchangeProperty.msgName} == 'Settl'")   // terima settlement
 					.to("direct:settlement")
 					.setBody(constant(null))
 
-				.when().simple("${exchangeProperty.prop_process_data.inbMsgName} == 'PrxNtf'")  
+				.when().simple("${exchangeProperty.msgName} == 'PrxNtf'")  
 					.to("direct:proxynotif")
 					.setBody(constant(null))
 
-				.when().simple("${exchangeProperty.prop_process_data.inbMsgName} == 'AccEnq'")   // terima account enquiry
+				.when().simple("${exchangeProperty.msgName} == 'AccEnq'")   // terima account enquiry
 					.to("direct:accountenq")
 
-				.when().simple("${exchangeProperty.prop_process_data.inbMsgName} == 'CrdTrn'")    // terima credit transfer
+				.when().simple("${exchangeProperty.msgName} == 'CrdTrn'")    // terima credit transfer
 					.to("direct:crdttransfer")
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
-				.when().simple("${exchangeProperty.prop_process_data.inbMsgName} == 'RevCT'")     // reverse CT
+				.when().simple("${exchangeProperty.msgName} == 'RevCT'")     // reverse CT
 					.to("direct:reverct")
 					.setHeader("hdr_toBIobj", simple("${body}"))
 
 				.otherwise()	
-					.log("[Inbound] Message ${exchangeProperty.prop_process_data.inbMsgName} tidak dikenal")
+					.log("[Inbound] Message ${exchangeProperty.msgName} tidak dikenal")
 			.end()
 	
 			// kirim log notif ke Portal
-			.filter().simple("${exchangeProperty.prop_process_data.inbMsgName} in 'AccEnq,CrdTrn,RevCT' ")
+			.filter().simple("${exchangeProperty.msgName} in 'AccEnq,CrdTrn,RevCT' ")
 				.setHeader("hdr_tmpbody", simple("${body}"))
 				.to("seda:portalnotif?exchangePattern=InOnly")
 				.setBody(simple("${header.hdr_tmpbody}"))
 			.end()
 				
-			// jika CT yang mesti reversal
-//			.choice()
-//				.when().simple("${header.hdr_reversal} == 'PENDING'")
-//					.to("seda:reversal?exchangePattern=InOnly")
-//			.end()
-		;
-
-		from("seda:reversal")
-			.setBody(simple("${header.hdr_frBIobj}"))
-			.to("direct:reversal")
 		;
 
 

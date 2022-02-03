@@ -138,6 +138,10 @@ public class ProxyRegistrationService {
 			seed.setReason("U804");
 		}
 		
+		else if (!(oAccountProxy.get().getAccountStatus().equals("ACTV"))) {
+			seed.setStatus("RJCT");
+			seed.setReason("U805");
+		}
 		else {
 			AccountProxy proxy = oAccountProxy.get();
 

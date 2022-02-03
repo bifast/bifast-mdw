@@ -34,6 +34,8 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		String regType = msg.getDocument().getPrxyRegn().getRegn().getRegnTp().value();
 		String proxyType = msg.getDocument().getPrxyRegn().getRegn().getPrxy().getTp();
 		String proxyVal = msg.getDocument().getPrxyRegn().getRegn().getPrxy().getVal();
+		if (proxyType.equals("02"))
+			proxyVal = proxyVal.toUpperCase();
 
 		if (regType.equals("NEWR")) {
 			seed = proxyRegService.newr(msg);
@@ -60,6 +62,7 @@ public class ProxyRegistrationResponseProcessor implements Processor{
 		else if (regType.equals("ACTV")) {
 			seed = proxyRegService.actv(msg);		
 		}
+
 		
 		seed.setMsgId(msgId);
 

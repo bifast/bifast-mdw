@@ -1,8 +1,8 @@
-package bifast.inbound.reversecrdttrns.pojo;
+package bifast.outbound.corebank.pojo;
 
 import java.util.List;
 
-public class AccountCustInfoResponsePojo {
+public class AccountCustInfoResponseDTO {
 
     private String status;
     

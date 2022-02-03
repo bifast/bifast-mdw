@@ -1,15 +1,17 @@
-package bifast.inbound.reversecrdttrns;
+package bifast.inbound.reversecrdttrns.processor;
+
+import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.corebank.isopojo.AccountCustInfoResponse;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.Pacs002Seed;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
-import bifast.inbound.reversecrdttrns.pojo.DebitReversalResponsePojo;
 import bifast.inbound.service.AppHeaderService;
 import bifast.inbound.service.Pacs002MessageService;
 import bifast.inbound.service.UtilService;
@@ -19,43 +21,44 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 
 @Component
-public class ReverseCTResponseProcessor implements Processor {
+public class RevCTResponseProcessor implements Processor {
+
 	@Autowired private AppHeaderService appHdrService;
 	@Autowired private Pacs002MessageService pacs002Service;
 	@Autowired private UtilService utilService;
 
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		
-		Object oResp = exchange.getMessage().getBody(Object.class);
-		
-		Pacs002Seed resp = new Pacs002Seed();
-		
 		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-		FlatPacs008Pojo flatRequest = (FlatPacs008Pojo) processData.getBiRequestFlat();
 
-		String msgId = utilService.genMsgId("011", processData.getKomiTrnsId());
+		FlatPacs008Pojo flatRequest = exchange.getProperty("flatRequest", FlatPacs008Pojo.class);
+		BusinessMessage reqBusMesg = exchange.getProperty("prop_frBIobj", BusinessMessage.class);
+
+		String msgType = processData.getBiRequestMsg().getAppHdr().getBizMsgIdr().substring(16, 19);
+
+		String bizMsgId = utilService.genRfiBusMsgId(msgType, processData.getKomiTrnsId());
+		String msgId = utilService.genMsgId(msgType, processData.getKomiTrnsId());
+
+		Pacs002Seed resp = new Pacs002Seed();
 		resp.setMsgId(msgId);
 		resp.setCreditorAccountIdType(flatRequest.getCreditorAccountType());
-//		BusinessMessage msg = processData.getBiRequestMsg();
 
+		Object oCbResp = exchange.getMessage().getBody(Object.class);
+		if (null != oCbResp) {
+			if (oCbResp.getClass().getSimpleName().equals("AccountCustInfoResponsePojo")) {
+				AccountCustInfoResponse cbResponse = (AccountCustInfoResponse) oCbResp;
+				resp.setStatus(cbResponse.getStatus());
+				resp.setReason(cbResponse.getReason());				
+			}
+			else if (oCbResp.getClass().getSimpleName().equals("FaultPojo")) {
+				FaultPojo fault = (FaultPojo) oCbResp;
+				resp.setStatus(fault.getResponseCode());
+				resp.setReason(fault.getReasonCode());	
+			}
+		}		
 
-		FaultPojo fault = new FaultPojo();
-		DebitReversalResponsePojo cbResponse = new DebitReversalResponsePojo();
-		if (oResp.getClass().getSimpleName().equals("DebitReversalResponsePojo")) {
-			cbResponse = (DebitReversalResponsePojo) oResp;
-			resp.setStatus(cbResponse.getStatus());
-			resp.setReason(cbResponse.getReason());				
-			resp.setAdditionalInfo(cbResponse.getAdditionalInfo());
-		}
-		else {
-			fault = (FaultPojo) oResp;
-			System.out.println("Pojo response "  + fault.getReasonCode());
-			resp.setStatus(fault.getResponseCode());
-			resp.setReason(fault.getReasonCode());				
-//			resp.setAdditionalInfo(fault.getErrorMessage());
-			
-		}
 		if ((resp.getReason().equals("U101") && (resp.getCreditorAccountIdType().equals("SVGS"))))
 			resp.setReason("53");
 		else if (resp.getReason().equals("U101"))
@@ -65,33 +68,28 @@ public class ReverseCTResponseProcessor implements Processor {
 		else if (!(resp.getReason().equals("U000")))
 			resp.setReason("62");
 
+		
+
 		resp.setCreditorResidentialStatus(flatRequest.getCreditorResidentialStatus());  // 01 RESIDENT
 		resp.setCreditorTown(flatRequest.getCreditorTownName());  
 		resp.setCreditorType(flatRequest.getCreditorType());
 		if (null != flatRequest.getCreditorId())
 			resp.setCreditorId(flatRequest.getCreditorId());
-		if (!(null == flatRequest.getCreditorName())) 
+			
+		if (null != flatRequest.getCreditorName())
 			resp.setCreditorName(flatRequest.getCreditorName());
-
-
-		//////////
-		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("hdr_frBIobj", BusinessMessage.class);
-//		CreditTransferTransaction39 biReq =  reqBusMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
-
-
+		
 		FIToFIPaymentStatusReportV10 respMsg = pacs002Service.creditTransferRequestResponse(resp, reqBusMesg);
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(respMsg);
-
-		String bizMsgId = utilService.genRfiBusMsgId("011", processData.getKomiTrnsId());
-		String orignBank = reqBusMesg.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId();
-		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr(orignBank, "pacs.002.001.10", bizMsgId);
+		
+		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr("pacs.002.001.10", bizMsgId);
 		appHdr.setBizSvc("CLEAR");
-
+		
 		BusinessMessage respBusMesg = new BusinessMessage();
 		respBusMesg.setAppHdr(appHdr);
 		respBusMesg.setDocument(doc);
-
+		
 		processData.setBiResponseMsg(respBusMesg);
 		exchange.setProperty("prop_process_data", processData);
 		exchange.getIn().setBody(respBusMesg);

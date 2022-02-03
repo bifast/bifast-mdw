@@ -106,9 +106,9 @@ public class CreditTransferProcessor implements Processor {
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(respMsg);
 		
-		String orignBank = flatRequest.getDebtorAgentId();
+//		String orignBank = flatRequest.getDebtorAgentId();
 
-		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr(orignBank, "pacs.002.001.10", bizMsgId);
+		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr("pacs.002.001.10", bizMsgId);
 		appHdr.setBizSvc("CLEAR");
 		
 		BusinessMessage respBusMesg = new BusinessMessage();

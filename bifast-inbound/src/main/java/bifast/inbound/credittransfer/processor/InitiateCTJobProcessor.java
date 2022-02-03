@@ -38,6 +38,9 @@ public class InitiateCTJobProcessor implements Processor{
 
 		exchange.setProperty("prop_process_data", processData);
 		
+		exchange.setProperty("pr_komitrnsid", String.valueOf(arr.get("komi_trns_id")));
+
+		
 	}
 
 }

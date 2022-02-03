@@ -43,7 +43,7 @@ public class EventNotificationProcessor implements Processor{
 		
 		SystemEventAcknowledgementV01 respMsg = admi011Service.acknowledge(seed);
 
-		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr(flat.getFrBic(), "admi.011.001.01", bizMsgId);
+		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr("admi.011.001.01", bizMsgId);
 		
 		Document doc = new Document();
 		doc.setSysEvtAck(respMsg);
