@@ -1,23 +1,25 @@
 package bifast.inbound.settlement;
 
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.config.Config;
 import bifast.inbound.corebank.isopojo.SettlementRequest;
+import bifast.inbound.model.ChannelTransaction;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs002Pojo;
-import bifast.inbound.repository.CreditTransferRepository;
+import bifast.inbound.repository.ChannelTransactionRepository;
 import bifast.inbound.service.RefUtils;
 
 @Component
 public class SettlementDebitProcessor implements Processor {
-	@Autowired private CreditTransferRepository ctRepo;
-	
+	@Autowired private ChannelTransactionRepository chnlTrnsRepo;
+
 	@Value("${komi.isoadapter.merchant}")
 	String merchant;
 
@@ -38,7 +40,7 @@ public class SettlementDebitProcessor implements Processor {
 		CreditTransfer ct = exchange.getProperty("pr_orgnlCT", CreditTransfer.class);
 		
 		SettlementRequest sttlRequest = new SettlementRequest();
-		
+
 		RefUtils.Ref ref = RefUtils.newRef();
 
 		sttlRequest.setAdditionalInfo(flatSttl.getRsnInfAddtlInf());
@@ -51,12 +53,14 @@ public class SettlementDebitProcessor implements Processor {
 		sttlRequest.setTerminalId(terminal);
 		sttlRequest.setTransactionId(txid);
 
-//		sttlRequest.setBizMsgId(());
+		sttlRequest.setBizMsgId(ct.getCrdtTrnRequestBizMsgIdr());
 		sttlRequest.setMsgId(flatSttl.getOrgnlEndToEndId());
 		
 		sttlRequest.setCounterParty(flatSttl.getCdtrAgtFinInstnId());
 
-//		sttlRequest.setOriginalNoRef();
+		Optional<ChannelTransaction> oChnlTrns = chnlTrnsRepo.findByKomiTrnsId(ct.getKomiTrnsId());
+		if (oChnlTrns.isPresent())
+			sttlRequest.setOriginalNoRef(oChnlTrns.get().getChannelRefId());
 				
 		exchange.getMessage().setBody(sttlRequest);
 

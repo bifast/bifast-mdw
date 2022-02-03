@@ -41,6 +41,7 @@ public class SettlementRoute extends RouteBuilder {
 					}}
 	 		})
 
+	 		
 	 		.process(saveSettlement)
 			
 			.log(LoggingLevel.DEBUG, "komi.settlement", "[${exchangeProperty.prop_process_data.inbMsgName}:"
