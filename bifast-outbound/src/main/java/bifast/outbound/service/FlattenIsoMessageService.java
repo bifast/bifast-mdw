@@ -203,7 +203,8 @@ public class FlattenIsoMessageService {
 		
 		flatMsg.setOrgnlMsgId(data.getOrgnlGrpInf().getOrgnlMsgId());
 		flatMsg.setOrgnlMsgName(data.getOrgnlGrpInf().getOrgnlMsgNmId());
-		flatMsg.setOrgnlRegistrationType(data.getRegnRspn().getOrgnlRegnTp().value());
+		if (null!= data.getRegnRspn().getOrgnlRegnTp())
+			flatMsg.setOrgnlRegistrationType(data.getRegnRspn().getOrgnlRegnTp().value());
 
 		if (data.getRegnRspn().getPrxyRegn().size()>0) {
 			if (null != data.getRegnRspn().getPrxyRegn().get(0).getRegnId())
