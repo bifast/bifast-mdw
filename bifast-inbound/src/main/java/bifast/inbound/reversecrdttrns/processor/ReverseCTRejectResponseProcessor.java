@@ -29,19 +29,14 @@ public class ReverseCTRejectResponseProcessor implements Processor {
 		
 		FlatPacs008Pojo flatRequest = exchange.getProperty("flatRequest", FlatPacs008Pojo.class);
 
+		resp.setStatus("RJCT");
+		resp.setReason("62");				
 
-		String checkRevResult = exchange.getProperty("revCTCheckRsl", String.class);
-		if (checkRevResult.equals("AmountNotMatch")) {
-			resp.setStatus("RJCT");
-			resp.setReason("62");				
+		String checkRevResult = exchange.getProperty("pr_revCTCheckRsl", String.class);
+		if (checkRevResult.equals("AmountNotMatch")) 
 			resp.setAdditionalInfo("Amount tidak sesuai");
-		}
-		
-		else { // CT Not Found
-			resp.setStatus("RJCT");
-			resp.setReason("62");				
+		else  // CT Not Found
 			resp.setAdditionalInfo("Transaksi asal tidak ditemukan");
-		}
 				
 		
 		resp.setCreditorAccountIdType(flatRequest.getCreditorAccountType());

@@ -23,13 +23,13 @@ public class CheckDebitHistoryProcessor implements Processor {
 		if (oCrdtTrns.isPresent()) {
 			CreditTransfer ct = oCrdtTrns.get();
 			if (ct.getAmount().compareTo(request.getAmount()) == 0)
-				exchange.setProperty("revCTCheckRsl", "AmountMatch");
+				exchange.setProperty("pr_revCTCheckRsl", "AmountMatch");
 			else 
-				exchange.setProperty("revCTCheckRsl", "AmountNotMatch");
+				exchange.setProperty("pr_revCTCheckRsl", "AmountNotMatch");
 		}
 		
 		else {
-			exchange.setProperty("revCTCheckRsl", "NotFound");
+			exchange.setProperty("pr_revCTCheckRsl", "NotFound");
 		}
 		
 	}
