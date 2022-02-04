@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.corebank.pojo.CbDebitResponsePojo;
 import bifast.outbound.corebank.pojo.DebitRequestDTO;
+import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.model.CorebankTransaction;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -47,6 +48,9 @@ public class SaveCBTableProcessor implements Processor{
 		cb.setResponse(response);
 		cb.setReason(reason);
 
+		DateTimeFormatter fdt = DateTimeFormatter.ofPattern("yyyyMMdd");
+		cb.setTrnsDate(fdt.format(LocalDate.now()));
+
 		ObjectMapper mapper = new ObjectMapper();
 	    mapper.setSerializationInclusion(Include.NON_NULL);
 	    
@@ -63,8 +67,6 @@ public class SaveCBTableProcessor implements Processor{
 			cb.setDateTime(debitReq.getDateTime());
 			cb.setKomiNoref(debitReq.getNoRef());
 			
-			DateTimeFormatter fdt = DateTimeFormatter.ofPattern("yyyyMMdd");
-			cb.setTrnsDate(fdt.format(LocalDate.now()));
 		
 			cb.setDebitAmount(new BigDecimal(debitReq.getAmount()));
 			cb.setFeeAmount(new BigDecimal(debitReq.getFeeTransfer()));
@@ -74,6 +76,11 @@ public class SaveCBTableProcessor implements Processor{
 			cb.setCstmAccountType(debitReq.getDebtorAccountType());
 			cb.setTransactionType("Debit");
 
+		}
+		
+		else if (requestClassName.equals("DebitReversalRequestPojo")) {
+			DebitReversalRequestPojo req = (DebitReversalRequestPojo) oCbRequest;
+			
 		}
 
 		

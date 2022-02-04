@@ -20,12 +20,14 @@ import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
+//import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class AcctCustInfoRoute extends RouteBuilder{
     @Autowired private StatusReasonRepository statusReasonRepo;
-
+    @Autowired private PrepACIRequestProcessor prepACIPrc;
+    
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
 
@@ -36,22 +38,9 @@ public class AcctCustInfoRoute extends RouteBuilder{
 		from("direct:acctcustmrinfo").routeId("komi.acctcustinfo")
 			
 			// build request msg
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-					ChnlAccountCustomerInfoRequestPojo chnlReq = (ChnlAccountCustomerInfoRequestPojo) rmw.getChannelRequest();
-					CbCustomerInfoRequestPojo aciReq = new CbCustomerInfoRequestPojo();
-					aciReq.setAccountNumber(chnlReq.getAccountNumber());
-					aciReq.setKomiTrnsId(rmw.getKomiTrxId());
-					aciReq.setMerchantType(rmw.getMerchantType());
-					aciReq.setNoRef(chnlReq.getNoRef());
-					aciReq.setTerminalId(chnlReq.getTerminalId());
-					exchange.getMessage().setBody(aciReq);
-				}
-			})
-			
+			.process(prepACIPrc)
 			// call ke corebank
-			.to("direct:callcb")
+			.to("direct:isoadpt")
 	
 			.log(LoggingLevel.DEBUG, "komi.acctcustinfo", "After callcb: ${body}")
 			.process(new Processor() {

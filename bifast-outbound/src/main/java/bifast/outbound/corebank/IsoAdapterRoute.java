@@ -15,6 +15,7 @@ import bifast.outbound.corebank.pojo.DebitRequestDTO;
 import bifast.outbound.corebank.pojo.DebitResponseDTO;
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
+import bifast.outbound.corebank.processor.CbCallFaultProcessor;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.service.JacksonDataFormatService;
@@ -25,7 +26,7 @@ import bifast.outbound.service.JacksonDataFormatService;
 public class IsoAdapterRoute extends RouteBuilder{
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
-//	@Autowired private CbCallFaultProcessor cbFaultProcessor;
+	@Autowired private CbCallFaultProcessor cbFaultProcessor;
 	@Autowired private SaveCBTableProcessor saveCBTransactionProc;
 
 	@Override
@@ -53,15 +54,15 @@ public class IsoAdapterRoute extends RouteBuilder{
 					
 			.choice()
 				.when().simple("${body.class} endsWith 'AccountCustInfoRequestDTO'")
-					.setHeader("cb_requestName", constant("accountcustinfo"))
+					.setProperty("pr_cbRequestName", constant("accountcustinfo"))
 					.setHeader("cb_url", simple("{{komi.url.isoadapter.customerinfo}}"))
 					.marshal(aciRequestJDF)
 				.when().simple("${body.class} endsWith 'DebitRequestDTO'")
-					.setHeader("cb_requestName", constant("debit"))
+					.setProperty("pr_cbRequestName", constant("debit"))
 					.setHeader("cb_url", simple("{{komi.url.isoadapter.debit}}"))
 					.marshal(debitRequestJDF)
 				.when().simple("${body.class} endsWith 'DebitReversalRequestPojo'")
-					.setHeader("cb_requestName", constant("debitreversal"))
+					.setProperty("pr_cbRequestName", constant("debitreversal"))
 					.marshal(debitReversalReqJDF)
 					.setHeader("cb_url", simple("{{komi.url.isoadapter.reversal}}"))
 
@@ -86,12 +87,12 @@ public class IsoAdapterRoute extends RouteBuilder{
 				.log("[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] CB response: ${body}")
 
 		    	.choice()
-		 			.when().simple("${header.cb_requestName} == 'accountcustinfo'")
+		 			.when().simple("${exchangeProperty.pr_cbRequestName} == 'accountcustinfo'")
 		 				.unmarshal(aciResponseJDF)
 	 				.endChoice()
-		 			.when().simple("${header.cb_requestName} == 'debit'")
+		 			.when().simple("${exchangeProperty.pr_cbRequestName} == 'debit'")
 		 				.unmarshal(debitResponseJDF)
-		 			.when().simple("${header.cb_requestName} == 'debitreversal'")
+		 			.when().simple("${exchangeProperty.pr_cbRequestName} == 'debitreversal'")
 	 					.unmarshal(debitReversalResponseJDF)
 	 				.endChoice()
 		 		.end()
@@ -116,18 +117,9 @@ public class IsoAdapterRoute extends RouteBuilder{
 	    	.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] Call CB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-//		    	.process(cbFaultProcessor)
+		    	.process(cbFaultProcessor)
 	    	.end()
 
-//			.process(new Processor() {
-//				@Override
-//				public void process(Exchange exchange) throws Exception {
-//					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-//					Object cbResponse = exchange.getMessage().getBody(Object.class);
-//					processData.setCorebankResponse(cbResponse);
-//					exchange.setProperty("prop_process_data", processData);
-//				}
-//			})
 			
 			.filter().simple("${header.cb_requestName} in 'debit,debitreversal'")
 				.log("akan simpan ${header.cb_requestName}")
