@@ -1,17 +1,44 @@
 package bifast.mock.isoapt.pojo;
 
+import java.util.List;
+
 public class CIFResponse extends BaseResponseDTO {
+
+    private List<String> emailAddressList;
+
+    private List<String> phoneNumberList;
+
     private String accountNumber;
-    
-    private String creditorName;
-    
-    private String creditorId;
-    
-    private String creditorType;
-    
+
+    private String accountType;
+
+    private String customerName;
+
+    private String customerType;
+
+    private String customerId;
+
+    private String customerIdType;
+
     private String residentStatus;
-    
+
     private String townName;
+
+	public List<String> getEmailAddressList() {
+		return emailAddressList;
+	}
+
+	public void setEmailAddressList(List<String> emailAddressList) {
+		this.emailAddressList = emailAddressList;
+	}
+
+	public List<String> getPhoneNumberList() {
+		return phoneNumberList;
+	}
+
+	public void setPhoneNumberList(List<String> phoneNumberList) {
+		this.phoneNumberList = phoneNumberList;
+	}
 
 	public String getAccountNumber() {
 		return accountNumber;
@@ -21,28 +48,44 @@ public class CIFResponse extends BaseResponseDTO {
 		this.accountNumber = accountNumber;
 	}
 
-	public String getCreditorName() {
-		return creditorName;
+	public String getAccountType() {
+		return accountType;
 	}
 
-	public void setCreditorName(String creditorName) {
-		this.creditorName = creditorName;
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
 	}
 
-	public String getCreditorId() {
-		return creditorId;
+	public String getCustomerName() {
+		return customerName;
 	}
 
-	public void setCreditorId(String creditorId) {
-		this.creditorId = creditorId;
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 
-	public String getCreditorType() {
-		return creditorType;
+	public String getCustomerType() {
+		return customerType;
 	}
 
-	public void setCreditorType(String creditorType) {
-		this.creditorType = creditorType;
+	public void setCustomerType(String customerType) {
+		this.customerType = customerType;
+	}
+
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerIdType() {
+		return customerIdType;
+	}
+
+	public void setCustomerIdType(String customerIdType) {
+		this.customerIdType = customerIdType;
 	}
 
 	public String getResidentStatus() {
@@ -60,6 +103,6 @@ public class CIFResponse extends BaseResponseDTO {
 	public void setTownName(String townName) {
 		this.townName = townName;
 	}
-    
+
     
 }
