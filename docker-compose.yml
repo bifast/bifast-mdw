@@ -52,7 +52,7 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:2.3.1
+      image: fransmzh/komi-outbound:2.3.2
       container_name: komi-outbound
       restart: always
       depends_on: 
@@ -64,7 +64,7 @@ services:
       environment: 
         - KOMI.URL.CICONNECTOR=http://172.18.0.1:9006/mock/cihub
         - KOMI.URL.COREBANK=172.18.0.1:9007/api/corebank
-        - KOMI.URL.ISOADAPTER=172.18.0.1:9006/mock/adapter
+        - KOMI.URL.ISOADAPTER=http://172.18.0.1:9006/mock/adapter
         - KOMI.URL.PORTALAPI=http://172.18.0.1:9006/mock
         - KOMI.URL.INBOUND=172.18.0.1:9001
         - KOMI.BANKCODE=SIHBIDJ1
