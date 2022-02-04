@@ -2,11 +2,7 @@ package bifast.outbound.corebank.pojo;
 
 import java.util.List;
 
-public class AccountCustInfoResponseDTO {
-
-    private String status;
-    
-    private String reason;
+public class AccountCustInfoResponseDTO extends BaseResponseDTO{
 
     private List<String> emailAddressList;
 
@@ -28,109 +24,85 @@ public class AccountCustInfoResponseDTO {
 
     private String townName;
 
-    public String getStatus() {
-        return status;
-    }
+	public List<String> getEmailAddressList() {
+		return emailAddressList;
+	}
 
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setEmailAddressList(List<String> emailAddressList) {
+		this.emailAddressList = emailAddressList;
+	}
 
-    /**
-     * @return the reason
-     */
-    public String getReason() {
-        return reason;
-    }
+	public List<String> getPhoneNumberList() {
+		return phoneNumberList;
+	}
 
-    /**
-     * @param reason the reason to set
-     */
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-    
-    public List<String> getEmailAddressList() {
-        return emailAddressList;
-    }
+	public void setPhoneNumberList(List<String> phoneNumberList) {
+		this.phoneNumberList = phoneNumberList;
+	}
 
-    public void setEmailAddressList(List<String> emailAddressList) {
-        this.emailAddressList = emailAddressList;
-    }
+	public String getAccountNumber() {
+		return accountNumber;
+	}
 
-    public List<String> getPhoneNumberList() {
-        return phoneNumberList;
-    }
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
 
-    public void setPhoneNumberList(List<String> phoneNumberList) {
-        this.phoneNumberList = phoneNumberList;
-    }
+	public String getAccountType() {
+		return accountType;
+	}
 
-    public String getAccountNumber() {
-        return accountNumber;
-    }
+	public void setAccountType(String accountType) {
+		this.accountType = accountType;
+	}
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
+	public String getCustomerName() {
+		return customerName;
+	}
 
-    public String getAccountType() {
-        return accountType;
-    }
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
-    }
+	public String getCustomerType() {
+		return customerType;
+	}
 
-    public String getCustomerName() {
-        return customerName;
-    }
+	public void setCustomerType(String customerType) {
+		this.customerType = customerType;
+	}
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
+	public String getCustomerId() {
+		return customerId;
+	}
 
-    public String getCustomerType() {
-        return customerType;
-    }
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
 
-    public void setCustomerType(String customerType) {
-        this.customerType = customerType;
-    }
+	public String getCustomerIdType() {
+		return customerIdType;
+	}
 
-    public String getCustomerId() {
-        return customerId;
-    }
+	public void setCustomerIdType(String customerIdType) {
+		this.customerIdType = customerIdType;
+	}
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
+	public String getResidentStatus() {
+		return residentStatus;
+	}
 
-    public String getCustomerIdType() {
-        return customerIdType;
-    }
+	public void setResidentStatus(String residentStatus) {
+		this.residentStatus = residentStatus;
+	}
 
-    public void setCustomerIdType(String customerIdType) {
-        this.customerIdType = customerIdType;
-    }
+	public String getTownName() {
+		return townName;
+	}
 
-    public String getResidentStatus() {
-        return residentStatus;
-    }
+	public void setTownName(String townName) {
+		this.townName = townName;
+	}
 
-    public void setResidentStatus(String residentStatus) {
-        this.residentStatus = residentStatus;
-    }
-
-    public String getTownName() {
-        return townName;
-    }
-
-    public void setTownName(String townName) {
-        this.townName = townName;
-    }
 	
 }

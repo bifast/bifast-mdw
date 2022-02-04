@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import bifast.outbound.corebank.pojo.AccountCustInfoRequestDTO;
 import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.corebank.pojo.CbDebitResponsePojo;
 import bifast.outbound.corebank.pojo.DebitRequestDTO;
@@ -83,7 +84,6 @@ public class SaveCBTableProcessor implements Processor{
 			
 		}
 
-		
 		cbTransactionRepo.save(cb);
 	}
 

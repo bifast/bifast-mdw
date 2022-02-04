@@ -12,13 +12,10 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.accountcustmrinfo.pojo.ChnlAccountCustomerInfoRequestPojo;
 import bifast.outbound.accountcustmrinfo.pojo.ChnlAccountCustomerInfoResponsePojo;
-import bifast.outbound.corebank.pojo.CbCustomerInfoRequestPojo;
-import bifast.outbound.corebank.pojo.CbCustomerInfoResponsePojo;
+import bifast.outbound.corebank.pojo.AccountCustInfoResponseDTO;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChannelResponseWrapper;
-import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 //import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.StatusReasonRepository;
@@ -52,43 +49,45 @@ public class AcctCustInfoRoute extends RouteBuilder{
 					channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 					channelResponseWr.setResponses(new ArrayList<>());
 
-					Object oCbResponse = exchange.getMessage().getBody(Object.class);
+//					Object oCbResponse = exchange.getMessage().getBody(Object.class);
 					ChnlAccountCustomerInfoResponsePojo chnlResp = new ChnlAccountCustomerInfoResponsePojo();
-
 					chnlResp.setNoRef(rmw.getRequestId());
-					
-					if (oCbResponse.getClass().getSimpleName().equals("FaultPojo")) {
-						FaultPojo fault = (FaultPojo) oCbResponse;
-						channelResponseWr.setResponseCode(fault.getResponseCode());
-						channelResponseWr.setReasonCode(fault.getReasonCode());
 
-						Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
+					AccountCustInfoResponseDTO cbResponse = exchange.getMessage().getBody(AccountCustInfoResponseDTO.class);
+
+					if (!cbResponse.getStatus().equals("ACTC")) {
+//					if (oCbResponse.getClass().getSimpleName().equals("FaultPojo")) {
+//						FaultPojo fault = (FaultPojo) oCbResponse;
+						channelResponseWr.setResponseCode(cbResponse.getStatus());
+						channelResponseWr.setReasonCode(cbResponse.getReason());
+
+						Optional<StatusReason> oStatusReason = statusReasonRepo.findById(cbResponse.getReason());
 						if (oStatusReason.isPresent())
 							channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 						else
 							channelResponseWr.setReasonMessage("General Error");
 					}
 					else {
-						CbCustomerInfoResponsePojo cbResp = (CbCustomerInfoResponsePojo) oCbResponse;
+//						AccountCustInfoResponseDTO cbResp = (AccountCustInfoResponseDTO) oCbResponse;
 						
-						channelResponseWr.setResponseCode(cbResp.getStatus());
-						channelResponseWr.setReasonCode(cbResp.getReason());
-						Optional<StatusReason> optStatusReason = statusReasonRepo.findById(cbResp.getReason());
+						channelResponseWr.setResponseCode(cbResponse.getStatus());
+						channelResponseWr.setReasonCode(cbResponse.getReason());
+						Optional<StatusReason> optStatusReason = statusReasonRepo.findById(cbResponse.getReason());
 						if (optStatusReason.isPresent()) {
 							String desc = optStatusReason.get().getDescription();
 							channelResponseWr.setReasonMessage(desc);
 						}	
 
-						chnlResp.setAccountNumber(cbResp.getAccountNumber());
-						chnlResp.setAccountType(cbResp.getAccountType());
-						chnlResp.setDebtorId(cbResp.getCustomerId());
-						chnlResp.setDebtorIdType(cbResp.getCustomerIdType());
-						chnlResp.setDebtorName(cbResp.getCustomerName());
-						chnlResp.setDebtorType(cbResp.getCustomerType());
-						chnlResp.setEmailAddressList(cbResp.getEmailAddressList());
-						chnlResp.setPhoneNumberList(cbResp.getPhoneNumberList());
-						chnlResp.setResidentialStatus(cbResp.getResidentStatus());
-						chnlResp.setTownName(cbResp.getTownName());
+						chnlResp.setAccountNumber(cbResponse.getAccountNumber());
+						chnlResp.setAccountType(cbResponse.getAccountType());
+						chnlResp.setDebtorId(cbResponse.getCustomerId());
+						chnlResp.setDebtorIdType(cbResponse.getCustomerIdType());
+						chnlResp.setDebtorName(cbResponse.getCustomerName());
+						chnlResp.setDebtorType(cbResponse.getCustomerType());
+						chnlResp.setEmailAddressList(cbResponse.getEmailAddressList());
+						chnlResp.setPhoneNumberList(cbResponse.getPhoneNumberList());
+						chnlResp.setResidentialStatus(cbResponse.getResidentStatus());
+						chnlResp.setTownName(cbResponse.getTownName());
 						
 					}
 					
