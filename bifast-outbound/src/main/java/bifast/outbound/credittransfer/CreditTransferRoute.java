@@ -64,6 +64,8 @@ public class CreditTransferRoute extends RouteBuilder {
 				.to("direct:isoadpt")
 			.end()
 		
+			.log(LoggingLevel.DEBUG, "komi.ct", 
+					"Hasil corebank ${body.class}")
 			// periksa hasil debit-account. Jika failure raise exception
 			.filter().simple("${body.class} endsWith 'FaultPojo'")
 				.process(new Processor() {

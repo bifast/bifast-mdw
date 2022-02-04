@@ -19,9 +19,6 @@ public class BuildDebitRequestProcessor implements Processor{
 	@Value("${komi.isoadapter.txid}")
 	String txid;
 
-	@Value("${komi.isoadapter.merchant}")
-	String merchant;
-
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
@@ -32,7 +29,7 @@ public class BuildDebitRequestProcessor implements Processor{
 //		debitReq.setKomiTrnsId(rmw.getKomiTrxId());
 		debitReq.setTransactionId(txid);
 		debitReq.setNoRef(rmw.getRequestId());
-		debitReq.setMerchantType(merchant);
+		debitReq.setMerchantType(rmw.getMerchantType());
 		debitReq.setTerminalId(chnReq.getTerminalId());
 		
 		RefUtils.Ref ref = RefUtils.setRef(chnReq.getChannelRefId());

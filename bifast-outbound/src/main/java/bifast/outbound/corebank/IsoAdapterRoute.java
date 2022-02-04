@@ -120,7 +120,8 @@ public class IsoAdapterRoute extends RouteBuilder{
 		    	.process(cbFaultProcessor)
 	    	.end()
 
-			.log("CCCC")
+			.log("[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] CB response: ${body}")
+
 			.filter().simple("${header.cb_requestName} in 'debit,debitreversal'")
 				.log("akan simpan ${header.cb_requestName}")
 				.process(saveCBTransactionProc)
