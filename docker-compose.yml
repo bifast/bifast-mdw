@@ -52,7 +52,7 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:2.3.1
+      image: fransmzh/komi-outbound:2.3.2
       container_name: komi-outbound
       restart: always
       depends_on: 

@@ -169,7 +169,7 @@ public class ProxyRegistrationService {
 	public Proxy002Seed susp (BusinessMessage bm) {
 		
 		Proxy002Seed seed = new Proxy002Seed();
-		
+
 		ProxyRegistrationV01 prxyRegn = bm.getDocument().getPrxyRegn();
 
 		String regId = prxyRegn.getRegn().getPrxyRegn().getRegnId();
@@ -198,7 +198,7 @@ public class ProxyRegistrationService {
 				seed.setStatus("ACTC");
 				seed.setReason("U000");
 
-				proxy.setAccountStatus("SUSP");
+				proxy.setAccountStatus(prxyRegn.getRegn().getRegnTp().value());
 				proxyRepo.save(proxy);
 			}
 			else {
