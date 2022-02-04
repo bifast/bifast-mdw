@@ -105,7 +105,7 @@ public class DebitReversalRoute extends RouteBuilder{
 	
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich()
-					.simple("http://{{komi.url.isoadapter}}/debitreversal?"
+					.simple("{{komi.url.isoadapter.reversal}}?"
 	//					+ "socketTimeout=7000&" 
 						+ "bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)
