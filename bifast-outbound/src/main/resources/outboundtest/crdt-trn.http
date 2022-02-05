@@ -1,6 +1,6 @@
 # Credit Transfer Request from channel on generic endpoint
 
-# categorypurpuse 02.. akan reject by CB
+# "PaymentInformation": "CB-RJCT" -->.. akan reject by CB
 # norekCreditor 5xx akan response reject
 # jika norekCreditor 221211999 RJCT 
 # Jika payInfo TIMEOUT, akan Timeout
@@ -19,7 +19,7 @@ Authorization: Basic MB:password
 		"NoRef": "FRN2201152{{$randomInt 1000 9999}}",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "112211333",
+		"CreditorAccountNumber": "112211777",
 		"CreditorAccountType": "SVGS",
 		"CreditorId": "018029520054000",
 		"CreditorType": "02",
@@ -36,7 +36,7 @@ Authorization: Basic MB:password
 		"DebtorType": "01",
 		"DebtorTownName": "0191",
 		"DebtorName": "MURYATI",
-		"PaymentInformation": "Test mantap "
+		"PaymentInformation": "CB-RJCT"
 	}
 }
 

@@ -1,5 +1,6 @@
 package bifast.outbound.corebank;
 
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -16,19 +17,23 @@ import bifast.outbound.corebank.pojo.DebitResponseDTO;
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
 import bifast.outbound.corebank.processor.CbCallFaultProcessor;
+import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.FaultPojo;
+import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.processor.EnrichmentAggregator;
+import bifast.outbound.repository.StatusReasonRepository;
 import bifast.outbound.service.JacksonDataFormatService;
 
 
 
 @Component
 public class IsoAdapterRoute extends RouteBuilder{
-	@Autowired private JacksonDataFormatService jdfService;
-	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private CbCallFaultProcessor cbFaultProcessor;
+	@Autowired private EnrichmentAggregator enrichmentAggregator;
+	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private SaveCBTableProcessor saveCBTransactionProc;
-
+	@Autowired private StatusReasonRepository reasonRepo;
+	
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat aciRequestJDF = jdfService.basic(AccountCustInfoRequestDTO.class);
@@ -46,6 +51,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 
 			.setHeader("cb_msgname", simple("${exchangeProperty[prop_process_data.inbMsgName]}"))
 			.setHeader("cb_e2eid", simple("${exchangeProperty[prop_process_data.endToEndId]}"))
+
 
 			.setProperty("pr_cbrequest", simple("${body}"))
 			
@@ -72,9 +78,9 @@ public class IsoAdapterRoute extends RouteBuilder{
 			
 			.setProperty("cb_request_str", simple("${body}"))
 			
-	 		.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${exchangeProperty.prop_request_list.requestId}:"
+	 		.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${exchangeProperty.prop_request_list.msgName}:"
 	 				+ "${exchangeProperty.prop_request_list.requestId}] POST ${header.cb_url}")
-	 		.log("[${exchangeProperty.prop_request_list.requestId}:${exchangeProperty.prop_request_list.requestId}] CB Request: ${body}")
+	 		.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CB Request: ${body}")
 			
 	 		.doTry()
 				.setHeader("HttpMethod", constant("POST"))
@@ -84,7 +90,8 @@ public class IsoAdapterRoute extends RouteBuilder{
 				.aggregationStrategy(enrichmentAggregator)
 				.convertBodyTo(String.class)
 				
-				.log("[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] CB response: ${body}")
+				.log("[${exchangeProperty.prop_request_list.msgName}:"
+						+ "${exchangeProperty.prop_request_list.requestId}] CB response: ${body}")
 
 		    	.choice()
 		 			.when().simple("${exchangeProperty.pr_cbRequestName} == 'accountcustinfo'")
@@ -99,18 +106,20 @@ public class IsoAdapterRoute extends RouteBuilder{
 
  				.setProperty("pr_response", simple("${body.status}"))
  				.setProperty("pr_reason", simple("${body.reason}"))
-
+ 			
 				.filter().simple("${exchangeProperty.pr_response} != 'ACTC' ")
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
-							FaultPojo fault = new FaultPojo();
 							String cbResponse = exchange.getProperty("pr_response", String.class);
 							String cbReason = exchange.getProperty("pr_reason", String.class);
-							fault.setResponseCode(cbResponse);
-							fault.setReasonCode(cbReason);
+							FaultPojo fault = new FaultPojo("CB-RJCT", cbResponse, cbReason);	
+							StatusReason sr = reasonRepo.findById(cbReason).orElse(new StatusReason());
+							fault.setErrorMessage(cbReason + ":" + sr.getDescription());
 							exchange.getMessage().setBody(fault);
-							}
-						})
+							ResponseMessageCollection respColl = exchange.getProperty("prop_response_list",ResponseMessageCollection.class);
+							respColl.setFault(fault);
+						}
+					})
 				.end()
 				
 	 		.endDoTry()
@@ -120,10 +129,8 @@ public class IsoAdapterRoute extends RouteBuilder{
 		    	.process(cbFaultProcessor)
 	    	.end()
 
-			.log("[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] CB response: ${body}")
-
-			.filter().simple("${header.cb_requestName} in 'debit,debitreversal'")
-				.log("akan simpan ${header.cb_requestName}")
+			.filter().simple("${exchangeProperty.pr_cbRequestName} in 'debit,debitreversal'")
+				.log("akan simpan ${exchangeProperty.prop_request_list.msgName}")
 				.process(saveCBTransactionProc)
 			.end()
 			

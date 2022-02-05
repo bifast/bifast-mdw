@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,8 @@ public class SaveChannelTransactionProcessor implements Processor{
 	@Autowired
 	private ChannelTransactionRepository channelTransactionRepo;
 	
+//	private static Logger logger = LoggerFactory.getLogger(SaveChannelTransactionProcessor.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
@@ -37,15 +41,22 @@ public class SaveChannelTransactionProcessor implements Processor{
 		
 		FaultPojo fault = null;
 
-		if (null == respColl.getFault())
+		if (null == respColl.getFault()) {
 			chnlTrns.setCallStatus("SUCCESS");
+			chnlTrns.setResponseCode(responseWr.getResponseCode());
+		}
 		else {
 			fault = respColl.getFault();
+
+			int errLength = fault.getErrorMessage().length();
+			if (errLength>250)
+				errLength = 250;
+			String errMsg = fault.getErrorMessage().substring(0, errLength);
 			chnlTrns.setCallStatus(fault.getCallStatus());
-			chnlTrns.setErrorMsg(fault.getErrorMessage());
+			chnlTrns.setErrorMsg(errMsg);
+			chnlTrns.setResponseCode(fault.getResponseCode());
 		}
 
-		chnlTrns.setResponseCode(responseWr.getResponseCode());
 		
 		Instant finish = Instant.now();
 		long timeElapsed = Duration.between(rmw.getKomiStart(), finish).toMillis();
@@ -67,7 +78,6 @@ public class SaveChannelTransactionProcessor implements Processor{
 
 		}
 		
-
 		channelTransactionRepo.save(chnlTrns);
 
 	}

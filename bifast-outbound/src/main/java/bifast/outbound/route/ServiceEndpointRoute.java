@@ -154,12 +154,13 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.marshal(chnlResponseJDF)
 			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
+			.removeProperties("pr_*")
+			.removeProperties("prop*")
 
 		;
 		
-		from("seda:savetablechannel?concurrentConsumers=10&blockWhenFull=true")
+		from("seda:savetablechannel?concurrentConsumers=2&blockWhenFull=true")
 			.routeId("komi.savechnltrns")
-			.delay(20000)
 			.log(LoggingLevel.DEBUG, "komi.savechnltrns", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Save table channel_transaction.")
 			.process(saveChannelTransactionProcessor)

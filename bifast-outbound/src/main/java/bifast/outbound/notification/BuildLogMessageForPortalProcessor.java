@@ -42,7 +42,7 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 		FaultPojo fault = respColl.getFault();
 		if (null == fault)
 			data.setStatus_code("SUCCESS");
-		else if (fault.getCallStatus().equals("REJECT-CB"))
+		else if (fault.getCallStatus().equals("CB-RJCT"))
 			data.setStatus_code("SUCCESS");
 		else {
 			data.setStatus_code(fault.getCallStatus());

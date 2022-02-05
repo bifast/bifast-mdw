@@ -13,13 +13,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import bifast.outbound.corebank.pojo.AccountCustInfoRequestDTO;
-import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
-import bifast.outbound.corebank.pojo.CbDebitResponsePojo;
 import bifast.outbound.corebank.pojo.DebitRequestDTO;
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.model.CorebankTransaction;
-import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.CorebankTransactionRepository;
 

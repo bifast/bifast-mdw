@@ -27,7 +27,7 @@ public class ExceptionResponseProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-//		DebitException exception = (DebitException) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
+		DebitException exception = (DebitException) exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		
 		ChnlCreditTransferRequestPojo chnlReq = rmw.getChnlCreditTransferRequest();
@@ -36,7 +36,7 @@ public class ExceptionResponseProcessor implements Processor {
 		resp.setOrignReffId(chnlReq.getChannelRefId());
 		resp.setAccountNumber(chnlReq.getCrdtAccountNo());
 
-		FaultPojo fault = DebitException.getFault();
+		FaultPojo fault = exception.getFault();
 				
 		ChannelResponseWrapper responseWr = new ChannelResponseWrapper();
 		responseWr.setResponseCode(fault.getResponseCode());

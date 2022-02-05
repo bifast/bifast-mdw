@@ -40,12 +40,14 @@ public class CreditTransferRoute extends RouteBuilder {
 
 	    onException(DebitException.class)
 	    	.process(exceptionResponseProcessor)
+			.to("seda:savetablechannel?exchangePattern=InOnly")
 			.to("seda:logportal?exchangePattern=InOnly")
 	    	.marshal(chnlResponseJDF)
 	    	.log(LoggingLevel.ERROR, "komi.ct", 
 	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Debit account gagal.")
 	    	.log(LoggingLevel.ERROR, "komi.ct", "${body}")
 	    	.removeHeaders("*")
+	    	.removeProperties("pr_*")
 	    	.handled(true)
 	    ;
 	    
@@ -64,8 +66,6 @@ public class CreditTransferRoute extends RouteBuilder {
 				.to("direct:isoadpt")
 			.end()
 		
-			.log(LoggingLevel.DEBUG, "komi.ct", 
-					"Hasil corebank ${body.class}")
 			// periksa hasil debit-account. Jika failure raise exception
 			.filter().simple("${body.class} endsWith 'FaultPojo'")
 				.process(new Processor() {
@@ -75,7 +75,7 @@ public class CreditTransferRoute extends RouteBuilder {
 					}
 				})
 			.end()
-
+		
 			.log(LoggingLevel.DEBUG, "komi.ct", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] "
 					+ "setelah corebank, ${header.ct_progress}.")
@@ -125,7 +125,7 @@ public class CreditTransferRoute extends RouteBuilder {
 		;
 		
 		
-		from("seda:savecredittransfer?concurrentConsumers=20").routeId("komi.ct.savedb")
+		from("seda:savecredittransfer?concurrentConsumers=3").routeId("komi.ct.savedb")
 			.process(saveCrdtTrnsProcessor)
 		;
 		

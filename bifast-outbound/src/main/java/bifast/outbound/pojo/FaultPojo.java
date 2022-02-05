@@ -16,6 +16,17 @@ public class FaultPojo {
 	
 	private Object orgnlResponse;
 
+	public FaultPojo () {
+	}
+	
+	public FaultPojo (String callStatus, 
+					  String responseCode, 
+					  String reasonCode) {
+		this.callStatus = callStatus;
+		this.responseCode = responseCode;
+		this.reasonCode = reasonCode;
+	}
+	
 	public String getCallStatus() {
 		return callStatus;
 	}
@@ -75,7 +86,7 @@ public class FaultPojo {
 	@Override
 	public String toString() {
 		return "FaultPojo [callStatus=" + callStatus + ", responseCode=" + responseCode + ", reasonCode=" + reasonCode
-				+ ", reasonMessage=" + reasonMessage + "]";
+				+ ", reasonMessage=" + reasonMessage + ", errorMessage=" + errorMessage + "]";
 	}
 
 

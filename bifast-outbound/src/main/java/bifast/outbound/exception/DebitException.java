@@ -9,7 +9,7 @@ public class DebitException extends Exception {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static FaultPojo fault;
+	private FaultPojo fault;
 	
 	public DebitException(String errorMessage) {  
     	super(errorMessage);  
@@ -17,10 +17,10 @@ public class DebitException extends Exception {
 
 	public DebitException(String errorMessage, FaultPojo fault) {  
     	super(errorMessage);
-    	DebitException.fault = fault;
+    	this.fault = fault;
     }
 
-	public static FaultPojo getFault() {
+	public FaultPojo getFault() {
 		return fault;
 	}
 

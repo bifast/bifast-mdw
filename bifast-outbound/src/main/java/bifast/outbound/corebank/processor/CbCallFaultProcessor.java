@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import bifast.outbound.corebank.pojo.AccountCustInfoResponseDTO;
 import bifast.outbound.corebank.pojo.DebitResponseDTO;
 import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
+import bifast.outbound.pojo.FaultPojo;
+import bifast.outbound.pojo.ResponseMessageCollection;
 
 @Component
 public class CbCallFaultProcessor implements Processor {
@@ -51,28 +53,34 @@ public class CbCallFaultProcessor implements Processor {
 			errMsg = "Check error log";
 		}
 
+		FaultPojo fault = new FaultPojo("CB-ERROR", response, reason);
+		fault.setErrorMessage(errMsg);
+		exchange.getMessage().setBody(fault);
 
-		String reqName = exchange.getProperty("pr_cbRequestName", String.class); 
-		if (reqName.equals("accountcustinfo")) {
-			AccountCustInfoResponseDTO resp = new AccountCustInfoResponseDTO();
-			resp.setReason(reason);
-			resp.setStatus(response);
-			exchange.getMessage().setBody(resp, AccountCustInfoResponseDTO.class);
-		}
+		ResponseMessageCollection respColl = exchange.getProperty("prop_response_list",ResponseMessageCollection.class);
+		respColl.setFault(fault);
 
-		else if (reqName.equals("debit")) {
-			DebitResponseDTO resp = new DebitResponseDTO();
-			resp.setReason(reason);
-			resp.setStatus(response);
-			exchange.getMessage().setBody(resp, AccountCustInfoResponseDTO.class);
-		}
-		
-		else if (reqName.equals("debitreversal")) {
-			DebitReversalResponsePojo resp = new DebitReversalResponsePojo();
-			resp.setReason(reason);
-			resp.setStatus(response);
-			exchange.getMessage().setBody(resp, DebitReversalResponsePojo.class);
-		}
+//		String reqName = exchange.getProperty("pr_cbRequestName", String.class); 
+//		if (reqName.equals("accountcustinfo")) {
+//			AccountCustInfoResponseDTO resp = new AccountCustInfoResponseDTO();
+//			resp.setReason(reason);
+//			resp.setStatus(response);
+//			exchange.getMessage().setBody(resp, AccountCustInfoResponseDTO.class);
+//		}
+//
+//		else if (reqName.equals("debit")) {
+//			DebitResponseDTO resp = new DebitResponseDTO();
+//			resp.setReason(reason);
+//			resp.setStatus(response);
+//			exchange.getMessage().setBody(resp, AccountCustInfoResponseDTO.class);
+//		}
+//		
+//		else if (reqName.equals("debitreversal")) {
+//			DebitReversalResponsePojo resp = new DebitReversalResponsePojo();
+//			resp.setReason(reason);
+//			resp.setStatus(response);
+//			exchange.getMessage().setBody(resp, DebitReversalResponsePojo.class);
+//		}
 			
 	}
 
