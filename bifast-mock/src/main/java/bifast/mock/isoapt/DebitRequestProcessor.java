@@ -1,5 +1,7 @@
 package bifast.mock.isoapt;
 
+import java.util.Optional;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
@@ -23,8 +25,17 @@ public class DebitRequestProcessor implements Processor {
 		resp.setDateTime(req.getDateTime());
 		resp.setMerchantType(req.getMerchantType());
 		resp.setNoRef(req.getNoRef());
-		resp.setReason("U000");
-		resp.setStatus("ACTC");
+
+		String pymtInfo = Optional.ofNullable(req.getPaymentInformation()).orElse("");
+		if (pymtInfo.equals("CB-RJCT")) {
+			resp.setReason("U149");
+			resp.setStatus("RJCT");			
+		}
+		else {
+			resp.setReason("U000");
+			resp.setStatus("ACTC");
+		}
+		
 		resp.setTerminalId(req.getTerminalId());
 		resp.setTransactionId(req.getTransactionId());
 		
