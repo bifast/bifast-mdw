@@ -16,6 +16,7 @@ import bifast.outbound.accountcustmrinfo.pojo.ChnlAccountCustomerInfoResponsePoj
 import bifast.outbound.corebank.pojo.AccountCustInfoResponseDTO;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChannelResponseWrapper;
+import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 //import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.StatusReasonRepository;
@@ -49,26 +50,26 @@ public class AcctCustInfoRoute extends RouteBuilder{
 					channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 					channelResponseWr.setResponses(new ArrayList<>());
 
-//					Object oCbResponse = exchange.getMessage().getBody(Object.class);
 					ChnlAccountCustomerInfoResponsePojo chnlResp = new ChnlAccountCustomerInfoResponsePojo();
 					chnlResp.setNoRef(rmw.getRequestId());
 
-					AccountCustInfoResponseDTO cbResponse = exchange.getMessage().getBody(AccountCustInfoResponseDTO.class);
+					Object oCbResponse = exchange.getMessage().getBody(Object.class);
+//					AccountCustInfoResponseDTO cbResponse = exchange.getMessage().getBody(AccountCustInfoResponseDTO.class);
 
-					if (!cbResponse.getStatus().equals("ACTC")) {
-//					if (oCbResponse.getClass().getSimpleName().equals("FaultPojo")) {
-//						FaultPojo fault = (FaultPojo) oCbResponse;
-						channelResponseWr.setResponseCode(cbResponse.getStatus());
-						channelResponseWr.setReasonCode(cbResponse.getReason());
+//					if (!cbResponse.getStatus().equals("ACTC")) {
+					if (oCbResponse.getClass().getSimpleName().equals("FaultPojo")) {
+						FaultPojo fault = (FaultPojo) oCbResponse;
+						channelResponseWr.setResponseCode(fault.getResponseCode());
+						channelResponseWr.setReasonCode(fault.getReasonCode());
 
-						Optional<StatusReason> oStatusReason = statusReasonRepo.findById(cbResponse.getReason());
+						Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 						if (oStatusReason.isPresent())
 							channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 						else
 							channelResponseWr.setReasonMessage("General Error");
 					}
 					else {
-//						AccountCustInfoResponseDTO cbResp = (AccountCustInfoResponseDTO) oCbResponse;
+						AccountCustInfoResponseDTO cbResponse = (AccountCustInfoResponseDTO) oCbResponse;
 						
 						channelResponseWr.setResponseCode(cbResponse.getStatus());
 						channelResponseWr.setReasonCode(cbResponse.getReason());

@@ -36,7 +36,7 @@ Authorization: Basic MB:password
 		"DebtorType": "01",
 		"DebtorTownName": "0191",
 		"DebtorName": "MURYATI",
-		"PaymentInformation": "CB-RJCT"
+		"PaymentInformation": ""
 	}
 }
 

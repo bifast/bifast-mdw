@@ -5,7 +5,7 @@ Authorization: Basic MB:password
 
 {
   "AccountCustomerInfo" : {
-    "NoRef" : "MOB220108082347321", 
+    "NoRef" : "MOB22010808234{{$randomInt 1000 9999}}", 
     "TerminalId" : "MOBILE0001",  
     "AccountNumber" : "912107551019"
   }
