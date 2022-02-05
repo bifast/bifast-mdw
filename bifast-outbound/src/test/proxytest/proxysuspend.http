@@ -6,10 +6,10 @@ Authorization: Basic CMS:password
 
 {
     "ProxyRegistrationRequest" : {
-        "NoRef" : "627447${{$randomInt 1 1000}}",
-        "RegistrationType" : "SUSP",
+        "NoRef" : "627447{{$randomInt 1 1000}}",
+        "RegistrationType" : "SUSB",
         "ProxyType" : "02",
-        "ProxyValue" : "bams111@gmail.com",
+        "ProxyValue" : "BAMS13@GMAIL.COM",
         "AccountNumber" : "22522",
         "AccountType" : "CACC",
         "SecondaryIdType" : "01",
