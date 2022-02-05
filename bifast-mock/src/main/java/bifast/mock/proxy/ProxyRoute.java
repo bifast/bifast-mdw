@@ -1,4 +1,4 @@
-package bifast.mock.route;
+package bifast.mock.proxy;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -10,15 +10,12 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.mock.processor.ProxyRegistrationInquiryProcessor;
-import bifast.mock.processor.ProxyRegistrationResponseProcessor;
-import bifast.mock.processor.ProxyResolutionResponseProc;
 
 @Component
 public class ProxyRoute extends RouteBuilder {
 
     @Autowired
-	private ProxyRegistrationResponseProcessor proxyRegistrationResponseProcessor;
+	private ProxyRegistrationProcessor proxyRegistrationPrc;
 	@Autowired
 	private ProxyResolutionResponseProc proxyResolutionResponseProcessor;
 	@Autowired
@@ -42,7 +39,7 @@ public class ProxyRoute extends RouteBuilder {
         from("direct:prxyregn").routeId("proxyregistration")
         	
             .log("Terima di mock Regis")
-            .process(proxyRegistrationResponseProcessor)
+            .process(proxyRegistrationPrc)
             .log("End Process")
             
         ;

@@ -1,4 +1,4 @@
-package bifast.mock.processor;
+package bifast.mock.proxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,7 @@ import bifast.mock.isoservice.Proxy006Seed;
 import bifast.mock.isoservice.Proxy006SeedAccount;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
+import bifast.mock.processor.UtilService;
 
 @Component
 public class ProxyRegistrationInquiryProcessor implements Processor{
