@@ -1,6 +1,7 @@
-package bifast.outbound.paymentstatus;
+package bifast.outbound.backgrndjob;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
@@ -8,25 +9,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.backgrndjob.processor.BuildMessageForPortalProcessor;
+import bifast.outbound.backgrndjob.processor.BuildPSSAFRequestProcessor;
+import bifast.outbound.backgrndjob.processor.PSFilter;
+import bifast.outbound.backgrndjob.processor.PaymentStatusResponseProcessor;
+import bifast.outbound.backgrndjob.processor.ProcessQuerySAFProcessor;
+import bifast.outbound.backgrndjob.processor.UpdateStatusSAFProcessor;
 import bifast.outbound.exception.PSNotFoundException;
 import bifast.outbound.notification.pojo.PortalApiPojo;
-import bifast.outbound.paymentstatus.processor.BuildMessageForPortalProcessor;
-import bifast.outbound.paymentstatus.processor.BuildPaymentStatusSAFRequestProcessor;
-import bifast.outbound.paymentstatus.processor.PaymentStatusResponseProcessor;
-import bifast.outbound.paymentstatus.processor.ProcessQuerySAFProcessor;
-import bifast.outbound.paymentstatus.processor.UpdateStatusSAFProcessor;
-import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class PaymentStatusSAFRoute extends RouteBuilder {
 	@Autowired private BuildMessageForPortalProcessor logPortalProcessor;
-	@Autowired private BuildPaymentStatusSAFRequestProcessor buildPSRequest;;
+	@Autowired private BuildPSSAFRequestProcessor buildPSRequest;;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private PaymentStatusResponseProcessor psResponseProcessor;
 	@Autowired private ProcessQuerySAFProcessor processQueryProcessor;
 	@Autowired private UpdateStatusSAFProcessor updateStatusProcessor;
+	@Autowired private PSFilter psFilter;
 
 	@Override
 	public void configure() throws Exception {
@@ -40,82 +42,78 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 		;
 		
 		
-		from("sql:select ct.id, cht.channel_ref_id, ct.req_bizmsgid, ct.komi_trns_id as komi_id, "
-				+ "ct.e2e_id, chnl.channel_type, "
-				+ "ct.recpt_bank, cht.request_time  "
+		from("sql:select ct.id, "
+				+ "ct.req_bizmsgid, "
+				+ "ct.komi_trns_id as komi_id, "
+				+ "ct.full_request_msg as TxtCTReq, "
+				+ "ct.e2e_id, "
+				+ "ct.recpt_bank, "
+				+ "ct.ps_counter "
 				+ "from kc_credit_transfer ct "
-				+ "join kc_channel_transaction cht on ct.komi_trns_id = cht.komi_trns_id "
-				+ "join kc_channel chnl on chnl.channel_id = cht.channel_id "
 				+ "where ct.call_status = 'TIMEOUT' "
-				+ "order by ps_counter "
-				+ "limit 5"
-				+ "?delay=15000"
+				+ "and ct.ps_counter < 6 "
+				+ "limit 10"
+				+ "?delay=5000"
 				+ "&sendEmptyMessageWhenIdle=true"
 				)
 			.routeId("komi.ps.saf")
-//			.autoStartup(false)
 						
-			.setHeader("ps_qryresult", simple("${body}"))
 //			.log("[CTReq:${header.ps_qryresult[e2e_id]}] PymtStsSAF started.")
 
 			// selesai dan matikan router jika tidak ada lagi SAF
 			.filter().simple("${body} == null")
-//				.to("controlbus:route?routeId=komi.ps.saf&action=stop&async=true")
 				.throwException(PSNotFoundException.class, "PS Selesai.")			  
 			.end()	
 						
 			// check settlement dulu
 			.process(processQueryProcessor)
-			.unmarshal().base64()
-			.unmarshal().zipDeflater()
+			.filter().method(psFilter, "timeIsDue")
 			
-//			.log(LoggingLevel.DEBUG, "komi.ps.saf", "[CTReq:${header.ps_request.channelNoref}] Original request: ${body}")
+			.log("[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Retry ${exchangeProperty.pr_psrequest.psCounter}")
 
-			.unmarshal(businessMessageJDF)
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
-					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-					rmw.setCreditTransferRequest(bm);
-					exchange.setProperty("prop_request_list", rmw);
-				}
-				
-			})
-			.to("direct:caristtl")
+//			.unmarshal().base64().unmarshal().zipDeflater()
+//			.unmarshal(businessMessageJDF)
+						
+			.to("direct:findSettlement")
 			// selesai check settlement
 
-//			.log("hdr_settlement: ${header.hdr_settlement}")
-			.filter().simple("${header.hdr_settlement} == 'NOTFOUND'")	// jika tidak ada settlement
-//				.log(LoggingLevel.DEBUG, "komi.ps.saf", 
-//						"[CTReq:${header.ps_qryresult[channel_ref_id]}]Tidak ada settlement, build PS Request")
-				.process(buildPSRequest)
-				.to("direct:call-cihub")				
+			.filter().simple("${body.psStatus} == 'STTL_FOUND'")	// jika settlement
+				.process(updateStatusProcessor)
 			.end()
 			
-			//TODO kalo terima settlement, forward ke Inbound Service
-			.filter().simple("${header.hdr_settlement} == 'NOTFOUND' "
-						+ "&& ${body.class} endsWith 'FlatPacs002Pojo' "
-						+ "&& ${body.transactionStatus} == 'ACSC' ")
-//				.log(LoggingLevel.DEBUG, "komi.ps.saf", "Terima settlement dari CIHUB harus kirim ke Inbound Service")
+			.filter().method(psFilter, "sttlIsNotFound")
+			
+//			.log("hdr_settlement: ${header.hdr_settlement}")
+			.log(LoggingLevel.DEBUG, "komi.ps.saf", 
+					"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Siapkan PS Request")
+			.process(buildPSRequest)
+			.to("direct:call-cihub")				
+
+			// kalo terima settlement, forward ke Inbound Service
+			.filter().simple("${body.class} endsWith 'FlatPacs002Pojo' "
+							+ "&& ${body.bizSvc} == 'STTL' ")
+				.log(LoggingLevel.DEBUG, "komi.ps.saf", 
+						"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Settlement dari CIHUB kirim ke Inbound Service")
 				.to("seda:fwd_settlement?exchangePattern=InOnly")
 			.end()
 
-//			.log(LoggingLevel.DEBUG, "komi.ps.saf", "Akan proses response SAF")
+			.log(LoggingLevel.DEBUG, "komi.ps.saf", 
+					"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Akan proses response SAF")
 			.process(psResponseProcessor)
 
-//			.log(LoggingLevel.DEBUG, "komi.ps.saf", "Akan update status Credit Transfer SAF")
+			.log(LoggingLevel.DEBUG, "komi.ps.saf", 
+					"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Akan update status Credit Transfer SAF")
 			.process(updateStatusProcessor)
 			
-			.log("[CTReq:${header.ps_request.channelNoref}] PymtStsSAF result: ${body.psStatus}")
+			.log("[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] PymtStsSAF result: ${body.psStatus}")
 
 			.filter().simple("${body.psStatus} == 'REJECTED'")
-				.log("${body.reqBizmsgid} Rejected")
-					//TODO lakukan reversal
-				.to("seda:debitreversal")
+				.to("direct:debitreversal")
 			.end()
 			
 			//TODO call notifikasi
-			.filter().simple("${header.ps_notif} == 'yes'")
+			.filter().simple("${exchangeProperty.pr_notif} == 'yes'")
+				//TODO akan notifkikasi
 				.log("akan notifikasi")
 			.end()
 			
@@ -132,7 +130,6 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 		;
 
 		from("seda:fwd_settlement").routeId("komi.ps.fwd_settlement")
-			.setHeader("ps_tmpbody", simple("${body}"))
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
@@ -140,9 +137,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 				}
 			})
 			.marshal(businessMessageJDF)
-			.log("${body}")
 			.to("rest:post:?host={{komi.url.inbound}}")
-			.setBody(simple("${header.ps_tmpbody}"))
 		;
 
 

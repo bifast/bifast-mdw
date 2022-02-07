@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.credittransfer.processor.FindingSettlementProcessor;
+import bifast.outbound.backgrndjob.processor.FindingSettlementProcessor;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.service.FlattenIsoMessageService;
@@ -33,9 +33,9 @@ public class CheckSettlementRoute extends RouteBuilder{
 			.process(findingSettlementProcessor)
 	
 			.filter().simple("${body} != null")
-				.unmarshal().base64()
-				.unmarshal().zipDeflater()
-				.log(LoggingLevel.DEBUG, "komi.findsttl", "[ChnlReq:${exchangeProperty.prop_request_list.requestId}][CTReq] Ketemu settlement: ${body}")
+				.unmarshal().base64().unmarshal().zipDeflater()
+				
+				.log(LoggingLevel.DEBUG, "komi.findsttl", "[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Ketemu settlement: ${body}")
 	
 				.unmarshal(businessMessageJDF)
 				
@@ -52,12 +52,14 @@ public class CheckSettlementRoute extends RouteBuilder{
 				})
 			.end()
 			
-			.setHeader("hdr_settlement", constant("FOUND"))
-
+//			.setHeader("hdr_settlement", constant("FOUND"))
+			.setProperty("pr_settlement", constant("FOUND"))
+			
 			.filter().simple("${body} == null")
 				.log(LoggingLevel.DEBUG, "komi.findsttl", 
 						"[ChnlReq:${exchangeProperty.prop_request_list.requestId}][CTReq] Tidak ketemu settlement.")
-				.setHeader("hdr_settlement", constant("NOTFOUND"))
+//				.setHeader("hdr_settlement", constant("NOTFOUND"))
+				.setProperty("pr_settlement", constant("NOTFOUND"))
 				.setBody(simple("${header.tmp_body}"))
 			.end()
 			

@@ -1,4 +1,4 @@
-package bifast.outbound.paymentstatus.processor;
+package bifast.outbound.backgrndjob.processor;
 
 import java.time.format.DateTimeFormatter;
 
@@ -6,7 +6,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.paymentstatus.pojo.UndefinedCTPojo;
+import bifast.outbound.backgrndjob.dto.UndefinedCTPojo;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 
@@ -21,7 +21,7 @@ public class PaymentStatusResponseProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		Object objResponse = exchange.getMessage().getBody(Object.class);
-		UndefinedCTPojo psReq = exchange.getMessage().getHeader("ps_request", UndefinedCTPojo.class);
+		UndefinedCTPojo psReq = exchange.getProperty("pr_psrequest", UndefinedCTPojo.class);
 		
 		if (objResponse.getClass().getSimpleName().equals("FaultPojo")) {
 			//TODO subject of notification
@@ -44,7 +44,7 @@ public class PaymentStatusResponseProcessor implements Processor {
 			}
 			
 			else if (biResp.getTransactionStatus().equals("ACSC")) {
-				psReq.setPsStatus("ACCEPTED");
+				psReq.setPsStatus("STTL_FOUND");
 				psReq.setResponseCode("ACTC");
 				psReq.setReasonCode(biResp.getReasonCode());
 			}

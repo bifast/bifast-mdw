@@ -1,4 +1,4 @@
-package bifast.outbound.paymentstatus.pojo;
+package bifast.outbound.backgrndjob.dto;
 
 import java.time.LocalDateTime;
 
@@ -9,9 +9,13 @@ public class UndefinedCTPojo {
 	public String KomiTrnsId;
 	public String channelType;
 	public String channelNoref;
+	public String endToEndId;
 	public String recipientBank;
-
+	public String ctFullText;
+	public int psCounter;
+	
 	public LocalDateTime orgnlDateTime;
+	
 	public String psStatus;
 	public String responseCode;
 	public String reasonCode;
@@ -40,17 +44,35 @@ public class UndefinedCTPojo {
 	public void setRecipientBank(String recipientBank) {
 		this.recipientBank = recipientBank;
 	}
+	public String getCtFullText() {
+		return ctFullText;
+	}
+	public void setCtFullText(String ctFullText) {
+		this.ctFullText = ctFullText;
+	}
 	public String getPsStatus() {
 		return psStatus;
 	}
 	public void setPsStatus(String psStatus) {
 		this.psStatus = psStatus;
 	}
+	public int getPsCounter() {
+		return psCounter;
+	}
+	public void setPsCounter(int psCounter) {
+		this.psCounter = psCounter;
+	}
 	public String getChannelType() {
 		return channelType;
 	}
 	public void setChannelType(String channelType) {
 		this.channelType = channelType;
+	}
+	public String getEndToEndId() {
+		return endToEndId;
+	}
+	public void setEndToEndId(String endToEndId) {
+		this.endToEndId = endToEndId;
 	}
 	public LocalDateTime getOrgnlDateTime() {
 		return orgnlDateTime;

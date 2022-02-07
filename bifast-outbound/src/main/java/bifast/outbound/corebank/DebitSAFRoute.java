@@ -80,7 +80,7 @@ public class DebitSAFRoute extends RouteBuilder {
 			})
 			
 			// kirim ke corebank
-			.to("seda:debitreversal")
+			.to("direct:debitreversal")
 
 			// evaluasi hasilnya
 			// jika sukses update status channel_transaction = 'SUCCESS'

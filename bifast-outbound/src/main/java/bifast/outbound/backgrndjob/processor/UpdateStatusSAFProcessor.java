@@ -1,4 +1,4 @@
-package bifast.outbound.paymentstatus.processor;
+package bifast.outbound.backgrndjob.processor;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -8,11 +8,10 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.backgrndjob.dto.UndefinedCTPojo;
 import bifast.outbound.config.Config;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.CreditTransfer;
-import bifast.outbound.paymentstatus.pojo.UndefinedCTPojo;
-import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.CreditTransferRepository;
 
@@ -22,19 +21,24 @@ public class UpdateStatusSAFProcessor implements Processor{
 	@Autowired private CreditTransferRepository ctRepo;
 	@Autowired private Config config;
 	
+//	private static Logger logger = LoggerFactory.getLogger(UpdateStatusSAFProcessor.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-		UndefinedCTPojo psReq = (UndefinedCTPojo) rmw.getChannelRequest();
+//		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
+//		UndefinedCTPojo psReq = (UndefinedCTPojo) rmw.getChannelRequest();
+		UndefinedCTPojo psReq = exchange.getProperty("pr_psrequest", UndefinedCTPojo.class);
 		
 		CreditTransfer ct = ctRepo.findById(Long.parseLong(psReq.getId())).orElse(new CreditTransfer());
+//		System.out.println("CT id : " + ct.getId() + " status " + ct.getCallStatus());
 		
 		ChannelTransaction ch = chnlTrnsRepo.findById(psReq.getKomiTrnsId()).orElse(new ChannelTransaction());
 		
-		if (psReq.getPsStatus().equals("ACCEPTED")) {
+		
+		if (psReq.getPsStatus().equals("STTL_FOUND")) {
+			
 			ct.setCallStatus("SUCCESS");
-
 			ct.setResponseCode(psReq.getResponseCode());
 			ct.setReasonCode(psReq.getReasonCode());
 
@@ -42,6 +46,7 @@ public class UpdateStatusSAFProcessor implements Processor{
 			ch.setResponseCode(psReq.getResponseCode());
 
 		}
+
 		
 		else if (psReq.getPsStatus().equals("REJECTED")) {
 			ct.setCallStatus("SUCCESS");
@@ -62,9 +67,7 @@ public class UpdateStatusSAFProcessor implements Processor{
 			ch.setResponseCode(psReq.getResponseCode());
 		}
 			
-		Integer cnt = ct.getPsCounter();
-		if (null == cnt) cnt = 0;
-		ct.setPsCounter(cnt + 1);
+		ct.setPsCounter(ct.getPsCounter() + 1);
 
 		ct.setLastUpdateDt(LocalDateTime.now());
 		
@@ -72,12 +75,15 @@ public class UpdateStatusSAFProcessor implements Processor{
 		ct.setCihubElapsedTime(dur);
 
 		if (ct.getPsCounter()== config.getMaxRetryBeforeNotif()) 
-			exchange.getMessage().setHeader("ps_notif", "yes");
+			exchange.setProperty("pr_notif", "yes");
 		else
-			exchange.getMessage().setHeader("ps_notif", "no");
+			exchange.setProperty("pr_notif", "no");
 		
 		ctRepo.save(ct);
 		chnlTrnsRepo.save(ch);
+		
+//		System.out.println("Status CT: " + ct.getCallStatus());
+		
 	}
 
 }

@@ -2,6 +2,7 @@ package bifast.outbound.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -239,7 +240,7 @@ public class CreditTransfer {
 		this.errorMessage = errorMessage;
 	}
 	public Integer getPsCounter() {
-		return psCounter;
+		return Optional.ofNullable(psCounter).orElse(0);
 	}
 	public void setPsCounter(Integer psCounter) {
 		this.psCounter = psCounter;

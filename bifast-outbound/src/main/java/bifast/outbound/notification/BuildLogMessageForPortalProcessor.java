@@ -144,7 +144,7 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 		}
 
 		
-		else if (rmw.getMsgName().equals("PaymentStsSAF")) {
+		else if (rmw.getMsgName().equals("PyStsSAF")) {
 			logMsg.setCodelog("PS");
 			ChnlCreditTransferRequestPojo chn = rmw.getChnlCreditTransferRequest();
 			

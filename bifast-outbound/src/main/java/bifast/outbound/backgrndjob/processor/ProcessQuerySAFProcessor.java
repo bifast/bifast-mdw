@@ -1,6 +1,5 @@
-package bifast.outbound.paymentstatus.processor;
+package bifast.outbound.backgrndjob.processor;
 
-import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.util.HashMap;
 
@@ -12,22 +11,19 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import bifast.outbound.backgrndjob.dto.UndefinedCTPojo;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.model.Channel;
 import bifast.outbound.model.ChannelTransaction;
-import bifast.outbound.model.CreditTransfer;
-import bifast.outbound.paymentstatus.pojo.UndefinedCTPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.ChannelRepository;
 import bifast.outbound.repository.ChannelTransactionRepository;
-import bifast.outbound.repository.CreditTransferRepository;
 
 @Component
 public class ProcessQuerySAFProcessor implements Processor{
 	@Autowired private ChannelRepository channelRepo;
 	@Autowired private ChannelTransactionRepository channelTrnsRepo;
-	@Autowired private CreditTransferRepository creditTransferRepo;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -37,25 +33,25 @@ public class ProcessQuerySAFProcessor implements Processor{
 		UndefinedCTPojo ct = new UndefinedCTPojo();
 		ct.setId(String.valueOf(arr.get("id")));
 		ct.setKomiTrnsId((String)arr.get("komi_id"));
+		ct.setEndToEndId((String) arr.get("e2e_id") );
+		ct.setCtFullText(String.valueOf(arr.get("txtctreq")));
 		ct.setRecipientBank((String)arr.get("recpt_bank"));
 		ct.setReqBizmsgid((String)arr.get("req_bizmsgid"));
-		ct.setChannelType((String)arr.get("channel_type"));
-		ct.setChannelNoref((String) arr.get("channel_ref_id"));
+		ct.setPsCounter((int) arr.get("ps_counter"));
+		ct.setPsCounter(ct.getPsCounter()+1);
 			
-		Timestamp ldt = (Timestamp) arr.get("request_time");	
-		ct.setOrgnlDateTime(ldt.toLocalDateTime());
-		
-		exchange.getMessage().setHeader("ps_request", ct);
-		
 		ChannelTransaction chnlTrns = channelTrnsRepo.findById(ct.getKomiTrnsId()).orElse(new ChannelTransaction());
+		ct.setOrgnlDateTime(chnlTrns.getRequestTime());
+		ct.setChannelNoref(chnlTrns.getChannelRefId());
 		
 		Channel channel = channelRepo.findById(chnlTrns.getChannelId()).orElse(new Channel());
-		CreditTransfer creditTransfer = creditTransferRepo.findByKomiTrnsId(ct.getKomiTrnsId()).orElse(new CreditTransfer());
+		ct.setChannelType(channel.getChannelType());
+	
 		
 		RequestMessageWrapper rmw = new RequestMessageWrapper();
 		
 		rmw.setChannelRequest(ct);
-		rmw.setMsgName("PaymentStsSAF");
+		rmw.setMsgName("PyStsSAF");
 		
 		rmw.setRequestId(chnlTrns.getChannelRefId());
 		rmw.setChannelId(channel.getChannelId());
@@ -75,13 +71,15 @@ public class ProcessQuerySAFProcessor implements Processor{
 		
 		rmw.setChnlCreditTransferRequest(chnlCTReq);
 		
+		exchange.setProperty("pr_psrequest", ct);
+
 		exchange.setProperty("prop_request_list", rmw);	
 
 		ResponseMessageCollection rmc = new ResponseMessageCollection();
 		exchange.setProperty("prop_response_list", rmc);	
 		
 		// request message asli untuk keperluan cari settlement harus di unzip dulu
-		exchange.getMessage().setBody(creditTransfer.getFullRequestMessage());
+		exchange.getMessage().setBody(ct.getCtFullText());
 
 
 	}

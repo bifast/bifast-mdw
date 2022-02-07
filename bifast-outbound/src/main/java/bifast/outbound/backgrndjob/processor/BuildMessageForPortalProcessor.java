@@ -1,4 +1,4 @@
-package bifast.outbound.paymentstatus.processor;
+package bifast.outbound.backgrndjob.processor;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -9,10 +9,10 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.backgrndjob.dto.UndefinedCTPojo;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.notification.pojo.LogDataPojo;
 import bifast.outbound.notification.pojo.PortalApiPojo;
-import bifast.outbound.paymentstatus.pojo.UndefinedCTPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.StatusReasonRepository;
 

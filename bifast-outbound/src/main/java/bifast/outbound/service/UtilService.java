@@ -53,6 +53,12 @@ public class UtilService {
 		return strToday + config.getBankcode() + trxType + "O" + rmw.getChannelType() + komiNumber;
 	}
 
+	public String genBusMsgId (String trxType, String komiTrxId, String chnlType) {
+		String strToday = komiTrxId.substring(0,8);
+		String komiNumber = komiTrxId.substring(9);
+		return strToday + config.getBankcode() + trxType + "O" + chnlType + komiNumber;
+	}
+
 	public String genMessageId (String trxType, RequestMessageWrapper rmw) {
 		String strToday = LocalDateTime.now().format(formatter);
 		String komiNumber = rmw.getKomiTrxId().substring(9);
@@ -61,7 +67,14 @@ public class UtilService {
 		return msgId;
 	}
 
-	
+	public String genMessageId (String trxType, String komiTrxId) {
+		String strToday = LocalDateTime.now().format(formatter);
+		String komiNumber = komiTrxId.substring(9);
+
+		String msgId = strToday + config.getBankcode() + trxType + komiNumber;
+		return msgId;
+	}
+
 
 	public String getMsgType (String bizDefIdr, String bizMsgIdr) {
 		

@@ -1,4 +1,4 @@
-package bifast.outbound.credittransfer.processor;
+package bifast.outbound.backgrndjob.processor;
 
 import java.util.Optional;
 
@@ -7,6 +7,7 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.backgrndjob.dto.UndefinedCTPojo;
 import bifast.outbound.model.Settlement;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.SettlementRepository;
@@ -21,8 +22,9 @@ public class FindingSettlementProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-		String orglBizMsgId = rmw.getCreditTransferRequest().getAppHdr().getBizMsgIdr();
-		Optional<Settlement> oSettlement = settlementRepo.findByOrgnlCTBizMsgId(orglBizMsgId);
+		UndefinedCTPojo safCT = (UndefinedCTPojo) rmw.getChannelRequest();
+
+		Optional<Settlement> oSettlement = settlementRepo.findByOrgnlEndToEndId(safCT.getEndToEndId());
 		
 		if (oSettlement.isPresent()) {
 			String strSettlement = oSettlement.get().getFullMessage();
@@ -30,6 +32,12 @@ public class FindingSettlementProcessor implements Processor {
 			
 			rmw.setCihubEncriptedResponse(strSettlement);
 			exchange.setProperty("prop_request_list", rmw);
+			
+			safCT.setPsStatus("ACCEPTED");
+			safCT.setResponseCode("ACTC");
+			safCT.setReasonCode("U000");
+			exchange.getMessage().setBody(safCT);
+
 		}
 		
 		else

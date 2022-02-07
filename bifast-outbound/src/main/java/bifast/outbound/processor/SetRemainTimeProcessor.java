@@ -28,7 +28,7 @@ public class SetRemainTimeProcessor implements Processor {
 		else 
 			sla = param.getSlaChannelEnqr();
 		
-		if (rmw.getMsgName().equals("PaymentStsSAF"))
+		if (rmw.getMsgName().equals("PyStsSAF"))
 			timeElapsed = 0;
 
 		String sisa = Long.toString(sla - timeElapsed);

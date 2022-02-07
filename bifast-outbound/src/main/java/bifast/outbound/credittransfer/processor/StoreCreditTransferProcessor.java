@@ -106,6 +106,7 @@ public class StoreCreditTransferProcessor implements Processor {
 			
 				if (ctResponse.getReasonCode().equals("U900")) {
 					ct.setCallStatus("TIMEOUT");
+					ct.setPsCounter(0);
 				}
 				else {
 					ct.setCallStatus("SUCCESS");
