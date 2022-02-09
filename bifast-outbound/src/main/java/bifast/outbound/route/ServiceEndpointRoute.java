@@ -114,9 +114,6 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				}
 			})
 			
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
-					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Mulai proses.")
-
 			.choice()
 				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'AEReq'")
 					.to("direct:acctenqr")
@@ -130,10 +127,10 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'PrxRegn'")
 					.to("direct:prxyrgst")
 
-				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'ProxyResolution'")
+				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'PrxResl'")
 					.to("direct:proxyresolution")
 					
-				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'PrxRegnInquiryReq'")
+				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'PrxRegInq'")
 					.to("direct:prxyrgstinquiry")
 
 				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'ACReq'")

@@ -11,8 +11,6 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -35,7 +33,7 @@ public class DebitReversalRoute extends RouteBuilder{
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
 	
-	private static Logger logger = LoggerFactory.getLogger(DebitReversalRoute.class);
+//	private static Logger logger = LoggerFactory.getLogger(DebitReversalRoute.class);
 
 	@Override
 	public void configure() throws Exception {
@@ -172,16 +170,14 @@ public class DebitReversalRoute extends RouteBuilder{
 					cbTrns.setTrnsDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 					cbTrns.setUpdateTime(LocalDateTime.now());
 					
-					String cbResponseClass = oCbResponse.getClass().getSimpleName();
+//					String cbResponseClass = oCbResponse.getClass().getSimpleName();
 					if (oCbResponse.getClass().getSimpleName().equals("DebitReversalResponsePojo")) {
 						DebitReversalResponsePojo resp = (DebitReversalResponsePojo)oCbResponse;
-						logger.debug("Response:" + resp.getStatus() + ", Reason:" + resp.getReason());
 						cbTrns.setReason(resp.getReason());
 						cbTrns.setResponse(resp.getStatus());
 					}
 					else {
 						FaultPojo fault = (FaultPojo) oCbResponse;
-						logger.debug("Response:" + fault.getCallStatus() + ", Reason:" + fault.getReasonCode());
 						cbTrns.setReason(fault.getReasonCode());
 						cbTrns.setResponse(fault.getCallStatus());
 					}

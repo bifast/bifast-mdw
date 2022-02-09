@@ -96,8 +96,7 @@ public class CihubRoute extends RouteBuilder {
 				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CIHUB response: ${body}")
 	
 				.setHeader("tmp_body", simple("${body}"))
-				.marshal().zipDeflater()
-				.marshal().base64()
+				.marshal().zipDeflater().marshal().base64()
 				.setHeader("cihubroute_encr_response", simple("${body}"))
 				
 				.process(new Processor() {

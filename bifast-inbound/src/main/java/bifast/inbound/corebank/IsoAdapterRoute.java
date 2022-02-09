@@ -149,7 +149,6 @@ public class IsoAdapterRoute extends RouteBuilder{
 			})
 			
 			.filter().simple("${header.cb_requestName} in 'credit,settlement,debitreversal'")
-				.log("akan simpan ${header.cb_requestName}")
 				.process(saveCBTransactionProc)
 			.end()
 			

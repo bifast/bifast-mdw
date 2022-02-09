@@ -7,11 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.corebank.pojo.CbAccountEnquiryRequestPojo;
-import bifast.outbound.corebank.pojo.CbDebitRequestPojo;
 import bifast.outbound.corebank.pojo.DebitRequestDTO;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.paymentstatus.pojo.ChnlPaymentStatusRequestPojo;
-import bifast.outbound.paymentstatus.pojo.PaymentStatusRequestSAFPojo;
 import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationInquiryRequestPojo;
 import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
@@ -49,8 +47,6 @@ public class RequestMessageWrapper {
 
 	@JsonProperty("PaymentStatusRequest")
 	private ChnlPaymentStatusRequestPojo chnlPaymentStatusRequest;
-
-	private PaymentStatusRequestSAFPojo PaymentStatusRequestSAF;
 
 	@JsonProperty("ProxyRegistrationRequest")
 	private ChnlProxyRegistrationRequestPojo chnlProxyRegistrationRequest;
@@ -189,12 +185,6 @@ public class RequestMessageWrapper {
 	}
 	public void setAccountEnquiryRequest(BusinessMessage accountEnquiryRequest) {
 		this.accountEnquiryRequest = accountEnquiryRequest;
-	}
-	public PaymentStatusRequestSAFPojo getPaymentStatusRequestSAF() {
-		return PaymentStatusRequestSAF;
-	}
-	public void setPaymentStatusRequestSAF(PaymentStatusRequestSAFPojo paymentStatusRequestSAF) {
-		PaymentStatusRequestSAF = paymentStatusRequestSAF;
 	}
 	public BusinessMessage getCreditTransferRequest() {
 		return creditTransferRequest;

@@ -22,8 +22,8 @@ public class CreditRequestProcessor implements Processor {
 		resp.setDateTime(req.getDateTime());
 		resp.setMerchantType(req.getMerchantType());
 		resp.setNoRef(req.getNoRef());
-		resp.setReason("U911");
-		resp.setStatus("RJCT");
+		resp.setReason("U000");
+		resp.setStatus("ACTC");
 		resp.setTerminalId(req.getTerminalId());
 		resp.setTransactionId(req.getTransactionId());
 		

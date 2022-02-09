@@ -5,8 +5,6 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.isopojo.DebitReversalResponse;
-import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.Pacs002Seed;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
@@ -19,7 +17,7 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 
 @Component
-public class ReverseCTResponseProcessor implements Processor {
+public class RevCTRejectResponseProcessor implements Processor {
 	@Autowired private AppHeaderService appHdrService;
 	@Autowired private Pacs002MessageService pacs002Service;
 	@Autowired private UtilService utilService;
@@ -27,43 +25,24 @@ public class ReverseCTResponseProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
-		Object oResp = exchange.getMessage().getBody(Object.class);
 		
 		Pacs002Seed resp = new Pacs002Seed();
 		
-		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-		FlatPacs008Pojo flatRequest = (FlatPacs008Pojo) processData.getBiRequestFlat();
+		FlatPacs008Pojo flatRequest = exchange.getProperty("flatRequest", FlatPacs008Pojo.class);
 
-		String msgId = utilService.genMsgId("011", processData.getKomiTrnsId());
-		resp.setMsgId(msgId);
+		resp.setStatus("RJCT");
+		resp.setReason("62");				
+
+		String checkRevResult = exchange.getProperty("pr_revCTCheckRsl", String.class);
+		if (checkRevResult.equals("DataNotMatch")) 
+			resp.setAdditionalInfo("Data tidak sesuai");
+		else if (checkRevResult.equals("AccountInActive")) 
+			resp.setAdditionalInfo("Account tidak aktif");
+		else  // CT Not Found
+			resp.setAdditionalInfo("Transaksi asal tidak ditemukan");
+				
+		
 		resp.setCreditorAccountIdType(flatRequest.getCreditorAccountType());
-//		BusinessMessage msg = processData.getBiRequestMsg();
-
-
-		FaultPojo fault = new FaultPojo();
-		DebitReversalResponse cbResponse = new DebitReversalResponse();
-		if (oResp.getClass().getSimpleName().equals("DebitReversalResponsePojo")) {
-			cbResponse = (DebitReversalResponse) oResp;
-			resp.setStatus(cbResponse.getStatus());
-			resp.setReason(cbResponse.getReason());				
-			resp.setAdditionalInfo(cbResponse.getAdditionalInfo());
-		}
-		else {
-			fault = (FaultPojo) oResp;
-			System.out.println("Pojo response "  + fault.getReasonCode());
-			resp.setStatus(fault.getResponseCode());
-			resp.setReason(fault.getReasonCode());				
-//			resp.setAdditionalInfo(fault.getErrorMessage());
-			
-		}
-		if ((resp.getReason().equals("U101") && (resp.getCreditorAccountIdType().equals("SVGS"))))
-			resp.setReason("53");
-		else if (resp.getReason().equals("U101"))
-			resp.setReason("52");
-		else if (resp.getReason().equals("U102"))
-			resp.setReason("78");
-		else if (!(resp.getReason().equals("U000")))
-			resp.setReason("62");
 
 		resp.setCreditorResidentialStatus(flatRequest.getCreditorResidentialStatus());  // 01 RESIDENT
 		resp.setCreditorTown(flatRequest.getCreditorTownName());  
@@ -75,15 +54,19 @@ public class ReverseCTResponseProcessor implements Processor {
 
 
 		//////////
-		BusinessMessage reqBusMesg = exchange.getMessage().getHeader("hdr_frBIobj", BusinessMessage.class);
 //		CreditTransferTransaction39 biReq =  reqBusMesg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
+		BusinessMessage reqBusMesg = exchange.getProperty("prop_frBIobj", BusinessMessage.class);
 
+		String komiTrnsId = exchange.getProperty("pr_komitrnsid", String.class);
+		String msgId = utilService.genMsgId("011", komiTrnsId);
+		
+		resp.setMsgId(msgId);
 
 		FIToFIPaymentStatusReportV10 respMsg = pacs002Service.creditTransferRequestResponse(resp, reqBusMesg);
 		Document doc = new Document();
 		doc.setFiToFIPmtStsRpt(respMsg);
 
-		String bizMsgId = utilService.genRfiBusMsgId("011", processData.getKomiTrnsId());
+		String bizMsgId = utilService.genRfiBusMsgId("011", komiTrnsId);
 		BusinessApplicationHeaderV01 appHdr = appHdrService.getAppHdr("pacs.002.001.10", bizMsgId);
 		appHdr.setBizSvc("CLEAR");
 
@@ -91,10 +74,11 @@ public class ReverseCTResponseProcessor implements Processor {
 		respBusMesg.setAppHdr(appHdr);
 		respBusMesg.setDocument(doc);
 
+		exchange.getIn().setBody(respBusMesg);
+		
+		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 		processData.setBiResponseMsg(respBusMesg);
 		exchange.setProperty("prop_process_data", processData);
-		exchange.getIn().setBody(respBusMesg);
-
+		
 	}
-
 }

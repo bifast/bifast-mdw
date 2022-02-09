@@ -3,8 +3,6 @@ package bifast.outbound.corebank;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -17,7 +15,6 @@ import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.exception.PSNotFoundException;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.CorebankTransaction;
-import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.ChannelTransactionRepository;
@@ -87,6 +84,7 @@ public class DebitSAFRoute extends RouteBuilder {
 			// jika gagal update kolom retry, lastupdate
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
+					@SuppressWarnings("unchecked")
 					HashMap<String, Object> arr = exchange.getMessage().getHeader("debit_qryresult", HashMap.class);
 					Long cbTrnsId = (Long) arr.get("cbt_id");
 					String komiId = String.valueOf(arr.get("komi_trns_id"));

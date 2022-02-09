@@ -52,6 +52,7 @@ public class UpdateStatusSAFProcessor implements Processor{
 			ct.setCallStatus("SUCCESS");
 			ct.setResponseCode(psReq.getResponseCode());
 			ct.setReasonCode(psReq.getReasonCode());
+			ct.setSettlementConfBizMsgIdr("");
 
 			ch.setCallStatus("SUCCESS");
 			ch.setResponseCode(psReq.getResponseCode());

@@ -1,9 +1,6 @@
 package bifast.outbound.proxyregistration.processor;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Optional;
 
 import org.apache.camel.Exchange;

@@ -8,7 +8,7 @@ Content-Type: application/json
         "FIId": {
           "FinInstnId": {
             "Othr": {
-              "Id": "CENAIDJA"
+              "Id": "FASTIDJA"
             }
           }
         }
@@ -22,15 +22,15 @@ Content-Type: application/json
           }
         }
       },
-      "BizMsgIdr": "20220111CENAIDJA011R0200000983",
+      "BizMsgIdr": "20220111FASTIDJA011O020000{{$randomInt 1000 9999}}",
       "MsgDefIdr": "pacs.008.001.08",
-      "CreDt": "2022-01-11T11:15:20Z"
+      "CreDt": "2022-02-08T11:15:20Z"
     },
     "Document": {
       "FIToFICstmrCdtTrf": {
         "GrpHdr": {
-          "MsgId": "20220111CENAIDJA01100000641",
-          "CreDtTm": "2022-01-11T18:15:20.925",
+          "MsgId": "20220111CENAIDJA01100005863",
+          "CreDtTm": "2022-02-08T18:15:20.925",
           "NbOfTxs": "1",
           "SttlmInf": {
             "SttlmMtd": "CLRG"
@@ -39,8 +39,8 @@ Content-Type: application/json
         "CdtTrfTxInf": [
           {
             "PmtId": {
-              "EndToEndId": "20220111CENAIDJA011R0200000983",
-              "TxId": "20220111SIHBIDJ1010O0200000741"
+              "EndToEndId": "20220111CENAIDJA011R020000{{$randomInt 1000 9999}}",
+              "TxId": "20220208SIHBIDJ1010O0248704003"
             },
             "PmtTpInf": {
               "LclInstrm": {
@@ -51,7 +51,7 @@ Content-Type: application/json
               }
             },
             "IntrBkSttlmAmt": {
-              "Value": "12000.57",
+              "Value": "60500.24",
               "Ccy": "IDR"
             },
             "ChrgBr": "DEBT",
@@ -83,7 +83,7 @@ Content-Type: application/json
             "DbtrAgt": {
               "FinInstnId": {
                 "Othr": {
-                  "Id": "SIHBIDJ1"
+                  "Id": "CENAIDJA"
                 }
               }
             },
@@ -109,7 +109,7 @@ Content-Type: application/json
             "CdtrAcct": {
               "Id": {
                 "Othr": {
-                  "Id": "112211333"
+                  "Id": "0002107551117"
                 }
               },
               "Tp": {
@@ -137,7 +137,8 @@ Content-Type: application/json
                       "Tp": "01",
                       "RsdntSts": "01",
                       "TwnNm": "0300"
-                    }
+                    },
+                    "RltdEndToEndId": "20220208SIHBIDJ1010O0271993003"
                   }
                 }
               }
@@ -151,8 +152,9 @@ Content-Type: application/json
 
 
 ###
+#lanjut dengan settlement
 
 POST http://localhost:9001/komi-inbound/json/service HTTP/1.1
 Content-Type: application/json
 
-{"BusMsg":{"AppHdr":{"Fr":{"FIId":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}}},"To":{"FIId":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"BizMsgIdr":"20220113CENAIDJA011R0200001235","MsgDefIdr":"pacs.008.001.08","CreDt":"2022-01-13T07:36:08Z"},"Document":{"FIToFICstmrCdtTrf":{"GrpHdr":{"MsgId":"20220113CENAIDJA01100000649","CreDtTm":"2022-01-13T14:36:08.402","NbOfTxs":"1","SttlmInf":{"SttlmMtd":"CLRG"}},"CdtTrfTxInf":[{"PmtId":{"EndToEndId":"20220113CENAIDJA011R0200001235","TxId":"20220113SIHBIDJ101000000770"},"PmtTpInf":{"LclInstrm":{"Prtry":"02"},"CtgyPurp":{"Prtry":"01001"}},"IntrBkSttlmAmt":{"Value":"12001.50","Ccy":"IDR"},"ChrgBr":"DEBT","Dbtr":{"Nm":"Joko Susilo","Id":{"PrvtId":{"Othr":[{"Id":"KTP-205772715"}]}}},"DbtrAcct":{"Id":{"Othr":{"Id":"112211333"}},"Tp":{"Prtry":"CACC"},"Prxy":{"Tp":{}}},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"Cdtr":{"Nm":"Purnama Erwin","Id":{"PrvtId":{"Othr":[{"Id":"7555444443333"}]}}},"CdtrAcct":{"Id":{"Othr":{"Id":"104794259"}},"Tp":{"Prtry":"SVGS"}},"RmtInf":{"Ustrd":["REVERSAL"]},"SplmtryData":[{"Envlp":{"Dtl":{"Dbtr":{"Tp":"01","RsdntSts":"01","TwnNm":"0300"},"Cdtr":{"Tp":"01","RsdntSts":"01","TwnNm":"0300"}}}}]}]}}}}
+{"BusMsg":{"AppHdr":{"Fr":{"FIId":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}}},"To":{"FIId":{"FinInstnId":{"Othr":{"Id":"SIHBIDJI"}}}},"BizMsgIdr":"20220116INDOIDJA010R020000{{$randomInt 1000 9999}}","MsgDefIdr":"pacs.002.001.10","BizSvc":"STTL","CreDt":"2022-02-08T19:58:26Z"},"Document":{"FIToFIPmtStsRpt":{"GrpHdr":{"MsgId":"20220116FASTIDJA01000000746","CreDtTm":"2022-01-16T17:58:26.955"},"OrgnlGrpInfAndSts":[{"OrgnlMsgId":"20220116SIHBIDJ101000004268","OrgnlMsgNmId":"pacs.008.001.08"}],"TxInfAndSts":[{"OrgnlEndToEndId":"20220111CENAIDJA011R0200009209","OrgnlTxId":"20220116SIHBIDJ101000004268","TxSts":"ACSC","StsRsnInf":[{"Rsn":{"Prtry":"U000"},"AddtlInf":["OK"]}],"OrgnlTxRef":{"Dbtr":{"Pty":{"Nm":"I NYOMAN TIKA"}},"DbtrAcct":{"Id":{"Othr":{"Id":"0012107551026"}},"Tp":{"Prtry":"SVGS"}},"DbtrAgt":{"FinInstnId":{"Othr":{"Id":"CENAIDJA"}}},"CdtrAgt":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}},"Cdtr":{"Pty":{"Nm":"Joko Susilo"}},"CdtrAcct":{"Id":{"Othr":{"Id":"112211333"}},"Tp":{"Prtry":"SVGS"}}},"SplmtryData":[{"Envlp":{"Dtl":{"DbtrAgtAcct":{"Id":{"Othr":{"Id":"01234567"}}},"CdtrAgtAcct":{"Id":{"Othr":{"Id":"567890"}}}}}}]}]}}}}

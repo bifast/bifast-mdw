@@ -19,7 +19,7 @@ public interface CreditTransferRepository extends JpaRepository<CreditTransfer, 
 	
 	String qry = "select ct from CreditTransfer ct "
 			+ "join CorebankTransaction cb "
-			+ "where cb.komiTrnsId = ct.komiTrnsId "
+			+ "on cb.komiTrnsId = ct.komiTrnsId "
 			+ "and ct.endToEndId = :end2endid";
 	public Optional<CreditTransfer> getSuccessByEndToEndId (@Param("end2endid") String end2endId);
 

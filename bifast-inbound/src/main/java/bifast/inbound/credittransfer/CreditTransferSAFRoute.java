@@ -1,20 +1,14 @@
 package bifast.inbound.credittransfer;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.isopojo.SettlementRequest;
 import bifast.inbound.credittransfer.processor.CTCorebankRequestProcessor;
 import bifast.inbound.credittransfer.processor.InitiateCTJobProcessor;
 import bifast.inbound.exception.CTSAFException;
-import bifast.inbound.pojo.ProcessDataPojo;
-import bifast.inbound.pojo.flat.FlatPacs002Pojo;
-import bifast.inbound.service.FlattenIsoMessageService;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.inbound.settlement.SettlementCreditProcessor;
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -23,17 +17,13 @@ import bifast.library.iso20022.custom.BusinessMessage;
 public class CreditTransferSAFRoute extends RouteBuilder {
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private CTCorebankRequestProcessor ctRequestProcessor;
-//	@Autowired private BuildSettlementCBRequestProcessor buildSettlementRequest;
 	@Autowired private SettlementCreditProcessor settlementRequestPrc;
 	@Autowired private InitiateCTJobProcessor initCTJobProcessor;
-	@Autowired private FlattenIsoMessageService flatMessageService;
-	
 	
 	@Override
 	public void configure() throws Exception {
 		
 		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
-		JacksonDataFormat settlementRequestJDF = jdfService.basic(SettlementRequest.class);
 
 		onException(CTSAFException.class).routeId("ctsaf.onException")
 			.handled(true)
@@ -75,7 +65,7 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 			// send ke corebank
 			.to("direct:isoadpt")
 			
-			.log(LoggingLevel.DEBUG, "komi.ct.saf", "Selesai call credit account")
+			.log(LoggingLevel.DEBUG, "komi.ct.saf", "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] Selesai call credit account")
 			
 			.choice()
 				.when().simple("${body.class} endsWith 'FaultPojo'")
@@ -103,32 +93,24 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
 				.endChoice()
 				.when().simple("${body.status} == 'ACTC'")
-//					.setHeader("ctsaf_settlement", constant("YES"))
+					.log(LoggingLevel.DEBUG,"komi.ct.saf", "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] CT corebank Accepted")
 					.setProperty("ctsaf_settlement", constant("YES"))
 					.to("sql:update kc_credit_transfer "
 							+ "set cb_status = 'DONE' "
 							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
+					.to("direct:post_settlement")
 				.endChoice()
 			.end()
-
-			.filter().simple("${exchangeProperty.ctsaf_settlement} == 'YES'")
-				.log(LoggingLevel.DEBUG,"komi.ct.saf", "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] akan submit Settlement")
-				.to("direct:post_settlement")
-			.end()
-			
-			.delay(2000)
-			.throwException(CTSAFException.class, "CT SAF Selesai.")			  
-					
+							
 		;
 
-		from ("direct:post_settlement").routeId("komi.post_settlement")
-			.log(LoggingLevel.DEBUG,"komi.post_settlement", "Akan post settlement")
+		from ("direct:post_settlement").routeId("komi.settlement.inbound")
+			.log(LoggingLevel.DEBUG,"komi.settlement.inbound", "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] Akan post settlement")
 			.setBody(simple("${exchangeProperty.ctsaf_qryresult[STTL_MSG]}"))
 			.unmarshal().base64().unmarshal().zipDeflater()
 			.unmarshal(businessMessageJDF)
 
 			.process(settlementRequestPrc)
-			.log("ori noref: ${body.originalNoRef}")
 			.to("direct:isoadpt")
 			
 		;

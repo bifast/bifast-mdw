@@ -54,7 +54,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			// akan panggil Proxy Resolution
 			.filter().simple("${body.creditorAccountNumber} == null || ${body.creditorAccountNumber} == '' ")
 				.log(LoggingLevel.DEBUG, "komi.acctenq", "[${exchangeProperty.prop_request_list.msgName}:"
-						+ "${exchangeProperty.prop_request_list.requestId}][AE] akan panggil ProxyResolution.")
+						+ "${exchangeProperty.prop_request_list.requestId}] akan panggil ProxyResolution.")
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);

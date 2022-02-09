@@ -19,7 +19,7 @@ Authorization: Basic MB:password
 		"NoRef": "FRN2201152{{$randomInt 1000 9999}}",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "112211777",
+		"CreditorAccountNumber": "112211333",
 		"CreditorAccountType": "SVGS",
 		"CreditorId": "018029520054000",
 		"CreditorType": "02",

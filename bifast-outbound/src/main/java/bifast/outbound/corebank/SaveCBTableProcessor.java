@@ -63,7 +63,7 @@ public class SaveCBTableProcessor implements Processor{
 //			
 			cb.setDateTime(debitReq.getDateTime());
 			cb.setKomiNoref(debitReq.getNoRef());
-			
+			cb.setOrgnlChnlNoref(debitReq.getNoRef());
 		
 			cb.setDebitAmount(new BigDecimal(debitReq.getAmount()));
 			cb.setFeeAmount(new BigDecimal(debitReq.getFeeTransfer()));

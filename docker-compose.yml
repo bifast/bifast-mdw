@@ -26,7 +26,7 @@ services:
 
     inbound:
       build: bifast-inbound
-      image: fransmzh/komi-inbound:2.3.1
+      image: fransmzh/komi-inbound:2.4
       container_name: komi-inbound
       restart: always
       depends_on: 
@@ -43,7 +43,8 @@ services:
         - LOGGING.FILE.NAME=/home/logs/komi-inbound.log
         - KOMI.BANKCODE=SIHBIDJ1
         - KOMI.URL.COREBANK=http://172.18.0.1:9007/api/corebank
-        - KOMI.URL.PORTALAPI=http://172.18.0.1:9006/mock
+        - KOMI.URL.ISOADAPTER=http://172.18.0.1:9006/mock/adapter
+        - KOMI.URL.PORTALAPI=http://172.18.0.1:9006/mock/portalapi
         - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/inbound:/home/logs
@@ -52,7 +53,7 @@ services:
 
     outbound:
       build: bifast-outbound
-      image: fransmzh/komi-outbound:2.4
+      image: fransmzh/komi-outbound:2.4.1
       container_name: komi-outbound
       restart: always
       depends_on: 

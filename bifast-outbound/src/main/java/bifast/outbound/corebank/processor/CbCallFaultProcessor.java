@@ -6,9 +6,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.corebank.pojo.AccountCustInfoResponseDTO;
-import bifast.outbound.corebank.pojo.DebitResponseDTO;
-import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.ResponseMessageCollection;
 

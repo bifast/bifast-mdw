@@ -20,17 +20,27 @@ public class CheckDebitHistoryProcessor implements Processor {
 
 		FlatPacs008Pojo request = exchange.getProperty("flatRequest", FlatPacs008Pojo.class);
 		Optional<CreditTransfer> oCrdtTrns = ctRepo.getSuccessByEndToEndId(request.getOrgnlEndToEndId());
+		
+	
 		if (oCrdtTrns.isPresent()) {
 			CreditTransfer ct = oCrdtTrns.get();
-			if (ct.getAmount().compareTo(request.getAmount()) == 0)
-				exchange.setProperty("pr_revCTCheckRsl", "AmountMatch");
+			if (ct.getAmount().compareTo(request.getAmount()) != 0) 
+				exchange.setProperty("pr_revCTCheckRsl", "DataNotMatch");
+			
+			else if (!(ct.getDebtorAccountNumber().equals(request.getCreditorAccountNo())))
+				exchange.setProperty("pr_revCTCheckRsl", "DataNotMatch");
+
+			else if (!(ct.getCreditorAccountNumber().equals(request.getDebtorAccountNo())))
+				exchange.setProperty("pr_revCTCheckRsl", "DataNotMatch");
+
 			else 
-				exchange.setProperty("pr_revCTCheckRsl", "AmountNotMatch");
+				exchange.setProperty("pr_revCTCheckRsl", "DataMatch");
+			
 		}
 		
-		else {
+		else 
 			exchange.setProperty("pr_revCTCheckRsl", "NotFound");
-		}
+		
 		
 	}
 

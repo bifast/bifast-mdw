@@ -25,13 +25,13 @@ public class ProxyEnrichmentAggregator implements AggregationStrategy {
 
 		Object oPxrxResltn = newExchange.getMessage().getBody(Object.class);
 		
-		logger.debug("ProxyResolution class : " + oPxrxResltn.getClass().getSimpleName());
+//		logger.debug("ProxyResolution class : " + oPxrxResltn.getClass().getSimpleName());
 		FlatPrxy004Pojo pxrxResltn = null;
 		
 
 		if (oPxrxResltn.getClass().getSimpleName().equals("FlatPrxy004Pojo")) {
 			pxrxResltn = newExchange.getMessage().getBody(FlatPrxy004Pojo.class);
-			logger.debug("ProxyResolution response : " + pxrxResltn.getReasonCode());
+//			logger.debug("ProxyResolution response : " + pxrxResltn.getReasonCode());
 
 			if (pxrxResltn.getReasonCode().equals("U000")) {
 			

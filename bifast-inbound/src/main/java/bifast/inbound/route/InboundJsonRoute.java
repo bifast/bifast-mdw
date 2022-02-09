@@ -59,15 +59,9 @@ public class InboundJsonRoute extends RouteBuilder {
 				.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Response: ${body}")
 				// simpan outbound compress
 				.setHeader("hdr_tmp", simple("${body}"))
-//				.marshal().zipDeflater()
-//				.marshal().base64()
-//				.setHeader("hdr_toBI_jsonzip", simple("${body}"))
 				.setBody(simple("${header.hdr_tmp}"))
 			.end()
-			
-//			.setExchangePattern(ExchangePattern.InOnly)
-//			.to("seda:logandsave")
-	
+				
 			.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] completed.")
 			
 			.removeHeaders("*")
