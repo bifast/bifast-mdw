@@ -34,6 +34,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setHeader("ct_progress", constant("Start"))
 			
 			// FILTER-A debit-account di cbs dulu donk untuk e-Channel
+			.setProperty("pr_response", constant("ACTC"))
 			.filter().simple("${exchangeProperty.prop_request_list.merchantType} != '6010' ")
 				.log(LoggingLevel.DEBUG, "komi.ct", 
 						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] selain dari Teller")
@@ -44,6 +45,8 @@ public class CreditTransferRoute extends RouteBuilder {
 				.to("direct:isoadpt")
 			.end()
 		
+	    	.log(LoggingLevel.DEBUG, "komi.ct", 
+	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-1: ${body}.")
 			// periksa hasil debit-account. Jika failure raise exception
 			.filter().simple("${body.class} endsWith 'FaultPojo'")
 				.process(debitRejectResponseProc)
@@ -52,7 +55,10 @@ public class CreditTransferRoute extends RouteBuilder {
 				.to("seda:logportal?exchangePattern=InOnly")
 			.end()
 			
-			.filter(exchangeProperty("pr_response").isEqualTo("ACTC"))
+	    	.log(LoggingLevel.DEBUG, "komi.ct", 
+	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-2: ${exchangeProperty.pr_response}.")
+
+	    	.filter(exchangeProperty("pr_response").isEqualTo("ACTC"))
 
 			.log(LoggingLevel.DEBUG, "komi.ct", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] "
