@@ -7,8 +7,6 @@ import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.ServiceStatus;
-import org.apache.camel.spi.RouteController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +18,14 @@ import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.repository.CreditTransferRepository;
+import bifast.outbound.service.CallRouteService;
 
 @Component
 public class StoreCreditTransferProcessor implements Processor {
 
 	@Autowired private CreditTransferRepository creditTransferRepo;
-
+	@Autowired private CallRouteService routeService;
+	
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
@@ -123,11 +123,7 @@ public class StoreCreditTransferProcessor implements Processor {
 			creditTransferRepo.save(ct);
 
 			if (ct.getCallStatus().equals("TIMEOUT")) {
-				RouteController routeCtl = exchange.getContext().getRouteController();
-				ServiceStatus serviceSts = routeCtl.getRouteStatus("komi.ps.saf");
-				
-				if (serviceSts.isStopped())
-					routeCtl.startRoute("komi.ps.saf");
+				routeService.resumeJobRoute(exchange, "komi.ps.saf");
 			}
 
 		}

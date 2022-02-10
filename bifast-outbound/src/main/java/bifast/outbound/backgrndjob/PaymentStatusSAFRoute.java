@@ -38,7 +38,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 
 		onException(PSNotFoundException.class).routeId("ps.onException")
 			.handled(true)
-			.to("controlbus:route?routeId=komi.ps.saf&action=stop&async=true")
+			.to("controlbus:route?routeId=komi.ps.saf&action=suspend&async=true")
 		;
 		
 		
@@ -70,10 +70,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.filter().method(psFilter, "timeIsDue")
 			
 			.log("[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Retry ${exchangeProperty.pr_psrequest.psCounter}")
-
-//			.unmarshal().base64().unmarshal().zipDeflater()
-//			.unmarshal(businessMessageJDF)
-						
+					
 			.to("direct:findSettlement")
 			// selesai check settlement
 
@@ -126,6 +123,8 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.end()
 			
 			.removeHeaders("ps_*")
+			.removeProperties("pr_*")
+			.removeProperties("prop_*")
 					
 		;
 

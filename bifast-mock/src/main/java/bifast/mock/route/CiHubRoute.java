@@ -124,7 +124,7 @@ public class CiHubRoute extends RouteBuilder {
 					.log("Akan proses paymentStatusResponseProcessor")
 					.process(paymentStatusResponseProcessor)
 					.log("PS delay dulu")
-					.delay(1000)
+					.delay(15000)
 					.filter().simple("${body} == null")
 						.log("ga nemu payment status")
 						.setHeader("delay", simple("${random(2100,3000)}"))

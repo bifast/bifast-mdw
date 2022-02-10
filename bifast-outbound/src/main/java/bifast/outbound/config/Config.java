@@ -22,6 +22,7 @@ public class Config {
 	
 	private long slaChannelTrns;
 	private long slaChannelEnqr;
+	private long slaPymtStatus;
 	
 	private BigDecimal limitDailyAmount;
 	private BigDecimal limitTrnsAmount;
@@ -36,6 +37,9 @@ public class Config {
 
 		Optional<Parameter> oSlaChannelEnqr =	paramRepo.findByParamName("KOMI_CORE_SLA_AE");
 		this.slaChannelEnqr = Integer.valueOf(oSlaChannelEnqr.get().getParamValue());
+
+		Optional<Parameter> oSlaPymtStatus =	paramRepo.findByParamName("KOMI_CORE_SLA_PS");
+		this.slaPymtStatus = Integer.valueOf(oSlaPymtStatus.get().getParamValue());
 
 		Optional<Parameter> oMaxRetry =	paramRepo.findByParamName("KOMI_CORE_MAX_RETRY_BEFORE_NOTIF");
 		this.maxRetryBeforeNotif = Integer.valueOf(oMaxRetry.get().getParamValue());
@@ -80,6 +84,14 @@ public class Config {
 
 	public void setSlaChannelEnqr(long slaChannelEnqr) {
 		this.slaChannelEnqr = slaChannelEnqr;
+	}
+
+	public long getSlaPymtStatus() {
+		return slaPymtStatus;
+	}
+
+	public void setSlaPymtStatus(long slaPymtStatus) {
+		this.slaPymtStatus = slaPymtStatus;
 	}
 
 	public BigDecimal getLimitDailyAmount() {

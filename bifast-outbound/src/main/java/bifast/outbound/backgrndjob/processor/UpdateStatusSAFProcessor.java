@@ -26,12 +26,9 @@ public class UpdateStatusSAFProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-//		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-//		UndefinedCTPojo psReq = (UndefinedCTPojo) rmw.getChannelRequest();
 		UndefinedCTPojo psReq = exchange.getProperty("pr_psrequest", UndefinedCTPojo.class);
 		
 		CreditTransfer ct = ctRepo.findById(Long.parseLong(psReq.getId())).orElse(new CreditTransfer());
-//		System.out.println("CT id : " + ct.getId() + " status " + ct.getCallStatus());
 		
 		ChannelTransaction ch = chnlTrnsRepo.findById(psReq.getKomiTrnsId()).orElse(new ChannelTransaction());
 		
@@ -45,6 +42,15 @@ public class UpdateStatusSAFProcessor implements Processor{
 			ch.setCallStatus("SUCCESS");
 			ch.setResponseCode(psReq.getResponseCode());
 
+		}
+
+		else if (psReq.getPsStatus().equals("UNDEFINED")) {
+			ct.setCallStatus("SUCCESS");
+			ct.setResponseCode("RJCT");
+			ct.setReasonCode("U900");
+
+			ch.setCallStatus("SUCCESS");
+			ch.setResponseCode("RJCT");
 		}
 
 		
@@ -83,7 +89,6 @@ public class UpdateStatusSAFProcessor implements Processor{
 		ctRepo.save(ct);
 		chnlTrnsRepo.save(ch);
 		
-//		System.out.println("Status CT: " + ct.getCallStatus());
 		
 	}
 
