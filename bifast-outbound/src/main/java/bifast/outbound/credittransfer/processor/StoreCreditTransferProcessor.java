@@ -60,7 +60,8 @@ public class StoreCreditTransferProcessor implements Processor {
 			
 			ct.setOriginatingBank(biRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 			ct.setRecipientBank(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getOthr().getId());
-			
+			ct.setPsCounter(0);
+
 			creditTransferRepo.save(ct);
 
 		}
@@ -106,7 +107,6 @@ public class StoreCreditTransferProcessor implements Processor {
 			
 				if (ctResponse.getReasonCode().equals("U900")) {
 					ct.setCallStatus("TIMEOUT");
-					ct.setPsCounter(0);
 				}
 				else {
 					ct.setCallStatus("SUCCESS");
