@@ -19,6 +19,14 @@ public class PortalRoute extends RouteBuilder {
 			.post("/portalapi")
 				.consumes("application/json")
 				.to("direct:portal")
+
+			.post("/notifcustomer")
+				.consumes("application/json")
+				.to("direct:portal")
+
+			.post("/notifadmin")
+				.consumes("application/json")
+				.to("direct:portal")
 		;
 	
 

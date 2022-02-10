@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.notification.pojo.AdminNotifDTO;
 import bifast.outbound.notification.pojo.CustomerNotificationPojo;
 import bifast.outbound.notification.pojo.PortalApiPojo;
 import bifast.outbound.service.JacksonDataFormatService;
@@ -17,13 +18,14 @@ import bifast.outbound.service.JacksonDataFormatService;
 public class NotificationRoute extends RouteBuilder {
 	@Autowired private BuildLogMessageForPortalProcessor buildLogMessage;
 	@Autowired private JacksonDataFormatService jdfService;
-
+	
 
 	@Override
 	public void configure() throws Exception {
 
 		JacksonDataFormat portalLogJDF = jdfService.wrapRoot(PortalApiPojo.class);
 		JacksonDataFormat custNotifJDF = jdfService.wrapRoot(CustomerNotificationPojo.class);
+		JacksonDataFormat adminNotifJDF = jdfService.wrapRoot(AdminNotifDTO.class);
 		
 		from("seda:logportal?concurrentConsumers=10").routeId("komi.notif.portal")
 			.process(buildLogMessage)
@@ -61,7 +63,26 @@ public class NotificationRoute extends RouteBuilder {
 
 		;
 
-		
+		from("seda:notifadmin").routeId("komi.notif.admin")
+			.process(new Processor() {
+				@Override
+				public void process(Exchange exchange) throws Exception {
+					String msg = exchange.getMessage().getBody(String.class);
+					AdminNotifDTO notif = new AdminNotifDTO();
+					notif.setLevel("WARNING");
+					notif.setMessage(msg);
+					exchange.getMessage().setBody(notif);
+				}
+			})
+			.marshal(adminNotifJDF)
+			.doTry()
+				.to("rest:post:?host={{komi.url.adminnotif}}")
+			.endDoTry()
+	    	.doCatch(Exception.class)
+	    		.log(LoggingLevel.ERROR, "komi.notif.admin", "Error Admin-notif ${body}")
+	//    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+			.end()
+			;
 	}
 
 }

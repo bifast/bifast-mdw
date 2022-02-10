@@ -16,7 +16,6 @@ import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 @Component
 public class CreditTransferRoute extends RouteBuilder {
 
-//	@Autowired private BuildCBDebitRequestProcessor buildDebitRequestProcessor;
 	@Autowired private BuildDebitRequestProcessor buildDebitRequestProcessor;
 	@Autowired private BuildCTRequestProcessor crdtTransferProcessor;
 	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
