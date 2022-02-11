@@ -113,7 +113,9 @@ public class CiHubRoute extends RouteBuilder {
 
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
 					.log("Akan process CT")
-
+					
+					.delay(constant(30000))
+					
 					.process(creditTransferResponseProcessor)
 
 					.setHeader("hdr_ctResponseObj",simple("${body}"))		
@@ -123,8 +125,10 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'PaymentStatusRequest'")
 					.log("Akan proses paymentStatusResponseProcessor")
 					.process(paymentStatusResponseProcessor)
+					
 					.log("PS delay dulu")
-					.delay(15000)
+					.delay(20000)
+					
 					.filter().simple("${body} == null")
 						.log("ga nemu payment status")
 						.setHeader("delay", simple("${random(2100,3000)}"))
