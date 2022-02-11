@@ -69,7 +69,8 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.process(processQueryProcessor)
 //			.filter().method(psFilter, "timeIsDue")
 			
-			.log("[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Retry ${exchangeProperty.pr_psrequest.psCounter}")
+			.log(LoggingLevel.DEBUG, "komi.ps.saf", 
+					"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Retry ${exchangeProperty.pr_psrequest.psCounter}")
 					
 			.to("direct:findSettlement")
 			// selesai check settlement
