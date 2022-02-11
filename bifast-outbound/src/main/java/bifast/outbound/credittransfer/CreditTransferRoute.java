@@ -110,6 +110,8 @@ public class CreditTransferRoute extends RouteBuilder {
 		
 		
 		from("seda:savecredittransfer?concurrentConsumers=3").routeId("komi.ct.savedb")
+			.log(LoggingLevel.DEBUG, "komi.ct.savedb", 
+				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save transaksi CT")
 			.process(saveCrdtTrnsProcessor)
 		;
 		

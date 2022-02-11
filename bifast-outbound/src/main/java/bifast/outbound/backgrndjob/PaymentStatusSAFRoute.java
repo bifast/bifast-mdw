@@ -53,12 +53,12 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 				+ "where ct.call_status = 'TIMEOUT' "
 				+ "and ct.ps_counter < 6 "
 				+ "limit 10"
-				+ "?delay=3000"
+				+ "?delay=2000"
 				+ "&sendEmptyMessageWhenIdle=true"
 				)
 			.routeId("komi.ps.saf")
 						
-//			.log("[CTReq:${header.ps_qryresult[e2e_id]}] PymtStsSAF started.")
+//			.log("[CTReq:${body[e2e_id]}] PymtStsSAF started.")
 
 			// selesai dan matikan router jika tidak ada lagi SAF
 			.filter().simple("${body} == null")
@@ -67,7 +67,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 						
 			// check settlement dulu
 			.process(processQueryProcessor)
-			.filter().method(psFilter, "timeIsDue")
+//			.filter().method(psFilter, "timeIsDue")
 			
 			.log("[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Retry ${exchangeProperty.pr_psrequest.psCounter}")
 					

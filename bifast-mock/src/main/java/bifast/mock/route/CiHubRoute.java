@@ -87,6 +87,7 @@ public class CiHubRoute extends RouteBuilder {
 			.log("${header.msgType}")
 
 			.setHeader("delay_ae", simple("{{komi.timeout-ae}}"))
+			.setProperty("delay_ps", simple("{{komi.timeout-ps}}"))
 
 			.choice()
 
@@ -114,8 +115,8 @@ public class CiHubRoute extends RouteBuilder {
 				.when().simple("${header.msgType} == 'CreditTransferRequest'")
 					.log("Akan process CT")
 					
-					.delay(constant(30000))
-					
+//					.delay(constant(30000))
+
 					.process(creditTransferResponseProcessor)
 
 					.setHeader("hdr_ctResponseObj",simple("${body}"))		
@@ -127,11 +128,10 @@ public class CiHubRoute extends RouteBuilder {
 					.process(paymentStatusResponseProcessor)
 					
 					.log("PS delay dulu")
-					.delay(20000)
+					.delay(simple("${exchangeProperty.delay_ps}"))
 					
 					.filter().simple("${body} == null")
 						.log("ga nemu payment status")
-						.setHeader("delay", simple("${random(2100,3000)}"))
 					.end()
 				.endChoice()
 				
