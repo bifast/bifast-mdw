@@ -52,11 +52,6 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 						
 //			.log("[CTReq:${header.ps_qryresult[e2e_id]}] PymtStsSAF started.")
 
-			// selesai dan matikan router jika tidak ada lagi SAF
-//			.filter().simple("${body} == null")
-//				.throwException(PSNotFoundException.class, "PS Selesai.")			  
-//			.end()	
-						
 			// check settlement dulu
 			.process(processQueryProcessor)
 			.filter().method(psFilter, "timeIsDue")

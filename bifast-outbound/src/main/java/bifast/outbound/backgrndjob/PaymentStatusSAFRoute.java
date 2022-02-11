@@ -53,7 +53,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 				+ "where ct.call_status = 'TIMEOUT' "
 				+ "and ct.ps_counter < 6 "
 				+ "limit 10"
-				+ "?delay=5000"
+				+ "?delay=3000"
 				+ "&sendEmptyMessageWhenIdle=true"
 				)
 			.routeId("komi.ps.saf")

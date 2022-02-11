@@ -25,6 +25,8 @@ public class SetRemainTimeProcessor implements Processor {
 
 		if ((rmw.getMsgName().equals("CTReq")) || (rmw.getMsgName().equals("PrxRegn")))
 			sla = param.getSlaChannelTrns();
+		else if (rmw.getMsgName().equals("PyStsSAF"))
+			sla = param.getSlaPymtStatus();
 		else 
 			sla = param.getSlaChannelEnqr();
 		
