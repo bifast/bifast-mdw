@@ -19,7 +19,7 @@ Authorization: Basic MB:password
 		"NoRef": "FRN2201152{{$randomInt 1000 9999}}",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "112211333",
+		"CreditorAccountNumber": "112211777",
 		"CreditorAccountType": "SVGS",
 		"CreditorId": "018029520054000",
 		"CreditorType": "02",
@@ -28,7 +28,7 @@ Authorization: Basic MB:password
 		"CreditorTownName": "0300",
 		"Amount": "60500.24",
 		"FeeTransfer": "0.00",
-		"RecipientBank": "CENAIDJA",
+		"RecipientBank": "BRINIDJA",
 		"DebtorAccountNumber": "0002107551117",
 		"DebtorAccountType": "SVGS",
 		"DebtorId": "5171026206690001",
@@ -36,7 +36,7 @@ Authorization: Basic MB:password
 		"DebtorType": "01",
 		"DebtorTownName": "0191",
 		"DebtorName": "MURYATI",
-		"PaymentInformation": ""
+		"PaymentInformation": "TIMEOUT"
 	}
 }
 
