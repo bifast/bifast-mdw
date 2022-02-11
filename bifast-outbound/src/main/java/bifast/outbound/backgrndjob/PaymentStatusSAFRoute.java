@@ -104,7 +104,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			
 			.log("[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] PymtStsSAF result: ${body.psStatus}")
 
-			.filter().simple("${body.psStatus} == 'REJECTED'")
+			.filter().simple("${body.psStatus} in 'REJECTED,UNDEFINED'")
 				.to("direct:debitreversal")
 			.end()
 			
