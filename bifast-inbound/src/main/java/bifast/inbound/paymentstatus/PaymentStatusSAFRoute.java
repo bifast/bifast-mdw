@@ -48,7 +48,7 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 				+ "?delay=60000"
 //				+ "&sendEmptyMessageWhenIdle=true"
 				)
-			.routeId("komi.inqsttl.saf")
+			.routeId("komi.inbct.saf")
 						
 //			.log("[CTReq:${header.ps_qryresult[e2e_id]}] PymtStsSAF started.")
 
