@@ -1,13 +1,17 @@
 package bifast.inbound.paymentstatus;
 
+import java.time.LocalDateTime;
+
 public class CTQryDTO {
 
 	public String id;
 	public String reqBizmsgid;
 	public String KomiTrnsId;
 	public String endToEndId;
+	public LocalDateTime createDt;
 	public String recipientBank;
 	public String ctFullText;
+	
 	public int psCounter;
 	
 	public String getId() {
@@ -51,6 +55,12 @@ public class CTQryDTO {
 	}
 	public void setPsCounter(int psCounter) {
 		this.psCounter = psCounter;
+	}
+	public LocalDateTime getCreateDt() {
+		return createDt;
+	}
+	public void setCreateDt(LocalDateTime createDt) {
+		this.createDt = createDt;
 	}
 
 	
