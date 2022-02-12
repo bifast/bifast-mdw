@@ -17,6 +17,8 @@ public class JobWakeupProcessor implements Processor {
 			
 			if (serviceSts.isStopped())
 				routeCtl.startRoute("komi.ct.saf");
+			else if (serviceSts.isSuspended())
+				routeCtl.resumeRoute(null);
 	}
 
 }

@@ -4,20 +4,20 @@ import java.time.LocalDateTime;
 
 public class CTQryDTO {
 
-	public String id;
+	public Long id;
 	public String reqBizmsgid;
 	public String KomiTrnsId;
 	public String endToEndId;
-	public LocalDateTime createDt;
+	public LocalDateTime lastUpdateDt;
 	public String recipientBank;
 	public String ctFullText;
 	
 	public int psCounter;
 	
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getReqBizmsgid() {
@@ -56,11 +56,11 @@ public class CTQryDTO {
 	public void setPsCounter(int psCounter) {
 		this.psCounter = psCounter;
 	}
-	public LocalDateTime getCreateDt() {
-		return createDt;
+	public LocalDateTime getLastUpdateDt() {
+		return lastUpdateDt;
 	}
-	public void setCreateDt(LocalDateTime createDt) {
-		this.createDt = createDt;
+	public void setLastUpdateDt(LocalDateTime lastUpdateDt) {
+		this.lastUpdateDt = lastUpdateDt;
 	}
 
 	

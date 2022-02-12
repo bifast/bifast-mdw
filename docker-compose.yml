@@ -99,7 +99,7 @@ services:
         - BIFAST.INBOUND-LOG-FOLDER=/home/logs
         - KOMI.INBOUND-URL=172.18.0.1:9001/komi-inbound/json/service
         - KOMI.TIMEOUT-CT=50000
-        - KOMI.TIMEOUT-PS=15000
+        - KOMI.TIMEOUT-PS=1000
         - TZ=Asia/Jakarta
       volumes: 
         - /home/fransdm/workspace/bifast-log/mock:/home/logs

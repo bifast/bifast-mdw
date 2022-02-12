@@ -27,14 +27,20 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 
 		onException(CTSAFException.class).routeId("ctsaf.onException")
 			.handled(true)
-			.to("controlbus:route?routeId=komi.ct.saf&action=stop&async=true")
+			.to("controlbus:route?routeId=komi.ct.saf&action=suspend&async=true")
 		;
 		
-		from("sql:select kct.id , kct.komi_trns_id, kct.req_bizmsgid, kct.response_code, "
-				+ "kct.full_request_msg ct_msg, sttl.full_message sttl_msg, sttl.e2e_id "
+		from("sql:select kct.id , "
+				+ "kct.komi_trns_id, "
+				+ "kct.req_bizmsgid, "
+				+ "kct.response_code, "
+				+ "kct.full_request_msg ct_msg, "
+				+ "sttl.full_message sttl_msg, "
+				+ "sttl.settl_bizmsgid, "
+				+ "sttl.e2e_id "
 				+ "from kc_credit_transfer kct "
 				+ "join kc_settlement sttl on sttl.e2e_id = kct.e2e_id "
-				+ "where kct.cb_status = 'READY' "
+				+ "where kct.cb_status = 'PENDING' "
 				+ "?delay=10000"
 				+ "&sendEmptyMessageWhenIdle=true"
 				)
@@ -96,7 +102,7 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 					.log(LoggingLevel.DEBUG,"komi.ct.saf", "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] CT corebank Accepted")
 					.setProperty("ctsaf_settlement", constant("YES"))
 					.to("sql:update kc_credit_transfer "
-							+ "set cb_status = 'DONE' "
+							+ "set cb_status = 'DONE', sttl_bizmsgid = :#${exchangeProperty.ctsaf_qryresult[settl_bizmsgid]} "
 							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
 					.to("direct:post_settlement")
 				.endChoice()

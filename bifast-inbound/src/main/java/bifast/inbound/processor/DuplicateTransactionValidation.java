@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.exception.DuplicateTransactionException;
+import bifast.inbound.iso20022.AppHeaderService;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.pojo.Pacs002Seed;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.pojo.flat.FlatPacs008Pojo;
 import bifast.inbound.repository.CreditTransferRepository;
-import bifast.inbound.service.AppHeaderService;
 import bifast.inbound.service.Pacs002MessageService;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;

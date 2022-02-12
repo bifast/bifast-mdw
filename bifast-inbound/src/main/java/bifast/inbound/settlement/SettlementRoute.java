@@ -9,14 +9,13 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.credittransfer.processor.JobWakeupProcessor;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.repository.CreditTransferRepository;
 
 @Component
 public class SettlementRoute extends RouteBuilder {
 	@Autowired private CreditTransferRepository ctRepo;
-	@Autowired private JobWakeupProcessor jobWakeupProcessor;
+//	@Autowired private JobWakeupProcessor jobWakeupProcessor;
 	@Autowired private SaveSettlementMessageProcessor saveSettlement;
 	@Autowired private SettlementDebitProcessor settlementDebitProcessor;
 //	@Autowired private SettlementCreditProcessor settlementCreditProcessor;
@@ -45,14 +44,15 @@ public class SettlementRoute extends RouteBuilder {
 	 		.process(saveSettlement)
 			
 			.log(LoggingLevel.DEBUG, "komi.settlement", "[${exchangeProperty.prop_process_data.inbMsgName}:"
-					+ "${exchangeProperty.prop_process_data.endToEndId}] Settlement for ${header.sttl_transfertype} message")
+					+ "${exchangeProperty.prop_process_data.endToEndId}] Settlement for ${exchangeProperty.pr_sttlType} message")
 			
 			.choice()
-				.when().simple("${header.sttl_transfertype} == 'Inbound'")
+				.when().simple("${exchangeProperty.pr_sttlType} == 'Inbound'")
 		 			.log(LoggingLevel.DEBUG, "komi.settlement", 
 		 					"[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] activate credit-posting job")
 
-					.process(jobWakeupProcessor)
+//					.process(jobWakeupProcessor)
+					.to("controlbus:route?routeId=komi.ct.saf&action=resume&async=true")
 				.otherwise()
 					.process(settlementDebitProcessor)
 //					.to("direct:post_credit_cb")

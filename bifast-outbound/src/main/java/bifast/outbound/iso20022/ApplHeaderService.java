@@ -1,4 +1,4 @@
-package bifast.inbound.service;
+package bifast.outbound.iso20022;
 
 import java.time.ZoneOffset;
 import java.util.GregorianCalendar;
@@ -16,12 +16,10 @@ import bifast.library.iso20022.head001.FinancialInstitutionIdentification8;
 import bifast.library.iso20022.head001.GenericFinancialIdentification1;
 import bifast.library.iso20022.head001.Party9Choice;
 
-
 @Service
-public class AppHeaderService {
+public class ApplHeaderService {
 
-//	public BusinessApplicationHeaderV01 getAppHdr(String bicTo, String msgType, String bizMsgId) {
-	public BusinessApplicationHeaderV01 getAppHdr(String msgType, String bizMsgId) {
+	public BusinessApplicationHeaderV01 getAppHdr(String bicTo, String msgType, String bizMsgId) {
 		
         		
 		BusinessApplicationHeaderV01 appHdr = new BusinessApplicationHeaderV01();

@@ -103,6 +103,7 @@ public class SaveCreditTransferProcessor implements Processor {
 		
 		if (null != flatReq.getCpyDplct())
 			ct.setCpyDplct(flatReq.getCpyDplct());
+		ct.setPsCounter(0);
 		
 		creditTrnRepo.save(ct);
 	}

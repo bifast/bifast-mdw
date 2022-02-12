@@ -30,7 +30,7 @@ public class CTCorebankRequestProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		ProcessDataPojo processData= exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-		String komiTrnsId = processData.getKomiTrnsId();
+//		String komiTrnsId = processData.getKomiTrnsId();
 		
 		FlatPacs008Pojo biReq = (FlatPacs008Pojo) processData.getBiRequestFlat();
 

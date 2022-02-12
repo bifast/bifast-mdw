@@ -43,7 +43,7 @@ public class InboundXMLRoute extends RouteBuilder {
 			.setBody(simple("${header.hdr_tmp}"))
 
 			.unmarshal(jaxb)	
-			.setHeader("hdr_frBIobj", simple("${body}"))   // pojo BusinessMessage simpan ke header
+			.setProperty("prop_frBIobj", simple("${body}"))
 
 			.to("direct:receive")
 

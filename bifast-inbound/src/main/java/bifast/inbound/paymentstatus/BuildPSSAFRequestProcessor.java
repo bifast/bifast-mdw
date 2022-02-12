@@ -5,14 +5,14 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.iso20022.AppHeaderService;
+import bifast.inbound.iso20022.Pacs028MessageService;
+import bifast.inbound.iso20022.Pacs028Seed;
 import bifast.inbound.service.UtilService;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.head001.CopyDuplicate1Code;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs028MessageService;
-import bifast.library.iso20022.service.Pacs028Seed;
 
 @Component
 public class BuildPSSAFRequestProcessor implements Processor{
@@ -35,7 +35,7 @@ public class BuildPSSAFRequestProcessor implements Processor{
 		
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 
-		hdr = appHeaderService.getAppHdr(req.getRecipientBank(), "pacs.028.001.04", bizMsgId);
+		hdr = appHeaderService.getAppHdr("pacs.028.001.04", bizMsgId);
 
 		Document doc = new Document();
 		doc.setFiToFIPmtStsReq(pacs028MessageService.paymentStatusRequest(seed));

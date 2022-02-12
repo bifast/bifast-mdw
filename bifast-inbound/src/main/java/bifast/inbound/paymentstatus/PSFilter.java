@@ -11,25 +11,24 @@ public class PSFilter {
 
 	public boolean timeIsDue (Exchange exchange) {
 		CTQryDTO ct = exchange.getProperty("pr_psrequest", CTQryDTO.class);
-//		LocalDateTime orgnlTime = ct.getOrgnlDateTime();
-//		Duration duration = Duration.between(orgnlTime, LocalDateTime.now());
+		LocalDateTime orgnlTime = ct.getLastUpdateDt();
+		Duration duration = Duration.between(orgnlTime, LocalDateTime.now());
 		
-//		if (ct.getPsCounter()==0) 
-//			return duration.getSeconds() > 60;
-//		
-//		else if (ct.getPsCounter()==1) 
-//			return duration.getSeconds() > 180;
-//		
-//		else if (ct.getPsCounter()==2) 
-//			return duration.getSeconds() > 360;
-//		
-//		else if (ct.getPsCounter()==3) 
-//			return duration.getSeconds() > 600;
-//		
-//		else 
-//			return duration.getSeconds() > 900;
-//		
-		return true;
+		if (ct.getPsCounter()==1) 
+			return duration.getSeconds() > 30;
+		
+		else if (ct.getPsCounter()==2) 
+			return duration.getSeconds() > 30;
+		
+		else if (ct.getPsCounter()==3) 
+			return duration.getSeconds() > 60;
+		
+		else if (ct.getPsCounter()==4) 
+			return duration.getSeconds() > 120;
+
+		else 
+			return duration.getSeconds() > 240;
+		
 	}
 	
 //	public boolean sttlIsNotFound (Exchange exchange) {
