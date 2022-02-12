@@ -12,14 +12,13 @@ import org.springframework.stereotype.Service;
 
 import bifast.outbound.config.Config;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.repository.ChannelTransactionRepository;
 
 @Service
 public class UtilService {
 
 	@Autowired
 	private Config config;
-	@Autowired private ChannelTransactionRepository channelTrnsRepo;
+//	@Autowired private ChannelTransactionRepository channelTrnsRepo;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 	DecimalFormat df = new DecimalFormat("000");
@@ -35,7 +34,7 @@ public class UtilService {
 	
 	public String genKomiTrnsId () {
 		
-		LocalTime now = LocalTime.now(ZoneId.systemDefault());
+//		LocalTime now = LocalTime.now(ZoneId.systemDefault());
 //		int secofday = now.toSecondOfDay() ;
 
 		int secofday = LocalTime.now(ZoneId.systemDefault()).toSecondOfDay() ;

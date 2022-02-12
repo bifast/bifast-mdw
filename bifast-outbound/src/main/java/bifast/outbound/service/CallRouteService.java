@@ -1,12 +1,9 @@
 package bifast.outbound.service;
 
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.FluentProducerTemplate;
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.ServiceStatus;
-import org.apache.camel.impl.engine.DefaultProducerTemplate;
 import org.apache.camel.spi.RouteController;
 import org.springframework.stereotype.Service;
 
