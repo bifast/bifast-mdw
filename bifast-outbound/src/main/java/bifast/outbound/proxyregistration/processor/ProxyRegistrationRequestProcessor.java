@@ -42,7 +42,12 @@ public class ProxyRegistrationRequestProcessor implements Processor {
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		
-		String trxType = "710";
+		String trxType ="";
+		if (chnReq.getRegistrationType().equals("NEWR"))
+			trxType = "710";
+		else
+			trxType = "720";
+				
 		String bizMsgId = utilService.genBusMsgId(trxType, rmw);
 		String msgId = utilService.genMessageId(trxType, rmw);
 		

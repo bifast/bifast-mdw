@@ -30,8 +30,8 @@ public class BuildPSSAFRequestProcessor implements Processor{
 		
 		UndefinedCTPojo req = exchange.getProperty("pr_psrequest", UndefinedCTPojo.class);
 		
-		String bizMsgId = utilService.genBusMsgId("010", req.getKomiTrnsId(), "99");
-		String msgId = utilService.genMessageId("010", req.getKomiTrnsId());
+		String bizMsgId = utilService.genBusMsgId("000", req.getKomiTrnsId(), "99");
+		String msgId = utilService.genMessageId("000", req.getKomiTrnsId());
 
 		Pacs028Seed seed = new Pacs028Seed();
 		seed.setMsgId(msgId);
