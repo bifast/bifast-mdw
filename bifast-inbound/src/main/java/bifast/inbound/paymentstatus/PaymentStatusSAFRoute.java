@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import bifast.inbound.notification.PortalApiPojo;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.ResponseMessageCollection;
 
 @Component
 public class PaymentStatusSAFRoute extends RouteBuilder {
@@ -52,29 +54,73 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 						
 //			.log("[CTReq:${header.ps_qryresult[e2e_id]}] PymtStsSAF started.")
 
-			// check settlement dulu
 			.process(processQueryProcessor)
-			.filter().method(psFilter, "timeIsDue")
+//			.filter().method(psFilter, "timeIsDue")
 			
 			.log("[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Retry ${exchangeProperty.pr_psrequest.psCounter}")
-
-//			.unmarshal().base64().unmarshal().zipDeflater()
-//			.unmarshal(businessMessageJDF)
-						
-			.to("direct:findSettlement")
-			// selesai check settlement
-
-			.filter().simple("${body.psStatus} == 'STTL_FOUND'")	// jika settlement
-				.process(updateStatusProcessor)
-			.end()
-			
-			.filter().method(psFilter, "sttlIsNotFound")
-			
+		
 //			.log("hdr_settlement: ${header.hdr_settlement}")
 			.log(LoggingLevel.DEBUG, "komi.ps.saf", 
 					"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Siapkan PS Request")
 			.process(buildPSRequest)
-			.to("direct:call-cihub")				
+
+//			.to("direct:call-cihub")				
+
+			.doTry()
+				.setHeader("HttpMethod", constant("POST"))
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", 
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] "
+						+ "sisa waktu ${exchangeProperty.prop_remain_time}")
+	
+				.enrich()
+					.simple("{{komi.url.ciconnector}}?"
+						+ "socketTimeout=${exchangeProperty.prop_remain_time}&" 
+						+ "bridgeEndpoint=true")
+					.aggregationStrategy(enrichmentAggregator)
+				
+				.convertBodyTo(String.class)				
+				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CIHUB response: ${body}")
+	
+				.setHeader("tmp_body", simple("${body}"))
+				.marshal().zipDeflater().marshal().base64()
+				.setHeader("cihubroute_encr_response", simple("${body}"))
+				
+				.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						String body = exchange.getMessage().getBody(String.class);
+						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
+						rmw.setCihubEncriptedResponse(body);
+						exchange.setProperty("prop_request_list", rmw);
+					}
+				})
+				
+				.setBody(simple("${header.tmp_body}"))	
+				.unmarshal(businessMessageJDF)
+				.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
+						ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
+						rmc.setCihubResponse(bm);
+						exchange.setProperty("prop_response_list", rmc);
+					}
+				})
+								
+				.process(flatResponseProcessor)
+				
+				.filter().simple("${body.class} endsWith 'FaultPojo'")
+					.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CI-HUB Response: ${header.tmp_body}")
+		    	.end()
+			
+			.endDoTry()
+			.doCatch(java.net.SocketTimeoutException.class)
+				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CI-HUB TIMEOUT.")
+	//	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+		    	.process(exceptionToFaultMap)
+			.doCatch(Exception.class)
+				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Call CI-HUB Error.")
+		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+		    	.process(exceptionToFaultMap)
+			.end()
 
 			// kalo terima settlement, forward ke Inbound Service
 			.filter().simple("${body.class} endsWith 'FlatPacs002Pojo' "
