@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.backgrndjob.processor.BuildMessageForPortalProcessor;
 import bifast.outbound.backgrndjob.processor.BuildPSSAFRequestProcessor;
+import bifast.outbound.backgrndjob.processor.FindSettlementProc;
 import bifast.outbound.backgrndjob.processor.PSFilter;
 import bifast.outbound.backgrndjob.processor.PaymentStatusResponseProcessor;
 import bifast.outbound.backgrndjob.processor.ProcessQuerySAFProcessor;
@@ -21,9 +22,10 @@ import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
-public class PaymentStatusSAFRoute extends RouteBuilder {
+public class TimeoutCTSAFRoute extends RouteBuilder {
 	@Autowired private BuildMessageForPortalProcessor logPortalProcessor;
 	@Autowired private BuildPSSAFRequestProcessor buildPSRequest;;
+	@Autowired private FindSettlementProc findSettlementProc;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private PaymentStatusResponseProcessor psResponseProcessor;
 	@Autowired private ProcessQuerySAFProcessor processQueryProcessor;
@@ -72,7 +74,8 @@ public class PaymentStatusSAFRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.ps.saf", 
 					"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Retry ${exchangeProperty.pr_psrequest.psCounter}")
 					
-			.to("direct:findSettlement")
+//			.to("direct:findSettlement")\
+			.process(findSettlementProc)
 			// selesai check settlement
 
 			.filter().simple("${body.psStatus} == 'STTL_FOUND'")	// jika settlement
