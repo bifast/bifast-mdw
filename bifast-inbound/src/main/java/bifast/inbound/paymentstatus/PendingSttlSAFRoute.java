@@ -8,9 +8,7 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.notification.PortalApiPojo;
 import bifast.inbound.processor.EnrichmentAggregator;
-import bifast.inbound.repository.CreditTransferRepository;
 import bifast.inbound.service.JacksonDataFormatService;
 import bifast.library.iso20022.custom.BusinessMessage;
 
@@ -27,7 +25,7 @@ public class PendingSttlSAFRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
-		JacksonDataFormat portalLogJDF = jdfService.wrapRoot(PortalApiPojo.class);
+//		JacksonDataFormat portalLogJDF = jdfService.wrapRoot(PortalApiPojo.class);
 
 //		onException(PSNotFoundException.class).routeId("ps.onException")
 //			.handled(true)

@@ -9,13 +9,16 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.config.Config;
 import bifast.inbound.model.CreditTransfer;
+import bifast.inbound.pojo.ProcessDataPojo;
+import bifast.inbound.pojo.flat.FlatPacs002Pojo;
 import bifast.inbound.repository.CreditTransferRepository;
 
 @Component
 public class SettlementRoute extends RouteBuilder {
 	@Autowired private CreditTransferRepository ctRepo;
-//	@Autowired private JobWakeupProcessor jobWakeupProcessor;
+	@Autowired private Config config;
 	@Autowired private SaveSettlementMessageProcessor saveSettlement;
 	@Autowired private SettlementDebitProcessor settlementDebitProcessor;
 //	@Autowired private SettlementCreditProcessor settlementCreditProcessor;
@@ -37,11 +40,18 @@ public class SettlementRoute extends RouteBuilder {
 					if (oOrgnlCT.isPresent()) {
 						CreditTransfer orgnlCT = oOrgnlCT.get();
 						exchange.setProperty("pr_orgnlCT", orgnlCT);
-					}}
+					}
+					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
+					FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
+					String settlment_ctType = "Outbound";
+					if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
+						settlment_ctType = "Inbound";
+					exchange.setProperty("pr_sttlType", settlment_ctType);
+
+				}
 	 		})
 
 	 		
-	 		.process(saveSettlement)
 			
 			.log(LoggingLevel.DEBUG, "komi.settlement", "[${exchangeProperty.prop_process_data.inbMsgName}:"
 					+ "${exchangeProperty.prop_process_data.endToEndId}] Settlement for ${exchangeProperty.pr_sttlType} message")
@@ -55,10 +65,12 @@ public class SettlementRoute extends RouteBuilder {
 					.to("controlbus:route?routeId=komi.ct.saf&action=resume&async=true")
 				.otherwise()
 					.process(settlementDebitProcessor)
-//					.to("direct:post_credit_cb")
-					.to("direct:isoadpt")
+					.to("direct:isoadpt-sttl")
+//					.to("direct:isoadpt")
 			 		.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Selesai posting settlement")
 			.end()
+
+	 		.process(saveSettlement)
 
 		;
 

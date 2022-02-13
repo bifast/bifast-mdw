@@ -117,7 +117,8 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 			.unmarshal(businessMessageJDF)
 
 			.process(settlementRequestPrc)
-			.to("direct:isoadpt")
+//			.to("direct:isoadpt")
+			.to("direct:isoadpt-sttl")
 			
 		;
 

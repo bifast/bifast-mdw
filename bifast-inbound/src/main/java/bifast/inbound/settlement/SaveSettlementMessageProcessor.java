@@ -1,13 +1,13 @@
 package bifast.inbound.settlement;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.config.Config;
 import bifast.inbound.model.CreditTransfer;
 import bifast.inbound.model.Settlement;
 import bifast.inbound.pojo.ProcessDataPojo;
@@ -17,7 +17,6 @@ import bifast.inbound.repository.SettlementRepository;
 
 @Component
 public class SaveSettlementMessageProcessor implements Processor {
-	@Autowired private Config config;
 	@Autowired private CreditTransferRepository ctRepo;
 	@Autowired private SettlementRepository settlementRepo;
 
@@ -35,25 +34,34 @@ public class SaveSettlementMessageProcessor implements Processor {
 		sttl.setOrgnlEndToEndId(flatSttl.getOrgnlEndToEndId());
 		sttl.setReceiveDate(LocalDateTime.now());
 		sttl.setFullMessage(fullReqMsg);
-
-		CreditTransfer ct = ctRepo.getSuccessByEndToEndId(flatSttl.getOrgnlEndToEndId()).orElse(new CreditTransfer());
-		sttl.setOrgnlCTBizMsgId(ct.getCrdtTrnRequestBizMsgIdr());
+		
 		
 		sttl.setDbtrBank(flatSttl.getDbtrAgtFinInstnId());
 		sttl.setCrdtBank(flatSttl.getCdtrAgtFinInstnId());
-		
+
 		if (!(null == flatSttl.getCdtrAcctId()))
 			sttl.setCrdtAccountNo(flatSttl.getCdtrAcctId());
 		if (!(null == flatSttl.getDbtrAcctId()))
 			sttl.setDbtrAccountNo(flatSttl.getDbtrAcctId());
+
+		CreditTransfer ct = null;
+		Optional<CreditTransfer> oct = ctRepo.getSuccessByEndToEndId(flatSttl.getOrgnlEndToEndId());
+		if (oct.isPresent()) {
+			ct = oct.get();
+			ct.setSettlementConfBizMsgIdr(sttl.getSettlBizMsgId());
+			ctRepo.save(ct);
+
+			sttl.setOrgnlCTBizMsgId(ct.getCrdtTrnRequestBizMsgIdr());
+			sttl.setKomiTrnsId(ct.getKomiTrnsId());
+		}
 		
 		settlementRepo.save(sttl);
-
-		String settlment_ctType = "Outbound";
-		if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
-			settlment_ctType = "Inbound";
-	
-		exchange.setProperty("pr_sttlType", settlment_ctType);
+		
+//		String settlment_ctType = "Outbound";
+//		if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
+//			settlment_ctType = "Inbound";
+//	
+//		exchange.setProperty("pr_sttlType", settlment_ctType);
 
 	}
 }

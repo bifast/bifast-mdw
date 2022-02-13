@@ -29,6 +29,12 @@ public class Settlement {
 	@Column(name="E2E_ID", length=50)
 	private String orgnlEndToEndId;
 
+	@Column(length=50)
+	private String komiTrnsId;
+	
+	@Column(length=20)
+	private String cbResponse;
+	
 
 	@Column(length=35)
 	private String crdtAccountNo;
@@ -36,8 +42,6 @@ public class Settlement {
 	private String dbtrAccountNo;
 	
 	private LocalDateTime receiveDate;
-	
-	private Long corebankResponseId;
 	
 	@Column(length=5000)
 	private String fullMessage;
@@ -114,12 +118,20 @@ public class Settlement {
 		this.receiveDate = receiveDate;
 	}
 
-	public Long getCorebankResponseId() {
-		return corebankResponseId;
+	public String getKomiTrnsId() {
+		return komiTrnsId;
 	}
 
-	public void setCorebankResponseId(Long corebankResponseId) {
-		this.corebankResponseId = corebankResponseId;
+	public void setKomiTrnsId(String komiTrnsId) {
+		this.komiTrnsId = komiTrnsId;
+	}
+
+	public String getCbResponse() {
+		return cbResponse;
+	}
+
+	public void setCbResponse(String cbResponse) {
+		this.cbResponse = cbResponse;
 	}
 
 	public String getFullMessage() {

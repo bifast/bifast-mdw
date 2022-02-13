@@ -24,7 +24,7 @@ public class CheckRequestMsgProcessor implements Processor {
 	@Autowired private FlattenIsoMessageService flatMsgService;
 	
 	
-	private static Logger logger = LoggerFactory.getLogger(FlattenIsoMessageService.class);
+	private static Logger logger = LoggerFactory.getLogger(CheckRequestMsgProcessor.class);
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -95,8 +95,10 @@ public class CheckRequestMsgProcessor implements Processor {
 		processData.setBiRequestMsg(inputMsg);
 		processData.setStartTime(Instant.now());
 //		processData.setInbMesgType(trnType);
-//		processData.setKomiCounter(null);
 		processData.setKomiTrnsId(RefUtils.genKomiTrnsId());
+		
+		logger.debug("KomiTransId: " + processData.getKomiTrnsId());
+		
 		processData.setReceivedDt(LocalDateTime.now());
 //		processData.setTextDataReceived(null);
 

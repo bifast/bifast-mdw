@@ -85,7 +85,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 			
 			.setProperty("cb_request_str", simple("${body}"))
 			
-	 		.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${header.cb_msgname}:${exchangeProperty.end2endid}] POST ${header.cb_url}")
+	 		.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${header.cb_msgname}:${header.cb_e2eid}] POST ${header.cb_url}")
 	 		.log("[${header.cb_msgname}:${header.cb_e2eid}] CB Request: ${body}")
 			
 	 		.doTry()
