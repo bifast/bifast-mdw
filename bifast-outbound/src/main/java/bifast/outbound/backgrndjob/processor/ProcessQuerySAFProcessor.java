@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,8 @@ public class ProcessQuerySAFProcessor implements Processor{
 	@Autowired private ChannelRepository channelRepo;
 	@Autowired private ChannelTransactionRepository channelTrnsRepo;
 
+	private static Logger logger = LoggerFactory.getLogger(ProcessQuerySAFProcessor.class);
+
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		@SuppressWarnings("unchecked")
@@ -41,8 +45,11 @@ public class ProcessQuerySAFProcessor implements Processor{
 		ct.setPsCounter(ct.getPsCounter()+1);
 			
 		ChannelTransaction chnlTrns = channelTrnsRepo.findById(ct.getKomiTrnsId()).orElse(new ChannelTransaction());
+		logger.debug("[PyStsSAF:" + chnlTrns.getChannelRefId() + "] OrgnlReq: " + chnlTrns.getTextMessage());
+
 		ct.setOrgnlDateTime(chnlTrns.getRequestTime());
 		ct.setChannelNoref(chnlTrns.getChannelRefId());
+		
 		
 		Channel channel = channelRepo.findById(chnlTrns.getChannelId()).orElse(new Channel());
 		ct.setChannelType(channel.getChannelType());
@@ -71,6 +78,7 @@ public class ProcessQuerySAFProcessor implements Processor{
 		
 		rmw.setChnlCreditTransferRequest(chnlCTReq);
 		
+
 		exchange.setProperty("pr_psrequest", ct);
 
 		exchange.setProperty("prop_request_list", rmw);	

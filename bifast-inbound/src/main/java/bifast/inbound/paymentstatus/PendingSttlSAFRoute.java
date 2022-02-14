@@ -44,18 +44,16 @@ public class PendingSttlSAFRoute extends RouteBuilder {
 				+ "from kc_credit_transfer ct "
 				+ "where ct.cb_status = 'PENDING' "
 				+ "and ct.sttl_bizmsgid = 'WAITING' "
-				+ "and ct.ps_counter < 6 "
-				+ "limit 10"
+				+ "and ct.ps_counter < 5 "
+				+ "limit 20"
 				+ "?delay=60000"
 //				+ "&sendEmptyMessageWhenIdle=true"
 				)
 			.routeId("komi.inbct.saf")
 						
-			.log("[PymSts:${body[e2e_id]}] Payment Status Request started.")
 
 			.process(processQueryProcessor)
-			.filter().method(psFilter, "timeIsDue")
-			
+			.filter().method(psFilter, "timeIsDue")		
 			
 			.log("[PymSts:${exchangeProperty.pr_psrequest.endToEndId}] Retry ${exchangeProperty.pr_psrequest.psCounter}")
 		

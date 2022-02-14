@@ -3,7 +3,7 @@ package bifast.outbound.backgrndjob;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class JobStarterRoute extends RouteBuilder{
 
 	@Override

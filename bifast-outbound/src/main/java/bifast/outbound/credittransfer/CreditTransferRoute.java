@@ -39,7 +39,6 @@ public class CreditTransferRoute extends RouteBuilder {
 						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] selain dari Teller")
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
-				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] call Corebank")
 
 				.to("direct:isoadpt")
 			.end()
@@ -113,6 +112,9 @@ public class CreditTransferRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.ct.savedb", 
 				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save transaksi CT")
 			.process(saveCrdtTrnsProcessor)
+			.filter().simple("${header.ct_progress} == 'TIMEOUT'")
+				.to("controlbus:route?routeId=komi.ps.saf&action=resume&async=true")
+			.end()
 		;
 		
 		

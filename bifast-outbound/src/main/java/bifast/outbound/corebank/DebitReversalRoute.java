@@ -63,6 +63,10 @@ public class DebitReversalRoute extends RouteBuilder{
 			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:savecbdebitrevr")
 
+			.log(LoggingLevel.DEBUG, "komi.reverse_ct", 
+					"[${exchangeProperty.prop_request_list.msgName}:"
+					+ "${exchangeProperty.prop_request_list.requestId}] response class ${body.class}")
+
 			// jika gagal reversal return as Fault, otherwise DebitResponse
 			.choice()
 				.when().simple("${body.class} endsWith 'DebitReversalResponsePojo'")
@@ -88,7 +92,8 @@ public class DebitReversalRoute extends RouteBuilder{
 		
 		from("direct:postcreditreversal").routeId("komi.postcrdtrev")
 			.log(LoggingLevel.DEBUG, "komi.postcrdtrev", 
-					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Akan kirim reversal")
+					"[${exchangeProperty.prop_request_list.msgName}:"
+					+ "${exchangeProperty.prop_request_list.requestId}] POST {{komi.url.isoadapter.reversal}}")
 
 			.removeHeaders("hdr_*")
 

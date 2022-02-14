@@ -53,15 +53,13 @@ public class TimeoutCTSAFRoute extends RouteBuilder {
 				+ "ct.ps_counter "
 				+ "from kc_credit_transfer ct "
 				+ "where ct.call_status = 'TIMEOUT' "
-				+ "and ct.ps_counter < 6 "
+				+ "and ct.ps_counter < 4 "
 				+ "limit 10"
 				+ "?delay=2000"
 				+ "&sendEmptyMessageWhenIdle=true"
 				)
 			.routeId("komi.ps.saf")
 						
-//			.log("[CTReq:${body[e2e_id]}] PymtStsSAF started.")
-
 			// selesai dan matikan router jika tidak ada lagi SAF
 			.filter().simple("${body} == null")
 				.throwException(PSNotFoundException.class, "PS Selesai.")			  
@@ -121,7 +119,6 @@ public class TimeoutCTSAFRoute extends RouteBuilder {
 			.filter().simple("${body.psStatus} != 'UNDEFINED'")
 				.process(logPortalProcessor)
 				.marshal(portalLogJDF)
-//				.log(LoggingLevel.DEBUG, "komi.notif.portal", "Log-notif ${body}")
 			    .removeHeaders("CamelHttp*")
 				.to("rest:post:?host={{komi.url.portalapi}}")
 			.end()

@@ -7,8 +7,6 @@ import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,15 +18,13 @@ import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.pojo.flat.FlatPacs002Pojo;
 import bifast.outbound.repository.CreditTransferRepository;
-import bifast.outbound.service.CallRouteService;
 
 @Component
 public class StoreCreditTransferProcessor implements Processor {
 
 	@Autowired private CreditTransferRepository creditTransferRepo;
-	@Autowired private CallRouteService routeService;
 	
-	private static Logger logger = LoggerFactory.getLogger(StoreCreditTransferProcessor.class);
+//	private static Logger logger = LoggerFactory.getLogger(StoreCreditTransferProcessor.class);
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -126,10 +122,10 @@ public class StoreCreditTransferProcessor implements Processor {
 			}
 			creditTransferRepo.save(ct);
 
-			if (ct.getCallStatus().equals("TIMEOUT")) {
-				logger.debug("Akan resume job");
-				routeService.resumeJobRoute(exchange, "komi.ps.saf");
-			}
+//			if (ct.getCallStatus().equals("TIMEOUT")) {
+//				logger.debug("Akan resume job");
+//				routeService.resumeJobRoute(exchange, "komi.ps.saf");
+//			}
 
 		}
 

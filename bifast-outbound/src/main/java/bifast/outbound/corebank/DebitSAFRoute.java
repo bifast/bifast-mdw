@@ -9,7 +9,6 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.exception.PSNotFoundException;
@@ -21,9 +20,9 @@ import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.CorebankTransactionRepository;
 import bifast.outbound.service.JacksonDataFormatService;
 
-@Component
+// debit reversal timeout diselesaikan di rekon
+//@Component
 public class DebitSAFRoute extends RouteBuilder {
-	@Autowired DebitReversalRequestProcessor debitReversalRequestProc;
 	@Autowired JacksonDataFormatService jdfService;
 	@Autowired ChannelTransactionRepository chnlTrnsRepo;
 	@Autowired CorebankTransactionRepository cbRepo;
