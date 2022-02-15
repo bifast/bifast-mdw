@@ -53,7 +53,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${exchangeProperty.prop_request_list.msgName}:"
 					+ "${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
-			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
+//			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
  		;
 		
