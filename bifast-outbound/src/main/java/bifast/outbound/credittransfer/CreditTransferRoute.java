@@ -94,12 +94,24 @@ public class CreditTransferRoute extends RouteBuilder {
 
 			// jika response TIMEOUT/RJCT/ERROR, harus reversal ke corebanking
 			// unt Teller tidak dilakukan KOMI tapi oleh Teller langsung
-			.filter().simple("${header.ct_progress} in 'TIMEOUT,REJECT,ERROR' "
+			.choice()
+				.when().simple("${header.ct_progress} in 'REJECT,ERROR' "
 					+ "&& ${exchangeProperty.prop_request_list.merchantType} != '6010'")
-				.log(LoggingLevel.DEBUG, "komi.ct", 
-						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
-				.to("direct:debitreversal")
+					.log(LoggingLevel.DEBUG, "komi.ct", 
+							"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
+					.to("direct:debitreversal")
+
+				.when().simple("${header.ct_progress} = 'TIMEOUT'")
+					.to("controlbus:route?routeId=komi.ps.saf&action=resume&async=true")
+				
 			.end()
+			
+//			.filter().simple("${header.ct_progress} in 'REJECT,ERROR' "
+//					+ "&& ${exchangeProperty.prop_request_list.merchantType} != '6010'")
+//				.log(LoggingLevel.DEBUG, "komi.ct", 
+//						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
+//				.to("direct:debitreversal")
+//			.end()
 	
 			.process(crdtTransferResponseProcessor)		
 
@@ -112,9 +124,6 @@ public class CreditTransferRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.ct.savedb", 
 				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save transaksi CT")
 			.process(saveCrdtTrnsProcessor)
-			.filter().simple("${header.ct_progress} == 'TIMEOUT'")
-				.to("controlbus:route?routeId=komi.ps.saf&action=resume&async=true")
-			.end()
 		;
 		
 		
