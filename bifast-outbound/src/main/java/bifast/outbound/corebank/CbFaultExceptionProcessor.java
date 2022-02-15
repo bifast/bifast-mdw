@@ -42,7 +42,7 @@ public class CbFaultExceptionProcessor implements Processor {
 		logger.debug("response: " + responseCol.getCallStatus());
 		
 		int statusCode = 500;
-		fault.setCallStatus("ERROR");
+		fault.setCallStatus("ERROR-CB");
 
 		try {
 			Method getStatusCode = objException.getClass().getMethod("getStatusCode");

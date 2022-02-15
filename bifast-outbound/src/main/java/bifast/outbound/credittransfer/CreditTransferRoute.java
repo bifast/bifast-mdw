@@ -101,7 +101,7 @@ public class CreditTransferRoute extends RouteBuilder {
 							"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
 					.to("direct:debitreversal")
 
-				.when().simple("${header.ct_progress} = 'TIMEOUT'")
+				.when().simple("${header.ct_progress} == 'TIMEOUT'")
 					.to("controlbus:route?routeId=komi.ps.saf&action=resume&async=true")
 				
 			.end()

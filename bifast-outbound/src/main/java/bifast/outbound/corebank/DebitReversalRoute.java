@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
-
+import bifast.outbound.backgrndjob.dto.UndefinedCTPojo;
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
 import bifast.outbound.model.CorebankTransaction;
@@ -41,9 +41,9 @@ public class DebitReversalRoute extends RouteBuilder{
 		JacksonDataFormat debitReversalRequestJDF = jdfService.basic(DebitReversalRequestPojo.class);
 		JacksonDataFormat debitReversalResponseJDF = jdfService.wrapRoot(DebitReversalResponsePojo.class);
 
-		from("direct:debitreversal").routeId("komi.reverse_ct")
+		from("direct:debitreversal").routeId("komi.debit_rev")
 			
-			.log(LoggingLevel.DEBUG, "komi.reverse_ct", 
+			.log(LoggingLevel.DEBUG, "komi.debit_rev", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Akan debit-reversal")
 
 			.setHeader("ct_progress", constant("REVERSAL"))
@@ -63,28 +63,44 @@ public class DebitReversalRoute extends RouteBuilder{
 			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:savecbdebitrevr")
 
-			.log(LoggingLevel.DEBUG, "komi.reverse_ct", 
+			.log(LoggingLevel.DEBUG, "komi.debit_rev", 
 					"[${exchangeProperty.prop_request_list.msgName}:"
 					+ "${exchangeProperty.prop_request_list.requestId}] response class ${body.class}")
 
 			// jika gagal reversal return as Fault, otherwise DebitResponse
-			.choice()
-				.when().simple("${body.class} endsWith 'DebitReversalResponsePojo'")
-					.setBody(simple("${header.revct_tmpbody}"))
-				.endChoice()
-				
-				.when().simple("${body.class} endsWith 'FaultPojo'")
-					.process(new Processor() {
-						public void process(Exchange exchange) throws Exception {
-							FaultPojo fault = exchange.getMessage().getBody(FaultPojo.class);		
-							fault.setCallStatus("TIMEOUT");
-							fault.setResponseCode("KSTS");
-							fault.setReasonCode("K000");
-							exchange.getMessage().setBody(fault);
-						}
-					})
-				.endChoice()
+			.filter().simple("${body.class} endsWith 'FaultPojo'")
+				.process(new Processor() {
+					public void process(Exchange exchange) throws Exception {
+						FaultPojo fault = exchange.getMessage().getBody(FaultPojo.class);		
+						UndefinedCTPojo ct = exchange.getMessage().getHeader("revct_tmpbody", UndefinedCTPojo.class);
+						ct.setPsStatus(fault.getCallStatus());
+						ct.setResponseCode(fault.getResponseCode());
+						ct.setReasonCode(fault.getReasonCode());
+						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class);
+						rmw.setChannelRequest(ct);
+						exchange.setProperty("prop_request_list", rmw);
+						exchange.getMessage().setBody(ct);
+					}
+				})
 			.end()
+			
+//			.choice()
+//				.when().simple("${body.class} endsWith 'DebitReversalResponsePojo'")
+//					.setBody(simple("${header.revct_tmpbody}"))
+//				.endChoice()
+//				
+//				.when().simple("${body.class} endsWith 'FaultPojo'")
+//					.process(new Processor() {
+//						public void process(Exchange exchange) throws Exception {
+//							FaultPojo fault = exchange.getMessage().getBody(FaultPojo.class);		
+//							fault.setCallStatus("TIMEOUT");
+//							fault.setResponseCode("KSTS");
+//							fault.setReasonCode("K000");
+//							exchange.getMessage().setBody(fault);
+//						}
+//					})
+//				.endChoice()
+//			.end()
 			
 			.removeHeaders("revct_*")
 		;
@@ -124,6 +140,7 @@ public class DebitReversalRoute extends RouteBuilder{
 						public void process(Exchange exchange) throws Exception {
 							DebitReversalResponsePojo resp = exchange.getMessage().getBody(DebitReversalResponsePojo.class);
 							FaultPojo fault = new FaultPojo();
+							fault.setCallStatus("ERROR-CB");
 							fault.setResponseCode(resp.getStatus());
 							fault.setReasonCode(resp.getReason());
 							exchange.getMessage().setBody(fault);
