@@ -41,32 +41,33 @@ Authorization: Basic MB:password
 }
 
 ###
+
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
+Content-Type: application/json
+Authorization: Basic MB:password
+
 {
-	"CreditTransferRequest": {
-		"NoRef": "MOB211214110{{$randomInt 1000 9999}}",
-		"TerminalId": "MOBILE0001",
-		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "112211333",
-		"CreditorAccountType": "CACC",
-		"CreditorId": "KTP-205772715",
-		"CreditorType": "01",
-		"CreditorName": "Joko Susilo",
-		"CreditorResidentialStatus": "01",
-		"CreditorTownName": "0300",
-		"CreditorProxyId": "",
-		"CreditorProxyType": "",
-		"Amount": "12001.50",
-		"FeeTransfer": "0.00",
-		"RecipientBank": "CENAIDJA",
-		"DebtorAccountNumber": "104794259",
-		"DebtorAccountType": "SVGS",
-		"DebtorId": "7555444443333",
-		"DebtorResidentialStatus": "01",
-		"DebtorType": "01",
-		"DebtorTownName": "0300",
-		"DebtorName": "Purnama Erwin",
-		"PaymentInformation": ""
-	}
+  "CreditTransferRequest": {
+    "RecipientBank": "BMRIIDJA",
+    "CategoryPurpose": "02",
+    "FeeTransfer": "2500.00",
+    "DebtorId": "5171020812700001",
+    "Amount": "100000.00",
+    "CreditorProxyType": "",
+    "CreditorName": "I MADE SUTAMA",
+    "CreditorAccountNumber": "1450004483893",
+    "CreditorAccountType": "SVGS",
+    "NoRef": "MOB220215104311719",
+    "DebtorAccountType": "SVGS",
+    "DebtorAccountNumber": "0012104678316",
+    "DebtorResidentialStatus": "01",
+    "DebtorType": "01",
+    "CreditorProxyId": "",
+    "PaymentInformation": "",
+    "TerminalId": "MOBILE0001",
+    "DebtorTownName": "7291",
+    "DebtorName": "I MADE SUTAMA QQ SUKERTI"
+  }
 }
 
 ###

@@ -1,6 +1,8 @@
-Rel-1.0 : 1-Feb-2022: 
+1-Feb-2022 : Rel-1.0
 - Soft golive
 
-Rel-1.1 : 10-Feb-2002
+10-Feb-2022 : Rel-1.1
 - Outbound Payment status SAF 1x saja, kalo masih TO dianggap RJCT
 
+15-Feb-2022: Rel-1.1.1
+- Bugfix: CT bisa proses jika creditorType is null
