@@ -50,12 +50,14 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 
 		from("direct:prxyrgst").routeId("komi.prxyrgst")
 		
+			// unt sementara MB belum bisa aksses proxy registration
 			.process(prxRegValidation)
 			.filter().simple("${body.class} endsWith 'FaultPojo'")
 				.process(proxyRegistrationResponseProcessor)
 			.end()
 			.filter(body().isInstanceOf(ChnlProxyRegistrationRequestPojo.class))
-		
+			//////////////
+			
 			.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Proxy started.")
 			
