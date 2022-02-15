@@ -92,9 +92,9 @@ public class CreditTransferRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.ct", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] hasil cihub, ${header.ct_progress}.")
 
-			// jika response RJCT/ERROR, harus reversal ke corebanking
+			// jika response TIMEOUT/RJCT/ERROR, harus reversal ke corebanking
 			// unt Teller tidak dilakukan KOMI tapi oleh Teller langsung
-			.filter().simple("${header.ct_progress} in 'REJECT,ERROR' "
+			.filter().simple("${header.ct_progress} in 'TIMEOUT,REJECT,ERROR' "
 					+ "&& ${exchangeProperty.prop_request_list.merchantType} != '6010'")
 				.log(LoggingLevel.DEBUG, "komi.ct", 
 						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
