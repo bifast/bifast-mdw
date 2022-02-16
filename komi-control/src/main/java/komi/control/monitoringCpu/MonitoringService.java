@@ -103,9 +103,13 @@ public class MonitoringService {
         
         ///DISK 
         Disk disk = new Disk();
+        
+        Optional<Parameter> urlP = parameterService.findByParamname("MONITORING.DISKNAME");
+		String diskName = new String(urlP.get().getParamvalua());
+        
         try
         { 
-        Process process = Runtime.getRuntime().exec("df -h /app"); //for Windows
+        Process process = Runtime.getRuntime().exec("df -h "+diskName); //for Windows
         
         process.waitFor();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -141,8 +145,8 @@ public class MonitoringService {
 	public Monitoring getProcessor (Monitoring monitoringUsed) {
 	    
 		
-		Optional<Parameter> urlP = parameterService.findByModuleAndCode("EVENT", "URL.ACTUATOR.CPU.USAGE");
-		String urlActuatorCpuUsage = new String(urlP.get().getValue());
+		Optional<Parameter> urlP = parameterService.findByParamname("URL.ACTUATOR.CPU.USAGE");
+		String urlActuatorCpuUsage = new String(urlP.get().getParamvalua());
 		
 		CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpPost = new HttpGet(urlActuatorCpuUsage);

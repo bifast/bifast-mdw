@@ -56,23 +56,23 @@ public class MonitoringAppService {
 		Boolean ciConnector = false;
 		Boolean coreBankSystem = false;
 		
-		Optional<Parameter> urlP = parameterService.findByModuleAndCode("EVENT", "URL.OUTBOUND");
-		List<String> portOutbound = this.urlSplit(new String(urlP.get().getValue()));
+		Optional<Parameter> urlP = parameterService.findByParamname("URL.OUTBOUND");
+		List<String> portOutbound = this.urlSplit(new String(urlP.get().getParamvalua()));
 		
-		Optional<Parameter> urlo = parameterService.findByModuleAndCode("EVENT", "URL.INBOUND");
-		List<String> portinbound = this.urlSplit(new String(urlo.get().getValue()));
+		Optional<Parameter> urlo = parameterService.findByParamname("URL.INBOUND");
+		List<String> portinbound = this.urlSplit(new String(urlo.get().getParamvalua()));
 		
-		Optional<Parameter> urli = parameterService.findByModuleAndCode("EVENT", "URL.ISOADAPTER");
-		List<String> portIsoAdapter = this.urlSplit(new String(urli.get().getValue()));
+		Optional<Parameter> urli = parameterService.findByParamname("URL.ISOADAPTER");
+		List<String> portIsoAdapter = this.urlSplit(new String(urli.get().getParamvalua()));
 		
-		Optional<Parameter> urld = parameterService.findByModuleAndCode("EVENT", "URL.DATABASE");
-		List<String> portDatabase = this.urlSplit(new String(urld.get().getValue()));
+		Optional<Parameter> urld = parameterService.findByParamname("URL.DATABASE");
+		List<String> portDatabase = this.urlSplit(new String(urld.get().getParamvalua()));
 		
-		Optional<Parameter> urlCi = parameterService.findByModuleAndCode("EVENT", "URL.CICONNECTOR");
-		List<String> portCiConnector = this.urlSplit(new String(urlCi.get().getValue()));
+		Optional<Parameter> urlCi = parameterService.findByParamname("URL.CICONNECTOR");
+		List<String> portCiConnector = this.urlSplit(new String(urlCi.get().getParamvalua()));
 		
-		Optional<Parameter> urlCore = parameterService.findByModuleAndCode("EVENT", "URL.COREBANKSYSTEM");
-		String portCoreBankSystem = new String(urlCore.get().getValue());
+		Optional<Parameter> urlCore = parameterService.findByParamname("URL.COREBANKSYSTEM");
+		String portCoreBankSystem = new String(urlCore.get().getParamvalua());
 		
 		outbound = isSocketAliveUitlitybyCrunchify(portOutbound.get(0), Integer.valueOf(portOutbound.get(1)));
 		inbound = isSocketAliveUitlitybyCrunchify(portinbound.get(0), Integer.valueOf(portinbound.get(1)));
@@ -217,8 +217,8 @@ public class MonitoringAppService {
 	public MonitoringApp checkOutboundService (MonitoringApp monitoringUsed) {
 	    
 		
-		Optional<Parameter> urlP = parameterService.findByModuleAndCode("EVENT", "URL.ACTUATOR.CPU.USAGE");
-		String urlActuatorCpuUsage = new String(urlP.get().getValue());
+		Optional<Parameter> urlP = parameterService.findByParamname("URL.ACTUATOR.CPU.USAGE");
+		String urlActuatorCpuUsage = new String(urlP.get().getParamvalua());
 		
 		CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpPost = new HttpGet("http://10.11.100.116:9002/actuator/health");
@@ -264,8 +264,8 @@ public class MonitoringAppService {
 	public MonitoringApp checkInboundService (MonitoringApp monitoringUsed) {
 	    
 		
-		Optional<Parameter> urlP = parameterService.findByModuleAndCode("EVENT", "URL.ACTUATOR.CPU.USAGE");
-		String urlActuatorCpuUsage = new String(urlP.get().getValue());
+		Optional<Parameter> urlP = parameterService.findByParamname("URL.ACTUATOR.CPU.USAGE");
+		String urlActuatorCpuUsage = new String(urlP.get().getParamvalua());
 		
 		CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpPost = new HttpGet("http://10.11.100.116:9001/actuator/health");

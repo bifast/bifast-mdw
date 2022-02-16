@@ -95,8 +95,8 @@ public class SendSmsScheduller {
         public void run() {
         	
         	String UrlApiServerSms = "";
-        	Optional<Parameter> hostP = parameterService.findByModuleAndCode("EVENT", "SMS.API.URL");
-     		UrlApiServerSms = new String(hostP.get().getValue());
+        	Optional<Parameter> hostP = parameterService.findByParamname("SMS.API.URL");
+     		UrlApiServerSms = new String(hostP.get().getParamvalua());
      		
         	CloseableHttpClient client = HttpClients.createDefault();
 	        HttpPost httpPost = new HttpPost(UrlApiServerSms);
