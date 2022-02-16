@@ -101,7 +101,7 @@ public class TimeoutCTSAFRoute extends RouteBuilder {
 			.process(psResponseProcessor)
 
 			.log(LoggingLevel.DEBUG, "komi.ps.saf", 
-					"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Akan update status Credit Transfer SAF")
+					"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] update status CTSAF: ${body}")
 			.process(updateStatusProcessor)
 			
 			.log("[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] PymtStsSAF result: ${body.psStatus}")
@@ -115,8 +115,8 @@ public class TimeoutCTSAFRoute extends RouteBuilder {
 				//TODO akan notifkikasi
 				.log("akan notifikasi")
 			.end()
-			
-			.filter().simple("${body.psStatus} != 'UNDEFINED'")
+
+			.filter().simple("${exchangeProperty.pr_psrequest.psStatus} != 'UNDEFINED'")
 				.process(logPortalProcessor)
 				.marshal(portalLogJDF)
 			    .removeHeaders("CamelHttp*")

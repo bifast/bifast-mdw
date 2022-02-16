@@ -66,6 +66,7 @@ public class PaymentStatusResponseProcessor implements Processor {
 		}
 		
 		exchange.getMessage().setBody(psReq);
+		exchange.setProperty("pr_psrequest", psReq);
 
 	}
 	
