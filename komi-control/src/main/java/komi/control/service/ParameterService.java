@@ -16,15 +16,12 @@ public class ParameterService {
 	@Autowired
 	private ParameterRepository parameterRepository;
 
-  
-	public Optional<Parameter> findByCode (String code) {
+	
+	public Optional<Parameter> findByParamname (String paramname) {
 		  
-		return parameterRepository.findByCode(code);
+		return parameterRepository.findByParamname(paramname);
 	}
 	
-	public Optional<Parameter> findByModuleAndCode (String modul,String code) {
-		  
-		return parameterRepository.findByModuleAndCode(modul,code);
-	}
+	
 
 }

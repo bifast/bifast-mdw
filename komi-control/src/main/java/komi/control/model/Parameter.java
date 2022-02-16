@@ -3,46 +3,41 @@ package komi.control.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity(name="KC_PARAMETER")
+@Entity(name="m_systemparam")
 public class Parameter {
 
 	@Id
 	private Integer id;
-	private String module;
-	private String code;
-	private String value;
-	private String notes;
-	
+	private String paramname;
+	private String paramvalua;
+	private String status;
 	public Integer getId() {
 		return id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public String getModule() {
-		return module;
+	public String getParamname() {
+		return paramname;
 	}
-	public void setModule(String module) {
-		this.module = module;
+	public void setParamname(String paramname) {
+		this.paramname = paramname;
 	}
-	public String getCode() {
-		return code;
+	public String getParamvalua() {
+		return paramvalua;
 	}
-	public void setCode(String code) {
-		this.code = code;
+	public void setParamvalua(String paramvalua) {
+		this.paramvalua = paramvalua;
 	}
-	public String getValue() {
-		return value;
+	public String getStatus() {
+		return status;
 	}
-	public void setValue(String value) {
-		this.value = value;
+	public void setStatus(String status) {
+		this.status = status;
 	}
-	public String getNotes() {
-		return notes;
-	}
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
+
+	
+	
 	
 	
 }

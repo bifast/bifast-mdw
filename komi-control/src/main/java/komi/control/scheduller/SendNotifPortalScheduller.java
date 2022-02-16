@@ -95,8 +95,8 @@ public class SendNotifPortalScheduller {
         public void run() {
         	
         	String UrlApiPortal = "";
-        	Optional<Parameter> hostP = parameterService.findByModuleAndCode("EVENT", "PORTAL.API.URL");
-        	UrlApiPortal = new String(hostP.get().getValue());
+        	Optional<Parameter> hostP = parameterService.findByParamname("PORTAL.API.URL");
+        	UrlApiPortal = new String(hostP.get().getParamvalua());
 	        
         	CloseableHttpClient client = HttpClients.createDefault();
 	        HttpPost httpPost = new HttpPost(UrlApiPortal);

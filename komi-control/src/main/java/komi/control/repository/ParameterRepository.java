@@ -10,8 +10,7 @@ import komi.control.model.Parameter;
 @Repository
 public interface ParameterRepository extends JpaRepository<Parameter, Integer> {
 
-	Optional<Parameter> findByCode (String code);
-	Optional<Parameter> findByModuleAndCode (String module, String code);
+	Optional<Parameter> findByParamname (String code);
 	
 	
 }

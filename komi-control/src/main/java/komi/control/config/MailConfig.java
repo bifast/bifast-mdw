@@ -31,22 +31,23 @@ public class MailConfig {
     public JavaMailSender javaMailService() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         
-        Optional<Parameter> hostP = parameterService.findByModuleAndCode("EVENT", "EMAIL.SMTP.HOST");
-		this.host = new String(hostP.get().getValue());
+        /*
+        Optional<Parameter> hostP = parameterService.findByParamname("EMAIL.SMTP.HOST");
+		this.host = new String(hostP.get().getParamvalua());
 		
-		Optional<Parameter> portP = parameterService.findByModuleAndCode("EVENT", "EMAIL.SMTP.PORT");
-		this.port = new String(portP.get().getValue());
+		Optional<Parameter> portP = parameterService.findByParamname("EMAIL.SMTP.PORT");
+		this.port = new String(portP.get().getParamvalua());
 		
-		Optional<Parameter> usernameP = parameterService.findByModuleAndCode("EVENT", "EMAIL.SMTP.USERNAME");
-		this.username = new String(usernameP.get().getValue());
+		Optional<Parameter> usernameP = parameterService.findByParamname("EMAIL.SMTP.USERNAME");
+		this.username = new String(usernameP.get().getParamvalua());
 		
-		Optional<Parameter> passwordP = parameterService.findByModuleAndCode("EVENT", "EMAIL.SMTP.PASSWORD");
-		this.password = new String(passwordP.get().getValue());
+		Optional<Parameter> passwordP = parameterService.findByParamname("EMAIL.SMTP.PASSWORD");
+		this.password = new String(passwordP.get().getParamvalua());*/
 		
-        //host = "smtp.gmail.com";
-		//port =  "587";
-		//username =  "pamtestemail01@gmail.com";
-		//password =  "united1213";
+        host = "smtp.gmail.com";
+		port =  "587";
+		username =  "pamtestemail01@gmail.com";
+		password =  "united1213";
         
         javaMailSender.setHost(host);
         javaMailSender.setPort(Integer.valueOf(port));
