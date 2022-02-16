@@ -130,7 +130,8 @@ public class IsoAdapterRoute extends RouteBuilder{
 	    	.end()
 
 			.filter().simple("${exchangeProperty.pr_cbRequestName} in 'debit,debitreversal'")
-				.log("akan simpan ${exchangeProperty.prop_request_list.msgName}")
+				.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${exchangeProperty.prop_request_list.msgName}: "
+						+ "akan simpan ${exchangeProperty.prop_request_list.msgName}")
 				.process(saveCBTransactionProc)
 			.end()
 			
