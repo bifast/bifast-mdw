@@ -121,7 +121,6 @@
 	    <module>bifast-outbound</module>
 	    <module>bifast-inbound</module>
  	    <module>bifast-mock</module>
- 	    <module>komi-control</module>
  	    <module>corebankiface</module>
   </modules>
 </project>
