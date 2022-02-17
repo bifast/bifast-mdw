@@ -68,6 +68,16 @@
 			<version>${camel.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.camel.springboot</groupId>
+			<artifactId>camel-servlet-starter</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-http</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+<!-- 	<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-jackson</artifactId>
 			<version>${camel.version}</version>
@@ -76,7 +86,7 @@
 		  <groupId>com.fasterxml.jackson.module</groupId>
 		  <artifactId>jackson-module-jaxb-annotations</artifactId>
 		</dependency>
-		
+ -->		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

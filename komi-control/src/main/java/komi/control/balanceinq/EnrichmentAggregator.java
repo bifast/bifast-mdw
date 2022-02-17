@@ -1,4 +1,4 @@
-package komi.control.route;
+package komi.control.balanceinq;
 
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;

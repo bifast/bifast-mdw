@@ -1,22 +1,15 @@
-package komi.control.route;
+package komi.control.balanceinq;
 
 import java.time.format.DateTimeFormatter;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import komi.control.balanceinq.dto.BalanceInquiryRequest;
-import komi.control.balanceinq.dto.BalanceInquiryResponse;
-import komi.control.service.JacksonDataFormatService;
-
 
 @Component
 public class AcctCustInfoRoute extends RouteBuilder{
-    @Autowired JacksonDataFormatService jdfService;
+//    @Autowired JacksonDataFormatService jdfService;
     @Autowired EnrichmentAggregator enrichmentAggr;
     
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -26,14 +19,16 @@ public class AcctCustInfoRoute extends RouteBuilder{
 	@Override
 	public void configure() throws Exception {
 		
-		JacksonDataFormat balRequestJDF = jdfService.wrapUnwrapRoot(BalanceInquiryRequest.class);
-		JacksonDataFormat balResponseJDF = jdfService.wrapUnwrapRoot(BalanceInquiryResponse.class);
+		rest("/api/v1/adapter")
+			.post("/balanceinquiry")
+				.consumes("application/json")
+				.to("direct:balanceinquiry")
+		;
 
-		from("direct:balanceinquiry").routeId("komi.util.balanceinquiry")
+		from("direct:balanceinquiry").routeId("komi.balanceinquiry")
 
-			.marshal(balRequestJDF)
-			// build request msg
-
+			.convertBodyTo(String.class)
+			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
 				.enrich()
@@ -44,9 +39,6 @@ public class AcctCustInfoRoute extends RouteBuilder{
 				
 				.convertBodyTo(String.class)				
 				.log("CB response: ${body}")
-						
-				.unmarshal(balResponseJDF)
-			
 		
 			.endDoTry()
 			.doCatch(java.net.SocketTimeoutException.class)
@@ -56,10 +48,7 @@ public class AcctCustInfoRoute extends RouteBuilder{
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 			.end()
 
-			
-			// process resposne
-
-			
+		
 		;
 	}
 
