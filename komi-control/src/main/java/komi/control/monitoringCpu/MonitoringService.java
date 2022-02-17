@@ -3,6 +3,7 @@ package komi.control.monitoringCpu;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,15 +150,26 @@ public class MonitoringService {
 		Optional<Parameter> urlP = parameterService.findByParamname("URL.ACTUATOR.CPU.USAGE");
 		String urlActuatorCpuUsage = new String(urlP.get().getParamvalua());
 		
+		Optional<Parameter> usernameP = parameterService.findByParamname("KOMI_CORE_OUTBOUND_USERNAME");
+		String username = new String(usernameP.get().getParamvalua());
+		
+		Optional<Parameter> passwordP = parameterService.findByParamname("KOMI_CORE_OUTBOUND_PASSWORD");
+		String password = new String(passwordP.get().getParamvalua());
+		
+		
 		CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpPost = new HttpGet(urlActuatorCpuUsage);
 
         String jsonRspn=null;
-    
+        	
+           String auth = username + ":" + password;
+           byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+           String authHeader = "Basic " + new String( encodedAuth );
+        	
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
-            httpPost.setHeader("Authorization", "Basic Q01TOnBhc3N3b3Jk");
-
+            httpPost.setHeader("Authorization", authHeader);
+            
             try (CloseableHttpClient httpClient = HttpClients.createDefault();
                  CloseableHttpResponse rspn = httpClient.execute(httpPost)) {
 
