@@ -15,16 +15,16 @@ public class PSFilter {
 		Duration duration = Duration.between(orgnlTime, LocalDateTime.now());
 		
 		if (ct.getPsCounter()==1) 
-			return duration.getSeconds() > 30;
-		
-		else if (ct.getPsCounter()==2) 
 			return duration.getSeconds() > 60;
 		
-		else if (ct.getPsCounter()==3) 
+		else if (ct.getPsCounter()==2) 
 			return duration.getSeconds() > 120;
 		
-		else if (ct.getPsCounter()==4) 
+		else if (ct.getPsCounter()==3) 
 			return duration.getSeconds() > 240;
+		
+		else if (ct.getPsCounter()==4) 
+			return duration.getSeconds() > 480;
 
 		else 
 			return duration.getSeconds() > 480;
