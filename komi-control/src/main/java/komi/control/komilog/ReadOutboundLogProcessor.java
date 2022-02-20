@@ -35,7 +35,7 @@ public class ReadOutboundLogProcessor implements Processor{
 
 	FileFilter gzFilefilter = new FileFilter() {
 		public boolean accept(File pathname) {
-			if (pathname.getName().startsWith("komi-outbound"))
+			if (pathname.getName().startsWith("komi-outbound.log." + tgl))
 				if (pathname.getName().endsWith(".gz"))
 					return true;
 			return false;
@@ -47,7 +47,8 @@ public class ReadOutboundLogProcessor implements Processor{
 		
 		try {
             this.tgl = exchange.getMessage().getHeader("tanggal", String.class);
-        	LocalDate.parse(tgl);
+			if (null != tgl) 
+				LocalDate.parse(tgl);
         }
         catch (DateTimeParseException e) {
             exchange.getMessage().setBody("<--- Format tanggal salah --->");
@@ -56,15 +57,11 @@ public class ReadOutboundLogProcessor implements Processor{
 
         File logDir = new File(outboundlogdir);
         
-        if ((null != tgl) && (sysdate.equals(tgl)) ) {
-        	tgl = null;
-        }
-        
         StringBuffer sb = new StringBuffer();
         List<File> files = new ArrayList<File>();
         List<File> sortedFiles = new ArrayList<File>();
         
-        if (null == tgl) {
+        if ((null == tgl) || (sysdate.equals(tgl))) {
         	File[] fs = logDir.listFiles(logFilefilter);
         	if (fs.length>0) {
         		sortedFiles.add(fs[0]);
@@ -78,7 +75,7 @@ public class ReadOutboundLogProcessor implements Processor{
         }
         
         if (sortedFiles.size()==0) 
-        	sb.append("<--- Logfile tidak ditemukan di " + outboundlogdir + " --->");
+        	sb.append("<--- Logfile tidak ditemukan --->");
         
         for (File f : sortedFiles) 
         	sb.append(readLogfile.read(f));
