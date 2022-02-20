@@ -52,7 +52,8 @@ public class IsoAEResponsePrc implements Processor {
 		seed.setMsgId(msgId);
 		seed.setCreditorAccountNo(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 
-		logger.debug("response class: " + oResp.getClass().getSimpleName() + " status: " + aeResp.getStatus());
+		logger.debug("response class: " + oResp.getClass().getSimpleName());
+		
 		if (oResp.getClass().getSimpleName().equals("AccountEnquiryInboundResponse")) {
 			seed.setStatus(aeResp.getStatus());
 			if (aeResp.getReason().equals("U101")) {
@@ -80,12 +81,18 @@ public class IsoAEResponsePrc implements Processor {
 		
 		else {
 			seed.setStatus(fault.getResponseCode());
-			seed.setReason(fault.getReasonCode());	
-			seed.setCreditorAccountIdType("CACC");
+			
+			if (fault.getReasonCode().equals("U101")) 
+				seed.setReason("52");
+			else if (fault.getReasonCode().equals("U102"))
+				seed.setReason("78");
+			else 
+				seed.setReason("62");
 		}
 			
+		seed.setCreditorAccountIdType("CACC");
+
 		String bizMsgId = utilService.genRfiBusMsgId("510", processData.getKomiTrnsId());
-		
 
 		BusinessApplicationHeaderV01 hdr = new BusinessApplicationHeaderV01();
 		hdr = hdrService.getAppHdr(	"pacs.002.001.10", bizMsgId);
