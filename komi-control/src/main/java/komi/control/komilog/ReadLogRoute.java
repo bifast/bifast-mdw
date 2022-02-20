@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component;
 import komi.control.balanceinq.EnrichmentAggregator;
 
 @Component
-public class AcctCustInfoRoute extends RouteBuilder{
+public class ReadLogRoute extends RouteBuilder{
     @Autowired EnrichmentAggregator enrichmentAggr;
+    @Autowired ReadZipFileProcessor readZip;
     
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
@@ -20,17 +21,16 @@ public class AcctCustInfoRoute extends RouteBuilder{
 	public void configure() throws Exception {
 		
 		rest("/log")
-			.post("/inbound")
-				.consumes("application/json")
-				.to("direct:loginbound")
+			.get("/inbound")
+				.produces("text/plain")
+				.to("direct:readlog")
 		;
-
-		from("direct:loginbound").routeId("komi.log.inbound")
-
-			
 
 		
+		from("direct:readlog")
+			.process(readZip)
 		;
+		
 	}
 
 }
