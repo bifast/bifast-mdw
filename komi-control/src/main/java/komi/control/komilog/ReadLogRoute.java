@@ -11,11 +11,11 @@ import komi.control.balanceinq.EnrichmentAggregator;
 @Component
 public class ReadLogRoute extends RouteBuilder{
     @Autowired EnrichmentAggregator enrichmentAggr;
-    @Autowired ReadZipFileProcessor readZip;
+    @Autowired ReadInboundLogProcessor readInboundLogPrc;
+    @Autowired ReadOutboundLogProcessor readOutboundLogPrc;
     
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
-
 
 	@Override
 	public void configure() throws Exception {
@@ -23,14 +23,23 @@ public class ReadLogRoute extends RouteBuilder{
 		rest("/log")
 			.get("/inbound")
 				.produces("text/plain")
-				.to("direct:readlog")
+				.to("direct:readinboundlog")
+			.get("/outbound")
+				.produces("text/plain")
+				.to("direct:readoutboundlog")
 		;
 
 		
-		from("direct:readlog")
-			.process(readZip)
+		from("direct:readinboundlog")
+			.log("Tanggal : ${header.tanggal}")
+			.process(readInboundLogPrc)
 		;
-		
+
+		from("direct:readoutboundlog")
+			.log("Tanggal : ${header.tanggal}")
+			.process(readOutboundLogPrc)
+	;
+
 	}
 
 }
