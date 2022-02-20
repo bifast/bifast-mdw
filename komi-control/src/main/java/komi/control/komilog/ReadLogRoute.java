@@ -31,12 +31,10 @@ public class ReadLogRoute extends RouteBuilder{
 
 		
 		from("direct:readinboundlog")
-			.log("Tanggal : ${header.tanggal}")
 			.process(readInboundLogPrc)
 		;
 
 		from("direct:readoutboundlog")
-			.log("Tanggal : ${header.tanggal}")
 			.process(readOutboundLogPrc)
 	;
 
