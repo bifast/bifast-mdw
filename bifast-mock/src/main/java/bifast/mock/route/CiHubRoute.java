@@ -15,7 +15,6 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.mock.processor.AccountEnquiryResponseProcessor;
-import bifast.mock.processor.CreditResponseStoreProcessor;
 import bifast.mock.processor.CreditTransferResponseProcessor;
 import bifast.mock.processor.OnRequestProcessor;
 import bifast.mock.processor.PaymentStatusResponseProcessor;
@@ -32,8 +31,6 @@ public class CiHubRoute extends RouteBuilder {
 	private CreditTransferResponseProcessor creditTransferResponseProcessor;
 	@Autowired
 	private PaymentStatusResponseProcessor paymentStatusResponseProcessor;
-	@Autowired
-	private CreditResponseStoreProcessor creditResponseStoreProcessor;
 	@Autowired
 	private RejectMessageProcessor rejectMessageProcessor;
 

@@ -267,12 +267,15 @@ public class FlattenIsoMessageService {
 		}
 
 		if (!(null == ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy())) {
-			flatMsg.setCreditorAccountProxyType(ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy().getTp().getPrtry());
-			flatMsg.setCreditorAccountProxyType(ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy().getId());
+			if (null != ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy().getTp())
+				flatMsg.setCreditorAccountProxyType(ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy().getTp().getPrtry());
+			if (null != ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy().getId())
+				flatMsg.setCreditorAccountProxyType(ct.getCdtTrfTxInf().get(0).getCdtrAcct().getPrxy().getId());
 		}
 
 		if (!(null == ct.getCdtTrfTxInf().get(0).getRmtInf())) {
-			flatMsg.setPaymentInfo(ct.getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0));
+			if (null != ct.getCdtTrfTxInf().get(0).getRmtInf().getUstrd())
+				flatMsg.setPaymentInfo(ct.getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0));
 		}
 
 		if (ct.getCdtTrfTxInf().get(0).getSplmtryData().size() > 0) {
