@@ -2,7 +2,6 @@ package komi.control.monitoringCpu;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -10,16 +9,13 @@ import java.util.Optional;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.GsonBuilder;
@@ -33,6 +29,9 @@ public class MonitoringService {
 	@Autowired
 	ParameterService parameterService;
 	 
+	@Value("${server.port}")
+	private int serverPort;
+
 	public Monitoring getMonitoringUsed () {
 		  
 		Monitoring monitoringUsed = new Monitoring();
@@ -44,11 +43,7 @@ public class MonitoringService {
 	}
 	
 	public Monitoring getMemory (Monitoring monitoring) {  
-		
-		String totalDisk = "a";
-        
-        ///DISK 
-        Disk disk = new Disk();
+       
         try
         { 
 
@@ -98,7 +93,7 @@ public class MonitoringService {
 	}
 	
 	public Monitoring getDisk (Monitoring monitoring) {  
-		
+
 		String totalDisk = "a";
         
         ///DISK 
@@ -144,19 +139,30 @@ public class MonitoringService {
 	
 	public Monitoring getProcessor (Monitoring monitoringUsed) {
 	    
+//		Optional<Parameter> urlP = parameterService.findByParamname("URL.ACTUATOR.CPU.USAGE");
+//		String urlActuatorCpuUsage = new String(urlP.get().getParamvalua());
+		String urlActuatorCpuUsage = "http://localhost:" + serverPort + "/actuator/metrics/system.cpu.usage";
 		
-		Optional<Parameter> urlP = parameterService.findByParamname("URL.ACTUATOR.CPU.USAGE");
-		String urlActuatorCpuUsage = new String(urlP.get().getParamvalua());
+//		Optional<Parameter> usernameP = parameterService.findByParamname("KOMI_CORE_OUTBOUND_USERNAME");
+//		String username = new String(usernameP.get().getParamvalua());
+//		
+//		Optional<Parameter> passwordP = parameterService.findByParamname("KOMI_CORE_OUTBOUND_PASSWORD");
+//		String password = new String(passwordP.get().getParamvalua());
+		
 		
 		CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpPost = new HttpGet(urlActuatorCpuUsage);
 
         String jsonRspn=null;
-    
+        	
+//           String auth = username + ":" + password;
+//           byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")) );
+//           String authHeader = "Basic " + new String( encodedAuth );
+        	
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
-            httpPost.setHeader("Authorization", "Basic Q01TOnBhc3N3b3Jk");
-
+//            httpPost.setHeader("Authorization", authHeader);
+            
             try (CloseableHttpClient httpClient = HttpClients.createDefault();
                  CloseableHttpResponse rspn = httpClient.execute(httpPost)) {
 

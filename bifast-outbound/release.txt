@@ -6,3 +6,6 @@
 
 15-Feb-2022: Rel-1.1.1
 - Bugfix: CT bisa proses jika creditorType is null
+
+01-Mar-2022: Rel-1.1.2
+- Bugfix: Reverse CT jika suppl null

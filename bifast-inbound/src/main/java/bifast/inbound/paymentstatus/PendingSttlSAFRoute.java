@@ -44,7 +44,7 @@ public class PendingSttlSAFRoute extends RouteBuilder {
 				+ "from kc_credit_transfer ct "
 				+ "where ct.cb_status = 'PENDING' "
 				+ "and ct.sttl_bizmsgid = 'WAITING' "
-				+ "and ct.ps_counter < 5 "
+				+ "and ct.ps_counter < 3 "
 				+ "limit 20"
 				+ "?delay=60000"
 //				+ "&sendEmptyMessageWhenIdle=true"
