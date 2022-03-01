@@ -43,7 +43,7 @@ public class BuildRevCTRequestProcessor implements Processor {
 		BusinessMessage bmReq = callRouteService.decrypt_unmarshal(exchange);
 		
 		CreditTransferTransaction39 ctReq = bmReq.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0);
-		BISupplementaryDataEnvelope1 suppl = ctReq.getSplmtryData().get(0).getEnvlp().getDtl();
+
 		
 		Pacs008Seed seedCreditTrn = new Pacs008Seed();
 
@@ -70,11 +70,20 @@ public class BuildRevCTRequestProcessor implements Processor {
 		else if (null != ctReq.getDbtr().getId().getOrgId())
 			seedCreditTrn.setCrdtId(ctReq.getDbtr().getId().getOrgId().getOthr().get(0).getId());
 		
-		seedCreditTrn.setCrdtType(suppl.getDbtr().getTp());
-		seedCreditTrn.setCrdtName(ctReq.getDbtr().getNm());
-		seedCreditTrn.setCrdtResidentStatus(suppl.getDbtr().getRsdntSts());
-		seedCreditTrn.setCrdtTownName(suppl.getDbtr().getTwnNm());
+		BISupplementaryDataEnvelope1 suppl = null;
+		if (null != ctReq.getSplmtryData())
+			if (ctReq.getSplmtryData().size()>0) 
+				if (null != ctReq.getSplmtryData().get(0).getEnvlp()) 
+					if (null != ctReq.getSplmtryData().get(0).getEnvlp().getDtl()) 
+						suppl = ctReq.getSplmtryData().get(0).getEnvlp().getDtl();
 
+		if ((null != suppl) && (null != suppl.getDbtr())) {
+			seedCreditTrn.setCrdtType(suppl.getDbtr().getTp());
+			seedCreditTrn.setCrdtName(ctReq.getDbtr().getNm());
+			seedCreditTrn.setCrdtResidentStatus(suppl.getDbtr().getRsdntSts());
+			seedCreditTrn.setCrdtTownName(suppl.getDbtr().getTwnNm());
+		}	
+		
 		seedCreditTrn.setDbtrAccountNo(ctReq.getCdtrAcct().getId().getOthr().getId());
 		seedCreditTrn.setDbtrAccountType(ctReq.getCdtrAcct().getTp().getPrtry());
 		seedCreditTrn.setDbtrName(ctReq.getCdtr().getNm());
@@ -84,10 +93,14 @@ public class BuildRevCTRequestProcessor implements Processor {
 		else if (null != ctReq.getDbtr().getId().getOrgId())
 			seedCreditTrn.setDbtrId(ctReq.getCdtr().getId().getOrgId().getOthr().get(0).getId());
 		
-		seedCreditTrn.setDbtrType(suppl.getCdtr().getTp()); 
-		seedCreditTrn.setDbtrResidentStatus(suppl.getCdtr().getRsdntSts());
-		seedCreditTrn.setDbtrTownName(suppl.getCdtr().getTwnNm());
-
+		if (null != suppl) {
+			if (null != suppl.getCdtr()) {
+				seedCreditTrn.setDbtrType(suppl.getCdtr().getTp()); 
+				seedCreditTrn.setDbtrResidentStatus(suppl.getCdtr().getRsdntSts());
+				seedCreditTrn.setDbtrTownName(suppl.getCdtr().getTwnNm());
+			}
+		}
+	
 		seedCreditTrn.setPaymentInfo("O");
 
 		seedCreditTrn.setOrignBank(config.getBankcode());
