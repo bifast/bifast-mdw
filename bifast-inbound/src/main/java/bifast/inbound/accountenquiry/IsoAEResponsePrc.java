@@ -73,10 +73,10 @@ public class IsoAEResponsePrc implements Processor {
 
 			seed.setCreditorName(aeResp.getCreditorName());
 			seed.setCreditorAccountIdType(aeResp.getAccountType());
-			seed.setCreditorType(aeResp.getCreditorType());
-			seed.setCreditorId(aeResp.getCreditorId());
-			seed.setCreditorTown(aeResp.getTownName());
-			seed.setCreditorResidentialStatus(aeResp.getResidentStatus());
+//			seed.setCreditorType(aeResp.getCreditorType());
+//			seed.setCreditorId(aeResp.getCreditorId());
+//			seed.setCreditorTown(aeResp.getTownName());
+//			seed.setCreditorResidentialStatus(aeResp.getResidentStatus());
 		}
 		
 		else {
