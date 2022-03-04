@@ -92,15 +92,16 @@ public class Pacs002MessageService {
 		txInfAndSts.getOrgnlTxRef().getCdtrAcct().getTp().setPrtry(seed.getCreditorAccountIdType());
 				
 		// TxInfAndSts / SplmtryData
-		txInfAndSts.getSplmtryData().add(new BISupplementaryData1());
-		txInfAndSts.getSplmtryData().get(0).setEnvlp(new SupplementaryDataEnvelope1());
-		txInfAndSts.getSplmtryData().get(0).getEnvlp().setDtl(new BISupplementaryDataEnvelope1());
 
 		if ((!(null==seed.getCreditorType())) ||
 			(!(null==seed.getCreditorId())) ||
 			(!(null==seed.getCreditorResidentialStatus())) ||
 			(!(null==seed.getCreditorTown())) ) {
-					
+
+			txInfAndSts.getSplmtryData().add(new BISupplementaryData1());
+			txInfAndSts.getSplmtryData().get(0).setEnvlp(new SupplementaryDataEnvelope1());
+			txInfAndSts.getSplmtryData().get(0).getEnvlp().setDtl(new BISupplementaryDataEnvelope1());
+
 			txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().setCdtr(new BIAddtlCstmrInf());
 	
 			if (null != seed.getCreditorType())
