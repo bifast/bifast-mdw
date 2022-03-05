@@ -103,7 +103,7 @@ public class Pacs008Seed {
 		this.dbtrId = dbtrId;
 	}
 	public String getDbtrName() {
-		return dbtrName;
+		return Optional.ofNullable(dbtrName).orElse("");
 	}
 
 	public void setDbtrName(String dbtrName) {
@@ -131,7 +131,7 @@ public class Pacs008Seed {
 	}
 
 	public String getCrdtId() {
-		return crdtId;
+		return Optional.ofNullable(crdtId).orElse("");
 	}
 
 	public void setCrdtId(String crdtId) {
@@ -139,7 +139,7 @@ public class Pacs008Seed {
 	}
 
 	public String getCrdtName() {
-		return crdtName;
+		return Optional.ofNullable(crdtName).orElse("");
 	}
 
 	public void setCrdtName(String crdtName) {

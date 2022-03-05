@@ -19,12 +19,10 @@ import bifast.library.iso20022.head001.GenericFinancialIdentification1;
 import bifast.library.iso20022.head001.Party9Choice;
 import bifast.mock.processor.UtilService;
 
-
-
 @Service
 public class MsgHeaderService {
-	@Autowired private LibConfig config;
 	@Autowired private UtilService utilService;
+	@Autowired private Lib2Config config;
 	
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 

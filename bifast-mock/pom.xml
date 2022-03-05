@@ -10,11 +10,11 @@
 		<relativePath>../pom.xml</relativePath> 
 	</parent>
 
-	<groupId>fransmz</groupId>
 	<artifactId>komi-mock</artifactId>
 	<version>2.4-SNAPSHOT</version>
 	<name>komi-mock</name>
 	<description>BI FAST Mock</description>
+	<packaging>jar</packaging>
 	
 	<properties>
 		<java.version>11</java.version>
