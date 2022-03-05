@@ -14,7 +14,7 @@ import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.outbound.config.Config;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.iso20022.ApplHeaderService;
-import bifast.outbound.iso20022.Pacs008MessageService;
+import bifast.outbound.iso20022.Pacs008MsgService;
 import bifast.outbound.iso20022.Pacs008Seed;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.service.UtilService;
@@ -27,7 +27,7 @@ public class BuildCTRequestProcessor implements Processor {
 	@Autowired
 	private ApplHeaderService appHeaderService;
 	@Autowired
-	private Pacs008MessageService pacs008MessageService;
+	private Pacs008MsgService pacs008MessageService;
 	@Autowired
 	private UtilService utilService;
 
