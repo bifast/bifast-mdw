@@ -28,7 +28,6 @@ public class BuildAERequestProcessor implements Processor {
 
 		AERequestPojo req = exchange.getMessage().getBody(AERequestPojo.class);
 		
-		String msgType = "510";
 		String bizMsgId = utilService.genRfiBusMsgId("510", "01", "BMNDIDJA");
 		String msgId = utilService.genMessageId("510", "BMNDIDJA");
 		

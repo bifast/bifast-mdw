@@ -40,7 +40,7 @@ import bifast.library.iso20022.prxy006.ProxyEnquiryResponseV01;
 public class Proxy006MessageService {
 	
 	@Autowired
-	private LibConfig config;
+	private Lib2Config config;
 	
 	public ProxyEnquiryResponseV01 proxyRegistrationInquiryResponse (Proxy006Seed seed, 
 			BusinessMessage orgnlMessage) 

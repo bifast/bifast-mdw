@@ -190,7 +190,7 @@ public class Pacs008MsgService {
 		// CdtTrfTxInf / Dbtr
 		pacs008.getCdtTrfTxInf().get(0).setDbtr(new PartyIdentification135());
 		
-		if (null!=seed.getDbtrName())
+		if (!(seed.getDbtrName().isBlank()))
 			pacs008.getCdtTrfTxInf().get(0).getDbtr().setNm(seed.getDbtrName());
 		
 		pacs008.getCdtTrfTxInf().get(0).getDbtr().setId(new Party38Choice());
@@ -234,10 +234,10 @@ public class Pacs008MsgService {
 		// CdtTrfTxInf / Cdtr 
 		pacs008.getCdtTrfTxInf().get(0).setCdtr(new PartyIdentification135());
 		
-		if (!(null==seed.getCrdtName()))
+		if (!(seed.getCrdtName().isBlank()))
 			pacs008.getCdtTrfTxInf().get(0).getCdtr().setNm(seed.getCrdtName());
 		
-		if (!(null!=seed.getCrdtId()) || (!(seed.getCrdtId().isBlank()))) {
+		if (!(seed.getCrdtId().isBlank())) {
 			pacs008.getCdtTrfTxInf().get(0).getCdtr().setId(new Party38Choice());
 		
 			if (null != seed.getCrdtType()) {
