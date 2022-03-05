@@ -43,7 +43,7 @@ import bifast.library.iso20022.pacs008.SettlementMethod1Code;
 import bifast.library.iso20022.pacs008.SupplementaryDataEnvelope1;
 
 @Service
-public class Pacs008MessageService {
+public class Pacs008MsgService {
 
 	public FIToFICustomerCreditTransferV08 accountEnquiryRequest (Pacs008Seed seed) 
 			throws DatatypeConfigurationException {

@@ -1,8 +1,5 @@
 package bifast.outbound.reversect;
 
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.HashMap;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -14,10 +11,10 @@ import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
 import bifast.library.iso20022.pacs008.BISupplementaryDataEnvelope1;
 import bifast.library.iso20022.pacs008.CreditTransferTransaction39;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs008MessageService;
-import bifast.library.iso20022.service.Pacs008Seed;
 import bifast.outbound.config.Config;
+import bifast.outbound.iso20022.ApplHeaderService;
+import bifast.outbound.iso20022.Pacs008MsgService;
+import bifast.outbound.iso20022.Pacs008Seed;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.service.CallRouteService;
 import bifast.outbound.service.UtilService;
@@ -25,9 +22,9 @@ import bifast.outbound.service.UtilService;
 @Component
 public class BuildRevCTRequestProcessor implements Processor {
 
-	@Autowired	private AppHeaderService appHeaderService;
+	@Autowired	private ApplHeaderService appHeaderService;
 	@Autowired	private Config config;
-	@Autowired	private Pacs008MessageService pacs008MessageService;
+	@Autowired	private Pacs008MsgService pacs008MessageService;
 	@Autowired	private UtilService utilService;
 	@Autowired	private CallRouteService callRouteService;
 	
