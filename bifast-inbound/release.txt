@@ -3,3 +3,7 @@ Bugfix :
 - fix error for empty RmtInf
 Change : 
 - accountEnquiry response, exclude Creditor's Type, Creditor's National Identity, Creditor's Resident Status, Creditor's Town Name
+
+08-Mar-2022: Rel-1.2
+Upgrade
+- Camel 3.14.1
