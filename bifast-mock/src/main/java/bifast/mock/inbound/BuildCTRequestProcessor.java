@@ -63,10 +63,12 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setCrdtAccountType(crdtInfo.getOrgnlTxRef().getCdtrAcct().getTp().getPrtry());
 		seedCreditTrn.setCrdtName(crdtInfo.getOrgnlTxRef().getCdtr().getPty().getNm());
 		
-		seedCreditTrn.setCrdtId(crdtInfo.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getId());
-		seedCreditTrn.setCrdtType(crdtInfo.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
-		seedCreditTrn.setCrdtResidentStatus(crdtInfo.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getRsdntSts());
-		seedCreditTrn.setCrdtTownName(crdtInfo.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
+		if (crdtInfo.getSplmtryData().size()>0) {
+			seedCreditTrn.setCrdtId(crdtInfo.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getId());
+			seedCreditTrn.setCrdtType(crdtInfo.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
+			seedCreditTrn.setCrdtResidentStatus(crdtInfo.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getRsdntSts());
+			seedCreditTrn.setCrdtTownName(crdtInfo.getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
+		}
 		
 		seedCreditTrn.setDbtrAccountNo(inbRequest.getDebtorAccountNo());
 		seedCreditTrn.setDbtrAccountType("SVGS");
