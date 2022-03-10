@@ -27,9 +27,6 @@ import bifast.library.iso20022.pacs002.FIToFIPaymentStatusReportV10;
 import bifast.mock.isoservice.MsgHeaderService;
 import bifast.mock.isoservice.Pacs002MessageService;
 import bifast.mock.isoservice.Pacs002Seed;
-//import bifast.library.iso20022.service.AppHeaderService;
-//import bifast.library.iso20022.service.Pacs002MessageService;
-//import bifast.library.iso20022.service.Pacs002Seed;
 import bifast.mock.persist.AccountProxy;
 import bifast.mock.persist.AccountProxyRepository;
 import bifast.mock.persist.MockPacs002;
@@ -141,16 +138,24 @@ public class CreditTransferResponseProcessor implements Processor{
 		if ((null != bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf()) &&
 			(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().size() > 0))
 				seed.setAdditionalInfo(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0));
-		
-		String crdtType = bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp();
-		seed.setCreditorType(crdtType);
-		if (crdtType.equals("01"))
-			seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
-		else
-			seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
+
+		if (bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().size()>0) {
+
+			if (null != bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp()) {
+				String crdtType = bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp();
+				seed.setCreditorType(crdtType);
+				if (crdtType.equals("01"))
+					seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+				else
+					seed.setCreditorId(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).getId());
+				
+			}
+			
+			if (null != bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm()) 
+				seed.setCreditorTown(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
+		}
 		
 		seed.setCreditorResidentialStatus("01");
-		seed.setCreditorTown(bmInput.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTwnNm());
 
 		FIToFIPaymentStatusReportV10 response = pacs002Service.creditTransferRequestResponse(seed, bmInput);
 		

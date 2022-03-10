@@ -10,11 +10,12 @@ import org.springframework.stereotype.Component;
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.custom.Document;
 import bifast.library.iso20022.head001.BusinessApplicationHeaderV01;
-import bifast.library.iso20022.service.AppHeaderService;
-import bifast.library.iso20022.service.Pacs008MessageService;
-import bifast.library.iso20022.service.Pacs008Seed;
+//import bifast.library.iso20022.service.AppHeaderService;
 import bifast.outbound.config.Config;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
+import bifast.outbound.iso20022.ApplHeaderService;
+import bifast.outbound.iso20022.Pacs008MsgService;
+import bifast.outbound.iso20022.Pacs008Seed;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.service.UtilService;
 
@@ -24,9 +25,9 @@ public class BuildCTRequestProcessor implements Processor {
 	@Autowired
 	private Config config;
 	@Autowired
-	private AppHeaderService appHeaderService;
+	private ApplHeaderService appHeaderService;
 	@Autowired
-	private Pacs008MessageService pacs008MessageService;
+	private Pacs008MsgService pacs008MessageService;
 	@Autowired
 	private UtilService utilService;
 
@@ -60,11 +61,12 @@ public class BuildCTRequestProcessor implements Processor {
 		
 		seedCreditTrn.setCrdtAccountNo(chnReq.getCrdtAccountNo());		
 		seedCreditTrn.setCrdtAccountType(chnReq.getCrdtAccountType());
+		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
 		seedCreditTrn.setCrdtId(chnReq.getCrdtId());
 		seedCreditTrn.setCrdtType(chnReq.getCrdtType());
-		seedCreditTrn.setCrdtName(chnReq.getCrdtName());
-		seedCreditTrn.setCrdtResidentStatus(chnReq.getCrdtResidentialStatus());
-		seedCreditTrn.setCrdtTownName(chnReq.getCrdtTownName());
+		
+//		seedCreditTrn.setCrdtResidentStatus(chnReq.getCrdtResidentialStatus());
+//		seedCreditTrn.setCrdtTownName(chnReq.getCrdtTownName());
 		
 		
 		seedCreditTrn.setDbtrAccountNo(chnReq.getDbtrAccountNo());
@@ -72,8 +74,9 @@ public class BuildCTRequestProcessor implements Processor {
 		seedCreditTrn.setDbtrName(chnReq.getDbtrName());
 		seedCreditTrn.setDbtrId(chnReq.getDbtrId());
 		seedCreditTrn.setDbtrType(chnReq.getDbtrType()); 
-		seedCreditTrn.setDbtrResidentStatus(chnReq.getDbtrResidentialStatus());
-		seedCreditTrn.setDbtrTownName(chnReq.getDbtrTownName());
+		
+//		seedCreditTrn.setDbtrResidentStatus(chnReq.getDbtrResidentialStatus());
+//		seedCreditTrn.setDbtrTownName(chnReq.getDbtrTownName());
 
 		seedCreditTrn.setOrignBank(config.getBankcode());
 		

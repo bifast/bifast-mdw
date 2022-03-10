@@ -1,0 +1,5 @@
+3-Maret-2022: Rel-1.1
+Bugfix : 
+- fix error for empty RmtInf
+Change : 
+- accountEnquiry response, exclude Creditor's Type, Creditor's National Identity, Creditor's Resident Status, Creditor's Town Name

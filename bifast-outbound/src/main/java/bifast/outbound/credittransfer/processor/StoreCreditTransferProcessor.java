@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.model.CreditTransfer;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -33,6 +34,8 @@ public class StoreCreditTransferProcessor implements Processor {
 		BusinessMessage biRequest = rmw.getCreditTransferRequest();
 		FIToFICustomerCreditTransferV08 creditTransferReq = biRequest.getDocument().getFiToFICstmrCdtTrf();
 		
+		ChnlCreditTransferRequestPojo chnlReq = rmw.getChnlCreditTransferRequest();
+		
 		CreditTransfer ct = null;
 
 		Optional<CreditTransfer> oCT = creditTransferRepo.findByKomiTrnsId(rmw.getKomiTrxId());
@@ -50,21 +53,23 @@ public class StoreCreditTransferProcessor implements Processor {
 			
 			if (null != creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp())
 				ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
-			
-			if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr())
-				if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp())
-					ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
+
+			if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0)
+				if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr())
+					if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp())
+						ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
 			
 			ct.setCreateDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
 
 			ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
 			ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
 			
-			if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr())
-				if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp())
-					ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
+			if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0)
+				if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr())
+					if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp())
+						ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
 
-			if (ct.getDebtorType().endsWith("01"))
+			if (chnlReq.getDbtrType().equals("01"))
 				ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
 			else
 				ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		

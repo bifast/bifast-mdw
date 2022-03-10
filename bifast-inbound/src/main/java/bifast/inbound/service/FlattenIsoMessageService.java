@@ -274,7 +274,7 @@ public class FlattenIsoMessageService {
 		}
 
 		if (!(null == ct.getCdtTrfTxInf().get(0).getRmtInf())) {
-			if (null != ct.getCdtTrfTxInf().get(0).getRmtInf().getUstrd())
+			if (ct.getCdtTrfTxInf().get(0).getRmtInf().getUstrd().size()>0)
 				flatMsg.setPaymentInfo(ct.getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0));
 		}
 
