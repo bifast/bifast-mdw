@@ -58,6 +58,10 @@ public class ValidationService {
 			throw new InputValidationException("Format Amount salah.");
 		if (ctReq.getFeeTransfer().length() > 19)
 				throw new InputValidationException("Format Amount salah.");	
+		
+		if (ctReq.getRecptBank().equals(config.getBankcode())) 
+			if (ctReq.getDbtrAccountNo().equals(ctReq.getCrdtAccountNo()))
+				throw new InputValidationException("Tidak bisa transfer ke rekening yang sama.");	
 
 //		try {
 //			@SuppressWarnings("unused")

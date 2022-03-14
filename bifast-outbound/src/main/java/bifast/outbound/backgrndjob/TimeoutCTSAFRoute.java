@@ -65,14 +65,14 @@ public class TimeoutCTSAFRoute extends RouteBuilder {
 				.throwException(PSNotFoundException.class, "PS Selesai.")			  
 			.end()	
 						
-			// check settlement dulu
 			.process(processQueryProcessor)
+			
 //			.filter().method(psFilter, "timeIsDue")
 			
 			.log(LoggingLevel.DEBUG, "komi.ps.saf", 
 					"[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] Retry ${exchangeProperty.pr_psrequest.psCounter}")
 					
-//			.to("direct:findSettlement")\
+			// check settlement dulu
 			.process(findSettlementProc)
 			// selesai check settlement
 

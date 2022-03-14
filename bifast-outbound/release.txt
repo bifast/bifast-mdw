@@ -16,3 +16,7 @@ Bugfix
 - Terima CreDtTm dengan leading space
 Upgrade
 - Camel 3.14.1
+
+14-Mar-2022
+Bugfix
+- DebitReversal pada CreditTrasferRoute
