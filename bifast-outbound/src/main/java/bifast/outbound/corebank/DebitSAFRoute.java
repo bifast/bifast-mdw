@@ -115,8 +115,6 @@ public class DebitSAFRoute extends RouteBuilder {
 				}
 			})
 			
-//			.throwException(PSNotFoundException.class, "Debit SAF Selesai.")			  
-
 		;
 	}
 
