@@ -1,7 +1,9 @@
 package bifast.mock.isoservice;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -47,10 +49,13 @@ public class SettlementMessageService {
 		GroupHeader91 grpHdr = new GroupHeader91();
 		grpHdr.setMsgId(msgId);  // 010 Transaction-Type untuk CSTMRCRDTTRN
 		
-		GregorianCalendar gcal = new GregorianCalendar();
-		gcal.setTimeZone(TimeZone.getTimeZone(ZoneOffset.systemDefault()));
-		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		grpHdr.setCreDtTm(xcal);
+//		GregorianCalendar gcal = new GregorianCalendar();
+//		gcal.setTimeZone(TimeZone.getTimeZone(ZoneOffset.systemDefault()));
+//		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+//		grpHdr.setCreDtTm(xcal);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        LocalDateTime localDateTime = LocalDateTime.now();
+		grpHdr.setCreDtTm(fmt.format(localDateTime));
 		
 		pacs002.setGrpHdr(grpHdr);
 

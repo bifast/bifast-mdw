@@ -11,7 +11,6 @@ package bifast.library.iso20022.pacs002;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -49,9 +48,10 @@ public class GroupHeader91 {
 
     @XmlElement(name = "MsgId", required = true)
     protected String msgId;
-    @XmlElement(name = "CreDtTm", required = true)
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar creDtTm;
+    @XmlElement(name = "CreDtTm")
+//    @XmlSchemaType(name = "dateTime")
+//    protected XMLGregorianCalendar creDtTm;
+    protected String creDtTm;
     @XmlElement(name = "InstgAgt")
     protected BranchAndFinancialInstitutionIdentification6 instgAgt;
     @XmlElement(name = "InstdAgt")
@@ -89,7 +89,7 @@ public class GroupHeader91 {
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public XMLGregorianCalendar getCreDtTm() {
+    public String getCreDtTm() {
         return creDtTm;
     }
 
@@ -101,7 +101,7 @@ public class GroupHeader91 {
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setCreDtTm(XMLGregorianCalendar value) {
+    public void setCreDtTm(String value) {
         this.creDtTm = value;
     }
 

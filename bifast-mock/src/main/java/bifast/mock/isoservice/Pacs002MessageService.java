@@ -1,13 +1,9 @@
 package bifast.mock.isoservice;
 
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 //import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,10 +40,13 @@ public class Pacs002MessageService {
 		
 		pacs002.getGrpHdr().setMsgId(seed.getMsgId());  // 510 transaction_type untuk Account ENquiry
 		
-		GregorianCalendar gcal = new GregorianCalendar();
-		gcal.setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
-		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		pacs002.getGrpHdr().setCreDtTm(xcal);
+//		GregorianCalendar gcal = new GregorianCalendar();
+//		gcal.setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
+//		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+//		pacs002.getGrpHdr().setCreDtTm(xcal);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        LocalDateTime localDateTime = LocalDateTime.now();
+		pacs002.getGrpHdr().setCreDtTm(fmt.format(localDateTime));
 		
 		// +OrgnlGrpInfAndSts
 		pacs002.getOrgnlGrpInfAndSts().add(new OriginalGroupHeader17());
@@ -131,10 +130,13 @@ public class Pacs002MessageService {
 		GroupHeader91 grpHdr = new GroupHeader91();
 		grpHdr.setMsgId(seed.getMsgId());  // 010 Transaction-Type untuk CSTMRCRDTTRN
 		
-		GregorianCalendar gcal = new GregorianCalendar();
-		gcal.setTimeZone(TimeZone.getTimeZone(ZoneOffset.systemDefault()));
-		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		grpHdr.setCreDtTm(xcal);
+//		GregorianCalendar gcal = new GregorianCalendar();
+//		gcal.setTimeZone(TimeZone.getTimeZone(ZoneOffset.systemDefault()));
+//		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+//		grpHdr.setCreDtTm(xcal);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        LocalDateTime localDateTime = LocalDateTime.now();
+		pacs002.getGrpHdr().setCreDtTm(fmt.format(localDateTime));
 		
 		pacs002.setGrpHdr(grpHdr);
 
@@ -303,10 +305,13 @@ public class Pacs002MessageService {
 		pacs002.setGrpHdr(new GroupHeader91());
 		pacs002.getGrpHdr().setMsgId(seed.getMsgId()); 
 		
-		GregorianCalendar gcal = new GregorianCalendar();
-		gcal.setTimeZone(TimeZone.getTimeZone(ZoneOffset.systemDefault()));
-		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		pacs002.getGrpHdr().setCreDtTm(xcal);;
+//		GregorianCalendar gcal = new GregorianCalendar();
+//		gcal.setTimeZone(TimeZone.getTimeZone(ZoneOffset.systemDefault()));
+//		XMLGregorianCalendar xcal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
+//		pacs002.getGrpHdr().setCreDtTm(xcal);;
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        LocalDateTime localDateTime = LocalDateTime.now();
+		pacs002.getGrpHdr().setCreDtTm(fmt.format(localDateTime));
 
 		// OrgnlGrpInfAndSts
 		pacs002.getOrgnlGrpInfAndSts().add(new OriginalGroupHeader17());
