@@ -12,11 +12,13 @@
 - Credit Transfer: supplement data tidak kirim
 
 08-Mar-2022
-Bugfix
-- Terima CreDtTm dengan leading space
 Upgrade
 - Camel 3.14.1
 
 14-Mar-2022
 Bugfix
-- DebitReversal pada CreditTrasferRoute
+- DebitReversal pada CreditTransferRoute
+
+18-Mar-2022
+Bugfix
+- Terima CreDtTm dengan leading space
