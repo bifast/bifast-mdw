@@ -32,6 +32,10 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			.setHeader("ct_progress", constant("Start"))
 			
+			// post ke FraudDetectionSystem dulu
+			.to("direct:call-fds")
+	    	.filter(exchangeProperty("prop_fds").isEqualTo("Pass"))
+			
 			// FILTER-A debit-account di cbs dulu donk untuk e-Channel
 			.setProperty("pr_response", constant("ACTC"))
 			.filter().simple("${exchangeProperty.prop_request_list.merchantType} != '6010' ")
