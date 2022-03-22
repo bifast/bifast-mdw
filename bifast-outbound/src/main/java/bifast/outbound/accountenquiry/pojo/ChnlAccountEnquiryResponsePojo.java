@@ -1,5 +1,7 @@
 package bifast.outbound.accountenquiry.pojo;
 
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -92,7 +94,8 @@ public class ChnlAccountEnquiryResponsePojo {
 	}
 
 	public String getCreditorAccountType() {
-		return creditorAccountType;
+		return Optional.ofNullable(creditorAccountType).orElse("");
+//		return creditorAccountType;
 	}
 
 	public void setCreditorAccountType(String creditorAccountType) {
@@ -100,7 +103,8 @@ public class ChnlAccountEnquiryResponsePojo {
 	}
 
 	public String getCreditorName() {
-		return creditorName;
+		return Optional.ofNullable(creditorName).orElse("");
+//		return creditorName;
 	}
 
 	public void setCreditorName(String creditorName) {
@@ -108,7 +112,8 @@ public class ChnlAccountEnquiryResponsePojo {
 	}
 
 	public String getCreditorId() {
-		return creditorId;
+		return Optional.ofNullable(creditorId).orElse("");
+//		return creditorId;
 	}
 
 	public void setCreditorId(String creditorId) {
@@ -116,7 +121,8 @@ public class ChnlAccountEnquiryResponsePojo {
 	}
 
 	public String getCreditorType() {
-		return creditorType;
+		return Optional.ofNullable(creditorType).orElse("");
+//		return creditorType;
 	}
 
 	public void setCreditorType(String creditorType) {
@@ -124,7 +130,8 @@ public class ChnlAccountEnquiryResponsePojo {
 	}
 
 	public String getCreditorResidentStatus() {
-		return creditorResidentStatus;
+		return Optional.ofNullable(creditorResidentStatus).orElse("");
+//		return creditorResidentStatus;
 	}
 
 	public void setCreditorResidentStatus(String creditorResidentStatus) {
@@ -132,7 +139,8 @@ public class ChnlAccountEnquiryResponsePojo {
 	}
 
 	public String getCreditorTownName() {
-		return creditorTownName;
+		return Optional.ofNullable(creditorTownName).orElse("");
+//		return creditorTownName;
 	}
 
 	public void setCreditorTownName(String creditorTownName) {

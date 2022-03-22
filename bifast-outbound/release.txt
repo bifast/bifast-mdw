@@ -22,3 +22,9 @@ Bugfix
 18-Mar-2022
 Bugfix
 - Terima CreDtTm dengan leading space
+
+21-Mar-2022
+Bugfix
+- Channel response mandatori field must return json element
+
+
