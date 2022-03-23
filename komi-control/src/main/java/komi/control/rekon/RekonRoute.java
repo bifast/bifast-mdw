@@ -6,8 +6,6 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import komi.control.balanceinq.EnrichmentAggregator;
-
 @Component
 public class RekonRoute extends RouteBuilder{
     @Autowired RekonProcessor rekonPrc;
@@ -18,8 +16,8 @@ public class RekonRoute extends RouteBuilder{
 	@Override
 	public void configure() throws Exception {
 		
-		rest("/rekon")
-			.get("/daily")
+		rest("/download")
+			.get("/corebanktrans")
 				.produces("text/plain")
 				.to("direct:dailyrekon")
 		;
@@ -28,6 +26,7 @@ public class RekonRoute extends RouteBuilder{
 		from("direct:dailyrekon")
 			.setProperty("pr_periodType", constant("daily"))
 			.process(rekonPrc)
+//			.setHeader("Content-Disposition", constant("attachment; filename=Rekon.csv"))
 		;
 
 	

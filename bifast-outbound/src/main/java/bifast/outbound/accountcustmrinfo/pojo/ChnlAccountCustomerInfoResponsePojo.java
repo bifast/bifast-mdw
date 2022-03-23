@@ -1,6 +1,7 @@
 package bifast.outbound.accountcustmrinfo.pojo;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -27,7 +28,7 @@ public class ChnlAccountCustomerInfoResponsePojo {
 	private String debtorName;
 	@JsonProperty("DebtorType")
 	private String debtorType;
-	@JsonProperty("DebtorId")
+	@JsonProperty(value="DebtorId", required=true)
 	private String debtorId;
 	@JsonProperty("DebtorIdType")
 	private String debtorIdType;
@@ -47,55 +48,64 @@ public class ChnlAccountCustomerInfoResponsePojo {
 	private List<String> phoneNumberList;
 	
 	public String getNoRef() {
-		return noRef;
+		return Optional.ofNullable(noRef).orElse("");
+//		return noRef;
 	}
 	public void setNoRef(String noRef) {
 		this.noRef = noRef;
 	}
 	public String getDebtorName() {
-		return debtorName;
+		return Optional.ofNullable(debtorName).orElse("");
+//		return debtorName;
 	}
 	public void setDebtorName(String debtorName) {
 		this.debtorName = debtorName;
 	}
 	public String getDebtorType() {
-		return debtorType;
+		return Optional.ofNullable(debtorType).orElse("");
+//		return debtorType;
 	}
 	public void setDebtorType(String debtorType) {
 		this.debtorType = debtorType;
 	}
 	public String getDebtorId() {
-		return debtorId;
+		return Optional.ofNullable(debtorId).orElse("");
+//		return debtorId;
 	}
 	public void setDebtorId(String debtorId) {
 		this.debtorId = debtorId;
 	}
 	public String getDebtorIdType() {
-		return debtorIdType;
+		return Optional.ofNullable(debtorIdType).orElse("");
+//		return debtorIdType;
 	}
 	public void setDebtorIdType(String debtorIdType) {
 		this.debtorIdType = debtorIdType;
 	}
 	public String getAccountNumber() {
-		return accountNumber;
+		return Optional.ofNullable(accountNumber).orElse("");
+//		return accountNumber;
 	}
 	public void setAccountNumber(String accountNumber) {
 		this.accountNumber = accountNumber;
 	}
 	public String getAccountType() {
-		return accountType;
+		return Optional.ofNullable(accountType).orElse("");
+//		return accountType;
 	}
 	public void setAccountType(String accountType) {
 		this.accountType = accountType;
 	}
 	public String getResidentialStatus() {
-		return residentialStatus;
+		return Optional.ofNullable(residentialStatus).orElse("");
+//		return residentialStatus;
 	}
 	public void setResidentialStatus(String residentialStatus) {
 		this.residentialStatus = residentialStatus;
 	}
 	public String getTownName() {
-		return townName;
+		return Optional.ofNullable(townName).orElse("");
+//		return townName;
 	}
 	public void setTownName(String townName) {
 		this.townName = townName;

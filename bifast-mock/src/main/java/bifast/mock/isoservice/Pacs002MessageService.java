@@ -136,7 +136,7 @@ public class Pacs002MessageService {
 //		grpHdr.setCreDtTm(xcal);
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         LocalDateTime localDateTime = LocalDateTime.now();
-		pacs002.getGrpHdr().setCreDtTm(fmt.format(localDateTime));
+		grpHdr.setCreDtTm(fmt.format(localDateTime));
 		
 		pacs002.setGrpHdr(grpHdr);
 

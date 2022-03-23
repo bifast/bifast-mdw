@@ -107,6 +107,12 @@ public class IsoAdapterRoute extends RouteBuilder{
  				.setProperty("pr_response", simple("${body.status}"))
  				.setProperty("pr_reason", simple("${body.reason}"))
  			
+// 				.process(new Processor() {
+//					public void process(Exchange exchange) throws Exception {
+//						AccountCustInfoResponseDTO resp = exchange.getMessage().getBody(AccountCustInfoResponseDTO.class);
+//						System.out.println("D : " + resp.getCustomerId());
+//					}
+// 				})
 				.filter().simple("${exchangeProperty.pr_response} != 'ACTC' ")
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {

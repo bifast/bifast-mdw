@@ -12,6 +12,14 @@ import komi.control.model.CorebankTransaction;
 @Repository
 public interface CorebankTransactionRepository extends JpaRepository<CorebankTransaction, Long> {
 
-	@Query("select c FROM CorebankTransaction c category where trnsDate =:trnsDate")
-	public List<CorebankTransaction> getCoreBankTransaction (@Param("trnsDate") String trnsDate);
+	@Query(nativeQuery = true, 
+			value = "select cb.komi_trns_id , cb.cstm_account_no , cb.cstm_account_name , "
+					+ "cb.transaction_type , "
+					+ "cb.credit_amount , cb.debit_amount , "
+					+ "ct.orign_bank , ct.recpt_bank , "
+					+ "cb.reason, cb.response  , ct.sttl_bizmsgid "
+					+ "from kc_corebank_transaction cb "
+					+ "join kc_credit_transfer ct on ct.komi_trns_id = cb.komi_trns_id "
+					+ "where cb.trns_date = :trnsDate ")
+			public List<Object[]> getCoreBankTransaction (@Param("trnsDate") String trnsDate);
 }
