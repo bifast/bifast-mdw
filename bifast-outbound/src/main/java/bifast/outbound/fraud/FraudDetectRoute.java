@@ -14,14 +14,12 @@ import bifast.outbound.fraud.dao.FdsResponseDAO;
 import bifast.outbound.fraud.dao.FdsResponseListDAO;
 import bifast.outbound.fraud.processor.FdsInputProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.ExceptionToFaultProcessor;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class FraudDetectRoute extends RouteBuilder {
 
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
-	@Autowired private ExceptionToFaultProcessor exceptionToFaultMap;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private FdsInputProcessor fdsInputProc;
 	
@@ -67,10 +65,9 @@ public class FraudDetectRoute extends RouteBuilder {
 			.endDoTry()
 			.doCatch(java.net.SocketTimeoutException.class)
 				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] FDS response TIMEOUT.")
-		    	.process(exceptionToFaultMap)
 		    	.setProperty("prop_fds", constant("Pass"))
 			.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Call CI-HUB Error.")
+				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] FDS response Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.setProperty("prop_fds", constant("Pass"))
 	    	.end()
