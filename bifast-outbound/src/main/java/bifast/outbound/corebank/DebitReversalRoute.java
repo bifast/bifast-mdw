@@ -67,7 +67,7 @@ public class DebitReversalRoute extends RouteBuilder{
 					"[${exchangeProperty.prop_request_list.msgName}:"
 					+ "${exchangeProperty.prop_request_list.requestId}] response class ${body.class}")
 
-			.setBody(simple("header.revct_tmpbody"))
+			.setBody(simple("${header.revct_tmpbody}"))
 			.removeHeaders("revct_*")
 		;
 		
