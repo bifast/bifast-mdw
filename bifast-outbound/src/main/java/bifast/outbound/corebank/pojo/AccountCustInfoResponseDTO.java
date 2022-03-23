@@ -1,6 +1,7 @@
 package bifast.outbound.corebank.pojo;
 
 import java.util.List;
+import java.util.Optional;
 
 public class AccountCustInfoResponseDTO extends BaseResponseDTO{
 
@@ -73,7 +74,8 @@ public class AccountCustInfoResponseDTO extends BaseResponseDTO{
 	}
 
 	public String getCustomerId() {
-		return customerId;
+		return Optional.ofNullable(customerId).orElse("A");
+//		return customerId;
 	}
 
 	public void setCustomerId(String customerId) {

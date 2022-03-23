@@ -51,7 +51,7 @@ public class JacksonDataFormatService {
 	public JacksonDataFormat basicPrettyPrint (Class<?> unmarshalType) {
 		JacksonDataFormat jdf = new JacksonDataFormat(unmarshalType);
 		jdf.setInclude("NON_NULL");
-		jdf.setInclude("NON_EMPTY");
+//		jdf.setInclude("NON_EMPTY");
 		jdf.setPrettyPrint(true);
 		return jdf;
 	}
