@@ -45,7 +45,8 @@ public class FlatResponseProcessor implements Processor {
 			fault.setCallStatus("ERROR");
 			fault.setResponseCode("RJCT");
 			fault.setReasonCode("U215");
-			fault.setReasonMessage("Message Rejected with Admi.002");
+			fault.setReasonMessage("[Admi.002] " + flatAdmi002.getReasonDesc());
+//			fault.setReasonMessage("Message Rejected with Admi.002");
 			
 			Optional<RejectCode> oRejectCode = rejectCodeRepo.findById(flatAdmi002.getReason());
 			if (oRejectCode.isPresent()) 
