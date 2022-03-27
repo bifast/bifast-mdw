@@ -109,6 +109,8 @@ public class CihubRoute extends RouteBuilder {
 				})
 				
 				.setBody(simple("${header.tmp_body}"))	
+				.log(LoggingLevel.DEBUG, "komi.call-cihub", 
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan parsing response")
 				.unmarshal(businessMessageJDF)
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {

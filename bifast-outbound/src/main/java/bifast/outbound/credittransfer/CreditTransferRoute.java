@@ -95,7 +95,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			// jika response TIMEOUT/RJCT/ERROR, harus reversal ke corebanking
 			// unt Teller tidak dilakukan KOMI tapi oleh Teller langsung
 			.choice()
-				.when().simple("${header.ct_progress} in 'REJECT,ERROR' "
+				.when().simple("${header.ct_progress} in 'REJECT' "
 					+ "&& ${exchangeProperty.prop_request_list.merchantType} != '6010'")
 					.log(LoggingLevel.DEBUG, "komi.ct", 
 							"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
@@ -125,7 +125,6 @@ public class CreditTransferRoute extends RouteBuilder {
 				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save transaksi CT")
 			.process(saveCrdtTrnsProcessor)
 		;
-		
 		
 		
 	}
