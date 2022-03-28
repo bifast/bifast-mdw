@@ -130,6 +130,7 @@ public class TimeoutCTSAFRoute extends RouteBuilder {
 		;
 
 		from("seda:fwd_settlement").routeId("komi.ps.fwd_settlement")
+			.setProperty("pr_tmpbody", simple("${body}"))
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
@@ -138,6 +139,7 @@ public class TimeoutCTSAFRoute extends RouteBuilder {
 			})
 			.marshal(businessMessageJDF)
 			.to("rest:post:?host={{komi.url.inbound}}")
+			.setBody(simple("${exchangeProperty.pr_tmpbody}"))
 		;
 
 

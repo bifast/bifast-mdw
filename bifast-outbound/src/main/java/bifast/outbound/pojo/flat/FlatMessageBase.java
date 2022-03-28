@@ -8,7 +8,7 @@ public class FlatMessageBase {
 	private String msgDefIdr;
 	private String bizSvc;
 	private String creDt;
-	private String CpyDplct;
+	private String cpyDplct;
 	private Boolean pssblDplct;
 	
 	public String getFrBic() {
@@ -48,10 +48,10 @@ public class FlatMessageBase {
 		this.creDt = creDt;
 	}
 	public String getCpyDplct() {
-		return CpyDplct;
+		return cpyDplct;
 	}
 	public void setCpyDplct(String cpyDplct) {
-		CpyDplct = cpyDplct;
+		this.cpyDplct = cpyDplct;
 	}
 	public Boolean getPssblDplct() {
 		return pssblDplct;

@@ -7,3 +7,7 @@ Change :
 08-Mar-2022: Rel-1.2
 Upgrade
 - Camel 3.14.1
+
+28-Mar-2022
+Bugfix :
+- response CreDtTm as String
