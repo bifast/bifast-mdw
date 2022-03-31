@@ -10,6 +10,8 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +38,8 @@ public class CihubRoute extends RouteBuilder {
 	@Autowired
 	private SetRemainTimeProcessor setRemainTime;
 
+	private static Logger logger = LoggerFactory.getLogger(CihubRoute.class);
+
 	@Override
 	public void configure() throws Exception {
 		
@@ -57,7 +61,6 @@ public class CihubRoute extends RouteBuilder {
 					.marshal(jaxb)
 			.end()
 	
-
 			// zip dulu body ke cihubroute_encr_request
 			.setHeader("tmp_body", simple("${body}"))
 			.marshal().zipDeflater()
@@ -118,6 +121,10 @@ public class CihubRoute extends RouteBuilder {
 						ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 						rmc.setCihubResponse(bm);
 						exchange.setProperty("prop_response_list", rmc);
+						if (null != bm.getDocument().getFiToFIPmtStsRpt()) {
+							logger.debug("CreDtTm value: " + bm.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm());
+							logger.debug("CreDtTm class: " + bm.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm().getClass().getSimpleName());
+						}
 					}
 				})
 								

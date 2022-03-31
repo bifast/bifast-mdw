@@ -8,7 +8,6 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.corebank.isopojo.DebitReversalRequest;
-import bifast.inbound.pojo.ProcessDataPojo;
 
 
 @Component
@@ -16,7 +15,7 @@ public class DebitReversalRequestProcessor implements Processor{
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		ProcessDataPojo rmw = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
+//		ProcessDataPojo rmw = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 //		ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
 		
 		DebitReversalRequest reversalReq = new DebitReversalRequest();
