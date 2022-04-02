@@ -20,32 +20,39 @@ public class RekonProcessor implements Processor {
 
 		String tgl = exchange.getMessage().getHeader("date", String.class);
         StringBuffer sb = new StringBuffer();
-        sb.append("komiTrnsId, cstmAccountNo, cstmAccountName, transactionType, creditAmount, debitAmount, counterpartBank, reason, response, sttlStatus\n");
+        sb.append("NOREF, END2ENDID, NOREK, NAMA, TRANSACTIONTYPE, CREDITAMT, DEBITAMT, COUNTERPTBANK, REASON, RESPONSE, SETTLSTATUS\n");
         
 		List<Object[]> o = corebankRepo.getCoreBankTransaction(tgl);
 		for (Object[] data : o) {
 			RekonDAO rekonData = new RekonDAO();
 			String komId = (String) data[0];
 			rekonData.setKomiTrnsId(komId);
-			rekonData.setCstmAccountNo((String) data[1] );
-			rekonData.setCstmAccountName((String) data[2]);			
-			rekonData.setTransactionType((String) data[3]);
+			rekonData.setEndToEndId((String) data[1]);
+			rekonData.setCstmAccountNo((String) data[2] );
+			rekonData.setCstmAccountName((String) data[3]);			
+			rekonData.setTransactionType((String) data[4]);
 
-			BigDecimal amt = (BigDecimal)data[4];
+			BigDecimal amt = (BigDecimal)data[5];
 			if (null != amt)
 				rekonData.setCreditAmount(amt.toString());
 			
-			amt = (BigDecimal)data[5];
+			amt = (BigDecimal)data[6];
 			if (null != amt)
 				rekonData.setDebitAmount(amt.toString());
 
-			rekonData.setCounterpartBank((String) data[6]);
+			rekonData.setCounterpartBank((String) data[7]);
 			if (rekonData.getCounterpartBank().equals("SIHBIDJ1"))
-				rekonData.setCounterpartBank((String) data[7]);
+				rekonData.setCounterpartBank((String) data[8]);
 
-			rekonData.setReason((String) data[8]);
-			rekonData.setResponse((String) data[9]);
-			rekonData.setSttlStatus((String) data[10]);
+			rekonData.setReason((String) data[9]);
+			rekonData.setResponse((String) data[10]);
+			
+			rekonData.setSttlStatus((String) data[11]);
+			if (rekonData.getSttlStatus().equals("WAITING"))
+				rekonData.setSttlStatus("-");
+			else
+				rekonData.setSttlStatus("SETTLED");
+				
 //			sb.append(rekonData);
 			sb.append(rekonData.getCsv());
 		}

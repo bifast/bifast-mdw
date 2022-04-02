@@ -2,7 +2,8 @@ package komi.control.rekon;
 
 public class RekonDAO {
 
-	private String komiTrnsId;
+	private String noRef;
+	private String endToEndId;
 	private String cstmAccountNo;
 	private String cstmAccountName; 
 	private String transactionType;
@@ -30,15 +31,23 @@ public class RekonDAO {
 		String response, 
 		String sttlStatus ) {
 		
-		this.komiTrnsId = komiTrnsId;
+		this.noRef = komiTrnsId;
 	}
 
 	public String getKomiTrnsId() {
-		return komiTrnsId;
+		return noRef;
 	}
-	public void setKomiTrnsId(String komiTrnsId) {
-		this.komiTrnsId = komiTrnsId;
+	public void setKomiTrnsId(String noRef) {
+		this.noRef = noRef;
 	}
+	public String getEndToEndId() {
+		return endToEndId;
+	}
+
+	public void setEndToEndId(String endToEndId) {
+		this.endToEndId = endToEndId;
+	}
+
 	public String getCstmAccountNo() {
 		return cstmAccountNo;
 	}
@@ -102,17 +111,16 @@ public class RekonDAO {
 	
 	public String getCsv () {
 		return (
-				komiTrnsId + "," +
-				cstmAccountNo + ",\"" +
-				cstmAccountName + "\"," +
-				transactionType + "," +
+				"\"" + noRef + "\"," +
+				"\"" + endToEndId + "\", " +
+				"\"" + cstmAccountNo + "\"," +
+				"\"" + cstmAccountName + "\", " +
+				"\"" + transactionType + "\"," +
 				creditAmount + "," +
 				debitAmount + "," +
-				counterpartBank + "," +
-//				recptBank + "," +
-				reason + "," +
-				response + "," +
-				sttlStatus + "\n" ); 
+				"\"" + counterpartBank + "\", " +
+				"\"" + reason + "\"," +
+				"\"" + sttlStatus + "\"\n" ); 
 	}
 	
 }

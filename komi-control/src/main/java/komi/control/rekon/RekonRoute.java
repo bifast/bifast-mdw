@@ -17,7 +17,7 @@ public class RekonRoute extends RouteBuilder{
 	public void configure() throws Exception {
 		
 		rest("/download")
-			.get("/corebanktrans")
+			.get("/rekon")
 				.produces("text/plain")
 				.to("direct:dailyrekon")
 		;
@@ -25,6 +25,11 @@ public class RekonRoute extends RouteBuilder{
 		
 		from("direct:dailyrekon")
 			.setProperty("pr_periodType", constant("daily"))
+
+			.filter().simple("${header.date} == null")
+				.setHeader("date", simple("${date:now:yyyyMMdd}") )
+			.end()
+			
 			.process(rekonPrc)
 //			.setHeader("Content-Disposition", constant("attachment; filename=Rekon.csv"))
 		;
