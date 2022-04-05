@@ -63,7 +63,8 @@ public class FlattenIsoMessageService {
 
 		flatMsg.setMsgId(grpHdr.getMsgId());
 		
-		flatMsg.setCreDtTm(strTgl(grpHdr.getCreDtTm()));
+		flatMsg.setCreDtTm(grpHdr.getCreDtTm());
+//		flatMsg.setCreDtTm(strTgl(grpHdr.getCreDtTm()));
 		
 		OriginalGroupHeader17 orgnlGrpInf = new OriginalGroupHeader17();
 		if (busMsg.getDocument().getFiToFIPmtStsRpt().getOrgnlGrpInfAndSts().size()>0) {

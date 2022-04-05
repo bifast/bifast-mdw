@@ -27,4 +27,6 @@ Bugfix
 Bugfix
 - Channel response mandatori field must return json element
 
-
+28-Mar-2022
+Bugfix
+- Response unt PymStatus bukan Settlement, bizSvr=CLEAR

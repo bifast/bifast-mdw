@@ -28,7 +28,7 @@ public class ChnlAccountCustomerInfoResponsePojo {
 	private String debtorName;
 	@JsonProperty("DebtorType")
 	private String debtorType;
-	@JsonProperty("DebtorId")
+	@JsonProperty(value="DebtorId", required=true)
 	private String debtorId;
 	@JsonProperty("DebtorIdType")
 	private String debtorIdType;

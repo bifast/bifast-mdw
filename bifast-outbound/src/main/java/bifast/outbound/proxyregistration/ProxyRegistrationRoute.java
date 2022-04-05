@@ -18,6 +18,7 @@ import bifast.outbound.proxyinquiry.processor.ProxyResolutionRequestProcessor;
 import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 import bifast.outbound.proxyregistration.processor.ProxyRegistrationRequestProcessor;
 import bifast.outbound.proxyregistration.processor.ProxyRegistrationResponseProcessor;
+import bifast.outbound.proxyregistration.processor.PrxRegValidation;
 import bifast.outbound.proxyregistration.processor.StoreProxyRegistrationProcessor;
 import bifast.outbound.repository.ProxyRepository;
 
@@ -34,7 +35,8 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 	private StoreProxyRegistrationProcessor saveProxyRegnProc;
 	@Autowired ProxyEnrichmentAggregator prxyAggrStrg;
 	@Autowired ProxyRepository proxyRepo;	
-	
+	@Autowired PrxRegValidation prxRegValidation;	
+
 	JacksonDataFormat chnlResponseJDF = new JacksonDataFormat(ChannelResponseWrapper.class);
 
 	@Override
@@ -47,6 +49,15 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 		// Untuk Proses Proxy Registration Request
 
 		from("direct:prxyrgst").routeId("komi.prxyrgst")
+		
+			// unt sementara MB belum bisa aksses proxy registration
+			.process(prxRegValidation)
+			.filter().simple("${body.class} endsWith 'FaultPojo'")
+				.process(proxyRegistrationResponseProcessor)
+			.end()
+			.filter(body().isInstanceOf(ChnlProxyRegistrationRequestPojo.class))
+			//////////////
+			
 			.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Proxy started.")
 			

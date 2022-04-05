@@ -4,11 +4,11 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 	
 	private String msgId;
 	private String creDtTm;
-	private String OrgnlMsgId;
-	private String OrgnlMsgNmId;
-	private String OrgnlCreDtTm;
-	private String OrgnlEndToEndId;
-	private String OrgnlTxId;
+	private String orgnlMsgId;
+	private String orgnlMsgNmId;
+	private String orgnlCreDtTm;
+	private String orgnlEndToEndId;
+	private String orgnlTxId;
 	private String transactionStatus;
 	private String reasonCode;
 	private String rsnInfAddtlInf;
@@ -48,34 +48,34 @@ public class FlatPacs002Pojo extends FlatMessageBase {
 		this.creDtTm = creDtTm;
 	}
 	public String getOrgnlMsgId() {
-		return OrgnlMsgId;
+		return orgnlMsgId;
 	}
 	public void setOrgnlMsgId(String orgnlMsgId) {
-		OrgnlMsgId = orgnlMsgId;
+		this.orgnlMsgId = orgnlMsgId;
 	}
 	public String getOrgnlMsgNmId() {
-		return OrgnlMsgNmId;
+		return orgnlMsgNmId;
 	}
 	public void setOrgnlMsgNmId(String orgnlMsgNmId) {
-		OrgnlMsgNmId = orgnlMsgNmId;
+		this.orgnlMsgNmId = orgnlMsgNmId;
 	}
 	public String getOrgnlCreDtTm() {
-		return OrgnlCreDtTm;
+		return orgnlCreDtTm;
 	}
 	public void setOrgnlCreDtTm(String orgnlCreDtTm) {
-		OrgnlCreDtTm = orgnlCreDtTm;
+		this.orgnlCreDtTm = orgnlCreDtTm;
 	}
 	public String getOrgnlEndToEndId() {
-		return OrgnlEndToEndId;
+		return orgnlEndToEndId;
 	}
 	public void setOrgnlEndToEndId(String orgnlEndToEndId) {
-		OrgnlEndToEndId = orgnlEndToEndId;
+		this.orgnlEndToEndId = orgnlEndToEndId;
 	}
 	public String getOrgnlTxId() {
-		return OrgnlTxId;
+		return orgnlTxId;
 	}
 	public void setOrgnlTxId(String orgnlTxId) {
-		OrgnlTxId = orgnlTxId;
+		this.orgnlTxId = orgnlTxId;
 	}
 	public String getTransactionStatus() {
 		return transactionStatus;

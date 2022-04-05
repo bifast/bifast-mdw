@@ -75,15 +75,17 @@ public class ExceptionToFaultProcessor implements Processor {
 		}
 		else if (oFaultClass.isPresent()) {
 			
+			System.out.println("oFaultClass found");
 			fault.setResponseCode("KSTS");
 			String reasonCode = oFaultClass.get().getReason();
 			fault.setReasonCode(reasonCode);
 			fault.setReasonMessage(statusReasonRepo.findById(reasonCode).orElse(new StatusReason()).getDescription());
 		}
 		else {
+			System.out.println("oFaultClass not found");
 			fault.setResponseCode("RJCT");
 			fault.setReasonCode("U220");
-			fault.setReasonCode(statusReasonRepo.findById("U220").orElse(new StatusReason()).getDescription());
+			fault.setReasonMessage(statusReasonRepo.findById("U220").orElse(new StatusReason()).getDescription());
 		}
 
 

@@ -68,6 +68,7 @@ public class AcctCustInfoRoute extends RouteBuilder{
 						else
 							channelResponseWr.setReasonMessage("General Error");
 					}
+					
 					else {
 						AccountCustInfoResponseDTO cbResponse = (AccountCustInfoResponseDTO) oCbResponse;
 						

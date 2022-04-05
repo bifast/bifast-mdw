@@ -33,7 +33,7 @@ public class UpdateStatusSAFProcessor implements Processor{
 		ChannelTransaction ch = chnlTrnsRepo.findById(psReq.getKomiTrnsId()).orElse(new ChannelTransaction());
 		
 		
-		if (psReq.getPsStatus().equals("STTL_FOUND")) {
+		if (psReq.getPsStatus().equals("ACCEPTED")) {
 			
 			ct.setCallStatus("SUCCESS");
 			ct.setResponseCode(psReq.getResponseCode());
