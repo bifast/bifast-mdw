@@ -1,0 +1,237 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "OpenAPI definition",
+        "version": "v0"
+    },
+    "servers": [{
+            "url": "http://localhost:9008/",
+            "description": "Generated server url"
+        }
+    ],
+    "paths": {
+        "/api/event/save": {
+            "post": {
+                "tags": ["event-controller"],
+                "operationId": "save",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Event"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Event"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/monitoringApp/checkService": {
+            "get": {
+                "tags": ["monitoring-app-controller"],
+                "operationId": "getStorage",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MonitoringApp"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/monitoring/getMonitoringUsed": {
+            "get": {
+                "tags": ["monitoring-controller"],
+                "operationId": "getStorage_1",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Monitoring"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/event/getSource": {
+            "get": {
+                "tags": ["event-controller"],
+                "operationId": "getStorage_2",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Event": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "source": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "userId": {
+                        "type": "string"
+                    },
+                    "typeSubcribe": {
+                        "type": "string"
+                    },
+                    "accountNUmber": {
+                        "type": "string"
+                    },
+                    "transactionNumber": {
+                        "type": "string"
+                    },
+                    "referenseNumber": {
+                        "type": "string"
+                    },
+                    "accountNumberRecipient": {
+                        "type": "string"
+                    },
+                    "bankRecipient": {
+                        "type": "string"
+                    },
+                    "categoryEvent": {
+                        "type": "string"
+                    },
+                    "statusDistributed": {
+                        "type": "string"
+                    },
+                    "createDt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "modifDt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "KomiStatus": {
+                "type": "object",
+                "properties": {
+                    "InboundService": {
+                        "type": "string"
+                    },
+                    "OutboundService": {
+                        "type": "string"
+                    },
+                    "IsoAdapter": {
+                        "type": "string"
+                    },
+                    "Database": {
+                        "type": "string"
+                    },
+                    "CiConnector": {
+                        "type": "string"
+                    },
+                    "CoreBankSystem": {
+                        "type": "string"
+                    }
+                }
+            },
+            "MonitoringApp": {
+                "type": "object",
+                "properties": {
+                    "KomiStatus": {
+                        "$ref": "#/components/schemas/KomiStatus"
+                    }
+                }
+            },
+            "Disk": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "size": {
+                        "type": "string"
+                    },
+                    "used": {
+                        "type": "string"
+                    },
+                    "available": {
+                        "type": "string"
+                    },
+                    "percent": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Memory": {
+                "type": "object",
+                "properties": {
+                    "totalMemory": {
+                        "type": "string"
+                    },
+                    "usedMemory": {
+                        "type": "string"
+                    },
+                    "availableMemory": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Monitoring": {
+                "type": "object",
+                "properties": {
+                    "disk": {
+                        "$ref": "#/components/schemas/Disk"
+                    },
+                    "processor": {
+                        "$ref": "#/components/schemas/Processor"
+                    },
+                    "memory": {
+                        "$ref": "#/components/schemas/Memory"
+                    }
+                }
+            },
+            "Processor": {
+                "type": "object",
+                "properties": {
+                    "used": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                }
+            }
+        }
+    }
