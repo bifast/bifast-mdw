@@ -26,7 +26,7 @@ public class FraudDetectRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 		
-		JacksonDataFormat inputJDF = jdfService.wrapUnwrapRoot(FdsInputDAO.class);
+		JacksonDataFormat inputJDF = jdfService.basic(FdsInputDAO.class);
 		JacksonDataFormat outputJDF = jdfService.wrapUnwrapRoot(FdsResponseListDAO.class);
 		
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //

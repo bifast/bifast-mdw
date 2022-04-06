@@ -48,11 +48,11 @@ public class ValidateProcessor implements Processor  {
 		String msgType = rmw.getMsgName();
 
 //		// noRef tidak boleh duplikat
-		List<ChannelTransaction> lChnlTrns = chnlTrnsRepo.findByChannelIdAndChannelRefId(channelid, noref); 
 		if ((msgType.equals("AEReq")) ||
 		 	(msgType.equals("CTReq")) || 
 		 	(msgType.equals("PrxRegn")) ) 
 		{
+			List<ChannelTransaction> lChnlTrns = chnlTrnsRepo.findByChannelIdAndChannelRefId(channelid, noref); 
 			if (lChnlTrns.size()>0) 
 				throw new DuplicateIdException("Nomor RefId duplikat");
 		}
@@ -63,21 +63,19 @@ public class ValidateProcessor implements Processor  {
 		
 		//TODO format data input
 		
-		//TODO sesuai domaincode, daftar bank
+		//TODO sesuai domaincode
 		
 		Object objRequest = exchange.getIn().getBody(Object.class);
 		
 		Boolean validatePurpose = false;
 
 		
-//		if (msgType.equals("AEReq")) {
-		if (rmw.getChannelRequest().getClass().getSimpleName().equals("ChnlAccountEnquiryRequestPojo")) {
-			ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
-			validationService.validateAccountEnquiryRequest(aeReq);
-		}
+//		if (rmw.getChannelRequest().getClass().getSimpleName().equals("ChnlAccountEnquiryRequestPojo")) {
+//			ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
+//			validationService.validateAccountEnquiryRequest(aeReq);
+//		}
 		
-//		else if (msgType.equals("CTReq")) {
-		else if (rmw.getChannelRequest().getClass().getSimpleName().equals("ChnlCreditTransferRequestPojo")) {
+		if (rmw.getChannelRequest().getClass().getSimpleName().equals("ChnlCreditTransferRequestPojo")) {
 			ChnlCreditTransferRequestPojo req = rmw.getChnlCreditTransferRequest();
 			validationService.validateCreditTransferRequest(req);
 		}

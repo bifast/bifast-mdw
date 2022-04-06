@@ -27,19 +27,26 @@ public class ValidateAEProcessor implements Processor{
 			DomainCode domain = domainRepo.findByGrpAndKey("CATEGORY.PURPOSE", aeReq.getCategoryPurpose()).orElseThrow();
 		}
 		catch(NoSuchElementException ne) {
-			throw new InputValidationException ("Category Purpose type error");
+			throw new InputValidationException ("Input Error: Category Purpose error");
 		}
 		
-		if (null == aeReq.getCreditorAccountNumber()) {
-			if (null == aeReq.getProxyId())
+		if ((null == aeReq.getCreditorAccountNumber() || aeReq.getCreditorAccountNumber().isBlank())) {
+			if ((null == aeReq.getProxyId() || aeReq.getProxyId().isBlank()))
 				throw new InputValidationException("CreditorAccountNumber atau ProxyId/ProxyType tidak boleh kosong.");
-			if (null == aeReq.getProxyType())
+			if ((null == aeReq.getProxyType() || aeReq.getProxyType().isBlank()))
 				throw new InputValidationException("CreditorAccountNumber atau ProxyId/ProxyType tidak boleh kosong.");
 		}
 		
 		if ((null != aeReq.getCreditorAccountNumber()) && (null == aeReq.getRecptBank())) 
 			throw new InputValidationException("RecipientBank tidak boleh kosong.");
 
+		String pattern = "^\\d+\\.\\d\\d";
+		if (!(aeReq.getAmount().matches(pattern))) 
+			throw new InputValidationException("Format Amount salah.");
+		if (aeReq.getAmount().length() > 19)
+				throw new InputValidationException("Format Amount salah.");	
+
 	}
+
 
 }

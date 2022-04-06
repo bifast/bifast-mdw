@@ -48,6 +48,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 		onException(Exception.class).routeId("komi.endpointRoute.onException")
 			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+			
 			.process(exceptionProcessor)
 			.marshal(chnlResponseJDF)
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${exchangeProperty.prop_request_list.msgName}:"
@@ -103,6 +104,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					chnlTrns.setMsgName(rmw.getMsgName());
 					chnlTrns.setTextMessage(fullTextInput);
 					channelTransactionRepo.save(chnlTrns);
+//					System.out.println("sudah save: " + chnlTrns.getKomiTrnsId());
 				}
 			})
 

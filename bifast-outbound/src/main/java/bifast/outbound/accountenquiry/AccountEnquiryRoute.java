@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.accountenquiry.processor.AEFaultResponseProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryRequestProcessor;
 import bifast.outbound.accountenquiry.processor.AccountEnquiryResponseProcessor;
+import bifast.outbound.accountenquiry.processor.ValidateAEProcessor;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.processor.ExceptionProcessor;
 import bifast.outbound.proxyinquiry.pojo.ChnlProxyResolutionRequestPojo;
 import bifast.outbound.proxyinquiry.processor.ProxyResolutionRequestProcessor;
 import bifast.outbound.service.JacksonDataFormatService;
@@ -23,18 +24,20 @@ public class AccountEnquiryRoute extends RouteBuilder{
 
 	@Autowired private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
-	@Autowired private ExceptionProcessor exceptionProcessor;
+	@Autowired private AEFaultResponseProcessor faultResponseProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
 //	@Autowired private SaveAccountEnquiryProcessor saveAccountEnquiryProcessor;
+	@Autowired private ValidateAEProcessor validateAEProc;
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat chnlResponseJDF = jdfService.basic(ChannelResponseWrapper.class);
+		JacksonDataFormat chnlResponseJDF = jdfService.basicPrettyPrint(ChannelResponseWrapper.class);
 
 		onException(Exception.class).routeId("komi.acctenq.onException")
 			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-			.process(exceptionProcessor)
+			.process(faultResponseProcessor)
+			.to("seda:savetablechannel?exchangePattern=InOnly")
 			.marshal(chnlResponseJDF)
 			.removeHeaders("*")
 	    	.handled(true)
@@ -43,6 +46,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 
 		from("direct:acctenqr").routeId("komi.acctenq")
 			
+			.process(validateAEProc)
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
