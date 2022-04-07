@@ -12,6 +12,10 @@ Upgrade
 Bugfix :
 - response CreDtTm as String
 
-31-Mar-2002
+31-Mar-2022
 Bugfix :
 - CreDtTm pada pacs.028 (payment status) 
+
+7-Apr-2022
+BugFix :
+- SettlementSAF, jika response U106 maka status CT.settlement = NOTFOUND

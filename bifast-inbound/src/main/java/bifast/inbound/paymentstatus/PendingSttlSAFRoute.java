@@ -104,6 +104,8 @@ public class PendingSttlSAFRoute extends RouteBuilder {
 			.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[$PymSts:${exchangeProperty.pr_psrequest.endToEndId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+				.setProperty("pr_psresponse", constant("ERROR"))
+				.setProperty("pr_psresponse", constant(""))
 //		    	.process(exceptionToFaultMap)
 			.end()
 
