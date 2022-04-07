@@ -1,91 +1,25 @@
 package bifast.outbound.fraud.dao;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class FdsResponseDAO {
 
-	private String TransactionDateTime;
-	private String ScoringScore;
-	private String Grade;
-	private String TriggeredRules;
-	private String AssignedUser;
-	private String AssignedTeam;
-	private String Alert;
-	private String RiskLevel;
-	private String RuleDecision;
-	private String RandomNumber;
-	private String ActionsQueued;
-	private String MachineLearningScore;
+	@JsonProperty("Transaction")
+	private FdsTransactionResponseDAO transaction;
+	@JsonProperty("Role")
+	private String role;
 	
-	public String getTransactionDateTime() {
-		return TransactionDateTime;
+	public FdsTransactionResponseDAO getTransaction() {
+		return transaction;
 	}
-	public void setTransactionDateTime(String transactionDateTime) {
-		TransactionDateTime = transactionDateTime;
+	public void setTransaction(FdsTransactionResponseDAO transaction) {
+		this.transaction = transaction;
 	}
-	public String getScoringScore() {
-		return ScoringScore;
+	public String getRole() {
+		return role;
 	}
-	public void setScoringScore(String scoringScore) {
-		ScoringScore = scoringScore;
-	}
-	public String getGrade() {
-		return Grade;
-	}
-	public void setGrade(String grade) {
-		Grade = grade;
-	}
-	public String getTriggeredRules() {
-		return TriggeredRules;
-	}
-	public void setTriggeredRules(String triggeredRules) {
-		TriggeredRules = triggeredRules;
-	}
-	public String getAssignedUser() {
-		return AssignedUser;
-	}
-	public void setAssignedUser(String assignedUser) {
-		AssignedUser = assignedUser;
-	}
-	public String getAssignedTeam() {
-		return AssignedTeam;
-	}
-	public void setAssignedTeam(String assignedTeam) {
-		AssignedTeam = assignedTeam;
-	}
-	public String getAlert() {
-		return Alert;
-	}
-	public void setAlert(String alert) {
-		Alert = alert;
-	}
-	public String getRiskLevel() {
-		return RiskLevel;
-	}
-	public void setRiskLevel(String riskLevel) {
-		RiskLevel = riskLevel;
-	}
-	public String getRuleDecision() {
-		return RuleDecision;
-	}
-	public void setRuleDecision(String ruleDecision) {
-		RuleDecision = ruleDecision;
-	}
-	public String getRandomNumber() {
-		return RandomNumber;
-	}
-	public void setRandomNumber(String randomNumber) {
-		RandomNumber = randomNumber;
-	}
-	public String getActionsQueued() {
-		return ActionsQueued;
-	}
-	public void setActionsQueued(String actionsQueued) {
-		ActionsQueued = actionsQueued;
-	}
-	public String getMachineLearningScore() {
-		return MachineLearningScore;
-	}
-	public void setMachineLearningScore(String machineLearningScore) {
-		MachineLearningScore = machineLearningScore;
+	public void setRole(String role) {
+		this.role = role;
 	}
 	
 	

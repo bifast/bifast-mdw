@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.fraud.dao.FdsInputDAO;
 import bifast.outbound.fraud.dao.FdsResponseDAO;
-import bifast.outbound.fraud.dao.FdsResponseListDAO;
+import bifast.outbound.fraud.dao.FdsResponseList;
 import bifast.outbound.fraud.processor.FdsInputProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.service.JacksonDataFormatService;
@@ -27,9 +27,8 @@ public class FraudDetectRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		JacksonDataFormat inputJDF = jdfService.basic(FdsInputDAO.class);
-		JacksonDataFormat outputJDF = jdfService.wrapUnwrapRoot(FdsResponseListDAO.class);
+		JacksonDataFormat outputJDF = jdfService.basic(FdsResponseList.class);
 		
-		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
 		from("direct:call-fds").routeId("komi.fds")
 
 			.setHeader("tmp_body", simple("${body}"))
@@ -40,10 +39,11 @@ public class FraudDetectRoute extends RouteBuilder {
 			
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
-
+				.setHeader("PS-API-Key", constant("d9657164-83ff-4641-a9a9-edb30c8b78b9"))
+				
 				.enrich()
 					.simple("{{komi.url.fds}}?"
-						+ "socketTimeout=1000&bridgeEndpoint=true")
+						+ "socketTimeout=2000&bridgeEndpoint=true")
 					.aggregationStrategy(enrichmentAggregator)
 				
 				.convertBodyTo(String.class)				
@@ -53,9 +53,9 @@ public class FraudDetectRoute extends RouteBuilder {
 								
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
-						FdsResponseListDAO responseList = exchange.getMessage().getBody(FdsResponseListDAO.class);
-						FdsResponseDAO response = responseList.getResponseList().get(0);
-						if (response.getRuleDecision().equals("02"))
+						FdsResponseList responseList = exchange.getMessage().getBody(FdsResponseList.class);
+						FdsResponseDAO response = responseList.get(0);
+						if (response.getTransaction().getRuleDecision().equals("02"))
 							exchange.setProperty("prop_fds", "Decline");
 						else
 							exchange.setProperty("prop_fds", "Pass");

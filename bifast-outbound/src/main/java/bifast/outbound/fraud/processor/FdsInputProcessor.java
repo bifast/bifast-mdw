@@ -8,7 +8,9 @@ import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
+import bifast.outbound.fraud.dao.FdsChannelInputDAO;
 import bifast.outbound.fraud.dao.FdsInputDAO;
+import bifast.outbound.fraud.dao.FdsTransactionInputDAO;
 import bifast.outbound.pojo.RequestMessageWrapper;
 
 @Component
@@ -20,7 +22,7 @@ public class FdsInputProcessor implements Processor{
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlCreditTransferRequestPojo chnReq = rmw.getChnlCreditTransferRequest();
 		
-		FdsInputDAO input = new FdsInputDAO();
+		FdsTransactionInputDAO input = new FdsTransactionInputDAO();
 		input.setTanggal(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
 		input.setChannel(rmw.getChannelId());
@@ -57,7 +59,11 @@ public class FdsInputProcessor implements Processor{
 		
 		input.setTransactionCode(chnReq.getCategoryPurpose());
 		
-		exchange.getMessage().setBody(input);
+		FdsInputDAO inp = new FdsInputDAO();
+		inp.setChannel(new FdsChannelInputDAO("C01"));
+		inp.setTransaction(input);
+		
+		exchange.getMessage().setBody(inp);
 	}
 
 }
