@@ -127,7 +127,7 @@ public class FlattenIsoMessageService {
 				
 		}
 		
-		if (!(null == txInfAndSts.getSplmtryData())) {
+		if (txInfAndSts.getSplmtryData().size() > 0) {
 			
 			if (!(null == txInfAndSts.getSplmtryData().get(0).getEnvlp().getDtl().getDbtr())) {
 			

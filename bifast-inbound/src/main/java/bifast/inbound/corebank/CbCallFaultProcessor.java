@@ -58,7 +58,10 @@ public class CbCallFaultProcessor implements Processor {
 		}
 
 		exchange.getMessage().setBody(fault, FaultPojo.class);
-			
+		exchange.getMessage().setHeader("cb_response", fault.getResponseCode());
+		exchange.getMessage().setHeader("cb_reason", fault.getReasonCode());
+		
+		
 	}
 
 }

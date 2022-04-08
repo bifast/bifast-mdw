@@ -16,6 +16,9 @@ Bugfix :
 Bugfix :
 - CreDtTm pada pacs.028 (payment status) 
 
-7-Apr-2022
+8-Apr-2022
 BugFix :
+- Upgrade Spring Boot 2.5.12 
 - SettlementSAF, jika response U106 maka status CT.settlement = NOTFOUND
+- PaymentStatusSAF, no bizmsgidr ubah dari RFI jadi OFI
+- Flat002.CrdtAgnFinInstId diganti CT.orgnlBank/recptBank

@@ -110,7 +110,8 @@ public class PendingSttlSAFRoute extends RouteBuilder {
 			.end()
 
 			.process(updatePendingCT) 
-			.filter(exchangeProperty("pr_psresponse").isNotEqualTo("TIMEOUT"))		
+//			.filter(exchangeProperty("pr_psresponse").isNotEqualTo("TIMEOUT"))		
+//			.filter(exchangeProperty("pr_psresponse").isNotEqualTo("ERROR"))		
 
 			// kalo terima settlement, forward ke Inbound Service
 			.filter().simple("${exchangeProperty.pr_psresponse} == 'ACSC'")

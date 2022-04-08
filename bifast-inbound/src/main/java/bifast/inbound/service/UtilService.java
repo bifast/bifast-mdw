@@ -33,7 +33,14 @@ public class UtilService {
 		return msgId;
 	}
 
-	
+	public String genOfiBusMsgId (String trxType, String komiTrnsId) {
+
+		String komiId = komiTrnsId.substring(9);
+		String strToday = LocalDateTime.now().format(formatter);
+		String msgId = strToday + config.getBankcode() + trxType + "O99" +komiId;
+		return msgId;
+	}
+
 	public String genMsgId (String trxType, String komiTrnsId) {
 		String strToday = LocalDateTime.now().format(formatter);
 		String komiId = komiTrnsId.substring(9);
