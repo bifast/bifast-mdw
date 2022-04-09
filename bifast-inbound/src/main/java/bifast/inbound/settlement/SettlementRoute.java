@@ -38,7 +38,6 @@ public class SettlementRoute extends RouteBuilder {
 	 		.process(new Processor () {
 				public void process(Exchange exchange) throws Exception {
 					String e2eid = exchange.getProperty("end2endid", String.class);
-					logger.debug("Settlement End2EndId: " + e2eid);
 					Optional<CreditTransfer> oOrgnlCT = ctRepo.getSuccessByEndToEndId(e2eid);
 					String settlment_ctType = "";
 
@@ -73,7 +72,8 @@ public class SettlementRoute extends RouteBuilder {
 
 //					.process(jobWakeupProcessor)
 					.to("controlbus:route?routeId=komi.ct.saf&action=resume&async=true")
-				.otherwise()
+				.when().simple("${exchangeProperty.pr_sttlType} == 'Outbound'")
+//				.otherwise()
 					.process(settlementDebitProcessor)
 					.to("direct:isoadpt-sttl")
 //					.to("direct:isoadpt")
