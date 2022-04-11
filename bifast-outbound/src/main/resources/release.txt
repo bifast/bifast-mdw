@@ -30,3 +30,7 @@ Bugfix
 28-Mar-2022
 Bugfix
 - Response unt PymStatus bukan Settlement, bizSvr=CLEAR
+
+11-Apr-2022
+Bugfix
+- Perbaikan timeout dari ISOAdapter masih diloloskan ke CIHUB

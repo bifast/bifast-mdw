@@ -56,29 +56,11 @@ public class CbCallFaultProcessor implements Processor {
 
 		ResponseMessageCollection respColl = exchange.getProperty("prop_response_list",ResponseMessageCollection.class);
 		respColl.setFault(fault);
-
-//		String reqName = exchange.getProperty("pr_cbRequestName", String.class); 
-//		if (reqName.equals("accountcustinfo")) {
-//			AccountCustInfoResponseDTO resp = new AccountCustInfoResponseDTO();
-//			resp.setReason(reason);
-//			resp.setStatus(response);
-//			exchange.getMessage().setBody(resp, AccountCustInfoResponseDTO.class);
-//		}
-//
-//		else if (reqName.equals("debit")) {
-//			DebitResponseDTO resp = new DebitResponseDTO();
-//			resp.setReason(reason);
-//			resp.setStatus(response);
-//			exchange.getMessage().setBody(resp, AccountCustInfoResponseDTO.class);
-//		}
-//		
-//		else if (reqName.equals("debitreversal")) {
-//			DebitReversalResponsePojo resp = new DebitReversalResponsePojo();
-//			resp.setReason(reason);
-//			resp.setStatus(response);
-//			exchange.getMessage().setBody(resp, DebitReversalResponsePojo.class);
-//		}
+		
+		exchange.setProperty("pr_response", "ERROR");
+		exchange.setProperty("pr_reason", fault.getReasonCode());
 			
-	}
+	} 				
+
 
 }
