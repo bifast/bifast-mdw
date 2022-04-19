@@ -34,3 +34,6 @@ Bugfix
 11-Apr-2022
 Bugfix
 - Perbaikan timeout dari ISOAdapter masih diloloskan ke CIHUB
+
+18-Apr-2022
+CR: proxyRegistration untuk mobilbanking enabled
