@@ -44,7 +44,7 @@ public class SettlementRoute extends RouteBuilder {
 					if (oOrgnlCT.isPresent()) {
 						CreditTransfer orgnlCT = oOrgnlCT.get();
 						exchange.setProperty("pr_orgnlCT", orgnlCT);
-						logger.debug("OrgnlCT.req_bizmsgidr: " + orgnlCT.getCrdtTrnRequestBizMsgIdr());
+						logger.debug("[Settl:" +e2eid+ "] OrgnlCT.req_bizmsgidr: " + orgnlCT.getCrdtTrnRequestBizMsgIdr());
 						
 						if (orgnlCT.getOriginatingBank().equals(config.getBankcode())) 
 							settlment_ctType = "Outbound";

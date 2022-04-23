@@ -37,3 +37,8 @@ Bugfix
 
 18-Apr-2022
 CR: proxyRegistration untuk mobilbanking enabled
+
+23-Apr-2022
+Bugfix
+- CT message pacs008 cdtr.id boleh/bisa null
+
