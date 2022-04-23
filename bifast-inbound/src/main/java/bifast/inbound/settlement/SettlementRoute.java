@@ -6,13 +6,13 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.inbound.config.Config;
 import bifast.inbound.model.CreditTransfer;
-import bifast.inbound.pojo.ProcessDataPojo;
-import bifast.inbound.pojo.flat.FlatPacs002Pojo;
 import bifast.inbound.repository.CreditTransferRepository;
 
 @Component
@@ -22,6 +22,8 @@ public class SettlementRoute extends RouteBuilder {
 	@Autowired private SaveSettlementMessageProcessor saveSettlement;
 	@Autowired private SettlementDebitProcessor settlementDebitProcessor;
 //	@Autowired private SettlementCreditProcessor settlementCreditProcessor;
+
+	private static Logger logger = LoggerFactory.getLogger(SettlementRoute.class);
 
 	@Override
 	public void configure() throws Exception {
@@ -37,15 +39,22 @@ public class SettlementRoute extends RouteBuilder {
 				public void process(Exchange exchange) throws Exception {
 					String e2eid = exchange.getProperty("end2endid", String.class);
 					Optional<CreditTransfer> oOrgnlCT = ctRepo.getSuccessByEndToEndId(e2eid);
+					String settlment_ctType = "";
+
 					if (oOrgnlCT.isPresent()) {
 						CreditTransfer orgnlCT = oOrgnlCT.get();
 						exchange.setProperty("pr_orgnlCT", orgnlCT);
+						logger.debug("[Settl:" +e2eid+ "] OrgnlCT.req_bizmsgidr: " + orgnlCT.getCrdtTrnRequestBizMsgIdr());
+						
+						if (orgnlCT.getOriginatingBank().equals(config.getBankcode())) 
+							settlment_ctType = "Outbound";
+						else
+							settlment_ctType = "Inbound";
 					}
-					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-					FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
-					String settlment_ctType = "Outbound";
-					if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
-						settlment_ctType = "Inbound";
+//					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
+//					FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
+//					if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
+//						settlment_ctType = "Inbound";
 					exchange.setProperty("pr_sttlType", settlment_ctType);
 
 				}
@@ -63,7 +72,8 @@ public class SettlementRoute extends RouteBuilder {
 
 //					.process(jobWakeupProcessor)
 					.to("controlbus:route?routeId=komi.ct.saf&action=resume&async=true")
-				.otherwise()
+				.when().simple("${exchangeProperty.pr_sttlType} == 'Outbound'")
+//				.otherwise()
 					.process(settlementDebitProcessor)
 					.to("direct:isoadpt-sttl")
 //					.to("direct:isoadpt")

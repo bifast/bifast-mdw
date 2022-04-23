@@ -4,10 +4,13 @@ import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import bifast.inbound.config.Config;
 import bifast.inbound.corebank.isopojo.SettlementRequest;
 import bifast.inbound.model.ChannelTransaction;
 import bifast.inbound.model.CreditTransfer;
@@ -19,6 +22,7 @@ import bifast.inbound.service.RefUtils;
 @Component
 public class SettlementDebitProcessor implements Processor {
 	@Autowired private ChannelTransactionRepository chnlTrnsRepo;
+	@Autowired private Config config;
 
 	@Value("${komi.isoadapter.merchant}")
 	String merchant;
@@ -29,7 +33,7 @@ public class SettlementDebitProcessor implements Processor {
 	@Value("${komi.isoadapter.txid}")
 	String txid;
 
-//	private static Logger logger = LoggerFactory.getLogger(SettlementProcessor.class);
+	private static Logger logger = LoggerFactory.getLogger(SettlementDebitProcessor.class);
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -38,7 +42,8 @@ public class SettlementDebitProcessor implements Processor {
 		FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
 
 		CreditTransfer ct = exchange.getProperty("pr_orgnlCT", CreditTransfer.class);
-		
+		logger.debug("OrgnlCT.req_bizmsgidr: " + ct.getCrdtTrnRequestBizMsgIdr());
+
 		SettlementRequest sttlRequest = new SettlementRequest();
 
 		RefUtils.Ref ref = RefUtils.newRef();
@@ -56,7 +61,10 @@ public class SettlementDebitProcessor implements Processor {
 		sttlRequest.setBizMsgId(ct.getCrdtTrnRequestBizMsgIdr());
 		sttlRequest.setMsgId(flatSttl.getOrgnlEndToEndId());
 		
-		sttlRequest.setCounterParty(flatSttl.getCdtrAgtFinInstnId());
+		if (ct.getOriginatingBank().equals(config.getBankcode()))
+			sttlRequest.setCounterParty(ct.getRecipientBank());
+		else
+			sttlRequest.setCounterParty(ct.getOriginatingBank());
 
 		Optional<ChannelTransaction> oChnlTrns = chnlTrnsRepo.findByKomiTrnsId(ct.getKomiTrnsId());
 		if (oChnlTrns.isPresent())

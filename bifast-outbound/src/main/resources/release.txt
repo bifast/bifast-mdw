@@ -34,3 +34,15 @@ Bugfix
 6-Apr-2022
 Feature
 - Fault Detection System on CTRequest
+
+11-Apr-2022
+Bugfix
+- Perbaikan timeout dari ISOAdapter masih diloloskan ke CIHUB
+
+18-Apr-2022
+CR: proxyRegistration untuk mobilbanking enabled
+
+23-Apr-2022
+Bugfix
+- CT message pacs008 cdtr.id boleh/bisa null
+

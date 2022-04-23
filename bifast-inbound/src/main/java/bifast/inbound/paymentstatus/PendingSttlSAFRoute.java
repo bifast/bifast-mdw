@@ -104,11 +104,14 @@ public class PendingSttlSAFRoute extends RouteBuilder {
 			.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[$PymSts:${exchangeProperty.pr_psrequest.endToEndId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+				.setProperty("pr_psresponse", constant("ERROR"))
+				.setProperty("pr_psresponse", constant(""))
 //		    	.process(exceptionToFaultMap)
 			.end()
 
 			.process(updatePendingCT) 
-			.filter(exchangeProperty("pr_psresponse").isNotEqualTo("TIMEOUT"))		
+//			.filter(exchangeProperty("pr_psresponse").isNotEqualTo("TIMEOUT"))		
+//			.filter(exchangeProperty("pr_psresponse").isNotEqualTo("ERROR"))		
 
 			// kalo terima settlement, forward ke Inbound Service
 			.filter().simple("${exchangeProperty.pr_psresponse} == 'ACSC'")

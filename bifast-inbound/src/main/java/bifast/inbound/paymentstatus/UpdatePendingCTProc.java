@@ -17,12 +17,17 @@ public class UpdatePendingCTProc implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		String response = exchange.getProperty("pr_psresponse", String.class);
+		String reason = exchange.getProperty("pr_psreason", String.class);
 		CTQryDTO qry = exchange.getProperty("pr_psrequest", CTQryDTO.class);
 		CreditTransfer ct = ctRepo.findById(qry.getId()).orElse(new CreditTransfer());
 		ct.setPsCounter(ct.getPsCounter()+1);
 		ct.setLastUpdateDt(LocalDateTime.now());
 		if (response.equals("ACSC")) 
 			ct.setCbStatus("DONE");
+		
+		if (reason.equals("U106"))
+			ct.setSettlementConfBizMsgIdr("NOTFOUND");
+		
 		ctRepo.save(ct);		
 	}
 

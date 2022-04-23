@@ -25,7 +25,7 @@ public class BuildPSSAFRequestProcessor implements Processor{
 		
 		CTQryDTO req = exchange.getProperty("pr_psrequest", CTQryDTO.class);
 		
-		String bizMsgId = utilService.genRfiBusMsgId("000", req.getKomiTrnsId());
+		String bizMsgId = utilService.genOfiBusMsgId("000", req.getKomiTrnsId());
 		String msgId = utilService.genMsgId("000", req.getKomiTrnsId());
 
 		Pacs028Seed seed = new Pacs028Seed();

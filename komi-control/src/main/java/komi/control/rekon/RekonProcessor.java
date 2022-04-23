@@ -18,7 +18,7 @@ public class RekonProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		String tgl = exchange.getMessage().getHeader("date", String.class);
+		String tgl = exchange.getMessage().getHeader("tanggal", String.class);
         StringBuffer sb = new StringBuffer();
         sb.append("NOREF, END2ENDID, NOREK, NAMA, TRANSACTIONTYPE, CREDITAMT, DEBITAMT, COUNTERPTBANK, REASON, RESPONSE, SETTLSTATUS\n");
         
