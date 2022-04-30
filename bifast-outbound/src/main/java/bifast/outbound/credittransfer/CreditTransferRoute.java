@@ -7,6 +7,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.credittransfer.processor.AftDebitCallProc;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
 import bifast.outbound.credittransfer.processor.BuildDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
@@ -21,13 +22,14 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
 	@Autowired private StoreCreditTransferProcessor saveCrdtTrnsProcessor;
 	@Autowired private DebitRejectResponseProc debitRejectResponseProc;
+	@Autowired private AftDebitCallProc afterDebitCallProc;
 	
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
     
 	@Override
 	public void configure() throws Exception {
-    
+	
 		from("direct:credittrns").routeId("komi.ct")
 			
 			.setHeader("ct_progress", constant("Start"))
@@ -41,17 +43,19 @@ public class CreditTransferRoute extends RouteBuilder {
 				.process(buildDebitRequestProcessor)
 
 				.to("direct:isoadpt")
+				.process(afterDebitCallProc)
 			.end()
 		
-	    	.log(LoggingLevel.DEBUG, "komi.ct", 
-	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-1: ${body}.")
-			// periksa hasil debit-account. Jika failure raise exception
-			.filter().simple("${body.class} endsWith 'FaultPojo'")
-				.process(debitRejectResponseProc)
-		    	.log(LoggingLevel.ERROR, "komi.ct", 
-		    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Debit account gagal.")
-				.to("seda:logportal?exchangePattern=InOnly")
-			.end()
+			.stop()
+	    	// .log(LoggingLevel.DEBUG, "komi.ct", 
+	    	// 		"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-1: ${body}.")
+			// // periksa hasil debit-account. Jika failure raise exception
+			// .filter().simple("${body.class} endsWith 'FaultPojo'")
+			// 	.process(debitRejectResponseProc)
+		    // 	.log(LoggingLevel.ERROR, "komi.ct", 
+		    // 			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Debit account gagal.")
+			// 	.to("seda:logportal?exchangePattern=InOnly")
+			// .end()
 			
 	    	.log(LoggingLevel.DEBUG, "komi.ct", 
 	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-2: ${exchangeProperty.pr_response}.")

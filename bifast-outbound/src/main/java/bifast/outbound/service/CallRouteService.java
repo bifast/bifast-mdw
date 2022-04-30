@@ -51,4 +51,9 @@ public class CallRouteService {
 			routeCtl.resumeRoute(route);
 	}
 
+	public Object callRoute (Exchange exchange, String to) {
+		FluentProducerTemplate template = exchange.getContext().createFluentProducerTemplate();
+		Object result = template.withExchange(exchange).to(to).request(Object.class);
+		return result;
+	}
 }
