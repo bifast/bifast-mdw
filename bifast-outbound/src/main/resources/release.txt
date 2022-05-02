@@ -42,3 +42,6 @@ CR: proxyRegistration untuk mobilbanking enabled
 Bugfix
 - CT message pacs008 cdtr.id boleh/bisa null
 
+3-May-2022
+Bugfix
+- CT dg response-504 dari isoadapter execute debit-reversal
