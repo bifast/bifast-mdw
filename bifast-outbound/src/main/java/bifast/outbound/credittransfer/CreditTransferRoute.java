@@ -45,8 +45,8 @@ public class CreditTransferRoute extends RouteBuilder {
 				.to("direct:isoadpt")
 				.process(afterDebitCallProc)
 			.end()
-		
-			.stop()
+
+			.log("${body.class}")
 	    	// .log(LoggingLevel.DEBUG, "komi.ct", 
 	    	// 		"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-1: ${body}.")
 			// // periksa hasil debit-account. Jika failure raise exception
@@ -60,6 +60,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	    	.log(LoggingLevel.DEBUG, "komi.ct", 
 	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-2: ${exchangeProperty.pr_response}.")
 
+//			.stop()
 	    	.filter(exchangeProperty("pr_response").isEqualTo("ACTC"))
 
 			.log(LoggingLevel.DEBUG, "komi.ct", 

@@ -17,6 +17,7 @@ import bifast.outbound.corebank.pojo.DebitResponseDTO;
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
 import bifast.outbound.corebank.processor.CbCallFaultProcessor;
+import bifast.outbound.corebank.processor.SaveCBTableProcessor;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.ResponseMessageCollection;

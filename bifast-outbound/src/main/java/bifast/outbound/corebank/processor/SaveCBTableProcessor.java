@@ -1,4 +1,4 @@
-package bifast.outbound.corebank;
+package bifast.outbound.corebank.processor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -51,6 +51,7 @@ public class SaveCBTableProcessor implements Processor{
 		ObjectMapper mapper = new ObjectMapper();
 	    mapper.setSerializationInclusion(Include.NON_NULL);
 	    
+	    System.out.println(requestClassName);
 		if (requestClassName.equals("DebitRequestDTO")) {
 
 			DebitRequestDTO debitReq = (DebitRequestDTO) oCbRequest;

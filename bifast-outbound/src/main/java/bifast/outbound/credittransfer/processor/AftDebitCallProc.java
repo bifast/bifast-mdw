@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class AftDebitCallProc implements Processor{
 
         Object body = exchange.getMessage().getBody(Object.class);
         String bodyClass = body.getClass().getSimpleName();
-        RequestMessageWrapper requestWrapper = exchange.getProperty("prop_request_list", RequestMessageWrapper.class )
+        RequestMessageWrapper requestWrapper = exchange.getProperty("prop_request_list", RequestMessageWrapper.class );
 
         if (bodyClass.equals("FaultPojo")) {
             //
@@ -42,7 +43,10 @@ public class AftDebitCallProc implements Processor{
             FaultPojo fault = (FaultPojo) body;
             if (fault.getReasonCode().equals("U900")) {
                 logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] akan debitreversal.");
-                routeService.callRoute(exchange, "direct:debitreversal");
+//        		CamelContext context = exchange.getContext();
+        		exchange.getContext().createProducerTemplate().send("direct:debitreversal", exchange);
+
+//                routeService.callRoute(exchange, "direct:debitreversal");
             }
 
             ChannelResponseWrapper response = debitRejectResponse (exchange);

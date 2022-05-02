@@ -1,4 +1,4 @@
-package bifast.outbound.corebank;
+package bifast.outbound.corebank.processor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

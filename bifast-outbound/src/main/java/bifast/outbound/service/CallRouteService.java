@@ -1,10 +1,13 @@
 package bifast.outbound.service;
 
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.FluentProducerTemplate;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.spi.RouteController;
+import org.apache.camel.support.DefaultExchange;
 import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -52,8 +55,13 @@ public class CallRouteService {
 	}
 
 	public Object callRoute (Exchange exchange, String to) {
-		FluentProducerTemplate template = exchange.getContext().createFluentProducerTemplate();
-		Object result = template.withExchange(exchange).to(to).request(Object.class);
+//		FluentProducerTemplate template = exchange.getContext().createFluentProducerTemplate();
+//		Object result = template.to(to).request(Object.class);
+		
+		CamelContext context = exchange.getContext();
+		context.createProducerTemplate().send(to, exchange);
+		Object result = exchange.getMessage().getBody(Object.class);
+
 		return result;
 	}
 }

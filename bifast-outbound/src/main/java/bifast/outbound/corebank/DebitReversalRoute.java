@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
 import bifast.outbound.corebank.processor.DebitReversalFaultProcessor;
+import bifast.outbound.corebank.processor.DebitReversalRequestProcessor;
 import bifast.outbound.model.CorebankTransaction;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
