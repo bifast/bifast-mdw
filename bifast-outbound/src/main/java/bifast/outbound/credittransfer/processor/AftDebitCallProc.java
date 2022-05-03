@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.slf4j.Logger;
@@ -16,16 +15,13 @@ import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferResponsePojo;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChannelResponseWrapper;
-import bifast.outbound.pojo.ChnlRequestWrapper;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.repository.StatusReasonRepository;
-import bifast.outbound.service.CallRouteService;
 
 @Component
 public class AftDebitCallProc implements Processor{
 	@Autowired private StatusReasonRepository statusReasonRepo;
-	@Autowired private CallRouteService routeService;
 
     private static Logger logger = LoggerFactory.getLogger(AftDebitCallProc.class);
 
@@ -36,22 +32,19 @@ public class AftDebitCallProc implements Processor{
         String bodyClass = body.getClass().getSimpleName();
         RequestMessageWrapper requestWrapper = exchange.getProperty("prop_request_list", RequestMessageWrapper.class );
 
+        logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] check status-1: " + body);
+
         if (bodyClass.equals("FaultPojo")) {
-            //
-            logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] check status-1: " + body);
 
             FaultPojo fault = (FaultPojo) body;
             if (fault.getReasonCode().equals("U900")) {
                 logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] akan debitreversal.");
-//        		CamelContext context = exchange.getContext();
         		exchange.getContext().createProducerTemplate().send("direct:debitreversal", exchange);
-
-//                routeService.callRoute(exchange, "direct:debitreversal");
             }
 
             ChannelResponseWrapper response = debitRejectResponse (exchange);
             exchange.getMessage().setBody(response);
-            routeService.callRoute(exchange, "seda:logportal?exchangePattern=InOnly");
+    		exchange.getContext().createProducerTemplate().send("seda:logportal?exchangePattern=InOnly", exchange);
         }
 
     }

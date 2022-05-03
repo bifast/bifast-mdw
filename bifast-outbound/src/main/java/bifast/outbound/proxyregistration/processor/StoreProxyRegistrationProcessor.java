@@ -30,7 +30,6 @@ public class StoreProxyRegistrationProcessor implements Processor{
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		ChnlProxyRegistrationRequestPojo chnlRequest = rmw.getChnlProxyRegistrationRequest();
 		Object oResponse = exchange.getMessage().getBody(Object.class);
-		System.out.println("Response berupa: " + oResponse.getClass().getSimpleName());
 		
 		if (oResponse.getClass().getSimpleName().equals("FlatPrxy002Pojo")) {
 			FlatPrxy002Pojo response = (FlatPrxy002Pojo) oResponse;

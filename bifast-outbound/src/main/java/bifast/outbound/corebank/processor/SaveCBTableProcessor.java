@@ -51,7 +51,6 @@ public class SaveCBTableProcessor implements Processor{
 		ObjectMapper mapper = new ObjectMapper();
 	    mapper.setSerializationInclusion(Include.NON_NULL);
 	    
-	    System.out.println(requestClassName);
 		if (requestClassName.equals("DebitRequestDTO")) {
 
 			DebitRequestDTO debitReq = (DebitRequestDTO) oCbRequest;

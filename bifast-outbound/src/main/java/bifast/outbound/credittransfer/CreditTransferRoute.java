@@ -11,7 +11,7 @@ import bifast.outbound.credittransfer.processor.AftDebitCallProc;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
 import bifast.outbound.credittransfer.processor.BuildDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
-import bifast.outbound.credittransfer.processor.DebitRejectResponseProc;
+//import bifast.outbound.credittransfer.processor.DebitRejectResponseProc;
 import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 
 @Component
@@ -21,7 +21,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private BuildCTRequestProcessor crdtTransferProcessor;
 	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
 	@Autowired private StoreCreditTransferProcessor saveCrdtTrnsProcessor;
-	@Autowired private DebitRejectResponseProc debitRejectResponseProc;
+//	@Autowired private DebitRejectResponseProc debitRejectResponseProc;
 	@Autowired private AftDebitCallProc afterDebitCallProc;
 	
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -46,7 +46,7 @@ public class CreditTransferRoute extends RouteBuilder {
 				.process(afterDebitCallProc)
 			.end()
 
-			.log("${body.class}")
+//			.log("${body.class}")
 	    	// .log(LoggingLevel.DEBUG, "komi.ct", 
 	    	// 		"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-1: ${body}.")
 			// // periksa hasil debit-account. Jika failure raise exception
@@ -60,7 +60,6 @@ public class CreditTransferRoute extends RouteBuilder {
 	    	.log(LoggingLevel.DEBUG, "komi.ct", 
 	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-2: ${exchangeProperty.pr_response}.")
 
-//			.stop()
 	    	.filter(exchangeProperty("pr_response").isEqualTo("ACTC"))
 
 			.log(LoggingLevel.DEBUG, "komi.ct", 
