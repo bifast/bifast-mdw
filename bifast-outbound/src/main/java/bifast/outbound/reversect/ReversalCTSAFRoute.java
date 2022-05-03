@@ -6,7 +6,7 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.library.iso20022.custom.BusinessMessage;
+//import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.exception.PSNotFoundException;
 import bifast.outbound.notification.pojo.PortalApiPojo;
 import bifast.outbound.service.JacksonDataFormatService;
@@ -23,7 +23,7 @@ public class ReversalCTSAFRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 		
-		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
+//		JacksonDataFormat businessMessageJDF = jdfService.wrapUnwrapRoot(BusinessMessage.class);
 		JacksonDataFormat portalLogJDF = jdfService.wrapPrettyPrint(PortalApiPojo.class);
 
 		onException(PSNotFoundException.class).routeId("revct.onException")
