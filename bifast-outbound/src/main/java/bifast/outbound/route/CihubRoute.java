@@ -123,7 +123,7 @@ public class CihubRoute extends RouteBuilder {
 						exchange.setProperty("prop_response_list", rmc);
 						if (null != bm.getDocument().getFiToFIPmtStsRpt()) {
 							logger.debug("CreDtTm value: " + bm.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm());
-							logger.debug("CreDtTm class: " + bm.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm().getClass().getSimpleName());
+//							logger.debug("CreDtTm class: " + bm.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm().getClass().getSimpleName());
 						}
 					}
 				})
