@@ -44,6 +44,7 @@ public class AftDebitCallProc implements Processor{
 
             ChannelResponseWrapper response = debitRejectResponse (exchange);
             exchange.getMessage().setBody(response);
+            
     		exchange.getContext().createProducerTemplate().send("seda:logportal?exchangePattern=InOnly", exchange);
         }
 
@@ -75,7 +76,7 @@ public class AftDebitCallProc implements Processor{
 		
 		responseWr.getResponses().add(resp);
 
-		exchange.getMessage().setBody(responseWr);
+//		exchange.getMessage().setBody(responseWr);
 
         return responseWr;
     }

@@ -45,3 +45,7 @@ Bugfix
 3-May-2022
 Bugfix
 - CT dg response-504 dari isoadapter execute debit-reversal
+
+13-May-2022
+Bugfix
+- bad response dari aftDebitcallProc, perbaiki notif portal

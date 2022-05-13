@@ -28,6 +28,9 @@ public class NotificationRoute extends RouteBuilder {
 		JacksonDataFormat adminNotifJDF = jdfService.wrapRoot(AdminNotifDTO.class);
 		
 		from("seda:logportal?concurrentConsumers=10").routeId("komi.notif.portal")
+			
+			.setProperty("tmpBody", simple("${body}"))
+			
 			.process(buildLogMessage)
 			.marshal(portalLogJDF)
 
@@ -51,6 +54,9 @@ public class NotificationRoute extends RouteBuilder {
 	    		.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")
 //	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 			.end()
+			
+			.setBody(simple("${exchangeProperty.tmpBody}"))
+			.removeProperty("tmpBody")
 
 		;
 

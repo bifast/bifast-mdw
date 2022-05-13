@@ -21,7 +21,6 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private BuildCTRequestProcessor crdtTransferProcessor;
 	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
 	@Autowired private StoreCreditTransferProcessor saveCrdtTrnsProcessor;
-//	@Autowired private DebitRejectResponseProc debitRejectResponseProc;
 	@Autowired private AftDebitCallProc afterDebitCallProc;
 	
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -44,19 +43,9 @@ public class CreditTransferRoute extends RouteBuilder {
 
 				.to("direct:isoadpt")
 				.process(afterDebitCallProc)
-			.end()
 
-//			.log("${body.class}")
-	    	// .log(LoggingLevel.DEBUG, "komi.ct", 
-	    	// 		"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-1: ${body}.")
-			// // periksa hasil debit-account. Jika failure raise exception
-			// .filter().simple("${body.class} endsWith 'FaultPojo'")
-			// 	.process(debitRejectResponseProc)
-		    // 	.log(LoggingLevel.ERROR, "komi.ct", 
-		    // 			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Debit account gagal.")
-			// 	.to("seda:logportal?exchangePattern=InOnly")
-			// .end()
-			
+			.end()
+		
 	    	.log(LoggingLevel.DEBUG, "komi.ct", 
 	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-2: ${exchangeProperty.pr_response}.")
 
@@ -110,17 +99,10 @@ public class CreditTransferRoute extends RouteBuilder {
 				
 			.end()
 			
-//			.filter().simple("${header.ct_progress} in 'REJECT,ERROR' "
-//					+ "&& ${exchangeProperty.prop_request_list.merchantType} != '6010'")
-//				.log(LoggingLevel.DEBUG, "komi.ct", 
-//						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
-//				.to("direct:debitreversal")
-//			.end()
-	
+
 			.process(crdtTransferResponseProcessor)		
 
 			.removeHeaders("ct_*")
-			
 		;
 		
 		
@@ -129,7 +111,6 @@ public class CreditTransferRoute extends RouteBuilder {
 				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save transaksi CT")
 			.process(saveCrdtTrnsProcessor)
 		;
-		
 		
 	}
 }
