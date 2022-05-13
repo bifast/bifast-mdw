@@ -32,7 +32,7 @@ public class DebitRequestProcessor implements Processor {
 			resp.setStatus("RJCT");			
 		}
 
-		else if (pymtInfo.equals("TIMEOUT")) {
+		else if (pymtInfo.equals("CB-TIMEOUT")) {
 			exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, "504");
 			resp.setReason("U900");
 			resp.setStatus("RJCT");			
