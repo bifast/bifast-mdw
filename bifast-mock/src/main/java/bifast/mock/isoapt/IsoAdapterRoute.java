@@ -115,6 +115,7 @@ public class IsoAdapterRoute extends RouteBuilder {
 		
 		from("direct:debit").routeId("debit")
 			.convertBodyTo(String.class)
+			.log("Terima: ${body}")
 			.unmarshal(debitRequestJDF)
 			.process(debitRequestPrc)
 			.marshal(debitResponseJDF)
