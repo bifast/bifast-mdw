@@ -37,12 +37,20 @@ public class CreditTransferRoute extends RouteBuilder {
 			.setProperty("pr_response", constant("ACTC"))
 			.filter().simple("${exchangeProperty.prop_request_list.merchantType} != '6010' ")
 				.log(LoggingLevel.DEBUG, "komi.ct", 
-						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] selain dari Teller")
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Transaksi non-teller")
 				.setHeader("ct_progress", constant("CB"))
 				.process(buildDebitRequestProcessor)
 
-				.to("direct:isoadpt")
+				.to("direct:debit")
+//				.filter().simple("${body} is 'bifast.outbound.pojo.FaultPojo' && ${body.reasonCode} == 'U900'")
+//	 				.setProperty("pr_response", constant("U900"))
+//					.process(crdtTransferResponseProcessor)		
+//					.log(LoggingLevel.DEBUG, "komi.ct",
+//							"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan debitreversal." )
+//	        		.to("seda:sdebitreversal?exchangePattern=InOnly&timeout=0")
+//				.end()
 				.process(afterDebitCallProc)
+
 
 			.end()
 		

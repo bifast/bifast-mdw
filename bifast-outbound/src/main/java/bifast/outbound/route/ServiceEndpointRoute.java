@@ -152,7 +152,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
 			.removeProperties("pr_*")
-			.removeProperties("prop*")
+//			.removeProperties("prop*")
 
 		;
 		

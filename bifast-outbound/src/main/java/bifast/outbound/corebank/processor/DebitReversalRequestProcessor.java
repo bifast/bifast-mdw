@@ -27,6 +27,7 @@ public class DebitReversalRequestProcessor implements Processor{
 		reversalReq.setCreditorAccountType(chnReq.getCrdtAccountType());
 		reversalReq.setCreditorId(chnReq.getCrdtId());
 		reversalReq.setCreditorName(chnReq.getCrdtName());
+//		reversalReq.setCreditorName("Reversal");
 		reversalReq.setCreditorProxyId(chnReq.getCrdtProxyIdValue());
 		reversalReq.setCreditorProxyType(chnReq.getCrdtProxyIdType());
 		reversalReq.setCreditorResidentStatus(chnReq.getCrdtResidentialStatus());

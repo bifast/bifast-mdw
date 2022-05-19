@@ -6,6 +6,7 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.http.common.HttpOperationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,22 @@ public class IsoAdapterRoute extends RouteBuilder{
 		JacksonDataFormat debitReversalReqJDF = jdfService.basic(DebitReversalRequestPojo.class);
 		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponsePojo.class);
 
+//		onException(Exception.class)
+//			.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] onException!")
+//			.handled(true)
+//			.choice()
+//				.when().simple("${exchangeProperty.CamelExceptionCaught.statusCode} == '504'")
+//					.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] Call CB Timeout(504).")
+//				.otherwise()
+//					.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] Call CB Error.")
+//					.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+//			.end()
+//	    	.process(cbFaultProcessor)
+//			.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${exchangeProperty.prop_request_list.msgName}: "
+//					+ "akan simpan ${exchangeProperty.prop_request_list.msgName}")
+////			.process(saveCBTransactionProc)
+//		;
+
 		// ROUTE CALLCB 
 		from("direct:isoadpt").routeId("komi.isoadapter")
 //			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
@@ -78,7 +95,6 @@ public class IsoAdapterRoute extends RouteBuilder{
 			.end()
 			
 			.setProperty("cb_request_str", simple("${body}"))
-			
 	 		.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${exchangeProperty.prop_request_list.msgName}:"
 	 				+ "${exchangeProperty.prop_request_list.requestId}] POST ${header.cb_url}")
 	 		.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CB Request: ${body}")
@@ -108,12 +124,6 @@ public class IsoAdapterRoute extends RouteBuilder{
  				.setProperty("pr_response", simple("${body.status}"))
  				.setProperty("pr_reason", simple("${body.reason}"))
  			
-// 				.process(new Processor() {
-//					public void process(Exchange exchange) throws Exception {
-//						AccountCustInfoResponseDTO resp = exchange.getMessage().getBody(AccountCustInfoResponseDTO.class);
-//						System.out.println("D : " + resp.getCustomerId());
-//					}
-// 				})
 				.filter().simple("${exchangeProperty.pr_response} != 'ACTC' ")
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
@@ -130,14 +140,22 @@ public class IsoAdapterRoute extends RouteBuilder{
 				.end()
 				
 	 		.endDoTry()
+//	    	.doCatch(org.apache.camel.http.common.HttpOperationFailedException.class)
+//				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] Call CB Timeout(504).")
+//		    	.process(cbFaultProcessor)
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] Call CB Error.")
-		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+				.choice()
+					.when().simple("${exchangeProperty.CamelExceptionCaught.statusCode} == '504'")
+						.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] Call CB Timeout(504).")
+					.otherwise()
+						.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] Call CB Error.")
+						.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+				.end()
 		    	.process(cbFaultProcessor)
 	    	.end()
 
 			.filter().simple("${exchangeProperty.pr_cbRequestName} in 'debit,debitreversal'")
-				.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${exchangeProperty.prop_request_list.msgName}: "
+				.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] "
 						+ "akan simpan ${exchangeProperty.prop_request_list.msgName}")
 				.process(saveCBTransactionProc)
 			.end()

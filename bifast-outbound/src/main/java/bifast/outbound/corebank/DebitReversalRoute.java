@@ -44,8 +44,9 @@ public class DebitReversalRoute extends RouteBuilder{
 		JacksonDataFormat debitReversalRequestJDF = jdfService.basic(DebitReversalRequestPojo.class);
 		JacksonDataFormat debitReversalResponseJDF = jdfService.wrapRoot(DebitReversalResponsePojo.class);
 
+	
 		from("direct:debitreversal").routeId("komi.debit_rev")
-			
+
 			.log(LoggingLevel.DEBUG, "komi.debit_rev", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Akan debit-reversal")
 

@@ -2,11 +2,9 @@ package bifast.outbound.credittransfer.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.config.Config;
 import bifast.outbound.corebank.pojo.DebitRequestDTO;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -14,7 +12,7 @@ import bifast.outbound.service.RefUtils;
 
 @Component
 public class BuildDebitRequestProcessor implements Processor{
-	@Autowired private Config config;
+//	@Autowired private Config config;
 	
 	@Value("${komi.isoadapter.txid}")
 	String txid;
@@ -53,7 +51,8 @@ public class BuildDebitRequestProcessor implements Processor{
 		debitReq.setAmount(chnReq.getAmount());
 		debitReq.setFeeTransfer(chnReq.getFeeTransfer());
 
-		debitReq.setRecipientBank(config.getBankcode()); 
+//		debitReq.setRecipientBank(config.getBankcode()); 
+		debitReq.setRecipientBank(chnReq.getRecptBank()); 
 		
 		debitReq.setCreditorName(chnReq.getCrdtName());
 		debitReq.setCreditorType(chnReq.getCrdtType());

@@ -4,8 +4,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.apache.camel.FluentProducerTemplate;
 import org.apache.camel.Processor;
+import org.apache.camel.ProducerTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,16 +41,19 @@ public class AftDebitCallProc implements Processor{
 
             FaultPojo fault = (FaultPojo) body;
             if (fault.getReasonCode().equals("U900")) {
-                logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] akan debitreversal.");
-        		exchange.getContext().createProducerTemplate().send("direct:debitreversal", exchange);
+                logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] response U900." );
+                FluentProducerTemplate pt = exchange.getContext().createFluentProducerTemplate();
+                pt.withExchange(exchange).to("seda:sdebitreversal?exchangePattern=InOnly&timeout=0").asyncSend();
+                
+                logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] selesai call debitreversal." );
+
             }
 
             ChannelResponseWrapper response = debitRejectResponse (exchange);
             exchange.getMessage().setBody(response);
             
-    		exchange.getContext().createProducerTemplate().send("seda:logportal?exchangePattern=InOnly", exchange);
         }
-
+       
     }
     
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
