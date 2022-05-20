@@ -49,3 +49,7 @@ Bugfix
 13-May-2022
 Bugfix
 - bad response dari aftDebitcallProc, perbaiki notif portal
+
+23-May-2022 (1.7)
+Feature:
+- 3x resubmit jika debit reversal TIMEOUT dgn selang waktu 1m
