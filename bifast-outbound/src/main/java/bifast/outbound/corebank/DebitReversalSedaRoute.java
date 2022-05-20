@@ -12,12 +12,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
+import bifast.outbound.corebank.processor.DebitReversalFaultProcessor;
 import bifast.outbound.corebank.processor.DebitReversalRequestProcessor;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class DebitReversalSedaRoute extends RouteBuilder{
+	@Autowired private DebitReversalFaultProcessor dbrevFaultProcessor;
 	@Autowired private DebitReversalRequestProcessor debitReversalRequestProcessor;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
@@ -34,6 +36,7 @@ public class DebitReversalSedaRoute extends RouteBuilder{
 			.maximumRedeliveries(2).redeliveryDelay(20000)
 			.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Call debit-reversal error.")
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+	    	.process(dbrevFaultProcessor)
 			.to("seda:savecbdebitrevr?exchangePattern=InOnly")
 			;
 
@@ -42,7 +45,9 @@ public class DebitReversalSedaRoute extends RouteBuilder{
 
 			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] POST {{komi.url.isoadapter.reversal}}")
 			.process(debitReversalRequestProcessor)
+			.setHeader("revct_revRequest", simple("${body}"))
 			.marshal(debitReversalRequestJDF)
+			.setHeader("revct_strRequest", simple("${body}"))
 			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Request ISOAdapter: ${body}")
 //
 //			//submit reversal

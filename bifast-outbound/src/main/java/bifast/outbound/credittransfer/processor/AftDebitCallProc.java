@@ -45,7 +45,7 @@ public class AftDebitCallProc implements Processor{
                 FluentProducerTemplate pt = exchange.getContext().createFluentProducerTemplate();
                 pt.withExchange(exchange).to("seda:sdebitreversal?exchangePattern=InOnly&timeout=0").asyncSend();
                 
-                logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] selesai call debitreversal." );
+                logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] barusan call debitreversal." );
 
             }
 

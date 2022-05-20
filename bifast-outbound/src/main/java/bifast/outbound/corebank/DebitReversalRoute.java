@@ -124,7 +124,6 @@ public class DebitReversalRoute extends RouteBuilder{
 					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("revct_revRequest",DebitReversalRequestPojo.class);
 	
 					String strRequest = exchange.getMessage().getHeader("revct_strRequest", String.class);
-	
 					CorebankTransaction cbTrns = new CorebankTransaction();
 					cbTrns.setCreditAmount(new BigDecimal(cbRequest.getAmount()));
 					cbTrns.setCstmAccountName(cbRequest.getDebtorName());

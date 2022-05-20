@@ -57,7 +57,7 @@ public class CbCallFaultProcessor implements Processor {
 		ResponseMessageCollection respColl = exchange.getProperty("prop_response_list",ResponseMessageCollection.class);
 		respColl.setFault(fault);
 		
-		exchange.setProperty("pr_response", "ERROR");
+		exchange.setProperty("pr_response", fault.getResponseCode());
 		exchange.setProperty("pr_reason", fault.getReasonCode());
 			
 	} 				

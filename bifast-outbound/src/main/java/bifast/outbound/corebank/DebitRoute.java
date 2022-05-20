@@ -36,32 +36,12 @@ public class DebitRoute extends RouteBuilder{
 		JacksonDataFormat debitRequestJDF = jdfService.basic(DebitRequestDTO.class);
 		JacksonDataFormat debitResponseJDF = jdfService.basic(DebitResponseDTO.class);
 
-//		onException(Exception.class)
-//			.handled(true)			
-////			.maximumRedeliveries(3).redeliveryDelay(500)
-//			.choice()
-//				.when().simple("${exchangeProperty.CamelExceptionCaught.statusCode} == '504'")
-//					.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] ${exchangeProperty.CamelExceptionCaught}")
-//				.otherwise()
-//					.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Call CB Error.")
-//					.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-//			.end()
-//	    	.process(cbFaultProcessor)
-////			.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${exchangeProperty.prop_request_list.msgName}: "
-////					+ "akan simpan ${exchangeProperty.prop_request_list.msgName}")
-//////			.process(saveCBTransactionProc)
-//		;
 
 		// ROUTE CALLCB 
 		from("direct:debit").routeId("komi.debit")
-//			.errorHandler(defaultErrorHandler().maximumRedeliveries(3).redeliveryDelay(2000))
 //			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
 
 			.removeHeaders("*")
-
-//			.setHeader("cb_msgname", simple("${exchangeProperty[prop_process_data.inbMsgName]}"))
-//			.setHeader("cb_e2eid", simple("${exchangeProperty[prop_process_data.endToEndId]}"))
-
 
 			.setProperty("pr_cbrequest", simple("${body}"))
 			
@@ -112,15 +92,17 @@ public class DebitRoute extends RouteBuilder{
 				.choice()
 					.when().simple("${exchangeProperty.CamelExceptionCaught.statusCode} == '504'")
 						.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank TIMEOUT")
+					.endChoice()
 					.otherwise()
 						.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Call CB Error.")
 						.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+					.endChoice()
 				.end()
 		    	.process(cbFaultProcessor)
-	    	.end()
+	    	.end().end()
 
 			.log(LoggingLevel.DEBUG, "komi.debit", "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] "
-					+ "akan simpan ${exchangeProperty.prop_request_list.msgName}")
+					+ "akan simpan debit msg")
 			.process(saveCBTransactionProc)
 			
 			.removeHeaders("cb_*")

@@ -37,8 +37,8 @@ public class DebitReversalFaultProcessor implements Processor{
 //		resp.setAccountNumber(null);			
 
 		if (statusCode == 504) {
-			resp.setStatus("KSTS");
-			resp.setReason("K000");
+			resp.setStatus("RJCT");
+			resp.setReason("U900");
 			resp.setAdditionalInfo(statusReasonRepo.findById("K000").orElse(new StatusReason()).getDescription());
 		}
 
