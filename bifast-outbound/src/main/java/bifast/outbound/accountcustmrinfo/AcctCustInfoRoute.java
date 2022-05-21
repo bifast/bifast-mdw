@@ -38,7 +38,8 @@ public class AcctCustInfoRoute extends RouteBuilder{
 			// build request msg
 			.process(prepACIPrc)
 			// call ke corebank
-			.to("direct:isoadpt")
+//			.to("direct:isoadpt")
+			.to("direct:accinfo")
 	
 			.log(LoggingLevel.DEBUG, "komi.acctcustinfo", "After callcb: ${body}")
 			.process(new Processor() {

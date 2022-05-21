@@ -10,6 +10,10 @@ import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import bifast.outbound.config.Config;
 import bifast.outbound.pojo.RequestMessageWrapper;
 
@@ -72,6 +76,7 @@ public class UtilService {
 
 		String msgId = strToday + config.getBankcode() + trxType + komiNumber;
 		return msgId;
+	
 	}
 
 
@@ -115,5 +120,17 @@ public class UtilService {
 			msgType = "RjctResp";
 
 		return msgType;
+	}
+	
+	public String serialize (Object objData, Class<?> className) throws JsonProcessingException {
+////		Class<?> datatba = (className.class) objData;
+//		className.class.cast(objData);
+		System.out.println(className.getName());
+		
+//		
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		String text = mapper.writeValueAsString(null);
+		return text;
 	}
 }
