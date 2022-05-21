@@ -31,20 +31,19 @@ public class DebitReversalSedaRoute extends RouteBuilder{
 			.handled(true)
 			.maximumRedeliveries(2).redeliveryDelay(5000)
 			.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank debit-reversal error.")
-//	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-    		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Caught exception ${exception.class}: \n ${exception.message}")
+	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+//    		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Caught exception ${exception.class}: \n ${exception.message}")
 	    	.process(dbrevFaultProcessor)
 			.to("seda:savecbdebitrevr?exchangePattern=InOnly")
 			;
 
 		from("seda:sdebitreversal").routeId("komi.cb.debit_rev")
-//			.errorHandler(defaultErrorHandler().maximumRedeliveries(2).redeliveryDelay(60000))
+//			.errorHandler(defaultErrorHandler().maximumRedeliveries(2).redeliveryDelay(10000))
 
 			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] POST {{komi.url.isoadapter.reversal}}")
 			.process(debitReversalRequestProcessor)
 			.setHeader("revct_revRequest", simple("${body}"))
 			.marshal(debitReversalRequestJDF)
-			.setHeader("revct_strRequest", simple("${body}"))
 			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Request ISOAdapter: ${body}")
 
             .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))

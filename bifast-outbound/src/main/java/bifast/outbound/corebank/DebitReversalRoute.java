@@ -24,17 +24,17 @@ import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.repository.CorebankTransactionRepository;
 import bifast.outbound.service.JacksonDataFormatService;
+import bifast.outbound.service.UtilService;
 
 @Component
 public class DebitReversalRoute extends RouteBuilder{
 //	@Autowired private CbFaultExceptionProcessor cbFaultProcessor;
-	@Autowired private DebitReversalFaultProcessor dbrevFaultProcessor;
 	@Autowired private CorebankTransactionRepository cbRepo;
+	@Autowired private DebitReversalFaultProcessor dbrevFaultProcessor;
 	@Autowired private DebitReversalRequestProcessor debitReversalRequestProcessor;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
-//	@Autowired private FaultClassRepository faultClassRepo;
 	@Autowired private JacksonDataFormatService jdfService;
-//	@Autowired private StatusReasonRepository statusReasonRepo;
+	@Autowired private UtilService utilService;
 
 //	private static Logger logger = LoggerFactory.getLogger(DebitReversalRoute.class);
 
@@ -57,7 +57,7 @@ public class DebitReversalRoute extends RouteBuilder{
 			.process(debitReversalRequestProcessor)
 			.setHeader("revct_revRequest", simple("${body}"))
 			.marshal(debitReversalRequestJDF)
-			.setHeader("revct_strRequest", simple("${body}"))
+//			.setHeader("revct_strRequest", simple("${body}"))
 
 			//submit reversal
 			.to("direct:postcreditreversal?exchangePattern=InOptionalOut")
@@ -109,8 +109,6 @@ public class DebitReversalRoute extends RouteBuilder{
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(dbrevFaultProcessor)
 			.end()
-			
-			
 		;
 		
 		from("seda:savecbdebitrevr?concurrentConsumers=5").routeId("komi.savecbdebitrevr")
@@ -123,7 +121,7 @@ public class DebitReversalRoute extends RouteBuilder{
 					String komiTrnsId = rmw.getKomiTrxId();
 					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("revct_revRequest",DebitReversalRequestPojo.class);
 	
-					String strRequest = exchange.getMessage().getHeader("revct_strRequest", String.class);
+//					String strRequest = exchange.getMessage().getHeader("revct_strRequest", String.class);
 					CorebankTransaction cbTrns = new CorebankTransaction();
 					cbTrns.setCreditAmount(new BigDecimal(cbRequest.getAmount()));
 					cbTrns.setCstmAccountName(cbRequest.getDebtorName());
@@ -131,7 +129,7 @@ public class DebitReversalRoute extends RouteBuilder{
 					cbTrns.setCstmAccountType(cbRequest.getDebtorAccountType());
 					cbTrns.setDateTime(cbRequest.getDateTime());
 					cbTrns.setFeeAmount(new BigDecimal(cbRequest.getFeeTransfer()));
-					cbTrns.setFullTextRequest(strRequest);
+					cbTrns.setFullTextRequest(utilService.serialize(cbRequest));
 					cbTrns.setKomiNoref(cbRequest.getNoRef());
 					cbTrns.setKomiTrnsId(komiTrnsId);
 		

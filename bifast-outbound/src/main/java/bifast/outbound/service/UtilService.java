@@ -122,15 +122,10 @@ public class UtilService {
 		return msgType;
 	}
 	
-	public String serialize (Object objData, Class<?> className) throws JsonProcessingException {
-////		Class<?> datatba = (className.class) objData;
-//		className.class.cast(objData);
-		System.out.println(className.getName());
-		
-//		
+	public String serialize (Object objData) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
-		String text = mapper.writeValueAsString(null);
+		String text = mapper.writeValueAsString(objData.getClass().cast(objData));
 		return text;
 	}
 }

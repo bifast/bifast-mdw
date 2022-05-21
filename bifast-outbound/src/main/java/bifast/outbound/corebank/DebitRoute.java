@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import bifast.outbound.corebank.pojo.DebitRequestDTO;
 import bifast.outbound.corebank.pojo.DebitResponseDTO;
 import bifast.outbound.corebank.processor.CbCallFaultProcessor;
-import bifast.outbound.corebank.processor.SaveCBTableProcessor;
+import bifast.outbound.corebank.processor.SaveCbDebitProcessor;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.ResponseMessageCollection;
@@ -28,7 +28,7 @@ public class DebitRoute extends RouteBuilder{
 	@Autowired private CbCallFaultProcessor cbFaultProcessor;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
-	@Autowired private SaveCBTableProcessor saveCBTransactionProc;
+	@Autowired private SaveCbDebitProcessor saveCBTransactionProc;
 	@Autowired private StatusReasonRepository reasonRepo;
 	
 	@SuppressWarnings("deprecation")
