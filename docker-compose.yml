@@ -86,7 +86,7 @@ services:
     mock:
       build: bifast-mock
       container_name: komi-mock
-      image: fransmzh/komi-mock:2.3.1.to
+      image: fransmzh/komi-mock:2.4
       restart: always
       depends_on: 
         - komidb

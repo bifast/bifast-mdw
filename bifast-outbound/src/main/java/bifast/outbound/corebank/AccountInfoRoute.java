@@ -34,7 +34,8 @@ public class AccountInfoRoute extends RouteBuilder{
 		JacksonDataFormat aciResponseJDF = jdfService.basic(AccountCustInfoResponseDTO.class);
 
 //		onException(Exception.class)
-//			.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] onException!")
+//			.maximumRedeliveries(1)
+//			.log(LoggingLevel.ERROR, "onException!")
 //			.handled(true)
 //			.choice()
 //				.when().simple("${exchangeProperty.CamelExceptionCaught.statusCode} == '504'")
@@ -44,14 +45,12 @@ public class AccountInfoRoute extends RouteBuilder{
 //					.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 //			.end()
 //	    	.process(cbFaultProcessor)
-//			.log(LoggingLevel.DEBUG, "komi.isoadapter", "[${exchangeProperty.prop_request_list.msgName}: "
-//					+ "akan simpan ${exchangeProperty.prop_request_list.msgName}")
-////			.process(saveCBTransactionProc)
 //		;
 
+		
 		// ROUTE CALLCB 
 		from("direct:accinfo").routeId("komi.cb.accinfo")
-
+//			.errorHandler(defaultErrorHandler().maximumRedeliveries(1))
 			.removeHeaders("*")
 
 			.log(LoggingLevel.DEBUG,"komi.cb.accinfo", "[${exchangeProperty.prop_request_list.msgName}:"

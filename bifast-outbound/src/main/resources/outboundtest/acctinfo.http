@@ -1,7 +1,7 @@
 # accountNumber '9***' akan reject K000
 POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
-Authorization: Basic MB:mb2022
+Authorization: Basic MB:password
 
 {
   "AccountCustomerInfo" : {
