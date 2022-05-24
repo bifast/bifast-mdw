@@ -19,7 +19,6 @@ import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.ChnlRequestWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.ExceptionProcessor;
 import bifast.outbound.processor.InitRequestMessageWrapperProcessor;

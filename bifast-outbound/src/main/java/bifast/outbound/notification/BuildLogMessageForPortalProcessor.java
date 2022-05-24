@@ -95,7 +95,8 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 		else if (rmw.getMsgName().equals("AEReq")) {
 //			logger.debug(rmw.getAccountEnquiryRequest());
 			logMsg.setCodelog("AE");
-			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
+//			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
+			ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
 			
 			logger.debug("CreditorAccountNumber: " + Optional.ofNullable(aeReq.getCreditorAccountNumber()).orElse(""));
 			if (null != rmw.getAccountEnquiryRequest())

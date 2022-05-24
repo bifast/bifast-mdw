@@ -25,7 +25,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 		LocalDateTime ldt = LocalDateTime.ofInstant(rmw.getKomiStart(), ZoneOffset.systemDefault());
 
 		if (!(null == req.getChnlAccountEnquiryRequest())) {
-			rmw.setChnlAccountEnquiryRequest(req.getChnlAccountEnquiryRequest());
+//			rmw.setChnlAccountEnquiryRequest(req.getChnlAccountEnquiryRequest());
 			rmw.setChannelRequest(req.getChnlAccountEnquiryRequest());
 			rmw.setMsgName("AEReq");
 			exchange.getMessage().setHeader("hdr_msgType", "AEReq");

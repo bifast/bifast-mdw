@@ -5,7 +5,6 @@ import java.time.Instant;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import bifast.library.iso20022.custom.BusinessMessage;
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.corebank.pojo.CbAccountEnquiryRequestPojo;
 import bifast.outbound.corebank.pojo.DebitRequestDTO;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
@@ -39,8 +38,8 @@ public class RequestMessageWrapper {
 	
 	private Object corebankRequest;
 	
-	@JsonProperty("AccountEnquiryRequest")
-	private ChnlAccountEnquiryRequestPojo chnlAccountEnquiryRequest;
+//	@JsonProperty("AccountEnquiryRequest")
+//	private ChnlAccountEnquiryRequestPojo chnlAccountEnquiryRequest;
 	
 	@JsonProperty("CreditTransferRequest")
 	private ChnlCreditTransferRequestPojo chnlCreditTransferRequest;
@@ -144,12 +143,12 @@ public class RequestMessageWrapper {
 	public void setDebitAccountRequest(DebitRequestDTO debitAccountRequest) {
 		this.debitAccountRequest = debitAccountRequest;
 	}
-	public ChnlAccountEnquiryRequestPojo getChnlAccountEnquiryRequest() {
-		return chnlAccountEnquiryRequest;
-	}
-	public void setChnlAccountEnquiryRequest(ChnlAccountEnquiryRequestPojo chnlAccountEnquiryRequest) {
-		this.chnlAccountEnquiryRequest = chnlAccountEnquiryRequest;
-	}
+//	public ChnlAccountEnquiryRequestPojo getChnlAccountEnquiryRequest() {
+//		return chnlAccountEnquiryRequest;
+//	}
+//	public void setChnlAccountEnquiryRequest(ChnlAccountEnquiryRequestPojo chnlAccountEnquiryRequest) {
+//		this.chnlAccountEnquiryRequest = chnlAccountEnquiryRequest;
+//	}
 	public ChnlCreditTransferRequestPojo getChnlCreditTransferRequest() {
 		return chnlCreditTransferRequest;
 	}

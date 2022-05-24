@@ -34,7 +34,8 @@ public class AccountEnquiryRequestProcessor implements Processor {
 	public void process(Exchange exchange) throws Exception {
 
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
+//		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
+		ChnlAccountEnquiryRequestPojo chnReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
 		
 		String msgType = "510";
 		String bizMsgId = utilService.genBusMsgId(msgType, rmw);

@@ -59,7 +59,8 @@ public class AccountEnquiryRoute extends RouteBuilder{
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-						ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
+//						ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
+						ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
 						ChnlProxyResolutionRequestPojo prxRes = new ChnlProxyResolutionRequestPojo();
 						
 						prxRes.setChannelRefId(aeReq.getChannelRefId());

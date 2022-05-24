@@ -39,7 +39,8 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		channelResponseWr.setResponses(new ArrayList<>());
 
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class);
-		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
+//		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
+		ChnlAccountEnquiryRequestPojo chnReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
 		
 		ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
 		chnResp.setOrignReffId(chnReq.getChannelRefId());

@@ -32,8 +32,9 @@ public class SaveAccountEnquiryProcessor implements Processor {
 		
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		
-		ChnlAccountEnquiryRequestPojo chnlRequest = rmw.getChnlAccountEnquiryRequest();
-		
+//		ChnlAccountEnquiryRequestPojo chnlRequest = rmw.getChnlAccountEnquiryRequest();
+		ChnlAccountEnquiryRequestPojo chnlRequest = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
+
 		ae.setKomiTrnsId(rmw.getKomiTrxId());
 		ae.setChnlRefId(rmw.getRequestId());
 		ae.setAccountNo(chnlRequest.getCreditorAccountNumber());

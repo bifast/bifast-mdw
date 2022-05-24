@@ -20,8 +20,9 @@ public class ValidateAEProcessor implements Processor{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-		ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
-		
+//		ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
+		ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
+
 		try {
 			@SuppressWarnings("unused")
 			DomainCode domain = domainRepo.findByGrpAndKey("CATEGORY.PURPOSE", aeReq.getCategoryPurpose()).orElseThrow();
