@@ -23,6 +23,20 @@ public class NotificationRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 
+		onException(Exception.class)
+		.maximumRedeliveries(2).redeliveryDelay(5000)
+		.handled(true)
+		.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")
+		.setBody(simple("${exchangeProperty.tmpBody}"))
+		.removeProperty("tmpBody")
+
+		
+		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank debit-reversal error.")
+    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+//		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Caught exception ${exception.class}: \n ${exception.message}")
+		.to("seda:savecbdebitrevr?exchangePattern=InOnly")
+		;
+
 		JacksonDataFormat portalLogJDF = jdfService.wrapRoot(PortalApiPojo.class);
 		JacksonDataFormat custNotifJDF = jdfService.wrapRoot(CustomerNotificationPojo.class);
 		JacksonDataFormat adminNotifJDF = jdfService.wrapRoot(AdminNotifDTO.class);
@@ -42,18 +56,18 @@ public class NotificationRoute extends RouteBuilder {
 				}
 			})
 			
-			.doTry()
+//			.doTry()
 
 				.to("rest:post:?host={{komi.url.portalapi}}")
 //				.to("{{komi.url.portalapi}}?"
 //						+ "socketTimeout=1000&" 
 //						+ "bridgeEndpoint=true")
 
-			.endDoTry()
-	    	.doCatch(Exception.class)
-	    		.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")
+//			.endDoTry()
+//	    	.doCatch(Exception.class)
+//	    		.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")
 //	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-			.end()
+//			.end()
 			
 			.setBody(simple("${exchangeProperty.tmpBody}"))
 			.removeProperty("tmpBody")

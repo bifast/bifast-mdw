@@ -3,7 +3,6 @@ package bifast.outbound.corebank.processor;
 import java.lang.reflect.Method;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 

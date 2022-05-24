@@ -1,5 +1,6 @@
 package bifast.outbound.route;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -11,6 +12,8 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.exception.DuplicateIdException;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.pojo.ChannelResponseWrapper;
@@ -102,18 +105,22 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					chnlTrns.setRequestTime(LocalDateTime.now());
 					chnlTrns.setMsgName(rmw.getMsgName());
 					chnlTrns.setTextMessage(fullTextInput);
+					
+					if (rmw.getMsgName().equals("AEReq")) {
+						ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
+						chnlTrns.setAmount(new BigDecimal(aeReq.getAmount()));
+						chnlTrns.setRecptBank(aeReq.getRecptBank());			
+					}
+					else if (rmw.getMsgName().equals("CTReq")) {
+						ChnlCreditTransferRequestPojo ctReq = (ChnlCreditTransferRequestPojo) rmw.getChannelRequest();
+						chnlTrns.setAmount(new BigDecimal(ctReq.getAmount()));
+						chnlTrns.setRecptBank(ctReq.getRecptBank());
+					}
+
 					channelTransactionRepo.save(chnlTrns);
 				}
 			})
 
-			// siapkan header penampung data2 hasil process.
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					ResponseMessageCollection rmc = new ResponseMessageCollection();
-					exchange.setProperty("prop_response_list" , rmc);
-				}
-			})
-			
 			.choice()
 				.when().simple("${exchangeProperty.prop_request_list.msgName} == 'AEReq'")
 					.to("direct:acctenqr")

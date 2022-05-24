@@ -11,6 +11,7 @@ import bifast.outbound.credittransfer.processor.AftDebitCallProc;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
 import bifast.outbound.credittransfer.processor.BuildDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
+import bifast.outbound.credittransfer.processor.SaveCTChannelRequestProc;
 //import bifast.outbound.credittransfer.processor.DebitRejectResponseProc;
 import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 
@@ -22,7 +23,8 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
 	@Autowired private StoreCreditTransferProcessor saveCrdtTrnsProcessor;
 	@Autowired private AftDebitCallProc afterDebitCallProc;
-	
+	@Autowired private SaveCTChannelRequestProc saveCTChannelRequestProc;
+
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
     
@@ -109,6 +111,8 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 
 			.process(crdtTransferResponseProcessor)		
+			
+//			.to("seda:savechanneltrns?exchangePattern=InOnly")   // update data
 
 			.removeHeaders("ct_*")
 		;
@@ -119,6 +123,12 @@ public class CreditTransferRoute extends RouteBuilder {
 				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save transaksi CT")
 			.process(saveCrdtTrnsProcessor)
 		;
+		
+//		from("seda:savechanneltrns?concurrentConsumers=2&blockWhenFull=true")
+//			.log(LoggingLevel.DEBUG, "komi.ct.savechnl", 
+//				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save channel log")
+//			.process(saveCTChannelRequestProc)
+//			;
 		
 	}
 }

@@ -15,6 +15,7 @@ public class ResponseMessageCollection {
 	private String reasonCode;
 	private String lastError;
 	private String cbResponse;
+	private String cbReason;
 	
 	private FaultPojo fault;
 	private ChnlAccountEnquiryResponsePojo chnlAccountEnquiryResponse;
@@ -67,6 +68,12 @@ public class ResponseMessageCollection {
 	}
 	public void setCbResponse(String cbResponse) {
 		this.cbResponse = cbResponse;
+	}
+	public String getCbReason() {
+		return cbReason;
+	}
+	public void setCbReason(String cbReason) {
+		this.cbReason = cbReason;
 	}
 	public Object getCorebankResponse() {
 		return corebankResponse;

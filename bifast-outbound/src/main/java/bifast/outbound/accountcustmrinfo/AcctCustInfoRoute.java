@@ -1,5 +1,7 @@
 package bifast.outbound.accountcustmrinfo;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -14,17 +16,19 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountcustmrinfo.pojo.ChnlAccountCustomerInfoResponsePojo;
 import bifast.outbound.corebank.pojo.AccountCustInfoResponseDTO;
+import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChannelResponseWrapper;
-import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
-//import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.ResponseMessageCollection;
+import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class AcctCustInfoRoute extends RouteBuilder{
-    @Autowired private StatusReasonRepository statusReasonRepo;
+	@Autowired private ChannelTransactionRepository channelTransactionRepo;
     @Autowired private PrepACIRequestProcessor prepACIPrc;
+    @Autowired private StatusReasonRepository statusReasonRepo;
     
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
@@ -38,14 +42,16 @@ public class AcctCustInfoRoute extends RouteBuilder{
 			// build request msg
 			.process(prepACIPrc)
 			// call ke corebank
-//			.to("direct:isoadpt")
 			.to("direct:accinfo")
 	
-			.log(LoggingLevel.DEBUG, "komi.acctcustinfo", "After callcb: ${body}")
+			.log(LoggingLevel.DEBUG, "komi.acctcustinfo", "[${exchangeProperty.prop_request_list.msgName}:"
+					+ "${exchangeProperty.prop_request_list.requestId}] prepare response ${exchangeProperty.pr_response}")
+			
+			// prepare output for client
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-
+			
 					ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
 					channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 					channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
@@ -54,16 +60,13 @@ public class AcctCustInfoRoute extends RouteBuilder{
 					ChnlAccountCustomerInfoResponsePojo chnlResp = new ChnlAccountCustomerInfoResponsePojo();
 					chnlResp.setNoRef(rmw.getRequestId());
 
-					Object oCbResponse = exchange.getMessage().getBody(Object.class);
-//					AccountCustInfoResponseDTO cbResponse = exchange.getMessage().getBody(AccountCustInfoResponseDTO.class);
+					String response = exchange.getProperty("pr_response", String.class);
+										
+					if (!(response.equals("ACTC"))) {
+						channelResponseWr.setResponseCode(exchange.getProperty("pr_response", String.class));
+						channelResponseWr.setReasonCode(exchange.getProperty("pr_reason", String.class));
 
-//					if (!cbResponse.getStatus().equals("ACTC")) {
-					if (oCbResponse.getClass().getSimpleName().equals("FaultPojo")) {
-						FaultPojo fault = (FaultPojo) oCbResponse;
-						channelResponseWr.setResponseCode(fault.getResponseCode());
-						channelResponseWr.setReasonCode(fault.getReasonCode());
-
-						Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
+						Optional<StatusReason> oStatusReason = statusReasonRepo.findById(channelResponseWr.getReasonCode());
 						if (oStatusReason.isPresent())
 							channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 						else
@@ -71,7 +74,7 @@ public class AcctCustInfoRoute extends RouteBuilder{
 					}
 					
 					else {
-						AccountCustInfoResponseDTO cbResponse = (AccountCustInfoResponseDTO) oCbResponse;
+						AccountCustInfoResponseDTO cbResponse = exchange.getMessage().getBody(AccountCustInfoResponseDTO.class);
 						
 						channelResponseWr.setResponseCode(cbResponse.getStatus());
 						channelResponseWr.setReasonCode(cbResponse.getReason());
@@ -80,7 +83,6 @@ public class AcctCustInfoRoute extends RouteBuilder{
 							String desc = optStatusReason.get().getDescription();
 							channelResponseWr.setReasonMessage(desc);
 						}	
-
 						chnlResp.setAccountNumber(cbResponse.getAccountNumber());
 						chnlResp.setAccountType(cbResponse.getAccountType());
 						chnlResp.setDebtorId(cbResponse.getCustomerId());
@@ -91,20 +93,41 @@ public class AcctCustInfoRoute extends RouteBuilder{
 						chnlResp.setPhoneNumberList(cbResponse.getPhoneNumberList());
 						chnlResp.setResidentialStatus(cbResponse.getResidentStatus());
 						chnlResp.setTownName(cbResponse.getTownName());
-						
 					}
-					
 					
 					channelResponseWr.getResponses().add(chnlResp);
 					exchange.getMessage().setBody(channelResponseWr);
-
 				}
-				
 			})
 			
-			// process resposne
-
-			
+			// save channel transaction
+//			.log(LoggingLevel.DEBUG, "komi.acctcustinfo", 
+//					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Save table channel_transaction.")
+//			.process(new Processor() {
+//				public void process(Exchange exchange) throws Exception {
+//					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class );
+//					ResponseMessageCollection respColl = exchange.getProperty("prop_response_list",ResponseMessageCollection.class );
+//					ChannelResponseWrapper responseWr = exchange.getMessage().getBody(ChannelResponseWrapper.class);
+//
+//					Optional<ChannelTransaction> optChannel = channelTransactionRepo.findById(rmw.getKomiTrxId());
+//					ChannelTransaction chnlTrns = optChannel.get();
+//					
+//					long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
+//					chnlTrns.setElapsedTime(timeElapsed);
+//
+//					if (respColl.getCallStatus().equals("SUCCESS")) {
+//						chnlTrns.setCallStatus("SUCCESS");
+//						chnlTrns.setResponseCode(responseWr.getResponseCode());
+//					}
+//					else {
+//						chnlTrns.setCallStatus(respColl.getCallStatus());
+//						chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
+//						chnlTrns.setResponseCode(responseWr.getResponseCode());
+//					}
+//
+//					channelTransactionRepo.save(chnlTrns);
+//				}
+//			})
 		;
 	}
 

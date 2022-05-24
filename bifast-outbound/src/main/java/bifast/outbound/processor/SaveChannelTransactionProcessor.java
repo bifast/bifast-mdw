@@ -14,7 +14,6 @@ import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.pojo.ChannelResponseWrapper;
-import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.ChannelTransactionRepository;
@@ -36,44 +35,52 @@ public class SaveChannelTransactionProcessor implements Processor{
 		Optional<ChannelTransaction> optChannel = channelTransactionRepo.findById(rmw.getKomiTrxId());
 		ChannelTransaction chnlTrns = optChannel.get();
 		
-		FaultPojo fault = null;
+//		FaultPojo fault = null;
 
-		if (null == respColl.getFault()) {
+		if (respColl.getCallStatus().equals("SUCCESS")) {
+//		if (null == respColl.getFault()) {
 			chnlTrns.setCallStatus("SUCCESS");
 			chnlTrns.setResponseCode(responseWr.getResponseCode());
 		}
 		else {
-			fault = respColl.getFault();
+//			fault = respColl.getFault();
+//
+//			int errLength = fault.getErrorMessage().length();
+//			if (errLength>250)
+//				errLength = 250;
+//			String errMsg = fault.getErrorMessage().substring(0, errLength);
+//			chnlTrns.setCallStatus(fault.getCallStatus());
+//			chnlTrns.setErrorMsg(errMsg);
+//			chnlTrns.setResponseCode(fault.getResponseCode());
 
-			int errLength = fault.getErrorMessage().length();
+			int errLength = respColl.getLastError().length();
 			if (errLength>250)
 				errLength = 250;
-			String errMsg = fault.getErrorMessage().substring(0, errLength);
-			chnlTrns.setCallStatus(fault.getCallStatus());
-			chnlTrns.setErrorMsg(errMsg);
-			chnlTrns.setResponseCode(fault.getResponseCode());
-		}
 
-		
-		Instant finish = Instant.now();
-		long timeElapsed = Duration.between(rmw.getKomiStart(), finish).toMillis();
+//			String errMsg = respColl.getLastError().substring(0, errLength);
+			chnlTrns.setCallStatus(respColl.getCallStatus());
+			chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
+			chnlTrns.setResponseCode(respColl.getResponseCode());
+
+		}
+	
+		long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
 		chnlTrns.setElapsedTime(timeElapsed);
 
-	
-		if (rmw.getMsgName().equals("AEReq")) {
-
-			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
-			chnlTrns.setAmount(new BigDecimal(aeReq.getAmount()));
-			chnlTrns.setRecptBank(aeReq.getRecptBank());			
-		}
-
-		else if (rmw.getMsgName().equals("CTReq")) {
-
-			ChnlCreditTransferRequestPojo ctReq = rmw.getChnlCreditTransferRequest();
-			chnlTrns.setAmount(new BigDecimal(ctReq.getAmount()));
-			chnlTrns.setRecptBank(ctReq.getRecptBank());
-
-		}
+//		if (rmw.getMsgName().equals("AEReq")) {
+//
+//			ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
+//			chnlTrns.setAmount(new BigDecimal(aeReq.getAmount()));
+//			chnlTrns.setRecptBank(aeReq.getRecptBank());			
+//		}
+//
+//		else if (rmw.getMsgName().equals("CTReq")) {
+//
+//			ChnlCreditTransferRequestPojo ctReq = rmw.getChnlCreditTransferRequest();
+//			chnlTrns.setAmount(new BigDecimal(ctReq.getAmount()));
+//			chnlTrns.setRecptBank(ctReq.getRecptBank());
+//
+//		}
 		
 		channelTransactionRepo.save(chnlTrns);
 

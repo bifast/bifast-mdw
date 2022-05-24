@@ -23,6 +23,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 
 	@Autowired private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
+//	@Autowired private ChannelTransactionRepository channelTransactionRepo;
 	@Autowired private ExceptionProcessor exceptionProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
@@ -46,7 +47,7 @@ public class AccountEnquiryRoute extends RouteBuilder{
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-					ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
+					ChnlAccountEnquiryRequestPojo chnReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
 					exchange.getMessage().setBody(chnReq);
 				}	
 			})
@@ -89,6 +90,39 @@ public class AccountEnquiryRoute extends RouteBuilder{
 //			.process(saveAccountEnquiryProcessor)
 
 			.process(accountEnqrResponseProcessor)
+
+			// save channel transaction
+//			.log(LoggingLevel.DEBUG, "komi.acctenq", 
+//					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Save table channel_transaction.")
+//			.process(new Processor() {
+//				public void process(Exchange exchange) throws Exception {
+//					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class );
+//					ResponseMessageCollection respColl = exchange.getProperty("prop_response_list",ResponseMessageCollection.class );
+//					ChannelResponseWrapper responseWr = exchange.getMessage().getBody(ChannelResponseWrapper.class);
+//
+//					Optional<ChannelTransaction> optChannel = channelTransactionRepo.findById(rmw.getKomiTrxId());
+//					ChannelTransaction chnlTrns = optChannel.get();
+//					
+//					long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
+//					chnlTrns.setElapsedTime(timeElapsed);
+//
+//					ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
+//					chnlTrns.setAmount(new BigDecimal(aeReq.getAmount()));
+//					chnlTrns.setRecptBank(aeReq.getRecptBank());			
+//
+//					if (respColl.getCallStatus().equals("SUCCESS")) {
+//						chnlTrns.setCallStatus("SUCCESS");
+//						chnlTrns.setResponseCode(responseWr.getResponseCode());
+//					}
+//					else {
+//						chnlTrns.setCallStatus(respColl.getCallStatus());
+//						chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
+//						chnlTrns.setResponseCode(responseWr.getResponseCode());
+//					}
+//
+//					channelTransactionRepo.save(chnlTrns);
+//				}
+//			})
 
 		;
 

@@ -29,7 +29,7 @@ public class DebitReversalSedaRoute extends RouteBuilder{
 
 		onException(Exception.class)
 			.handled(true)
-			.maximumRedeliveries(2).redeliveryDelay(5000)
+			.maximumRedeliveries(2).redeliveryDelay(60000)
 			.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank debit-reversal error.")
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 //    		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Caught exception ${exception.class}: \n ${exception.message}")

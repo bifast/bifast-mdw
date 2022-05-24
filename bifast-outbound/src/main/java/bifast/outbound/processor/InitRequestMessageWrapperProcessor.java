@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.model.Channel;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.security.Users;
 import bifast.outbound.service.UtilService;
 
@@ -37,6 +38,11 @@ public class InitRequestMessageWrapperProcessor implements Processor {
 		rmw.setKomiStart(Instant.now());
 		
 		exchange.setProperty("prop_request_list", rmw);
+		
+		ResponseMessageCollection rmc = new ResponseMessageCollection();
+		rmc.setCallStatus("SUCCESS");
+		exchange.setProperty("prop_response_list" , rmc);
+
 	}
 
 }
