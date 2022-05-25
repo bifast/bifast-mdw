@@ -65,7 +65,6 @@ public class AccountInfoRoute extends RouteBuilder{
 	    		.setProperty("pr_response", constant("CB-ERROR"))
 	    		.setProperty("pr_reason", constant("U901"))
     		.doFinally()
-    			.log("${exception.message}")
 	    		.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						String cbResponse = exchange.getProperty("pr_response", String.class);

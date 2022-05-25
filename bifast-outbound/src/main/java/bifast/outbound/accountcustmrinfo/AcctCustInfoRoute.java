@@ -1,7 +1,5 @@
 package bifast.outbound.accountcustmrinfo;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -16,17 +14,13 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountcustmrinfo.pojo.ChnlAccountCustomerInfoResponsePojo;
 import bifast.outbound.corebank.pojo.AccountCustInfoResponseDTO;
-import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.ResponseMessageCollection;
-import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
 public class AcctCustInfoRoute extends RouteBuilder{
-	@Autowired private ChannelTransactionRepository channelTransactionRepo;
     @Autowired private PrepACIRequestProcessor prepACIPrc;
     @Autowired private StatusReasonRepository statusReasonRepo;
     
