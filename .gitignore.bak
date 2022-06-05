@@ -39,4 +39,3 @@ build/
 docker
 corebankiface/src/main/resources/application.properties
 docker-compose.yml
-
