@@ -19,12 +19,12 @@ public class Config {
 
 	private String bankcode;
 	private String bicode;
+	private Debitrev debitrev;
 	
 	private long slaChannelTrns;
 	private long slaChannelEnqr;
 	private long slaPymtStatus;
 	
-	private BigDecimal limitDailyAmount;
 	private BigDecimal limitTrnsAmount;
 	
 	private int maxRetryBeforeNotif;
@@ -62,6 +62,14 @@ public class Config {
 		this.bicode = bicode;
 	}
 
+	public Debitrev getDebitrev() {
+		return debitrev;
+	}
+
+	public void setDebitrev(Debitrev debitrev) {
+		this.debitrev = debitrev;
+	}
+
 	public ParameterRepository getParamRepo() {
 		return paramRepo;
 	}
@@ -92,14 +100,6 @@ public class Config {
 
 	public void setSlaPymtStatus(long slaPymtStatus) {
 		this.slaPymtStatus = slaPymtStatus;
-	}
-
-	public BigDecimal getLimitDailyAmount() {
-		return limitDailyAmount;
-	}
-
-	public void setLimitDailyAmount(BigDecimal limitDailyAmount) {
-		this.limitDailyAmount = limitDailyAmount;
 	}
 
 	public BigDecimal getLimitTrnsAmount() {

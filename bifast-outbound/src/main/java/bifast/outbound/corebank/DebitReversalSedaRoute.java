@@ -7,6 +7,7 @@ import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bifast.outbound.config.Config;
 import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.corebank.processor.DebitReversalFaultProcessor;
 import bifast.outbound.corebank.processor.DebitReversalRequestProcessor;
@@ -15,12 +16,11 @@ import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class DebitReversalSedaRoute extends RouteBuilder{
+	@Autowired private Config config;
 	@Autowired private DebitReversalFaultProcessor dbrevFaultProcessor;
 	@Autowired private DebitReversalRequestProcessor debitReversalRequestProcessor;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
-
-//	private static Logger logger = LoggerFactory.getLogger(DebitReversalRoute.class);
 
 	@Override
 	public void configure() throws Exception {
@@ -29,7 +29,7 @@ public class DebitReversalSedaRoute extends RouteBuilder{
 
 		onException(Exception.class)
 			.handled(true)
-			.maximumRedeliveries(2).redeliveryDelay(60000)
+			.maximumRedeliveries(config.getDebitrev().getRetry()).redeliveryDelay(config.getDebitrev().getRetryInterval())
 			.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank debit-reversal error.")
 	    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 //    		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Caught exception ${exception.class}: \n ${exception.message}")
