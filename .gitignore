@@ -43,3 +43,4 @@ docker-compose.yml
 ### KOMI ###
 /komi-dashboard
 **/resources/application-*.properties
+**/bin/
