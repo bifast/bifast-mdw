@@ -1,4 +1,0 @@
-POST http://10.11.100.116:9004/komi/v1/external/logging/insert HTTP/1.1
-Content-Type: application/json
-
-{"apimessage":{"codelog":"CT","data":{"komi_unique_id":"MOB21121411062052","komi_trx_no":"20211231O00003594","channel_type":"03","trx_type":"O","trx_initiation_date":"2021-12-31 19:54:20","trx_duration":"15595","error_msg":"SocketTimeoutException: Read timed out","sender_bank":"SIHBIDJ1","recipient_bank":"BRINIDJA","bifast_trx_no":"20211231SIHBIDJ1110O0300003594","recipient_account_no":"112211333","recipient_account_name":"Joko Susilo","sender_account_no":"104794259","sender_account_name":"Purnama Erwin","proxyFlag":"T","charge_type":"D","trx_amount":"120000.57","status_code":"TIMEOUT","response_code":"KSTS","reason_code":"K000","reason_message":"Timeout/ On-progress"}}}
