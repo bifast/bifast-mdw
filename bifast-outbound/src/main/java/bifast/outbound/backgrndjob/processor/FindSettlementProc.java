@@ -31,11 +31,11 @@ public class FindSettlementProc implements Processor {
 			psReq.setResponseCode("ACTC");
 			psReq.setReasonCode("U000");
 
-			logger.debug("[PyStsSAF:" + psReq.getChannelNoref() + "]Settlement sudah diterima");
+			logger.debug("[PyStsSAF:" + psReq.getChannelNoref() + "] Settlement sudah diterima");
 		}
 		else {
 			psReq.setPsStatus("STTL_NOTFOUND");
-			logger.debug("[PyStsSAF:" + psReq.getChannelNoref() + "]Settlement belum diterima");
+			logger.debug("[PyStsSAF:" + psReq.getChannelNoref() + "] Settlement belum diterima");
 		}
 		exchange.getMessage().setBody(psReq);
 		

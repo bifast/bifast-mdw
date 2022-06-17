@@ -53,3 +53,8 @@ Bugfix
 23-May-2022 (1.7)
 Feature:
 - 3x resubmit jika debit reversal TIMEOUT dgn selang waktu 1m
+
+18-Juni-2022 (1.8)
+CR
+- Credit transfer dan payment status jika ci-conn timeout, jangan lakukan debit reversal
+ 

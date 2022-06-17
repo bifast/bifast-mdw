@@ -54,21 +54,15 @@ public class CreditTransferResponseProcessor implements Processor{
     	map4ctreq.setSerializationInclusion(Include.NON_NULL);
     	String strCTReq = map4ctreq.writeValueAsString(objRequest);
 
-		System.out.println(objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getSplmtryData().size());
 		System.out.println(strCTReq);
     	
-    	String addInfo = null;
+    	String addInfo = "";
 		if (null != objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf()) 
-			addInfo = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0);
-		else
-			addInfo = "";
+			addInfo = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0).toLowerCase();
 
 		String norekCdtr = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId();
-//		String bank = objRequest.getAppHdr().getTo().getFIId().getFinInstnId().getOthr().getId();
 		String bank = objRequest.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getOthr().getId();
 		exchange.getMessage().setHeader("hdr_account_no", norekCdtr);
-
-		
 	
 		if (norekCdtr.startsWith("99")) {
 			String str = admi002();
@@ -86,7 +80,7 @@ public class CreditTransferResponseProcessor implements Processor{
 			BusinessMessage resultMessg = buildBusinessMessage (objRequest, oAcct);
 			saveCreditResponse(objRequest, resultMessg, strCTReq);
 	
-			if (addInfo.toUpperCase().equals("TIMEOUT")) {
+			if ((addInfo.equals("timeout")) || (addInfo.contains("cttimeout"))) {
 			    try
 			    {
 			    	System.out.println("delay dulu selama " + delay);

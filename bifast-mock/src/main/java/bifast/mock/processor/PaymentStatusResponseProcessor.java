@@ -1,5 +1,7 @@
 package bifast.mock.processor;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -7,6 +9,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -35,6 +38,8 @@ public class PaymentStatusResponseProcessor implements Processor{
 	@Autowired
 	private Pacs002MessageService pacs002Service;
 
+	@Value("${komi.timeout-ps}")
+	private int delay;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -57,7 +62,29 @@ public class PaymentStatusResponseProcessor implements Processor{
 		
 		if (optPacs002.isPresent()) {
 			MockPacs002 pacs002 = optPacs002.get();
+			BusinessMessage ctReq = map.readValue(pacs002.getCtRequest(), BusinessMessage.class);
 			BusinessMessage bm = map.readValue(pacs002.getFullMessage(), BusinessMessage.class);
+			
+	    	String addInfo = "";
+			if (null != ctReq.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf()) 
+				addInfo = ctReq.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getRmtInf().getUstrd().get(0).toLowerCase();
+
+			if ((addInfo.equals("timeout")) || (addInfo.contains("pstimeout"))) {
+				System.out.println("PS delay dulu selama " +  delay + " ms");
+			    try
+			    {
+			    	System.out.println("delay dulu selama " + delay);
+			    	LocalDateTime dt1 = LocalDateTime.now();
+			        Thread.sleep(delay);
+			        Long duration = Duration.between(LocalDateTime.now(), dt1).getSeconds();
+			        System.out.println("Oke : " + duration);
+			    }
+			    catch(InterruptedException ex)
+			    {
+			        Thread.currentThread().interrupt();
+			    }
+			}
+
 			exchange.getMessage().setBody(bm);
 		}
 

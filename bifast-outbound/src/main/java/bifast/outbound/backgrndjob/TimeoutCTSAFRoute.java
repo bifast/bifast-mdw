@@ -106,7 +106,9 @@ public class TimeoutCTSAFRoute extends RouteBuilder {
 			
 			.log("[PyStsSAF:${exchangeProperty.pr_psrequest.channelNoref}] PymtStsSAF result: ${body.psStatus}")
 
-			.filter().simple("${body.psStatus} in 'REJECTED,UNDEFINED'")
+//			.filter().simple("${body.psStatus} in 'REJECTED,UNDEFINED'")
+			// sejak 18 Juni 2022, jika UNDEFINED jangan dilakukan debit reversal
+			.filter().simple("${body.psStatus} == 'REJECTED'")
 				.to("direct:debitreversal")
 			.end()
 			

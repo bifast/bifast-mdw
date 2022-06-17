@@ -124,8 +124,8 @@ public class CiHubRoute extends RouteBuilder {
 					.log("Akan proses paymentStatusResponseProcessor")
 					.process(paymentStatusResponseProcessor)
 					
-					.log("PS delay dulu")
-					.delay(simple("${exchangeProperty.delay_ps}"))
+//					.log("PS delay dulu")
+//					.delay(simple("${exchangeProperty.delay_ps}"))
 					
 					.filter().simple("${body} == null")
 						.log("ga nemu payment status")
