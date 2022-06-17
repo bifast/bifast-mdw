@@ -2,59 +2,65 @@
 - Soft golive
 
 10-Feb-2022 : Rel-1.1
+Functional
 - Outbound Payment status SAF 1x saja, kalo masih TO dianggap RJCT
 
 15-Feb-2022: Rel-1.1.1
-- Bugfix: CT bisa proses jika creditorType is null
+Bugfix: 
+- CT bisa proses jika creditorType is null
 
 01-Mar-2022: Rel-1.2
-- Bugfix: Reverse CT jika suppl null
+Bugfix: 
+- Reverse CT jika suppl null
 - Credit Transfer: supplement data tidak kirim
 
 08-Mar-2022
-Upgrade
-- Camel 3.14.1
+Coding:
+- Upgrade ke Camel 3.14.1
 
 14-Mar-2022
-Bugfix
+Bugfix:
 - DebitReversal pada CreditTransferRoute
 
 18-Mar-2022
-Bugfix
+Bugfix:
 - Terima CreDtTm dengan leading space
 
 21-Mar-2022
-Bugfix
+Bugfix:
 - Channel response mandatori field must return json element
 
 28-Mar-2022
-Bugfix
+Bugfix:
 - Response unt PymStatus bukan Settlement, bizSvr=CLEAR
 
 11-Apr-2022
-Bugfix
+Bugfix:
 - Perbaikan timeout dari ISOAdapter masih diloloskan ke CIHUB
 
 18-Apr-2022
-CR: proxyRegistration untuk mobilbanking enabled
+Functional:
+- proxyRegistration untuk mobilbanking enabled
 
 23-Apr-2022
-Bugfix
+Bugfix:
 - CT message pacs008 cdtr.id boleh/bisa null
 
 3-May-2022
-Bugfix
+Bugfix:
 - CT dg response-504 dari isoadapter execute debit-reversal
 
 13-May-2022
-Bugfix
+Bugfix:
 - bad response dari aftDebitcallProc, perbaiki notif portal
 
 23-May-2022 (1.7)
-Feature:
+Feature:g
 - 3x resubmit jika debit reversal TIMEOUT dgn selang waktu 1m
 
 18-Juni-2022 (1.8)
-CR
+Functional:
 - Credit transfer dan payment status jika ci-conn timeout, jangan lakukan debit reversal
- 
+Coding:
+- ubah groupId jadi "komi"
+

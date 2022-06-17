@@ -48,6 +48,7 @@ public class CIFProcessor implements Processor {
 		resp.setReason("U000");
 		resp.setStatus("ACTC");
 
+		exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, "504");
 
 		exchange.getMessage().setBody(resp);
 		

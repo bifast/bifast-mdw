@@ -4,12 +4,11 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<!--  <version>2.4.7</version> -->
 		<version>2.5.12</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	
-	<groupId>fransmz</groupId>
+	<groupId>komi</groupId>
 	<artifactId>komi-parent</artifactId>
 	<version>2.4-SNAPSHOT</version>
 	<name>komi-parent</name>
@@ -29,22 +28,6 @@
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
 	
-<!-- 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		
-		<dependency>
-		    <groupId>org.postgresql</groupId>
-		    <artifactId>postgresql</artifactId>
-		</dependency>
-		
- 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
- -->		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -102,13 +85,6 @@
 			<artifactId>camel-management</artifactId>
 			<version>${camel.version}</version>
 		</dependency>
-
-<!-- 		<dependency>
-			<groupId>io.hawt</groupId>
-			<artifactId>hawtio-springboot</artifactId>
-   	 		<version>2.13.5</version>
-		</dependency>
- -->		
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

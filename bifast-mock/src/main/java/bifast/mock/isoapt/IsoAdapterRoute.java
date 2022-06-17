@@ -101,6 +101,7 @@ public class IsoAdapterRoute extends RouteBuilder {
 
 		from("direct:cif").routeId("cif")
 			.convertBodyTo(String.class)
+			.log("Terima: ${body}")
 			.unmarshal(cifRequestJDF)
 			.process(cifPrc)
 			.marshal(cifResponseJDF)
@@ -108,6 +109,7 @@ public class IsoAdapterRoute extends RouteBuilder {
 
 		from("direct:accountenquiry").routeId("accountenquiry")
 			.convertBodyTo(String.class)
+			.log("Terima: ${body}")
 			.unmarshal(aeRequestJDF)
 			.process(accountEnquiryPrc)
 			.marshal(aeResponseJDF)
