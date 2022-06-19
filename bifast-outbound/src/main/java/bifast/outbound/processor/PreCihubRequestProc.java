@@ -10,28 +10,39 @@ import org.springframework.stereotype.Component;
 
 import bifast.outbound.config.Config;
 import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.service.CallRouteService;
 
 @Component
-public class SetRemainTimeProcessor implements Processor {
-	@Autowired
-	private Config param;
+public class PreCihubRequestProc implements Processor {
+	@Autowired private CallRouteService routeService;
+	@Autowired private Config param;
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		long sla = 0;
-		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
+		rmw.setCihubEncriptedRequest(routeService.encrypt_body(exchange));
+		
+		String msgName = exchange.getMessage().getHeader("cihubMsgName", String.class);
+		if (null==msgName) {
+			msgName = rmw.getMsgName();
+		}
+
+		if (!(msgName.equals("PSReq")))
+			rmw.setCihubStart(Instant.now());
+
+		long sla = 0;
 		long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
 
-		if ((rmw.getMsgName().equals("CTReq")) || (rmw.getMsgName().equals("PrxRegn")))
+		if ((msgName.equals("CTReq")) || (msgName.equals("PrxRegn")))
 			sla = param.getSlaChannelTrns();
-		else if (rmw.getMsgName().equals("PyStsSAF"))
+		else if (msgName.equals("PSReq")) {
 			sla = param.getSlaPymtStatus();
+			timeElapsed = 0;
+		}
 		else 
 			sla = param.getSlaChannelEnqr();
 		
-		if (rmw.getMsgName().equals("PyStsSAF"))
-			timeElapsed = 0;
 
 		String sisa = Long.toString(sla - timeElapsed);
 

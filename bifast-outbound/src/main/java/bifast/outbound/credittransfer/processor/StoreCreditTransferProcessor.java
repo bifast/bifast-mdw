@@ -29,7 +29,7 @@ public class StoreCreditTransferProcessor implements Processor {
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
-
+//		logger.debug("Save table credit transfer");
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 		BusinessMessage biRequest = rmw.getCreditTransferRequest();
 		FIToFICustomerCreditTransferV08 creditTransferReq = biRequest.getDocument().getFiToFICstmrCdtTrf();
@@ -76,15 +76,14 @@ public class StoreCreditTransferProcessor implements Processor {
 			
 			ct.setOriginatingBank(biRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
 			ct.setRecipientBank(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getOthr().getId());
-			ct.setPsCounter(0);
+			ct.setPsCounter(-1);
 
 			creditTransferRepo.save(ct);
-
 		}
 		
 		else {
-			
 			ct = oCT.get();
+
 			long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
 			ct.setCihubElapsedTime(timeElapsed);
 			ct.setLastUpdateDt(LocalDateTime.now());
@@ -136,16 +135,11 @@ public class StoreCreditTransferProcessor implements Processor {
 					ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
 				
 			}
+
+			ct.setPsCounter(ct.getPsCounter()+1);
+			
 			creditTransferRepo.save(ct);
-
-//			if (ct.getCallStatus().equals("TIMEOUT")) {
-//				logger.debug("Akan resume job");
-//				routeService.resumeJobRoute(exchange, "komi.ps.saf");
-//			}
-
 		}
-
-
 
 	}
 }

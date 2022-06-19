@@ -11,8 +11,6 @@ import bifast.outbound.credittransfer.processor.AftDebitCallProc;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
 import bifast.outbound.credittransfer.processor.BuildDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
-import bifast.outbound.credittransfer.processor.SaveCTChannelRequestProc;
-//import bifast.outbound.credittransfer.processor.DebitRejectResponseProc;
 import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
 
 @Component
@@ -23,7 +21,6 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
 	@Autowired private StoreCreditTransferProcessor saveCrdtTrnsProcessor;
 	@Autowired private AftDebitCallProc afterDebitCallProc;
-	@Autowired private SaveCTChannelRequestProc saveCTChannelRequestProc;
 
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     DateTimeFormatter timeformatter = DateTimeFormatter.ofPattern("HHmmss");
@@ -34,7 +31,7 @@ public class CreditTransferRoute extends RouteBuilder {
 		from("direct:credittrns").routeId("komi.ct")
 			
 			.setHeader("ct_progress", constant("Start"))
-			
+
 			// FILTER-A debit-account di cbs dulu donk untuk e-Channel
 			.setProperty("pr_response", constant("ACTC"))
 			.filter().simple("${exchangeProperty.prop_request_list.merchantType} != '6010' ")
@@ -53,11 +50,8 @@ public class CreditTransferRoute extends RouteBuilder {
 //				.end()
 				.process(afterDebitCallProc)
 
-
 			.end()
 		
-	    	.log(LoggingLevel.DEBUG, "komi.ct", 
-	    			"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] check status-2: ${exchangeProperty.pr_response}.")
 
 	    	.filter(exchangeProperty("pr_response").isEqualTo("ACTC"))
 
@@ -95,7 +89,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.ct", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] hasil cihub, ${header.ct_progress}.")
 
-			// jika response TIMEOUT/RJCT/ERROR, harus reversal ke corebanking
+			// jika response RJCT, harus reversal ke corebanking
 			// unt Teller tidak dilakukan KOMI tapi oleh Teller langsung
 			.choice()
 				.when().simple("${header.ct_progress} in 'REJECT' "
@@ -105,11 +99,12 @@ public class CreditTransferRoute extends RouteBuilder {
 					.to("direct:debitreversal")
 
 				.when().simple("${header.ct_progress} == 'TIMEOUT'")
-					.to("controlbus:route?routeId=komi.ps.saf&action=resume&async=true")
-				
+					.log(LoggingLevel.DEBUG, "komi.ct", 
+						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan payment status")
+//					.to("controlbus:route?routeId=komi.ps.saf&action=resume&async=true")
+					.to("seda:psr?exchangePattern=InOnly")
 			.end()
 			
-
 			.process(crdtTransferResponseProcessor)		
 			
 //			.to("seda:savechanneltrns?exchangePattern=InOnly")   // update data

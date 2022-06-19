@@ -87,6 +87,7 @@ public class CheckChannelRequestTypeProcessor implements Processor {
 			exchange.getMessage().setBody(req.getChnlAccountCstmrInfoRequest());
 		}
 
+		exchange.getMessage().setHeader("cihubMsgName", rmw.getMsgName());
 		exchange.setProperty("prop_request_list", rmw);
 
 	}

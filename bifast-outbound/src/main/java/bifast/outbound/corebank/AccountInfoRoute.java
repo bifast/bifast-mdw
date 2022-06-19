@@ -5,6 +5,7 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,6 @@ public class AccountInfoRoute extends RouteBuilder{
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat aciRequestJDF = jdfService.basic(AccountCustInfoRequestDTO.class);
@@ -56,10 +56,12 @@ public class AccountInfoRoute extends RouteBuilder{
  				.setProperty("pr_reason", simple("${body.reason}"))
  			
 	 		.endDoTry()
-	    	.doCatch(org.apache.camel.http.common.HttpOperationFailedException.class).onWhen(simple("${exception.statusCode} == '504'"))
-	    		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank TIMEOUT: \n ${exception.message}")
-	    		.setProperty("pr_response", constant("CB-TIMEOUT"))
-	    		.setProperty("pr_reason", constant("U900"))
+				
+	 		.doCatch(HttpOperationFailedException.class).onWhen(simple("${exception.statusCode} == '504'")) 
+				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank TIMEOUT: \n ${exception.message}") 
+				.setProperty("pr_response", constant("CB-TIMEOUT"))
+				.setProperty("pr_reason", constant("U900"))
+				 	    		
 	    	.doCatch(Exception.class)
 	    		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Caught exception ${exception.class}: \n ${exception.message}")
 	    		.setProperty("pr_response", constant("CB-ERROR"))

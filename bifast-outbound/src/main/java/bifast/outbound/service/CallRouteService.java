@@ -4,10 +4,8 @@ package bifast.outbound.service;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.FluentProducerTemplate;
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.spi.RouteController;
-import org.apache.camel.support.DefaultExchange;
 import org.springframework.stereotype.Service;
 
 import bifast.library.iso20022.custom.BusinessMessage;
@@ -40,6 +38,12 @@ public class CallRouteService {
 		String strBody = exchange.getMessage().getBody(String.class);
 		FluentProducerTemplate template = exchange.getContext().createFluentProducerTemplate();
 		BusinessMessage decrBody = template.withBody(strBody).to("direct:decryp_unmarshal").request(BusinessMessage.class);
+		return decrBody;
+	}
+	
+	public String encrypt_body (Exchange exchange) {
+		FluentProducerTemplate template = exchange.getContext().createFluentProducerTemplate();
+		String decrBody = template.withBody(exchange.getMessage().getBody()).to("direct:encrypbody").request(String.class);
 		return decrBody;
 	}
 	

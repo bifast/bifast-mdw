@@ -1,7 +1,5 @@
 package bifast.outbound.route;
 
-import java.time.Instant;
-
 import javax.xml.bind.JAXBContext;
 
 import org.apache.camel.Exchange;
@@ -10,8 +8,6 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,24 +17,21 @@ import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.processor.ExceptionToFaultProcessor;
 import bifast.outbound.processor.FlatResponseProcessor;
-import bifast.outbound.processor.SetRemainTimeProcessor;
+import bifast.outbound.processor.PreCihubRequestProc;
+import bifast.outbound.service.CallRouteService;
 import bifast.outbound.service.JacksonDataFormatService;
 
 @Component
 public class CihubRoute extends RouteBuilder {
 
-	@Autowired
-	private EnrichmentAggregator enrichmentAggregator;
-	@Autowired
-	private ExceptionToFaultProcessor exceptionToFaultMap;
-	@Autowired
-	private FlatResponseProcessor flatResponseProcessor;
-	@Autowired
-	private JacksonDataFormatService jdfService;
-	@Autowired
-	private SetRemainTimeProcessor setRemainTime;
+	@Autowired private CallRouteService routeService;
+	@Autowired private EnrichmentAggregator enrichmentAggregator;
+	@Autowired private ExceptionToFaultProcessor exceptionToFaultMap;
+	@Autowired private FlatResponseProcessor flatResponseProcessor;
+	@Autowired private JacksonDataFormatService jdfService;
+	@Autowired private PreCihubRequestProc preCihubRequestProc;
 
-	private static Logger logger = LoggerFactory.getLogger(CihubRoute.class);
+//	private static Logger logger = LoggerFactory.getLogger(CihubRoute.class);
 
 	@Override
 	public void configure() throws Exception {
@@ -51,44 +44,24 @@ public class CihubRoute extends RouteBuilder {
 
 		// ** ROUTE GENERAL UNTUK POSTING KE CI-HUB ** //
 		from("direct:call-cihub").routeId("komi.call-cihub")
-		
-			.setHeader("hdr_cihub_request", simple("${body}")).id("start_route")
-	
 			.choice()
 				.when().simple("${properties:komi.output-format} == 'json'")
 					.marshal(businessMessageJDF)
 				.otherwise()
 					.marshal(jaxb)
 			.end()
-	
-			// zip dulu body ke cihubroute_encr_request
-			.setHeader("tmp_body", simple("${body}"))
-			.marshal().zipDeflater()
-			.marshal().base64()
-			.setHeader("cihubroute_encr_request", simple("${body}"))
-			.setBody(simple("${header.tmp_body}"))
+
+			// daftarkan encrypted dan startTime ke rmw, set remain time
+			.process(preCihubRequestProc)
+			.log("[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] request CIHUB: ${body}")
 			
-			// daftarkan encrypted dan startTime ke rmw
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-					String encrMsg = exchange.getMessage().getHeader("cihubroute_encr_request", String.class);
-					rmw.setCihubEncriptedRequest(encrMsg);
-					rmw.setCihubStart(Instant.now());
-					exchange.setProperty("prop_request_list", rmw);
-				}
-			})
-			
-			.process(setRemainTime)
-			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] request CIHUB: ${body}")
-			
-			.removeHeaders("*")
+			.removeHeaders("hdr*")
+
 			.doTry()
 				.setHeader("HttpMethod", constant("POST"))
 				.log(LoggingLevel.DEBUG, "komi.call-cihub", 
-						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] "
+						"[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] "
 						+ "sisa waktu ${exchangeProperty.prop_remain_time}")
-
 				.enrich()
 					.simple("{{komi.url.ciconnector}}?"
 						+ "socketTimeout=${exchangeProperty.prop_remain_time}&" 
@@ -96,57 +69,39 @@ public class CihubRoute extends RouteBuilder {
 					.aggregationStrategy(enrichmentAggregator)
 				
 				.convertBodyTo(String.class)				
-				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CIHUB response: ${body}")
-	
-				.setHeader("tmp_body", simple("${body}"))
-				.marshal().zipDeflater().marshal().base64()
-				.setHeader("cihubroute_encr_response", simple("${body}"))
-				
+				.log("[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] CIHUB response: ${body}")
+					
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
-						String body = exchange.getMessage().getBody(String.class);
 						RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-						rmw.setCihubEncriptedResponse(body);
-						exchange.setProperty("prop_request_list", rmw);
+						rmw.setCihubEncriptedResponse(routeService.encrypt_body(exchange));
 					}
 				})
 				
-				.setBody(simple("${header.tmp_body}"))	
 				.unmarshal(businessMessageJDF)
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 						BusinessMessage bm = exchange.getMessage().getBody(BusinessMessage.class);
 						ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 						rmc.setCihubResponse(bm);
-						exchange.setProperty("prop_response_list", rmc);
-//						if (null != bm.getDocument().getFiToFIPmtStsRpt()) {
-//							logger.debug("CreDtTm value: " + bm.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm());
-//							logger.debug("CreDtTm class: " + bm.getDocument().getFiToFIPmtStsRpt().getGrpHdr().getCreDtTm().getClass().getSimpleName());
-//						}
 					}
 				})
 								
 				.process(flatResponseProcessor)
-				
-				.filter().simple("${body.class} endsWith 'FaultPojo'")
-					.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CI-HUB Response: ${header.tmp_body}")
-		    	.end()
-			
+		
 			.endDoTry()
 			.doCatch(java.net.SocketTimeoutException.class)
-				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] CI-HUB TIMEOUT.")
+				.log(LoggingLevel.ERROR, "[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] CI-HUB TIMEOUT.")
 //		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultMap)
 			.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Call CI-HUB Error.")
+				.log(LoggingLevel.ERROR, "[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] Call CI-HUB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(exceptionToFaultMap)
 			.end()
 	
-			.removeHeaders("tmp_*")
 			.removeHeaders("cihubroute_*")
 		;
-
 	
 	}		
 }

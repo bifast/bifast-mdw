@@ -19,7 +19,7 @@ Authorization: Basic MB:mb2022
 		"NoRef": "FRN2201152{{$randomInt 1000 9999}}",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "112211777",
+		"CreditorAccountNumber": "112211333",
 		"CreditorAccountType": "CACC",
 		"CreditorId": "018029520054000",
 		"CreditorType": "02",
@@ -28,7 +28,7 @@ Authorization: Basic MB:mb2022
 		"CreditorTownName": "0300",
 		"Amount": "500.24",
 		"FeeTransfer": "0.00",
-		"RecipientBank": "BRINIDJA",
+		"RecipientBank": "CENAIDJA",
 		"DebtorAccountNumber": "3602103332331",
 		"DebtorAccountType": "SVGS",
 		"DebtorId": "5171026206690001",
@@ -36,7 +36,7 @@ Authorization: Basic MB:mb2022
 		"DebtorType": "01",
 		"DebtorTownName": "0191",
 		"DebtorName": "MURYATI",
-		"PaymentInformation": ""
+		"PaymentInformation": "cttimeout"
 	}
 }
 
@@ -85,3 +85,6 @@ POST http://localhost:9006/mock/adapter/debitreversal HTTP/1.1
 Content-Type: application/json
 
 {"transactionId":"000001","noRef":"FRN22011523278","merchantType":"5002","terminalId":"MOBILE0001","dateTime":"2022-02-02T21:26:22.440","originalNoRef":"FRN22011523278","originalDateTime":"2022-02-02T21:26:22.440","categoryPurpose":"01","debtorName":"MURYATI","debtorType":"01","debtorId":"5171026206690001","debtorAccountNumber":"0002107551117","debtorAccountType":"SVGS","debtorResidentStatus":"01","debtorTownName":"0191","amount":"60500.24","feeTransfer":"0.00","recipientBank":"KSEIIDJ1","creditorName":"REKENING DANA INVESTASI NOSTRO","creditorType":"02","creditorId":"018029520054000","creditorAccountNumber":"KSEI1PLC100156","creditorAccountType":"SVGS","creditorResidentStatus":"01","creditorTownName":"0300","paymentInformation":"Test mantap "}
+
+###
+

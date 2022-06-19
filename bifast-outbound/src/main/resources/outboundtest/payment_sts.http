@@ -10,3 +10,8 @@ Authorization: Basic MB:password
     }
 }
 
+###
+POST http://10.11.100.93:5000
+Content-Type: application/json
+
+{"BusMsg":{"AppHdr":{"Fr":{"FIId":{"FinInstnId":{"Othr":{"Id":"SIHBIDJ1"}}}},"To":{"FIId":{"FinInstnId":{"Othr":{"Id":"FASTIDJA"}}}},"BizMsgIdr":"20220618SIHBIDJ1000O9967072779","MsgDefIdr":"pacs.028.001.04","CreDt":"2022-06-18T11:38:14Z"},"Document":{"FIToFIPmtStsReq":{"GrpHdr":{"MsgId":"20220618SIHBIDJ100067078779","CreDtTm":"2022-06-18T18:38:14.988"},"TxInf":[{"OrgnlEndToEndId":"20220618SIHBIDJ1010O0267078779"}]}}}}

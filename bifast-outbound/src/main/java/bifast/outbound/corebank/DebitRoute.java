@@ -6,6 +6,7 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -21,8 +22,6 @@ import bifast.outbound.processor.EnrichmentAggregator;
 import bifast.outbound.repository.StatusReasonRepository;
 import bifast.outbound.service.JacksonDataFormatService;
 
-
-
 @Component
 public class DebitRoute extends RouteBuilder{
 	@Autowired private CbCallFaultProcessor cbFaultProcessor;
@@ -31,7 +30,6 @@ public class DebitRoute extends RouteBuilder{
 	@Autowired private SaveCbDebitProcessor saveCBTransactionProc;
 	@Autowired private StatusReasonRepository reasonRepo;
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void configure() throws Exception {
 		JacksonDataFormat debitRequestJDF = jdfService.basic(DebitRequestDTO.class);
@@ -41,7 +39,7 @@ public class DebitRoute extends RouteBuilder{
 		// ROUTE CALLCB 
 		from("direct:debit").routeId("komi.cb.debit")
 
-			.removeHeaders("*")
+//			.removeHeaders("*")
 
 			.setProperty("pr_cbrequest", simple("${body}"))
 			
@@ -86,14 +84,16 @@ public class DebitRoute extends RouteBuilder{
 				.end()
 				
 	 		.endDoTry()
-	    	.doCatch(org.apache.camel.http.common.HttpOperationFailedException.class).onWhen(simple("${exception.statusCode} == '504'"))
+	 		
+	    	.doCatch(HttpOperationFailedException.class).onWhen(simple("${exception.statusCode} == '504'"))
 	    		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank TIMEOUT: \n ${exception.message}")
 	    		.process(cbFaultProcessor)
+	    		
 	    	.doCatch(Exception.class)
 	    		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Caught exception ${exception.class}: \n ${exception.message}")
 	    		.process(cbFaultProcessor)
 	    	.end()
-
+	 		
 			.log(LoggingLevel.DEBUG, "komi.cb.debit", "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] "
 					+ "akan simpan debit msg")
 			.process(saveCBTransactionProc)

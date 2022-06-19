@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.12</version>
+		<version>2.7.0</version>
 		<relativePath/>
 	</parent>
 	
 	<groupId>komi</groupId>
 	<artifactId>komi-parent</artifactId>
-	<version>2.4-SNAPSHOT</version>
+	<version>2.5-SNAPSHOT</version>
 	<name>komi-parent</name>
 	<description>BI FAST parent project</description>
 	<packaging>pom</packaging>
@@ -18,7 +18,7 @@
 	
 	<properties>
 		<java.version>11</java.version>
-		<camel.version>3.14.1</camel.version>
+		<camel.version>3.17.0</camel.version>
 	</properties>
 	
 	<dependencies>

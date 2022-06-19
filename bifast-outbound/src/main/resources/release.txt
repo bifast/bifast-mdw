@@ -63,4 +63,5 @@ Functional:
 - Credit transfer dan payment status jika ci-conn timeout, jangan lakukan debit reversal
 Coding:
 - ubah groupId jadi "komi"
-
+- Upgrade jadi Spring Boot 2.7.1
+- Upgrade jadi Camel 3.17.0

@@ -28,11 +28,12 @@ public class ExceptionToFaultProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
+		String msgName = exchange.getMessage().getHeader("cihubMsgName", String.class);
 		Object objException = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Object.class);
 		String exceptionClassName = objException.getClass().getName();
 		Optional<FaultClass> oFaultClass = faultClassRepo.findByExceptionClass(exceptionClassName);
 			
-		logger.debug("Nama Exception : " + exceptionClassName);
+		logger.debug("[" + msgName + ":] Nama Exception : " + exceptionClassName);
 		FaultPojo fault = new FaultPojo();
 		
 		fault.setLocation("CI-HUB");

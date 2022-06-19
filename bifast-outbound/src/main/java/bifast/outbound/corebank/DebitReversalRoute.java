@@ -43,30 +43,30 @@ public class DebitReversalRoute extends RouteBuilder{
 		
 		JacksonDataFormat debitReversalRequestJDF = jdfService.basic(DebitReversalRequestPojo.class);
 		JacksonDataFormat debitReversalResponseJDF = jdfService.wrapRoot(DebitReversalResponsePojo.class);
-
 	
 		from("direct:debitreversal").routeId("komi.debit_rev")
 
-			.log(LoggingLevel.DEBUG, "komi.debit_rev", 
-					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Akan debit-reversal")
-
+//			.log(LoggingLevel.DEBUG, "komi.debit_rev", 
+//					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Akan debit-reversal")
 			.setHeader("ct_progress", constant("REVERSAL"))
 			.setHeader("revct_tmpbody", simple("${body}"))
 				
 			// build reversal message from rmw.getChnlCreditTransferRequest
 			.process(debitReversalRequestProcessor)
-			.setHeader("revct_revRequest", simple("${body}"))
+//			.setHeader("revct_revRequest", simple("${body}"))
 			.marshal(debitReversalRequestJDF)
-//			.setHeader("revct_strRequest", simple("${body}"))
 
 			//submit reversal
+			.log(LoggingLevel.DEBUG, "komi.debit_rev", "[${header.cihubMsgName}:"
+					+ "${exchangeProperty.prop_request_list.requestId}] POST {{komi.url.isoadapter.reversal}}")
+			.log("[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] Request ISOAdapter: ${body}")
 			.to("direct:postcreditreversal?exchangePattern=InOptionalOut")
 			
 			.setExchangePattern(ExchangePattern.InOnly)
 			.to("seda:savecbdebitrevr")
 
 			.log(LoggingLevel.DEBUG, "komi.debit_rev", 
-					"[${exchangeProperty.prop_request_list.msgName}:"
+					"[${header.cihubMsgName}:"
 					+ "${exchangeProperty.prop_request_list.requestId}] response class ${body.class}")
 
 			.setBody(simple("${header.revct_tmpbody}"))
@@ -75,15 +75,10 @@ public class DebitReversalRoute extends RouteBuilder{
 		
 		
 		from("direct:postcreditreversal").routeId("komi.postcrdtrev")
-			.log(LoggingLevel.DEBUG, "komi.postcrdtrev", 
-					"[${exchangeProperty.prop_request_list.msgName}:"
-					+ "${exchangeProperty.prop_request_list.requestId}] POST {{komi.url.isoadapter.reversal}}")
 
 			.removeHeaders("hdr_*")
 
 			.doTry()
-				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Request ISOAdapter: ${body}")
-		
 				.process(new Processor() {
 					public void process(Exchange exchange) throws Exception {
 			            exchange.getIn().setHeader(Exchange.CONTENT_TYPE, MediaType.APPLICATION_JSON);
@@ -99,13 +94,13 @@ public class DebitReversalRoute extends RouteBuilder{
 	
 				.convertBodyTo(String.class)
 				
-				.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Response ISOAdapter: ${body}")
+				.log("[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] Response ISOAdapter: ${body}")
 	
 				.unmarshal(debitReversalResponseJDF)
 				
 			.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Call Corebank Error.")
+				.log(LoggingLevel.ERROR, "[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] Call Corebank Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 		    	.process(dbrevFaultProcessor)
 			.end()
@@ -113,13 +108,14 @@ public class DebitReversalRoute extends RouteBuilder{
 		
 		from("seda:savecbdebitrevr?concurrentConsumers=5").routeId("komi.savecbdebitrevr")
 			.log(LoggingLevel.DEBUG, "komi.savecbdebitrevr", 
-				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save Debit Reversal ke CB-log")
+				"[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] akan save Debit Reversal ke CB-log")
 			
 			.process(new Processor() {
 				public void process(Exchange exchange) throws Exception {
 					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
 					String komiTrnsId = rmw.getKomiTrxId();
-					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("revct_revRequest",DebitReversalRequestPojo.class);
+					DebitReversalRequestPojo cbRequest = rmw.getDebitReversalRequest();
+//					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("revct_revRequest",DebitReversalRequestPojo.class);
 	
 //					String strRequest = exchange.getMessage().getHeader("revct_strRequest", String.class);
 					CorebankTransaction cbTrns = new CorebankTransaction();

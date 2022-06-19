@@ -1,6 +1,5 @@
 package bifast.outbound.processor;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
@@ -10,8 +9,6 @@ import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
-import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
@@ -36,12 +33,19 @@ public class SaveChannelTransactionProcessor implements Processor{
 		ChannelTransaction chnlTrns = optChannel.get();
 		
 //		FaultPojo fault = null;
-
-		if (respColl.getCallStatus().equals("SUCCESS")) {
+		if (responseWr.getReasonCode().equals("K000")) {
+			chnlTrns.setCallStatus("TIMEOUT");
+			chnlTrns.setResponseCode(responseWr.getResponseCode());
+			chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
+		}
+		
+		else if (!(responseWr.getResponseCode().equals("KSTS"))) {
+//		if (respColl.getCallStatus().equals("SUCCESS")) {
 //		if (null == respColl.getFault()) {
 			chnlTrns.setCallStatus("SUCCESS");
 			chnlTrns.setResponseCode(responseWr.getResponseCode());
 		}
+		
 		else {
 //			fault = respColl.getFault();
 //
@@ -66,22 +70,7 @@ public class SaveChannelTransactionProcessor implements Processor{
 	
 		long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
 		chnlTrns.setElapsedTime(timeElapsed);
-
-//		if (rmw.getMsgName().equals("AEReq")) {
-//
-//			ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
-//			chnlTrns.setAmount(new BigDecimal(aeReq.getAmount()));
-//			chnlTrns.setRecptBank(aeReq.getRecptBank());			
-//		}
-//
-//		else if (rmw.getMsgName().equals("CTReq")) {
-//
-//			ChnlCreditTransferRequestPojo ctReq = rmw.getChnlCreditTransferRequest();
-//			chnlTrns.setAmount(new BigDecimal(ctReq.getAmount()));
-//			chnlTrns.setRecptBank(ctReq.getRecptBank());
-//
-//		}
-		
+	
 		channelTransactionRepo.save(chnlTrns);
 
 	}

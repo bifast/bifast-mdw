@@ -58,6 +58,7 @@ public class DebitReversalRequestProcessor implements Processor{
 		
 		reversalReq.setTransactionId("000001");
 		
+		rmw.setDebitReversalRequest(reversalReq);
 		exchange.getMessage().setBody(reversalReq);
 
 	}
