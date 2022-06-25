@@ -22,7 +22,7 @@ public class SaveAccountEnquiryProcessor implements Processor {
 	@Autowired
 	private AccountEnquiryRepository accountEnquiryRepo;
 
-	@SuppressWarnings("static-access")
+//	@SuppressWarnings("static-access")
 	@Override
 	public void process(Exchange exchange) throws Exception {
 	

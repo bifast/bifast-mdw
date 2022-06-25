@@ -22,3 +22,8 @@ BugFix :
 - SettlementSAF, jika response U106 maka status CT.settlement = NOTFOUND
 - PaymentStatusSAF, no bizmsgidr ubah dari RFI jadi OFI
 - Flat002.CrdtAgnFinInstId diganti CT.orgnlBank/recptBank
+
+25-Juni-2022 (v1.5)
+Coding:
+- Upgrade Springboot 2.7.0, Camel 3.17.0
+ 
