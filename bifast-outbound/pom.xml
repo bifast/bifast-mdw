@@ -11,7 +11,7 @@
 	</parent>
 	
 	<artifactId>komi-outbound</artifactId>
-	<version>1.8.1-SNAPSHOT</version>
+	<version>1.7</version>
 	<name>komi-outbound</name>
 	<description>BI FAST Outbound</description>
 	<packaging>jar</packaging>

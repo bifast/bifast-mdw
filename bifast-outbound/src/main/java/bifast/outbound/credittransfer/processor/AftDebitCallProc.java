@@ -42,9 +42,6 @@ public class AftDebitCallProc implements Processor{
                 logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] response U900." );
                 FluentProducerTemplate pt = exchange.getContext().createFluentProducerTemplate();
                 pt.withExchange(exchange).to("seda:sdebitreversal?exchangePattern=InOnly&timeout=0").asyncSend();
-                
-                logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] barusan call debitreversal." );
-
             }
 
             ChannelResponseWrapper response = debitRejectResponse (exchange);
