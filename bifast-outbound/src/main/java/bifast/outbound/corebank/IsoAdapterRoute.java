@@ -139,7 +139,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 				.end()
 				
 	 		.endDoTry()
-//	    	.doCatch(org.apache.camel.http.common.HttpOperationFailedException.class)
+//	    	.doCatch(org.apache.camel.http.base.HttpOperationFailedException.class)
 //				.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] Call CB Timeout(504).")
 //		    	.process(cbFaultProcessor)
 	    	.doCatch(Exception.class)

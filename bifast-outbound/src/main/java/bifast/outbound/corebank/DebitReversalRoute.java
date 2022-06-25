@@ -100,8 +100,13 @@ public class DebitReversalRoute extends RouteBuilder{
 				
 			.endDoTry()
 	    	.doCatch(Exception.class)
-				.log(LoggingLevel.ERROR, "[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] Call Corebank Error.")
-		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+				.choice()
+					.when().simple("${exchangeProperty.CamelExceptionCaught.statusCode} == '504'")
+						.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${header.cb_e2eid}] Call CB Timeout(504).")
+					.otherwise()
+						.log(LoggingLevel.ERROR, "[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] Call Corebank Error.")
+						.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+					.end()
 		    	.process(dbrevFaultProcessor)
 			.end()
 		;

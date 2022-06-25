@@ -85,7 +85,8 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.unmarshal(chnlRequestJDF)
 			.process(initRmwProcessor)
 	
-			.log("==*** Terima dari ${exchangeProperty.prop_request_list.channelId} ***==\n${header.hdr_fulltextinput}")
+			.log("======*******======")
+			.log("[ExchangeId:${exchangeId}] Terima dari ${exchangeProperty.prop_request_list.channelId}\n${header.hdr_fulltextinput}")
 //			.log("Terima dari ${exchangeProperty.prop_request_list.channelId}: ${header.hdr_fulltextinput}")
 
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest

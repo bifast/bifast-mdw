@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +22,7 @@ public class SaveChannelTransactionProcessor implements Processor{
 	@Autowired
 	private ChannelTransactionRepository channelTransactionRepo;
 	
-//	private static Logger logger = LoggerFactory.getLogger(SaveChannelTransactionProcessor.class);
+	private static Logger logger = LoggerFactory.getLogger(SaveChannelTransactionProcessor.class);
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -32,18 +34,22 @@ public class SaveChannelTransactionProcessor implements Processor{
 		Optional<ChannelTransaction> optChannel = channelTransactionRepo.findById(rmw.getKomiTrxId());
 		ChannelTransaction chnlTrns = optChannel.get();
 		
-//		FaultPojo fault = null;
-		if (responseWr.getReasonCode().equals("K000")) {
+		logger.debug("Save channelTransaction dgn response " + responseWr.getResponseCode());
+		if (responseWr.getResponseCode().equals("ACTC")) {
+			chnlTrns.setCallStatus("SUCCESS");
+			chnlTrns.setResponseCode(responseWr.getResponseCode());
+		}
+
+		else if (responseWr.getReasonCode().equals("K000")) {
 			chnlTrns.setCallStatus("TIMEOUT");
 			chnlTrns.setResponseCode(responseWr.getResponseCode());
 			chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
 		}
 		
-		else if (!(responseWr.getResponseCode().equals("KSTS"))) {
-//		if (respColl.getCallStatus().equals("SUCCESS")) {
-//		if (null == respColl.getFault()) {
+		else if (responseWr.getResponseCode().equals("RJCT")) {
 			chnlTrns.setCallStatus("SUCCESS");
 			chnlTrns.setResponseCode(responseWr.getResponseCode());
+			chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
 		}
 		
 		else {
@@ -61,7 +67,6 @@ public class SaveChannelTransactionProcessor implements Processor{
 			if (errLength>250)
 				errLength = 250;
 
-//			String errMsg = respColl.getLastError().substring(0, errLength);
 			chnlTrns.setCallStatus(respColl.getCallStatus());
 			chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
 			chnlTrns.setResponseCode(respColl.getResponseCode());
