@@ -1,10 +1,5 @@
 package bifast.outbound.corebank;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
@@ -19,22 +14,17 @@ import bifast.outbound.corebank.pojo.DebitReversalRequestPojo;
 import bifast.outbound.corebank.pojo.DebitReversalResponsePojo;
 import bifast.outbound.corebank.processor.DebitReversalFaultProcessor;
 import bifast.outbound.corebank.processor.DebitReversalRequestProcessor;
-import bifast.outbound.model.CorebankTransaction;
-import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.corebank.processor.SaveCbDebitReversalProc;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.repository.CorebankTransactionRepository;
 import bifast.outbound.service.JacksonDataFormatService;
-import bifast.outbound.service.UtilService;
 
 @Component
 public class DebitReversalRoute extends RouteBuilder{
-//	@Autowired private CbFaultExceptionProcessor cbFaultProcessor;
-	@Autowired private CorebankTransactionRepository cbRepo;
 	@Autowired private DebitReversalFaultProcessor dbrevFaultProcessor;
 	@Autowired private DebitReversalRequestProcessor debitReversalRequestProcessor;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
 	@Autowired private JacksonDataFormatService jdfService;
-	@Autowired private UtilService utilService;
+	@Autowired private SaveCbDebitReversalProc saveCbDebitReversalProc;
 
 //	private static Logger logger = LoggerFactory.getLogger(DebitReversalRoute.class);
 
@@ -114,43 +104,9 @@ public class DebitReversalRoute extends RouteBuilder{
 		from("seda:savecbdebitrevr?concurrentConsumers=5").routeId("komi.savecbdebitrevr")
 			.log(LoggingLevel.DEBUG, "komi.savecbdebitrevr", 
 				"[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] akan save Debit Reversal ke CB-log")
-			
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
-					String komiTrnsId = rmw.getKomiTrxId();
-					DebitReversalRequestPojo cbRequest = rmw.getDebitReversalRequest();
-//					DebitReversalRequestPojo cbRequest = exchange.getMessage().getHeader("revct_revRequest",DebitReversalRequestPojo.class);
-	
-//					String strRequest = exchange.getMessage().getHeader("revct_strRequest", String.class);
-					CorebankTransaction cbTrns = new CorebankTransaction();
-					cbTrns.setCreditAmount(new BigDecimal(cbRequest.getAmount()));
-					cbTrns.setCstmAccountName(cbRequest.getDebtorName());
-					cbTrns.setCstmAccountNo(cbRequest.getDebtorAccountNumber());
-					cbTrns.setCstmAccountType(cbRequest.getDebtorAccountType());
-					cbTrns.setDateTime(cbRequest.getDateTime());
-					cbTrns.setFeeAmount(new BigDecimal(cbRequest.getFeeTransfer()));
-					cbTrns.setFullTextRequest(utilService.serialize(cbRequest));
-					cbTrns.setKomiNoref(cbRequest.getNoRef());
-					cbTrns.setKomiTrnsId(komiTrnsId);
-		
-					cbTrns.setOrgnlChnlNoref(cbRequest.getOriginalNoRef());
-					cbTrns.setOrgnlDateTime(cbRequest.getOriginalDateTime());
-					cbTrns.setTransactionType("DebitReversal");
-					cbTrns.setTrnsDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-					cbTrns.setUpdateTime(LocalDateTime.now());
-					
-					DebitReversalResponsePojo resp = exchange.getMessage().getBody(DebitReversalResponsePojo.class);
-					cbTrns.setReason(resp.getReason());
-					cbTrns.setResponse(resp.getStatus());
-
-					cbRepo.save(cbTrns);
-				}
-			})
+			.process(saveCbDebitReversalProc)
 		;
 		
 	}
-
-		
 		
 }

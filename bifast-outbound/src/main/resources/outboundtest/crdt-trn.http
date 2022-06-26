@@ -19,7 +19,7 @@ Authorization: Basic MB:mb2022
 		"NoRef": "FRN2201152{{$randomInt 1000 9999}}",
 		"TerminalId": "MOBILE0001",
 		"CategoryPurpose": "01",
-		"CreditorAccountNumber": "112211333",
+		"CreditorAccountNumber": "112211777",
 		"CreditorAccountType": "CACC",
 		"CreditorId": "018029520054000",
 		"CreditorType": "02",
@@ -28,7 +28,7 @@ Authorization: Basic MB:mb2022
 		"CreditorTownName": "0300",
 		"Amount": "500.24",
 		"FeeTransfer": "0.00",
-		"RecipientBank": "CENAIDJA",
+		"RecipientBank": "BRINIDJA",
 		"DebtorAccountNumber": "3602103332331",
 		"DebtorAccountType": "SVGS",
 		"DebtorId": "5171026206690001",
@@ -36,7 +36,7 @@ Authorization: Basic MB:mb2022
 		"DebtorType": "01",
 		"DebtorTownName": "0191",
 		"DebtorName": "MURYATI",
-		"PaymentInformation": "cttimeout"
+		"PaymentInformation": "revtimeout"
 	}
 }
 
