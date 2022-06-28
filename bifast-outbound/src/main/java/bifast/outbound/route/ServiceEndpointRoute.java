@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
+import bifast.outbound.config.Config;
 import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
 import bifast.outbound.exception.DuplicateIdException;
 import bifast.outbound.model.ChannelTransaction;
@@ -32,6 +33,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 	@Autowired private ChannelTransactionRepository channelTransactionRepo;
 	@Autowired private CheckChannelRequestTypeProcessor checkChannelRequest;
+	@Autowired private Config config;
 	@Autowired private ExceptionProcessor exceptionProcessor;
 	@Autowired private InitRequestMessageWrapperProcessor initRmwProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
@@ -114,6 +116,9 @@ public class ServiceEndpointRoute extends RouteBuilder {
 						ChnlCreditTransferRequestPojo ctReq = (ChnlCreditTransferRequestPojo) rmw.getChannelRequest();
 						chnlTrns.setAmount(new BigDecimal(ctReq.getAmount()));
 						chnlTrns.setRecptBank(ctReq.getRecptBank());
+					}
+					else if (rmw.getMsgName().equals(config.getBicode())) {
+						chnlTrns.setRecptBank(config.getBicode());
 					}
 
 					channelTransactionRepo.save(chnlTrns);

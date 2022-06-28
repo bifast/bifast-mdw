@@ -87,7 +87,10 @@ public class StoreCreditTransferProcessor implements Processor {
 			long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
 			ct.setCihubElapsedTime(timeElapsed);
 			ct.setLastUpdateDt(LocalDateTime.now());
-			ct.setFullRequestMessage(rmw.getCihubEncriptedRequest());
+			
+			if (ct.getPsCounter() < 0)
+				ct.setFullRequestMessage(rmw.getCihubEncriptedRequest());
+			
 			if (null != rmw.getCihubEncriptedResponse())
 				ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
 			

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import bifast.outbound.model.ChannelTransaction;
 import bifast.outbound.pojo.ChannelResponseWrapper;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.ChannelTransactionRepository;
 
 @Component
@@ -28,56 +27,27 @@ public class SaveChannelTransactionProcessor implements Processor{
 	public void process(Exchange exchange) throws Exception {
 
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class );
-		ResponseMessageCollection respColl = exchange.getProperty("prop_response_list",ResponseMessageCollection.class );
+//		ResponseMessageCollection respColl = exchange.getProperty("prop_response_list",ResponseMessageCollection.class );
 		ChannelResponseWrapper responseWr = exchange.getMessage().getBody(ChannelResponseWrapper.class);
 
 		Optional<ChannelTransaction> optChannel = channelTransactionRepo.findById(rmw.getKomiTrxId());
 		ChannelTransaction chnlTrns = optChannel.get();
 		
 		logger.debug("Save channelTransaction dgn response " + responseWr.getResponseCode());
-		if (responseWr.getResponseCode().equals("ACTC")) {
-			chnlTrns.setCallStatus("SUCCESS");
-			chnlTrns.setResponseCode(responseWr.getResponseCode());
-		}
-
-		else if (responseWr.getReasonCode().equals("K000")) {
+		
+		if (responseWr.getReasonCode().equals("K000")) 
 			chnlTrns.setCallStatus("TIMEOUT");
-			chnlTrns.setResponseCode(responseWr.getResponseCode());
-			chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
-		}
-		
-		else if (responseWr.getResponseCode().equals("RJCT")) {
+		else
 			chnlTrns.setCallStatus("SUCCESS");
-			chnlTrns.setResponseCode(responseWr.getResponseCode());
+			
+		chnlTrns.setResponseCode(responseWr.getResponseCode());
+
+		if (!(responseWr.getResponseCode().equals("ACTC"))) 
 			chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
-		}
-		
-		else {
-//			fault = respColl.getFault();
-//
-//			int errLength = fault.getErrorMessage().length();
-//			if (errLength>250)
-//				errLength = 250;
-//			String errMsg = fault.getErrorMessage().substring(0, errLength);
-//			chnlTrns.setCallStatus(fault.getCallStatus());
-//			chnlTrns.setErrorMsg(errMsg);
-//			chnlTrns.setResponseCode(fault.getResponseCode());
 
-			int errLength = respColl.getLastError().length();
-			if (errLength>250)
-				errLength = 250;
-
-			chnlTrns.setCallStatus(respColl.getCallStatus());
-			chnlTrns.setErrorMsg("(" + responseWr.getReasonCode() + ") " + responseWr.getReasonMessage());
-			chnlTrns.setResponseCode(respColl.getResponseCode());
-
-		}
-	
 		long timeElapsed = Duration.between(rmw.getKomiStart(), Instant.now()).toMillis();
 		chnlTrns.setElapsedTime(timeElapsed);
 	
 		channelTransactionRepo.save(chnlTrns);
-
 	}
-
 }

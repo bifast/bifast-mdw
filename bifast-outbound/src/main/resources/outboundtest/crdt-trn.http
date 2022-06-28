@@ -10,7 +10,7 @@
 #localhost:9002/komi-outbound/routing/
 #localhost:9002/komi-outbound/service/
 
-POST http://localhost:9002/komi-outbound/service HTTP/1.1
+POST http://10.11.103.65:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
 Authorization: Basic MB:mb2022
 
@@ -29,14 +29,14 @@ Authorization: Basic MB:mb2022
 		"Amount": "500.24",
 		"FeeTransfer": "0.00",
 		"RecipientBank": "BRINIDJA",
-		"DebtorAccountNumber": "3602103332331",
+		"DebtorAccountNumber": "2012107552576",
 		"DebtorAccountType": "SVGS",
 		"DebtorId": "5171026206690001",
 		"DebtorResidentialStatus": "01",
 		"DebtorType": "01",
-		"DebtorTownName": "0191",
-		"DebtorName": "MURYATI",
-		"PaymentInformation": "revtimeout"
+		"DebtorTownName": "0394",
+		"DebtorName": "ROSYID HIDAYAT",
+		"PaymentInformation": "timeout"
 	}
 }
 
