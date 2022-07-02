@@ -55,8 +55,8 @@ public class BuildRevCTRequestProcessor implements Processor {
 		seedCreditTrn.setMsgId(msgId);
 		seedCreditTrn.setAmount(ctReq.getIntrBkSttlmAmt().getValue());
 		
-		seedCreditTrn.setCategoryPurpose(ctReq.getPmtTpInf().getCtgyPurp().getPrtry().substring(4, 5));
-		
+		seedCreditTrn.setCategoryPurpose(ctReq.getPmtTpInf().getCtgyPurp().getPrtry().substring(3, 5));
+
 		seedCreditTrn.setChannel("99");
 
 		seedCreditTrn.setCrdtAccountNo(ctReq.getDbtrAcct().getId().getOthr().getId());		
@@ -123,7 +123,7 @@ public class BuildRevCTRequestProcessor implements Processor {
 
 		hdr = appHeaderService.getAppHdr(ctReq.getDbtrAgt().getFinInstnId().getOthr().getId(), "pacs.008.001.08", bizMsgId);
 		busMsg.setAppHdr(hdr);
-
+		
 		Document doc = new Document();
 		doc.setFiToFICstmrCdtTrf(pacs008MessageService.reverseCreditTransferRequest(seedCreditTrn));
 		

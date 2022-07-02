@@ -280,7 +280,7 @@ public class Pacs008MsgService {
 		if (!(null==seed.getPaymentInfo())) {
 			pacs008.getCdtTrfTxInf().get(0).getRmtInf().getUstrd().add(seed.getPaymentInfo());
 		}
-		
+
 		// CdtTrfTxInf / SplmtryData
 		// unt credit transfer tidak digunakan
 		
