@@ -49,7 +49,8 @@ public class ReversalCTSAFRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.revct.saf", 
 					"[RevCT:${exchangeProperty.pr_rctrequest.endToEndId}] Siapkan Rev-CT Request")
 			.process(buildRevCTRequestProc)
-								
+							
+			.setHeader("cihubMsgName", constant("RevCT"))
 			.to("direct:call-cihub")				
 
 

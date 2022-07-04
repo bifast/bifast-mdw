@@ -37,7 +37,7 @@ public class InitRevCTProc implements Processor {
 
 		rmw.setKomiTrxId(komiTrnsId);
 		rmw.setKomiStart(Instant.now());
-		rmw.setMsgName("RevCT");
+//		rmw.setMsgName("RevCT");
 		rmw.setRequestId(qryRes.getEndToEndId());
 		
 		exchange.setProperty("prop_request_list", rmw);
