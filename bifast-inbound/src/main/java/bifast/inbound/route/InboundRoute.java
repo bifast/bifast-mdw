@@ -24,11 +24,11 @@ public class InboundRoute extends RouteBuilder {
 
 				.when().simple("${exchangeProperty.msgName} == 'Settl'")   // terima settlement
 					.to("direct:settlement")
-					.setBody(constant(null))
+					.setBody(constant(""))
 
 				.when().simple("${exchangeProperty.msgName} == 'PrxNtf'")  
 					.to("direct:proxynotif")
-					.setBody(constant(null))
+					.setBody(constant(""))
 
 				.when().simple("${exchangeProperty.msgName} == 'AccEnq'")   // terima account enquiry
 					.to("direct:accountenq")

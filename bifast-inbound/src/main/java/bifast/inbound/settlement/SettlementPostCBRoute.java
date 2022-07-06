@@ -30,19 +30,10 @@ public class SettlementPostCBRoute extends RouteBuilder{
 
 		// ROUTE CALLCB 
 		from("direct:isoadpt-sttl").routeId("komi.isoapt.settlement")
-//			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
-
 			.removeHeaders("*")
-
 			.setProperty("cb_request", simple("${body}"))
-			
-//			.log(LoggingLevel.DEBUG,"komi.isoadapter", "[${header.cb_msgname}:${header.cb_e2eid}] Terima di corebank: ${body}")
-					
-//			.setHeader("cb_url", simple("{{komi.url.isoadapter.settlement}}"))
-//			.setProperty("pr_url", simple("{{komi.url.isoadapter.settlement}}")
 			.marshal(settlementJDF)
 
-			
 			.setProperty("cb_request_str", simple("${body}"))
 			
 	 		.log(LoggingLevel.DEBUG, "komi.isoapt.settlement", 
@@ -85,18 +76,6 @@ public class SettlementPostCBRoute extends RouteBuilder{
 		    	.process(cbFaultProcessor)
 	    	.end()
 
-//			.process(new Processor() {
-//				@Override
-//				public void process(Exchange exchange) throws Exception {
-//					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-//					Object cbResponse = exchange.getMessage().getBody(Object.class);
-//					processData.setCorebankResponse(cbResponse);
-//					exchange.setProperty("prop_process_data", processData);
-//				}
-//			})
-			
-		
-//			.removeHeaders("cb_*")
 		;
 		
 		
