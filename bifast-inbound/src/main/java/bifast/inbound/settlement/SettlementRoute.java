@@ -51,36 +51,27 @@ public class SettlementRoute extends RouteBuilder {
 						else
 							settlment_ctType = "Inbound";
 					}
-//					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-//					FlatPacs002Pojo flatSttl = (FlatPacs002Pojo) processData.getBiRequestFlat();
-//					if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
-//						settlment_ctType = "Inbound";
 					exchange.setProperty("pr_sttlType", settlment_ctType);
 
 				}
 	 		})
-
-	 		
 			
 			.log(LoggingLevel.DEBUG, "komi.settlement", "[${exchangeProperty.prop_process_data.inbMsgName}:"
 					+ "${exchangeProperty.prop_process_data.endToEndId}] Settlement for ${exchangeProperty.pr_sttlType} message")
-			
+
+	 		.process(saveSettlement)
+
 			.choice()
 				.when().simple("${exchangeProperty.pr_sttlType} == 'Inbound'")
 		 			.log(LoggingLevel.DEBUG, "komi.settlement", 
 		 					"[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] activate credit-posting job")
 
-//					.process(jobWakeupProcessor)
 					.to("controlbus:route?routeId=komi.ct.saf&action=resume&async=true")
 				.when().simple("${exchangeProperty.pr_sttlType} == 'Outbound'")
-//				.otherwise()
 					.process(settlementDebitProcessor)
 					.to("direct:isoadpt-sttl")
-//					.to("direct:isoadpt")
 			 		.log("[${exchangeProperty.prop_process_data.inbMsgName}:${exchangeProperty.prop_process_data.endToEndId}] Selesai posting settlement")
 			.end()
-
-	 		.process(saveSettlement)
 
 		;
 

@@ -22,7 +22,6 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private CreditTransferProcessor creditTransferProcessor;
 	@Autowired private DuplicateTransactionValidation duplicationTrnsValidation;
 	@Autowired private JacksonDataFormatService jdfService;
-//	@Autowired private JobWakeupProcessor jobWakeupProcessor;
 	@Autowired private SaveCreditTransferProcessor saveCreditTransferProcessor;
 	@Autowired private IsoAERequestPrc isoAERequestPrc;
 
@@ -112,7 +111,6 @@ public class CreditTransferRoute extends RouteBuilder {
 		from("seda:save_ct?concurrentConsumers=5").routeId("savect")
 			.setExchangePattern(ExchangePattern.InOnly)
 			.process(saveCreditTransferProcessor)
-//			.process(jobWakeupProcessor)
 		;
 
 	}
