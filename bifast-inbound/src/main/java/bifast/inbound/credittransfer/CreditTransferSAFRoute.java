@@ -74,9 +74,15 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.ct.saf", "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] Selesai call credit account")
 			
 			.choice()
-				.when().simple("${body.class} endsWith 'FaultPojo'")
+				.when().simple("${body.class} endsWith 'FaultPojo' && ${body.callStatus} == 'TIMEOUT' ")
+					.log(LoggingLevel.DEBUG,"komi.ct.saf", "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] Update CT status TIMEOUT")
 					.to("sql:update kc_credit_transfer "
-							+ "set cb_status = 'DONE', reversal = 'PENDING' "
+							+ "set cb_status = 'TIMEOUT'  "
+							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
+				.endChoice()
+				.when().simple("${body.class} endsWith 'FaultPojo' && ${body.callStatus} == 'ERROR' ")
+					.to("sql:update kc_credit_transfer "
+							+ "set cb_status = 'ERROR', reversal = 'PENDING' "
 							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
 				.endChoice()
 				.when().simple("${body.status} == 'RJCT'")
@@ -88,14 +94,7 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 					//TODO harus report ke admin
 					.log(LoggingLevel.ERROR, "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] error submit credit-account ke cbs")
 					.to("sql:update kc_credit_transfer "
-							+ "set cb_status = 'ERROR' "
-							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
-				.endChoice()
-				.when().simple("${body.status} == 'TIMEOUT'")
-					//TODO harus report ke admin
-					.log(LoggingLevel.ERROR, "[CTSAF:${exchangeProperty.ctsaf_qryresult[e2e_id]}] TIMEOUT submit credit-account ke cbs")
-					.to("sql:update kc_credit_transfer "
-							+ "set cb_status = 'TIMEOUT' "
+							+ "set cb_status = 'ERROR', reversal = 'PENDING' "
 							+ "where id = :#${exchangeProperty.ctsaf_qryresult[id]}")
 				.endChoice()
 				.when().simple("${body.status} == 'ACTC'")
@@ -117,7 +116,6 @@ public class CreditTransferSAFRoute extends RouteBuilder {
 			.unmarshal(businessMessageJDF)
 
 			.process(settlementRequestPrc)
-//			.to("direct:isoadpt")
 			.to("direct:isoadpt-sttl")
 			
 		;

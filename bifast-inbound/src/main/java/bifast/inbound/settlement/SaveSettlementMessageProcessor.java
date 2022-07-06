@@ -57,11 +57,5 @@ public class SaveSettlementMessageProcessor implements Processor {
 		
 		settlementRepo.save(sttl);
 		
-//		String settlment_ctType = "Outbound";
-//		if (flatSttl.getCdtrAgtFinInstnId().equals(config.getBankcode()))
-//			settlment_ctType = "Inbound";
-//	
-//		exchange.setProperty("pr_sttlType", settlment_ctType);
-
 	}
 }

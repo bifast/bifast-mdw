@@ -33,18 +33,7 @@ public class IsoAEResponsePrc implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 
-		Object oResp = exchange.getMessage().getBody(Object.class);
-		
-		AccountEnquiryInboundResponse aeResp = new AccountEnquiryInboundResponse();
-		FaultPojo fault = new FaultPojo();
-		
-		if (oResp.getClass().getSimpleName().equals("AccountEnquiryInboundResponse"))
-			aeResp = (AccountEnquiryInboundResponse) oResp;
-		else
-			fault = (FaultPojo) oResp;
-		
 		ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
-
 		String msgId = utilService.genMsgId("510", processData.getKomiTrnsId());
 		BusinessMessage msg = processData.getBiRequestMsg();
 
@@ -52,9 +41,15 @@ public class IsoAEResponsePrc implements Processor {
 		seed.setMsgId(msgId);
 		seed.setCreditorAccountNo(msg.getDocument().getFiToFICstmrCdtTrf().getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 
+		AccountEnquiryInboundResponse aeResp = new AccountEnquiryInboundResponse();
+		FaultPojo fault = new FaultPojo();
+		
+		Object oResp = exchange.getMessage().getBody(Object.class);
 		logger.debug("response class: " + oResp.getClass().getSimpleName());
 		
 		if (oResp.getClass().getSimpleName().equals("AccountEnquiryInboundResponse")) {
+			aeResp = (AccountEnquiryInboundResponse) oResp;
+
 			seed.setStatus(aeResp.getStatus());
 			if (aeResp.getReason().equals("U101")) {
 				if (null == aeResp.getAccountType())
@@ -80,6 +75,8 @@ public class IsoAEResponsePrc implements Processor {
 		}
 		
 		else {
+			fault = (FaultPojo) oResp;
+
 			seed.setStatus(fault.getResponseCode());
 			
 			if (fault.getReasonCode().equals("U101")) 

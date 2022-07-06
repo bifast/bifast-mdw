@@ -5,25 +5,21 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
-import bifast.inbound.corebank.isopojo.AccountCustInfoRequest;
-import bifast.inbound.corebank.isopojo.AccountCustInfoResponse;
 import bifast.inbound.corebank.isopojo.AccountEnquiryInboundRequest;
 import bifast.inbound.corebank.isopojo.AccountEnquiryInboundResponse;
 import bifast.inbound.corebank.isopojo.CreditRequest;
 import bifast.inbound.corebank.isopojo.CreditResponse;
 import bifast.inbound.corebank.isopojo.DebitReversalRequest;
 import bifast.inbound.corebank.isopojo.DebitReversalResponse;
-import bifast.inbound.corebank.isopojo.SettlementRequest;
-import bifast.inbound.corebank.isopojo.SettlementResponse;
 import bifast.inbound.pojo.FaultPojo;
 import bifast.inbound.pojo.ProcessDataPojo;
 import bifast.inbound.processor.EnrichmentAggregator;
 import bifast.inbound.service.JacksonDataFormatService;
-
 
 @Component
 public class IsoAdapterRoute extends RouteBuilder{
@@ -34,20 +30,14 @@ public class IsoAdapterRoute extends RouteBuilder{
 
 	@Override
 	public void configure() throws Exception {
-		JacksonDataFormat aciRequestJDF = jdfService.basic(AccountCustInfoRequest.class);
-		JacksonDataFormat aciResponseJDF = jdfService.basic(AccountCustInfoResponse.class);
 		JacksonDataFormat aeRequestJDF = jdfService.basic(AccountEnquiryInboundRequest.class);
 		JacksonDataFormat aeResponseJDF = jdfService.basic(AccountEnquiryInboundResponse.class);
 		JacksonDataFormat creditRequestJDF = jdfService.basic(CreditRequest.class);
 		JacksonDataFormat creditResponseJDF = jdfService.basic(CreditResponse.class);
-		JacksonDataFormat settlementJDF = jdfService.basic(SettlementRequest.class);
-		JacksonDataFormat settlementResponseJDF = jdfService.basic(SettlementResponse.class);
 		JacksonDataFormat debitReversalReqJDF = jdfService.basic(DebitReversalRequest.class);
 		JacksonDataFormat debitReversalResponseJDF = jdfService.basic(DebitReversalResponse.class);
 
-		// ROUTE CALLCB 
 		from("direct:isoadpt").routeId("komi.isoadapter")
-//			.setProperty("bkp_hdr_process_data").header("hdr_process_data")
 
 			.removeHeaders("*")
 
@@ -59,10 +49,6 @@ public class IsoAdapterRoute extends RouteBuilder{
 			.log(LoggingLevel.DEBUG,"komi.isoadapter", "[${header.cb_msgname}:${header.cb_e2eid}] Terima di corebank: ${body}")
 					
 			.choice()
-				.when().simple("${body.class} endsWith 'AccountCustInfoRequest'")
-					.setHeader("cb_requestName", constant("accountcustinfo"))
-					.setHeader("cb_url", simple("{{komi.url.isoadapter.customerinfo}}"))
-					.marshal(aciRequestJDF)
 				.when().simple("${body.class} endsWith 'AccountEnquiryInboundRequest'")
 					.setHeader("cb_requestName", constant("accountenquiry"))
 					.setHeader("cb_url", simple("{{komi.url.isoadapter.accountinquiry}}"))
@@ -73,11 +59,8 @@ public class IsoAdapterRoute extends RouteBuilder{
 					.marshal(creditRequestJDF)
 				.when().simple("${body.class} endsWith 'DebitReversalRequest'")
 					.setHeader("cb_requestName", constant("debitreversal"))
+					.setHeader("cb_url", simple("{{komi.url.isoadapter.credit}}"))
 					.marshal(debitReversalReqJDF)
-				.when().simple("${body.class} endsWith 'SettlementRequest'")
-					.setHeader("cb_requestName", constant("settlement"))
-					.setHeader("cb_url", simple("{{komi.url.isoadapter.settlement}}"))
-					.marshal(settlementJDF)
 
 				.otherwise()
 		 			.log("Akan kirim : ${body.class}")
@@ -99,9 +82,6 @@ public class IsoAdapterRoute extends RouteBuilder{
 				.log("[${header.cb_msgname}:${header.cb_e2eid}] CB response: ${body}")
 
 		    	.choice()
-		 			.when().simple("${header.cb_requestName} == 'accountcustinfo'")
-		 				.unmarshal(aciResponseJDF)
-	 				.endChoice()
 		 			.when().simple("${header.cb_requestName} == 'accountenquiry'")
 		 				.unmarshal(aeResponseJDF)
 	 				.endChoice()
@@ -109,9 +89,6 @@ public class IsoAdapterRoute extends RouteBuilder{
 		 				.unmarshal(creditResponseJDF)
 		 			.when().simple("${header.cb_requestName} == 'debitreversal'")
 	 					.unmarshal(debitReversalResponseJDF)
-	 				.endChoice()
-		 			.when().simple("${header.cb_requestName} == 'settlement'")
-	 					.unmarshal(settlementResponseJDF)
 	 				.endChoice()
 		 		.end()
 
@@ -122,6 +99,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
 							FaultPojo fault = new FaultPojo();
+							fault.setCallStatus("SUCCESS");
 							String cbResponse = exchange.getMessage().getHeader("cb_response", String.class);
 							String cbReason = exchange.getMessage().getHeader("cb_reason", String.class);
 							fault.setResponseCode(cbResponse);
@@ -132,6 +110,9 @@ public class IsoAdapterRoute extends RouteBuilder{
 				.end()
 				
 	 		.endDoTry()
+	    	.doCatch(HttpOperationFailedException.class).onWhen(simple("${exception.statusCode} == '504'"))
+	    		.log(LoggingLevel.ERROR, "[${header.cb_msgname}:${header.cb_e2eid}] Corebank TIMEOUT: \n ${exception.message}")
+	    		.process(cbFaultProcessor)
 	    	.doCatch(Exception.class)
 				.log(LoggingLevel.ERROR, "[${header.cb_msgname}:${header.cb_e2eid}] Call CB Error.")
 		    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
@@ -144,7 +125,7 @@ public class IsoAdapterRoute extends RouteBuilder{
 					ProcessDataPojo processData = exchange.getProperty("prop_process_data", ProcessDataPojo.class);
 					Object cbResponse = exchange.getMessage().getBody(Object.class);
 					processData.setCorebankResponse(cbResponse);
-					exchange.setProperty("prop_process_data", processData);
+//					exchange.setProperty("prop_process_data", processData);
 				}
 			})
 			
@@ -154,7 +135,6 @@ public class IsoAdapterRoute extends RouteBuilder{
 			
 			.removeHeaders("cb_*")
 		;
-		
 		
 	}
 
