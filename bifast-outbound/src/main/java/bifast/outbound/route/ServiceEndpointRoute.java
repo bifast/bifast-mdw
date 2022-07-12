@@ -23,7 +23,7 @@ import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.processor.CheckChannelRequestTypeProcessor;
 import bifast.outbound.processor.ExceptionProcessor;
 import bifast.outbound.processor.InitRequestMessageWrapperProcessor;
-import bifast.outbound.processor.SaveChannelTransactionProcessor;
+import bifast.outbound.processor.SaveChannelRequestProc;
 import bifast.outbound.processor.ValidateProcessor;
 import bifast.outbound.repository.ChannelTransactionRepository;
 import bifast.outbound.service.JacksonDataFormatService;
@@ -37,7 +37,7 @@ public class ServiceEndpointRoute extends RouteBuilder {
 	@Autowired private ExceptionProcessor exceptionProcessor;
 	@Autowired private InitRequestMessageWrapperProcessor initRmwProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
-	@Autowired private SaveChannelTransactionProcessor saveChannelTransactionProcessor;
+	@Autowired private SaveChannelRequestProc saveChannelRequestProc;
 	@Autowired private ValidateProcessor validateInputProcessor;
 
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -148,12 +148,11 @@ public class ServiceEndpointRoute extends RouteBuilder {
 					.to("direct:acctcustmrinfo")
 
 			.end()
-			
 
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] process complete.")
 
-			.to("seda:savetablechannel?exchangePattern=InOnly")
+			.to("seda:savetablechannel?blockWhenFull=true")
 			
 //			.filter().simple("${exchangeProperty.prop_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
 //				.to("seda:logportal?exchangePattern=InOnly")
@@ -163,15 +162,14 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
 			.removeProperties("pr_*")
-//			.removeProperties("prop*")
 
 		;
 		
-		from("seda:savetablechannel?concurrentConsumers=2&blockWhenFull=true")
+		from("seda:savetablechannel?exchangePattern=InOnly")
 			.routeId("komi.savechnltrns")
 			.log(LoggingLevel.DEBUG, "komi.savechnltrns", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Save table channel_transaction.")
-			.process(saveChannelTransactionProcessor)
+			.process(saveChannelRequestProc)
 		;		
 
 

@@ -92,7 +92,9 @@ public class CreditTransfer {
 	private String reasonCode;
 	@Column(length=20)
 	private String responseCode;
-	
+	@Column(length=20)
+	private String cbStatus;
+
 	private LocalDateTime createDt;
 	private LocalDateTime lastUpdateDt;
 	public Long getId() {
@@ -256,6 +258,12 @@ public class CreditTransfer {
 	}
 	public void setCallStatus(String callStatus) {
 		this.callStatus = callStatus;
+	}
+	public String getCbStatus() {
+		return cbStatus;
+	}
+	public void setCbStatus(String cbStatus) {
+		this.cbStatus = cbStatus;
 	}
 	public String getReasonCode() {
 		return reasonCode;

@@ -36,7 +36,7 @@ Authorization: Basic MB:mb2022
 		"DebtorType": "01",
 		"DebtorTownName": "0394",
 		"DebtorName": "ROSYID HIDAYAT",
-		"PaymentInformation": "timeout"
+		"PaymentInformation": ""
 	}
 }
 

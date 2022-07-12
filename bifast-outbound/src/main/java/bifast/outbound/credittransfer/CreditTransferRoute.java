@@ -11,7 +11,7 @@ import bifast.outbound.credittransfer.processor.AftDebitCallProc;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
 import bifast.outbound.credittransfer.processor.BuildDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
-import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
+import bifast.outbound.credittransfer.processor.SaveCreditTransferProc;
 
 @Component
 public class CreditTransferRoute extends RouteBuilder {
@@ -19,7 +19,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private BuildDebitRequestProcessor buildDebitRequestProcessor;
 	@Autowired private BuildCTRequestProcessor crdtTransferProcessor;
 	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
-	@Autowired private StoreCreditTransferProcessor saveCrdtTrnsProcessor;
+	@Autowired private SaveCreditTransferProc saveCrdtTrnsProcessor;
 	@Autowired private AftDebitCallProc afterDebitCallProc;
 
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -55,14 +55,13 @@ public class CreditTransferRoute extends RouteBuilder {
 			.process(crdtTransferProcessor)
 			
 			// save data awal
-			.to("seda:savecredittransfer?exchangePattern=InOnly")   // data awal
+			.to("seda:savecredittransfer?exchangePattern=InOnly&blockWhenFull=true")   // simpan data awal
 
 			.to("direct:call-cihub?timeout=0")
 					
 			.log(LoggingLevel.DEBUG, "komi.ct", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] response class dari cihub: ${body}")
-			.to("seda:savecredittransfer?exchangePattern=InOnly")   // update data
-
+			.to("seda:savecredittransfer?exchangePattern=InOnly&blockWhenFull=true")   // update data
 
 			// periksa hasil call cihub
 			.choice()
@@ -99,23 +98,13 @@ public class CreditTransferRoute extends RouteBuilder {
 			
 			.process(crdtTransferResponseProcessor)		
 			
-//			.to("seda:savechanneltrns?exchangePattern=InOnly")   // update data
-
 			.removeHeaders("ct_*")
 		;
 		
 		
-		from("seda:savecredittransfer?concurrentConsumers=3").routeId("komi.ct.savedb")
-			.log(LoggingLevel.DEBUG, "komi.ct.savedb", 
-				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save transaksi CT")
+		from("seda:savecredittransfer?exchangePattern=InOnly").routeId("komi.ct.savedb")
 			.process(saveCrdtTrnsProcessor)
 		;
-		
-//		from("seda:savechanneltrns?concurrentConsumers=2&blockWhenFull=true")
-//			.log(LoggingLevel.DEBUG, "komi.ct.savechnl", 
-//				"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan save channel log")
-//			.process(saveCTChannelRequestProc)
-//			;
-		
+	
 	}
 }

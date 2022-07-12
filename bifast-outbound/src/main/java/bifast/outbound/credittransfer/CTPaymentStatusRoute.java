@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import bifast.library.iso20022.custom.BusinessMessage;
 import bifast.outbound.credittransfer.processor.PrePaymentStatusProc;
-import bifast.outbound.credittransfer.processor.StoreCreditTransferProcessor;
+import bifast.outbound.credittransfer.processor.SaveCreditTransferProc;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.service.JacksonDataFormatService;
 
@@ -19,7 +19,7 @@ public class CTPaymentStatusRoute extends RouteBuilder{
 
 	@Autowired private PrePaymentStatusProc prePaymentStatusProc;
 	@Autowired private JacksonDataFormatService jdfService;
-	@Autowired private StoreCreditTransferProcessor updateCTTable;
+	@Autowired private SaveCreditTransferProc updateCTTable;
 
 	@Override
 	public void configure() throws Exception {
