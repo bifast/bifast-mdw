@@ -145,8 +145,10 @@ public class SaveCreditTransferProc implements Processor {
 			CreditTransfer ct2 = creditTransferRepo.findByKomiTrnsId(rmw.getKomiTrxId()).orElse(new CreditTransfer());
 			logger.debug("[CTReq:" + rmw.getRequestId() + "] update table ct (" + ct2.getPsCounter() + ")") ;
 
-			if (ct2.getPsCounter()<0)
+			if (ct2.getPsCounter()<0) {
+				creditTransferRepo.save(ct);
 				logger.debug("[CTReq:" + rmw.getRequestId() + "] Table ct Id:(" + ct2.getId() + ":" + ct.getId());
+			}
 		}
 
 	}

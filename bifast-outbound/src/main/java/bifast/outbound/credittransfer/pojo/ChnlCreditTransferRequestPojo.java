@@ -341,7 +341,8 @@ public class ChnlCreditTransferRequestPojo {
 	}
 
 	public String getPaymentInfo() {
-		return paymentInfo;
+		if (paymentInfo.length() > 140) return paymentInfo.substring(0,140);
+		else return paymentInfo;
 	}
 
 	public void setPaymentInfo(String paymentInfo) {
