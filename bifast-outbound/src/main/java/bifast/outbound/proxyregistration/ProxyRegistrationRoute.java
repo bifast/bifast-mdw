@@ -97,7 +97,7 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 					}					
 				})
 				.process(proxyResolutionRequestProcessor)
-				.enrich("direct:call-cihub", prxyAggrStrg)
+				.enrich("direct:call-ciconn", prxyAggrStrg)
 
 			.end()
 
@@ -107,7 +107,7 @@ public class ProxyRegistrationRoute extends RouteBuilder {
 
 				.process(proxyRegistrationRequestProcessor)
 				
-				.to("direct:call-cihub")
+				.to("direct:call-ciconn")
 				.log(LoggingLevel.DEBUG, "komi.prxy.prxyrgst", 
 						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Dari call-cihub berupa ${body}")
 				.process(saveProxyRegnProc)

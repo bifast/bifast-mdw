@@ -38,7 +38,7 @@ public class ProxyInquiryRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.prxyrslt", "[ChRefId:${header.hdr_chnlRefId}] Proxy started.")
 			.process(proxyResolutionRequestProcessor)
 	
-			.to("direct:call-cihub")
+			.to("direct:call-ciconn")
 			
 			.process(proxyResolutionResponseProcessor)
 			
@@ -51,7 +51,7 @@ public class ProxyInquiryRoute extends RouteBuilder {
 			.log(LoggingLevel.DEBUG, "komi.prxyrgstinquiry", "[ChRefId:${header.hdr_chnlRefId}] Proxy started.")
 			.process(proxyRegistrationInquiryRequestProcessor)
 	
-			.to("direct:call-cihub")
+			.to("direct:call-ciconn")
 			
 			.process(proxyRegistrationInquiryResponseProcessor)
 			

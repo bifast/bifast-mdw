@@ -10,7 +10,7 @@
 #localhost:9002/komi-outbound/routing/
 #localhost:9002/komi-outbound/service/
 
-POST http://10.11.103.65:9002/komi-outbound/service HTTP/1.1
+POST http://localhost:9002/komi-outbound/service HTTP/1.1
 Content-Type: application/json
 Authorization: Basic MB:mb2022
 
@@ -36,7 +36,7 @@ Authorization: Basic MB:mb2022
 		"DebtorType": "01",
 		"DebtorTownName": "0394",
 		"DebtorName": "ROSYID HIDAYAT",
-		"PaymentInformation": ""
+		"PaymentInformation": "timeout"
 	}
 }
 

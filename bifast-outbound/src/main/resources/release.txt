@@ -55,16 +55,22 @@ Bugfix:
 - bad response dari aftDebitcallProc, perbaiki notif portal
 
 23-May-2022 (1.7)
-Feature:g
+Functional:
 - 3x resubmit jika debit reversal TIMEOUT dgn selang waktu 1m
 
-18-Juni-2022 (1.8)
+18-Juni-2022 (1.8.1-SNAPSHOT)
 Functional:
 - Credit transfer dan payment status jika ci-conn timeout, jangan lakukan debit reversal
-Bugfix:
-- creditTransfer paymentInfo tidak boleh lebih dari 140 char
 Coding:
 - ubah groupId jadi "komi"
 - Upgrade jadi Spring Boot 2.7.1
 - Upgrade jadi Camel 3.17.0
+
+15-Juli-2022 (1.8.2-SNAPSHOT)
+Coding:
+- call-cihub ganti jadi call-ciconn dgn onException global
+- PSR onException redelivery/retry
+Bugfix:
+- creditTransfer paymentInfo tidak boleh lebih dari 140 char
+
 

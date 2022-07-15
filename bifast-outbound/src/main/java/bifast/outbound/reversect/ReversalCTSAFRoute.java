@@ -51,7 +51,7 @@ public class ReversalCTSAFRoute extends RouteBuilder {
 			.process(buildRevCTRequestProc)
 							
 			.setHeader("cihubMsgName", constant("RevCT"))
-			.to("direct:call-cihub")				
+			.to("direct:call-ciconn")				
 
 
 			.log(LoggingLevel.DEBUG, "komi.revct.saf", 

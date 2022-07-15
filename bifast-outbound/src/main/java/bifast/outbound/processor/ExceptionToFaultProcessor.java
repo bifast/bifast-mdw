@@ -33,7 +33,8 @@ public class ExceptionToFaultProcessor implements Processor {
 		String exceptionClassName = objException.getClass().getName();
 		Optional<FaultClass> oFaultClass = faultClassRepo.findByExceptionClass(exceptionClassName);
 			
-		logger.debug("[" + msgName + ":] Nama Exception : " + exceptionClassName);
+		logger.debug("[" + msgName + ":" + exchange.getProperty("prop_request_list.requestId") + "] Nama Exception : " + exceptionClassName);
+		
 		FaultPojo fault = new FaultPojo();
 		
 		fault.setLocation("CI-HUB");

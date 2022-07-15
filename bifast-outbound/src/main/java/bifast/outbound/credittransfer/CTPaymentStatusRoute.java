@@ -33,7 +33,8 @@ public class CTPaymentStatusRoute extends RouteBuilder{
 					"[PSReq:${exchangeProperty.prop_request_list.requestId}] Akan PSR")
 
 			.setHeader("cihubMsgName", constant("PSReq"))
-			.to("direct:call-cihub")				
+//			.to("direct:call-cihub")				
+			.to("direct:call-ciconn")				
 
 			// kalo terima settlement, forward ke Inbound Service
 			.filter().simple("${body.class} endsWith 'FlatPacs002Pojo' ")

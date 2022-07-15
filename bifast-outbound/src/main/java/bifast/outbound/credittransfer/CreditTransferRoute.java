@@ -57,7 +57,8 @@ public class CreditTransferRoute extends RouteBuilder {
 			// save data awal
 			.to("seda:savecredittransfer?exchangePattern=InOnly&blockWhenFull=true")   // simpan data awal
 
-			.to("direct:call-cihub?timeout=0")
+//			.to("direct:call-cihub?timeout=0")
+			.to("direct:call-ciconn?timeout=0")
 					
 			.log(LoggingLevel.DEBUG, "komi.ct", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] response class dari cihub: ${body}")
