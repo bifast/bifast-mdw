@@ -1,7 +1,0 @@
-3-Apr-2022, Release-1.1
-New Feature: Add download rekon API 
-
-14-Juni-2022, Release-1.2
-Upgrade springboot 2.7.0
-Upgrade Camel 3.17.0
-Implement CrossOrigin
