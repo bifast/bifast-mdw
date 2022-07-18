@@ -43,7 +43,6 @@ public class CreditTransferRoute extends RouteBuilder {
 				.process(afterDebitCallProc)
 
 			.end()
-
 		
 	    	.filter(exchangeProperty("pr_response").isEqualTo("ACTC"))
 
@@ -57,7 +56,6 @@ public class CreditTransferRoute extends RouteBuilder {
 			// save data awal
 			.to("seda:savecredittransfer?exchangePattern=InOnly&blockWhenFull=true")   // simpan data awal
 
-//			.to("direct:call-cihub?timeout=0")
 			.to("direct:call-ciconn?timeout=0")
 					
 			.log(LoggingLevel.DEBUG, "komi.ct", 
@@ -93,7 +91,6 @@ public class CreditTransferRoute extends RouteBuilder {
 				.when().simple("${header.ct_progress} == 'TIMEOUT'")
 					.log(LoggingLevel.DEBUG, "komi.ct", 
 						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan payment status")
-//					.to("controlbus:route?routeId=komi.ps.saf&action=resume&async=true")
 					.to("seda:psr?exchangePattern=InOnly")
 			.end()
 			
