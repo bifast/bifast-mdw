@@ -61,7 +61,6 @@ public class ProxyResolutionRequestProcessor implements Processor {
 		else 
 			seedProxyResolution.setLookupType(ProxyLookUpType1Code.PXRS);
 				
-		
 		seedProxyResolution.setProxyType(chnReq.getProxyType());
 		seedProxyResolution.setProxyValue(chnReq.getProxyValue());
 		
@@ -75,7 +74,6 @@ public class ProxyResolutionRequestProcessor implements Processor {
 		busMsg.setDocument(doc);
 	
 		rmw.setProxyResolutionRequest(busMsg);
-		exchange.setProperty("prop_request_list",  rmw);
 		exchange.getIn().setBody(busMsg);
 	}
 

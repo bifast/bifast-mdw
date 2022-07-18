@@ -1,5 +1,7 @@
 package bifast.outbound.accountenquiry.pojo;
 
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -85,7 +87,7 @@ public class ChnlAccountEnquiryRequestPojo {
 	}
 
 	public String getCreditorAccountNumber() {
-		return creditorAccountNumber;
+		return Optional.ofNullable(creditorAccountNumber).orElse("");
 	}
 
 	public void setCreditorAccountNumber(String creditorAccountNumber) {

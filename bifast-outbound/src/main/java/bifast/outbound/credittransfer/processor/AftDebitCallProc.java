@@ -31,9 +31,9 @@ public class AftDebitCallProc implements Processor{
 
         Object body = exchange.getMessage().getBody(Object.class);
         String bodyClass = body.getClass().getSimpleName();
-        RequestMessageWrapper requestWrapper = exchange.getProperty("prop_request_list", RequestMessageWrapper.class );
 
-        logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] check status-1: " + body);
+        RequestMessageWrapper requestWrapper = exchange.getProperty("prop_request_list", RequestMessageWrapper.class );
+//        logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] check status-1: " + body);
 
         if (bodyClass.equals("FaultPojo")) {
 

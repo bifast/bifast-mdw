@@ -49,11 +49,13 @@ public class ProxyRegistrationInquiryResponseProcessor implements Processor {
 			FaultPojo fault = (FaultPojo)objBody;
 
 			channelResponseWr.setResponseCode(fault.getResponseCode());
+			channelResponseWr.setReasonCode(fault.getReasonCode());
+
 			Optional<StatusReason> oStatusReason = statusReasonRepo.findById(fault.getReasonCode());
 			if (oStatusReason.isPresent())
-				channelResponseWr.setResponseMessage(oStatusReason.get().getDescription());
+				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
 			else
-				channelResponseWr.setResponseMessage("General Error");
+				channelResponseWr.setReasonMessage("General Error");
 
 			ChnlProxyRegistrationInquiryResponsePojo chnResponse = new ChnlProxyRegistrationInquiryResponsePojo();
 			chnResponse.setNoRef(chnRequest.getChannelRefId());

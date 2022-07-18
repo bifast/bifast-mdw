@@ -42,8 +42,6 @@ public class ProxyInquiryRoute extends RouteBuilder {
 			
 			.process(proxyResolutionResponseProcessor)
 			
-//			.process(storeProxyResolutionProcessor)
-			
 		;
 
 		from("direct:prxyrgstinquiry").routeId("komi.prxyrgstinquiry")
@@ -52,10 +50,8 @@ public class ProxyInquiryRoute extends RouteBuilder {
 			.process(proxyRegistrationInquiryRequestProcessor)
 	
 			.to("direct:call-ciconn")
-			
+
 			.process(proxyRegistrationInquiryResponseProcessor)
-			
-	//		.process(storeProxyResolutionProcessor)
 			
 		;
 

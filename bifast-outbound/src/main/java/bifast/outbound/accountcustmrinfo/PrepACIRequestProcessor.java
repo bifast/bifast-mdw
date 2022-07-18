@@ -2,18 +2,15 @@ package bifast.outbound.accountcustmrinfo;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import bifast.outbound.accountcustmrinfo.pojo.ChnlAccountCustomerInfoRequestPojo;
 import bifast.outbound.corebank.pojo.AccountCustInfoRequestDTO;
 import bifast.outbound.pojo.RequestMessageWrapper;
-import bifast.outbound.service.CallRouteService;
 import bifast.outbound.service.RefUtils;
 
 @Component
 public class PrepACIRequestProcessor implements Processor{
-	@Autowired CallRouteService callRouteService;
 	
 //    private static Logger logger = LoggerFactory.getLogger(PrepACIRequestProcessor.class);
 

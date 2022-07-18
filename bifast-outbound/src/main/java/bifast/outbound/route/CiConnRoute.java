@@ -16,7 +16,7 @@ import bifast.outbound.pojo.FaultPojo;
 import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.processor.EnrichmentAggregator;
-import bifast.outbound.processor.ExceptionToFaultProcessor;
+import bifast.outbound.processor.ExceptionToFaultProc;
 import bifast.outbound.processor.FlatResponseProcessor;
 import bifast.outbound.processor.PreCihubRequestProc;
 import bifast.outbound.service.CallRouteService;
@@ -27,7 +27,7 @@ public class CiConnRoute extends RouteBuilder {
 
 	@Autowired private CallRouteService routeService;
 	@Autowired private EnrichmentAggregator enrichmentAggregator;
-	@Autowired private ExceptionToFaultProcessor exceptionToFaultMap;
+	@Autowired private ExceptionToFaultProc exceptionToFaultMap;
 	@Autowired private FlatResponseProcessor flatResponseProcessor;
 	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private PreCihubRequestProc preCihubRequestProc;
@@ -67,7 +67,7 @@ public class CiConnRoute extends RouteBuilder {
 
 			// daftarkan encrypted dan startTime ke rmw, set remain time
 			.process(preCihubRequestProc)
-			.log("[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] request CIHUB: ${body}")
+			.log("[${header.cihubMsgName}:${exchangeProperty.prop_request_list.requestId}] request CICONN: ${body}")
 			
 			.removeHeaders("hdr*")
 

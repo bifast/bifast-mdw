@@ -13,17 +13,18 @@ import org.springframework.stereotype.Component;
 import bifast.outbound.model.FaultClass;
 import bifast.outbound.model.StatusReason;
 import bifast.outbound.pojo.FaultPojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
 import bifast.outbound.pojo.ResponseMessageCollection;
 import bifast.outbound.repository.FaultClassRepository;
 import bifast.outbound.repository.StatusReasonRepository;
 
 @Component
-public class ExceptionToFaultProcessor implements Processor {
+public class ExceptionToFaultProc implements Processor {
 	@Autowired 
 	private FaultClassRepository faultClassRepo;
 	@Autowired StatusReasonRepository statusReasonRepo;
 
-	private static Logger logger = LoggerFactory.getLogger(ExceptionToFaultProcessor.class);
+	private static Logger logger = LoggerFactory.getLogger(ExceptionToFaultProc.class);
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -33,7 +34,8 @@ public class ExceptionToFaultProcessor implements Processor {
 		String exceptionClassName = objException.getClass().getName();
 		Optional<FaultClass> oFaultClass = faultClassRepo.findByExceptionClass(exceptionClassName);
 			
-		logger.debug("[" + msgName + ":" + exchange.getProperty("prop_request_list.requestId") + "] Nama Exception : " + exceptionClassName);
+		String requestId = exchange.getProperty("prop_request_list", RequestMessageWrapper.class).getRequestId();
+		logger.debug("[" + msgName + ":" + requestId + "] Nama Exception : " + exceptionClassName);
 		
 		FaultPojo fault = new FaultPojo();
 		
@@ -88,10 +90,8 @@ public class ExceptionToFaultProcessor implements Processor {
 			fault.setReasonMessage(statusReasonRepo.findById("U220").orElse(new StatusReason()).getDescription());
 		}
 
-
 		responseCol.setFault(fault);
 		responseCol.setLastError(description);
-		exchange.setProperty("prop_response_list", responseCol);
 
 		exchange.getMessage().setBody(fault, FaultPojo.class);
 	}

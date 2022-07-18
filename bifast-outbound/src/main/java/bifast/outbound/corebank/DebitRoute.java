@@ -68,7 +68,7 @@ public class DebitRoute extends RouteBuilder{
  				.setProperty("pr_response", simple("${body.status}"))
  				.setProperty("pr_reason", simple("${body.reason}"))
  			
-				.filter().simple("${exchangeProperty.pr_response} != 'ACTC' ")
+				.filter().simple("${body.status} != 'ACTC' ")
 					.process(new Processor() {
 						public void process(Exchange exchange) throws Exception {
 							String cbResponse = exchange.getProperty("pr_response", String.class);

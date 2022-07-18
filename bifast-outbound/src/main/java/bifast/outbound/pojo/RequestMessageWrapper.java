@@ -36,6 +36,7 @@ public class RequestMessageWrapper {
 
 	// Channel Attributes
 	private Object channelRequest;
+	private String channelRequestStr;
 
 	@JsonProperty("CreditTransferRequest")
 	private ChnlCreditTransferRequestPojo chnlCreditTransferRequest;
@@ -144,6 +145,12 @@ public class RequestMessageWrapper {
 	}
 	public void setChannelRequest(Object channelRequest) {
 		this.channelRequest = channelRequest;
+	}
+	public String getChannelRequestStr() {
+		return channelRequestStr;
+	}
+	public void setChannelRequestStr(String channelRequestStr) {
+		this.channelRequestStr = channelRequestStr;
 	}
 	public ChnlCreditTransferRequestPojo getChnlCreditTransferRequest() {
 		return chnlCreditTransferRequest;

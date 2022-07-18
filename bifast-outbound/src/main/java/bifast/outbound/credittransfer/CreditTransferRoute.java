@@ -31,9 +31,9 @@ public class CreditTransferRoute extends RouteBuilder {
 		from("direct:credittrns").routeId("komi.ct")
 			
 			.setHeader("ct_progress", constant("Start"))
+			.setProperty("pr_response", constant("ACTC"))
 
 			// FILTER-A debit-account di cbs dulu donk untuk e-Channel
-			.setProperty("pr_response", constant("ACTC"))
 			.filter().simple("${exchangeProperty.prop_request_list.merchantType} != '6010' ")
 				.log(LoggingLevel.DEBUG, "komi.ct", 
 						"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Transaksi non-teller")
@@ -43,8 +43,8 @@ public class CreditTransferRoute extends RouteBuilder {
 				.process(afterDebitCallProc)
 
 			.end()
-		
 
+		
 	    	.filter(exchangeProperty("pr_response").isEqualTo("ACTC"))
 
 			.log(LoggingLevel.DEBUG, "komi.ct", 

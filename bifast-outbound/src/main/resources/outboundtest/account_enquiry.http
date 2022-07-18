@@ -14,7 +14,8 @@ Authorization: Basic CB:password
     "RecipientBank" : "CENAIDJA",
     "Amount" : "245024.10",
     "CategoryPurpose" : "01",
-    "RecipientAccountNumber" : "1122113331"
+    "ProxyType" : "01",
+    "ProxyId" : "0812233002"
  }
 }
 
@@ -37,4 +38,5 @@ Authorization: Basic CMS:password
 ###
     "ProxyType" : "012",
     "ProxyId" : "20033002"
+    "RecipientAccountNumber" : "112211333",
 

@@ -39,7 +39,6 @@ public class AccountEnquiryResponseProcessor implements Processor {
 		channelResponseWr.setResponses(new ArrayList<>());
 
 		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class);
-//		ChnlAccountEnquiryRequestPojo chnReq = rmw.getChnlAccountEnquiryRequest();
 		ChnlAccountEnquiryRequestPojo chnReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
 		
 		ChnlAccountEnquiryResponsePojo chnResp = new ChnlAccountEnquiryResponsePojo();
@@ -57,18 +56,6 @@ public class AccountEnquiryResponseProcessor implements Processor {
 				channelResponseWr.setResponseMessage("General Error");
 		}
 		
-//		else if (objBody.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
-//
-//			channelResponseWr.setResponseCode("RJCT");
-//			channelResponseWr.setReasonCode("U215");
-//			Optional<StatusReason> oStatusReason = statusReasonRepo.findById("U215");
-//			if (oStatusReason.isPresent())
-//				channelResponseWr.setReasonMessage(oStatusReason.get().getDescription());
-//			else
-//				channelResponseWr.setResponseMessage("General Error");
-//
-//		}
-
 		else if (objBody.getClass().getSimpleName().equals("FlatPrxy004Pojo")) {
 			FlatPrxy004Pojo prxRsltResponse = (FlatPrxy004Pojo) objBody;
 			

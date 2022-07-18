@@ -23,28 +23,21 @@ public class NotificationRoute extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 
-		onException(Exception.class)
-		.maximumRedeliveries(2).redeliveryDelay(5000)
-		.handled(true)
-		.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")
-		.setBody(simple("${exchangeProperty.tmpBody}"))
-		.removeProperty("tmpBody")
-
-		
-		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank debit-reversal error.")
-    	.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-//		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Caught exception ${exception.class}: \n ${exception.message}")
-		.to("seda:savecbdebitrevr?exchangePattern=InOnly")
-		;
-
 		JacksonDataFormat portalLogJDF = jdfService.wrapRoot(PortalApiPojo.class);
 		JacksonDataFormat custNotifJDF = jdfService.wrapRoot(CustomerNotificationPojo.class);
 		JacksonDataFormat adminNotifJDF = jdfService.wrapRoot(AdminNotifDTO.class);
 		
-		from("seda:logportal?concurrentConsumers=10").routeId("komi.notif.portal")
-			
-			.setProperty("tmpBody", simple("${body}"))
-			
+		onException(Exception.class)
+			.maximumRedeliveries(2).redeliveryDelay(5000)
+			.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")
+    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
+			.continued(true);
+
+//		from("seda:logportal?concurrentConsumers=10")
+		from("direct:logportal").routeId("komi.notif.portal")
+
+			.filter().simple("${exchangeProperty.prop_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
+
 			.process(buildLogMessage)
 			.marshal(portalLogJDF)
 
@@ -56,22 +49,8 @@ public class NotificationRoute extends RouteBuilder {
 				}
 			})
 			
-//			.doTry()
-
-				.to("rest:post:?host={{komi.url.portalapi}}")
-//				.to("{{komi.url.portalapi}}?"
-//						+ "socketTimeout=1000&" 
-//						+ "bridgeEndpoint=true")
-
-//			.endDoTry()
-//	    	.doCatch(Exception.class)
-//	    		.log(LoggingLevel.ERROR, "komi.notif.portal", "Error Log-notif ${body}")
-//	    		.log(LoggingLevel.ERROR, "${exception.stacktrace}")
-//			.end()
+			.to("rest:post:?host={{komi.url.portalapi}}")
 			
-			.setBody(simple("${exchangeProperty.tmpBody}"))
-			.removeProperty("tmpBody")
-
 		;
 
 		from("seda:notifcustomer").routeId("komi.notif.customer")

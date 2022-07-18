@@ -54,20 +54,20 @@ public class PaymentStatusRoute extends RouteBuilder {
 			.end()
 			
 			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
-					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);				
-					ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
-					
+				public void process(Exchange exchange) throws Exception {					
 					ChannelResponseWrapper channelResponseWr = new ChannelResponseWrapper();
-					channelResponseWr.setResponseCode(rmc.getResponseCode());
-					channelResponseWr.setReasonCode(rmc.getReasonCode());
 					channelResponseWr.setDate(LocalDateTime.now().format(dateformatter));
 					channelResponseWr.setTime(LocalDateTime.now().format(timeformatter));
 					channelResponseWr.setResponses(new ArrayList<>());
-					
+
+					ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
+					channelResponseWr.setResponseCode(rmc.getResponseCode());
+					channelResponseWr.setReasonCode(rmc.getReasonCode());
+
 					String reasonMessage = statusReasonRepo.findById(rmc.getReasonCode()).orElse(new StatusReason()).getDescription();
 					channelResponseWr.setReasonMessage(reasonMessage);
 					
+					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);				
 					ChnlCreditTransferRequestPojo ctReq = new ChnlCreditTransferRequestPojo();
 					ctReq.setChannelRefId(rmw.getRequestId());
 

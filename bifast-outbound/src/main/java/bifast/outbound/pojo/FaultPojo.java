@@ -16,8 +16,6 @@ public class FaultPojo {
 	
 	private Object orgnlResponse;
 	
-	private String redeliveryCounter;
-
 	public FaultPojo () {
 	}
 	
@@ -85,18 +83,10 @@ public class FaultPojo {
 		this.orgnlResponse = orgnlResponse;
 	}
 
-	public String getRedeliveryCounter() {
-		return redeliveryCounter;
-	}
-
-	public void setRedeliveryCounter(String redeliveryCounter) {
-		this.redeliveryCounter = redeliveryCounter;
-	}
-
 	@Override
 	public String toString() {
 		return "FaultPojo [callStatus=" + callStatus + ", responseCode=" + responseCode + ", reasonCode=" + reasonCode
-				+ ", retryCounter= " + redeliveryCounter + ", reasonMessage=" + reasonMessage + ", errorMessage=" + errorMessage + "]";
+				 + ", reasonMessage=" + reasonMessage + ", errorMessage=" + errorMessage + "]";
 	}
 
 

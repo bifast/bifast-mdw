@@ -1,6 +1,7 @@
 package bifast.outbound.credittransfer.pojo;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -341,7 +342,8 @@ public class ChnlCreditTransferRequestPojo {
 	}
 
 	public String getPaymentInfo() {
-		if (paymentInfo.length() > 140) return paymentInfo.substring(0,140);
+		if (Optional.ofNullable(paymentInfo).orElse("").length() > 140) 
+			return paymentInfo.substring(0,140);
 		else return paymentInfo;
 	}
 

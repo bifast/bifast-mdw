@@ -27,13 +27,15 @@ public class InitRequestMessageWrapperProcessor implements Processor {
 		Users user = (Users) authentication.getPrincipal();
 		
 		Channel channel = user.getChannel();
-		String komiTrnsId = utilService.genKomiTrnsId();
 		RequestMessageWrapper rmw = new RequestMessageWrapper();
 		
 		rmw.setChannelId(channel.getChannelId());
 		rmw.setChannelType(channel.getChannelType());
-
+		rmw.setChannelRequestStr(exchange.getMessage().getBody(String.class));
+		
 		rmw.setMerchantType(channel.getMerchantCode());
+
+		String komiTrnsId = utilService.genKomiTrnsId();
 		rmw.setKomiTrxId(komiTrnsId);
 		rmw.setKomiStart(Instant.now());
 		

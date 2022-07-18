@@ -54,20 +54,18 @@ public class ServiceEndpointRoute extends RouteBuilder {
 			.log(LoggingLevel.ERROR, "${exception.stacktrace}")
 			.process(exceptionProcessor)
 			.marshal(chnlResponseJDF)
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${exchangeProperty.prop_request_list.msgName}:"
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute.onException", "[${exchangeProperty.prop_request_list.msgName}:"
 					+ "${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
-//			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
  		;
 		
-		onException(DuplicateIdException.class).routeId("komi.endpointRoute.duplikatException")
+		onException(DuplicateIdException.class).routeId("komi.endpointRoute.duplikatExcp")
 			.process(exceptionProcessor)
 			.marshal(chnlResponseJDF)
-			.log(LoggingLevel.DEBUG, "komi.endpointRoute", "[${exchangeProperty.prop_request_list.msgName}:"
+			.log(LoggingLevel.DEBUG, "komi.endpointRoute.duplikatExcp", "[${exchangeProperty.prop_request_list.msgName}:"
 					+ "${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
 			.removeHeaders("*")
-//			.setHeader(Exchange.HTTP_RESPONSE_CODE, constant(500))
 	    	.handled(true)
 		;
 		
@@ -82,14 +80,13 @@ public class ServiceEndpointRoute extends RouteBuilder {
 		
 		from("direct:service").routeId("komi.endpointRoute")
 			.convertBodyTo(String.class)
-			.setHeader("hdr_fulltextinput", simple("${body}"))
 
-			.unmarshal(chnlRequestJDF)
 			.process(initRmwProcessor)
+			.unmarshal(chnlRequestJDF)
 	
 			.log("======*******======")
-			.log("[ExchangeId:${exchangeId}] Terima dari ${exchangeProperty.prop_request_list.channelId}\n${header.hdr_fulltextinput}")
-//			.log("Terima dari ${exchangeProperty.prop_request_list.channelId}: ${header.hdr_fulltextinput}")
+			.log("Terima dari ${exchangeProperty.prop_request_list.channelId}\n"
+					+ "${exchangeProperty.prop_request_list.channelRequestStr}")
 
 			.process(checkChannelRequest)		// produce header hdr_msgType,hdr_channelRequest
 			.process(validateInputProcessor)
@@ -99,14 +96,13 @@ public class ServiceEndpointRoute extends RouteBuilder {
 				public void process(Exchange exchange) throws Exception {
 					ChannelTransaction chnlTrns = new ChannelTransaction();
 					RequestMessageWrapper rmw = exchange.getProperty("prop_request_list",RequestMessageWrapper.class );
-					String fullTextInput = exchange.getMessage().getHeader("hdr_fulltextinput", String.class);
 					chnlTrns.setChannelRefId(rmw.getRequestId());
 					chnlTrns.setKomiTrnsId(rmw.getKomiTrxId());
 					chnlTrns.setChannelId(rmw.getChannelId());
 					chnlTrns.setRequestTime(LocalDateTime.now());
 					chnlTrns.setMsgName(rmw.getMsgName());
-					chnlTrns.setTextMessage(fullTextInput);
-					
+					chnlTrns.setTextMessage(rmw.getChannelRequestStr());
+
 					if (rmw.getMsgName().equals("AEReq")) {
 						ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
 						chnlTrns.setAmount(new BigDecimal(aeReq.getAmount()));
@@ -149,24 +145,19 @@ public class ServiceEndpointRoute extends RouteBuilder {
 
 			.end()
 
+
 			.log(LoggingLevel.DEBUG, "komi.endpointRoute", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] process complete.")
 
-			.to("seda:savetablechannel?blockWhenFull=true")
+			.wireTap("direct:savetablechannel")
+			.wireTap("direct:logportal")
 			
-//			.filter().simple("${exchangeProperty.prop_request_list.msgName} in 'AEReq,CTReq,PrxRegn' ")
-//				.to("seda:logportal?exchangePattern=InOnly")
-//			.end()
-			
+			.removeHeaders("*")
 			.marshal(chnlResponseJDF)
 			.log("[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Response: ${body}")
-			.removeHeaders("*")
-			.removeProperties("pr_*")
-
 		;
 		
-		from("seda:savetablechannel?exchangePattern=InOnly")
-			.routeId("komi.savechnltrns")
+		from("direct:savetablechannel").routeId("komi.savechnltrns")
 			.log(LoggingLevel.DEBUG, "komi.savechnltrns", 
 					"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Save table channel_transaction.")
 			.process(saveChannelRequestProc)
