@@ -86,7 +86,9 @@ public class CreditTransferRoute extends RouteBuilder {
 					+ "&& ${exchangeProperty.prop_request_list.merchantType} != '6010'")
 					.log(LoggingLevel.DEBUG, "komi.ct", 
 							"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
-					.to("direct:debitreversal")
+					
+					.to("seda:debitreversal?exchangePattern=InOnly&blockWhenFull=true")   // update data
+//					.to("direct:debitreversal")
 
 				.when().simple("${header.ct_progress} == 'TIMEOUT'")
 					.log(LoggingLevel.DEBUG, "komi.ct", 

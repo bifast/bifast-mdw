@@ -19,16 +19,13 @@ public class AccountEnquiryRoute extends RouteBuilder{
 
 	@Autowired private AccountEnquiryRequestProcessor buildAccountEnquiryRequestProcessor;
 	@Autowired private AccountEnquiryResponseProcessor accountEnqrResponseProcessor;
-//	@Autowired private JacksonDataFormatService jdfService;
 	@Autowired private ProxyResolutionRequestProcessor proxyResolutionRequestProcessor;
 
 	@Override
 	public void configure() throws Exception {
-//		JacksonDataFormat chnlResponseJDF = jdfService.basic(ChannelResponseWrapper.class);
 
 		from("direct:acctenqr").routeId("komi.acctenq")
 			
-//			.setBody(simple("${exchangeProperty.prop_request_list.channelRequest}"))
 			.choice()
 				.when().simple("${body.creditorAccountNumber} == '' ") // jika pake proxyId panggil proxyResolution
 					.log(LoggingLevel.DEBUG, "komi.acctenq", "[${exchangeProperty.prop_request_list.msgName}:"

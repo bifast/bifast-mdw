@@ -4,12 +4,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +25,7 @@ import bifast.outbound.proxyregistration.pojo.ChnlProxyRegistrationRequestPojo;
 public class BuildLogMessageForPortalProcessor implements Processor {
 	@Autowired private Config config;
 	
-	private static Logger logger = LoggerFactory.getLogger(BuildLogMessageForPortalProcessor.class);
+//	private static Logger logger = LoggerFactory.getLogger(BuildLogMessageForPortalProcessor.class);
 
 	@Override
 	public void process(Exchange exchange) throws Exception {
@@ -98,7 +95,7 @@ public class BuildLogMessageForPortalProcessor implements Processor {
 //			ChnlAccountEnquiryRequestPojo aeReq = rmw.getChnlAccountEnquiryRequest();
 			ChnlAccountEnquiryRequestPojo aeReq = (ChnlAccountEnquiryRequestPojo) rmw.getChannelRequest();
 			
-			logger.debug("CreditorAccountNumber: " + Optional.ofNullable(aeReq.getCreditorAccountNumber()).orElse(""));
+//			logger.debug("CreditorAccountNumber: " + Optional.ofNullable(aeReq.getCreditorAccountNumber()).orElse(""));
 			if (null != rmw.getAccountEnquiryRequest())
 				data.setBifast_trx_no(rmw.getAccountEnquiryRequest().getAppHdr().getBizMsgIdr());
 			else

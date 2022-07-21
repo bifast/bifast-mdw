@@ -6,7 +6,7 @@ Authorization: Basic MB:mb2022
 {
     "PaymentStatusRequest" : {
       "NoRef" : "282432442",
-      "OriginalNoRef" : "FRN22011522059"
+      "OriginalNoRef" : "FRN2202"
     }
 }
 

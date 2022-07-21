@@ -30,25 +30,23 @@ public class AftDebitCallProc implements Processor{
     public void process(Exchange exchange) throws Exception {
 
         Object body = exchange.getMessage().getBody(Object.class);
-        String bodyClass = body.getClass().getSimpleName();
 
         RequestMessageWrapper requestWrapper = exchange.getProperty("prop_request_list", RequestMessageWrapper.class );
 //        logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] check status-1: " + body);
 
-        if (bodyClass.equals("FaultPojo")) {
+        if (body.getClass().getSimpleName().equals("FaultPojo")) {
 
             FaultPojo fault = (FaultPojo) body;
             if (fault.getReasonCode().equals("U900")) {
                 logger.debug("["+requestWrapper.getMsgName() + ":" + requestWrapper.getRequestId() + "] response U900." );
                 FluentProducerTemplate pt = exchange.getContext().createFluentProducerTemplate();
-                pt.withExchange(exchange).to("seda:sdebitreversal?exchangePattern=InOnly&timeout=0").asyncSend();
+                pt.withExchange(exchange).to("seda:debitreversal?exchangePattern=InOnly&timeout=0").asyncSend();
             }
 
             ChannelResponseWrapper response = debitRejectResponse (exchange);
             exchange.getMessage().setBody(response);
             
         }
-       
     }
     
     DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");

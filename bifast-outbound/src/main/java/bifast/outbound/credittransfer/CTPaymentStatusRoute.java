@@ -33,7 +33,6 @@ public class CTPaymentStatusRoute extends RouteBuilder{
 					"[PSReq:${exchangeProperty.prop_request_list.requestId}] Akan PSR")
 
 			.setHeader("cihubMsgName", constant("PSReq"))
-//			.to("direct:call-cihub")				
 			.to("direct:call-ciconn")				
 
 			// kalo terima settlement, forward ke Inbound Service
@@ -50,7 +49,10 @@ public class CTPaymentStatusRoute extends RouteBuilder{
 						.log(LoggingLevel.DEBUG, "komi.psr", 
 							"[PSReq:${exchangeProperty.prop_request_list.requestId}] Reject dan akan debit-reversal")
 						// kalo terima reject, lakukan reversal
+
+						.setHeader("tmp_body", simple("${body}"))
 						.to("direct:debitreversal")
+						.setBody(header("tmp_body")).removeHeader("tmp_body")
 				.end()
 			.end()
 

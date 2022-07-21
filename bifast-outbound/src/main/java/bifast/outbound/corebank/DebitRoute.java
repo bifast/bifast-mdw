@@ -86,8 +86,8 @@ public class DebitRoute extends RouteBuilder{
 	 		.endDoTry()
 	 		
 	    	.doCatch(HttpOperationFailedException.class).onWhen(simple("${exception.statusCode} == '504'"))
-	    		.log("[${exchangeProperty.prop_request_list.msgName}:"
-					+ "${exchangeProperty.prop_request_list.requestId}] CB response: ${body}")
+//	    		.log("[${exchangeProperty.prop_request_list.msgName}:"
+//					+ "${exchangeProperty.prop_request_list.requestId}] CB response: ${body}")
 	    		.log(LoggingLevel.ERROR, "[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] Corebank TIMEOUT: \n ${exception.message}")
 	    		.process(cbFaultProcessor)
 	    		
