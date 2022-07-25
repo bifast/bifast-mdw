@@ -1,0 +1,133 @@
+package bifast.outbound.credittransfer.processor;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import bifast.library.iso20022.custom.BusinessMessage;
+import bifast.library.iso20022.pacs008.FIToFICustomerCreditTransferV08;
+import bifast.outbound.credittransfer.pojo.ChnlCreditTransferRequestPojo;
+import bifast.outbound.model.CreditTransfer;
+import bifast.outbound.pojo.FaultPojo;
+import bifast.outbound.pojo.RequestMessageWrapper;
+import bifast.outbound.pojo.ResponseMessageCollection;
+import bifast.outbound.pojo.flat.FlatPacs002Pojo;
+import bifast.outbound.repository.CreditTransferRepository;
+
+@Component
+public class StoreCTTableProc implements Processor {
+
+	@Autowired private CreditTransferRepository creditTransferRepo;
+	
+	private static Logger logger = LoggerFactory.getLogger(StoreCTTableProc.class);
+
+	@Override
+	public void process(Exchange exchange) throws Exception {
+		RequestMessageWrapper rmw = exchange.getProperty("prop_request_list", RequestMessageWrapper.class);
+        
+		BusinessMessage biRequest = rmw.getCreditTransferRequest();
+		FIToFICustomerCreditTransferV08 creditTransferReq = biRequest.getDocument().getFiToFICstmrCdtTrf();
+		
+		ChnlCreditTransferRequestPojo chnlReq = rmw.getChnlCreditTransferRequest();
+		
+		CreditTransfer ct = new CreditTransfer();
+
+		ct.setKomiTrnsId(rmw.getKomiTrxId());
+
+        logger.debug("[CTReq:" + rmw.getRequestId() + "] Save initial CT table." );
+
+		ct.setMsgType("Credit Transfer");
+		ct.setCbStatus("DONE");
+		
+		LocalDateTime ld = LocalDateTime.ofInstant(rmw.getKomiStart(), ZoneOffset.systemDefault());
+		ct.setCihubRequestDT(ld);
+		
+		ct.setAmount(creditTransferReq.getCdtTrfTxInf().get(0).getIntrBkSttlmAmt().getValue());
+		ct.setCrdtTrnRequestBizMsgIdr(biRequest.getAppHdr().getBizMsgIdr());
+		ct.setEndToEndId(creditTransferReq.getCdtTrfTxInf().get(0).getPmtId().getEndToEndId());
+
+		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
+		
+		if (null != creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp())
+			ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
+
+		if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0)
+			if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr())
+				if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp())
+					ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
+		
+		ct.setCreateDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
+
+		ct.setDebtorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getId().getOthr().getId());
+		ct.setDebtorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtrAcct().getTp().getPrtry());
+		
+		if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size()>0)
+			if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr())
+				if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp())
+					ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
+
+		if (chnlReq.getDbtrType().equals("01"))
+			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).getId());
+		else
+			ct.setDebtorId(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());		
+		
+		ct.setOriginatingBank(biRequest.getAppHdr().getFr().getFIId().getFinInstnId().getOthr().getId());
+		ct.setRecipientBank(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAgt().getFinInstnId().getOthr().getId());
+		
+		long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
+		ct.setCihubElapsedTime(timeElapsed);
+		ct.setLastUpdateDt(LocalDateTime.now());
+		
+		if (null != rmw.getCihubEncriptedResponse())
+			ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
+
+		ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
+		ct.setErrorMessage(rmc.getLastError());
+
+		ct.setSettlementConfBizMsgIdr("WAITING");
+
+		Object oBiResponse = exchange.getMessage().getBody(Object.class);
+
+		if (oBiResponse.getClass().getSimpleName().equals("FaultPojo")) {
+
+			FaultPojo fault = (FaultPojo)oBiResponse;
+
+			ct.setCallStatus(fault.getCallStatus());
+			ct.setResponseCode(fault.getResponseCode());
+			ct.setReasonCode(fault.getReasonCode());
+			ct.setErrorMessage(fault.getErrorMessage());
+		}
+			
+		else if (oBiResponse.getClass().getSimpleName().equals("FlatAdmi002Pojo")) {
+			ct.setCallStatus("REJECT");
+			ct.setResponseCode("RJCT");
+			ct.setReasonCode("U215");
+			ct.setErrorMessage("Message Rejected with Admi.002");
+		}
+		
+		else {
+			FlatPacs002Pojo ctResponse = (FlatPacs002Pojo) oBiResponse;
+		
+			ct.setCallStatus("SUCCESS");
+			ct.setResponseCode(ctResponse.getTransactionStatus());
+			ct.setReasonCode(ctResponse.getReasonCode());
+			ct.setCrdtTrnResponseBizMsgIdr(ctResponse.getBizMsgIdr());
+			
+			if (!(null==rmw.getCihubEncriptedResponse()))
+				ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
+			
+		}
+
+		ct.setPsCounter(0);
+		creditTransferRepo.save(ct);
+
+	}
+}
