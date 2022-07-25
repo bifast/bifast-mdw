@@ -25,6 +25,8 @@ public class ChnlAccountEnquiryRequestPojo {
 	private String proxyId; 
 	private String proxyType; 
 
+	public ChnlAccountEnquiryRequestPojo() {}
+
 	@JsonCreator
 	public ChnlAccountEnquiryRequestPojo(
 			@JsonProperty(value="NoRef", required=true) String channelRefId,
