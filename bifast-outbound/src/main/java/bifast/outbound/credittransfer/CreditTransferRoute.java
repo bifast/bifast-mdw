@@ -11,7 +11,7 @@ import bifast.outbound.credittransfer.processor.AftDebitCallProc;
 import bifast.outbound.credittransfer.processor.BuildCTRequestProcessor;
 import bifast.outbound.credittransfer.processor.BuildDebitRequestProcessor;
 import bifast.outbound.credittransfer.processor.CreditTransferResponseProcessor;
-import bifast.outbound.credittransfer.processor.SaveCreditTransferProc;
+import bifast.outbound.credittransfer.processor.StoreCTTableProc;
 
 @Component
 public class CreditTransferRoute extends RouteBuilder {
@@ -19,7 +19,7 @@ public class CreditTransferRoute extends RouteBuilder {
 	@Autowired private BuildDebitRequestProcessor buildDebitRequestProcessor;
 	@Autowired private BuildCTRequestProcessor crdtTransferProcessor;
 	@Autowired private CreditTransferResponseProcessor crdtTransferResponseProcessor;
-	@Autowired private SaveCreditTransferProc saveCrdtTrnsProcessor;
+	@Autowired private StoreCTTableProc saveCrdtTrnsProcessor;
 	@Autowired private AftDebitCallProc afterDebitCallProc;
 
 	DateTimeFormatter dateformatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -54,7 +54,7 @@ public class CreditTransferRoute extends RouteBuilder {
 			.process(crdtTransferProcessor)
 			
 			// save data awal
-			.to("seda:savecredittransfer?exchangePattern=InOnly&blockWhenFull=true")   // simpan data awal
+//			.to("seda:savecredittransfer?exchangePattern=InOnly&blockWhenFull=true")   // simpan data awal
 
 			.to("direct:call-ciconn?timeout=0")
 					
@@ -88,7 +88,6 @@ public class CreditTransferRoute extends RouteBuilder {
 							"[${exchangeProperty.prop_request_list.msgName}:${exchangeProperty.prop_request_list.requestId}] akan reversal")
 					
 					.to("seda:debitreversal?exchangePattern=InOnly&blockWhenFull=true")   // update data
-//					.to("direct:debitreversal")
 
 				.when().simple("${header.ct_progress} == 'TIMEOUT'")
 					.log(LoggingLevel.DEBUG, "komi.ct", 
