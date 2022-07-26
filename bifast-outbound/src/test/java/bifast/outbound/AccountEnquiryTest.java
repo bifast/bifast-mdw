@@ -13,6 +13,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import bifast.outbound.accountenquiry.pojo.ChnlAccountEnquiryRequestPojo;
 import bifast.outbound.pojo.ChannelResponseWrapper;
@@ -25,6 +26,7 @@ public class AccountEnquiryTest {
 	@Autowired private TestUtils utilService;
 	@Autowired ProducerTemplate producerTemplate;
 
+    @WithMockUser(username="MB")
 	@Test
     @Order(1)    
 	public void postAE() throws Exception {
@@ -33,15 +35,18 @@ public class AccountEnquiryTest {
 		
 		Exchange ex = new DefaultExchange(producerTemplate.getCamelContext());
 		ex.getMessage().setHeader("Content-Type", "application/json");
-//		ex.getMessage().setHeader("Authorization", "Basic MB:mb2022");
+		ex.getMessage().setHeader("Authorization", "Basic MB:mb2022");
 		ex.getMessage().setBody(str);
 
-		Exchange ex1 = producerTemplate.send("direct:receive", ex);
-		
+		Exchange ex1 = producerTemplate.send("direct:service", ex);
 		System.out.println(ex1.getMessage().getBody().getClass().getSimpleName());
 		str = ex1.getMessage().getBody(String.class);
+		
+//		Object ret = producerTemplate.sendBody("direct:service", ExchangePattern.InOut, str);
+//		System.out.println(ret.getClass().getSimpleName());
+
 		System.out.println(str);
-//		ChannelResponseWrapper chnlResp = utilService.deserializeChannelResponse((String) str);
+		ChannelResponseWrapper chnlResp = utilService.deserializeChannelResponse((String) str);
 
 		Assertions.assertInstanceOf(String.class, str);
 
