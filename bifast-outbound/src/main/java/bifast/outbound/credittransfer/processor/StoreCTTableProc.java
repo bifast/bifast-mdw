@@ -85,7 +85,10 @@ public class StoreCTTableProc implements Processor {
 		long timeElapsed = Duration.between(rmw.getCihubStart(), Instant.now()).toMillis();
 		ct.setCihubElapsedTime(timeElapsed);
 		ct.setLastUpdateDt(LocalDateTime.now());
-		
+
+		if (null != rmw.getCihubEncriptedRequest())
+			ct.setFullRequestMessage(rmw.getCihubEncriptedRequest());
+
 		if (null != rmw.getCihubEncriptedResponse())
 			ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
 
@@ -123,7 +126,6 @@ public class StoreCTTableProc implements Processor {
 			
 			if (!(null==rmw.getCihubEncriptedResponse()))
 				ct.setFullResponseMsg(rmw.getCihubEncriptedResponse());
-			
 		}
 
 		ct.setPsCounter(0);
