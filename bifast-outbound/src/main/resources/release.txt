@@ -58,16 +58,13 @@ Bugfix:
 Functional:
 - 3x resubmit jika debit reversal TIMEOUT dgn selang waktu 1m
 
-18-Juni-2022 (1.8.1-SNAPSHOT)
+3-Agustus-2022 (v1.8.0)
 Functional:
 - Credit transfer dan payment status jika ci-conn timeout, jangan lakukan debit reversal
 Coding:
 - ubah groupId jadi "komi"
 - Upgrade jadi Spring Boot 2.7.1
 - Upgrade jadi Camel 3.17.0
-
-25-Juli-2022 (1.8.2-SNAPSHOT)
-Coding:
 - call-cihub ganti jadi call-ciconn dgn onException global
 - PSR onException redelivery/retry
 - Save table CT sekali saja bukan insert+update
