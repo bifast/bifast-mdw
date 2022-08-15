@@ -100,7 +100,7 @@ public class DebitRoute extends RouteBuilder{
 					+ "akan simpan debit msg")
 			.process(saveCBTransactionProc)
 			
-			.removeHeaders("cb_*")
+//			.removeHeaders("cb_*")
 		;
 		
 		
