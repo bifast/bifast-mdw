@@ -72,3 +72,8 @@ Bugfix:
 - creditTransfer paymentInfo tidak boleh lebih dari 140 char
 - timeout proxyreginquiry error save-channel-transcation
 
+19-Agustus-2022 (v1.8.1)
+Bugfix:
+- gagal save channelTransaction karena payment info > 140
+- payment status request gagal forward settlement ke inbound
+

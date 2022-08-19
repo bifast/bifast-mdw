@@ -62,10 +62,12 @@ public class BuildRevCTRequestProcessor implements Processor {
 		seedCreditTrn.setCrdtAccountNo(ctReq.getDbtrAcct().getId().getOthr().getId());		
 		seedCreditTrn.setCrdtAccountType(ctReq.getDbtrAcct().getTp().getPrtry());
 		
-		if (null != ctReq.getDbtr().getId().getPrvtId())
-			seedCreditTrn.setCrdtId(ctReq.getDbtr().getId().getPrvtId().getOthr().get(0).getId());
-		else if (null != ctReq.getDbtr().getId().getOrgId())
-			seedCreditTrn.setCrdtId(ctReq.getDbtr().getId().getOrgId().getOthr().get(0).getId());
+		if (null != ctReq.getDbtr().getId()) {
+			if (null != ctReq.getDbtr().getId().getPrvtId())
+				seedCreditTrn.setCrdtId(ctReq.getDbtr().getId().getPrvtId().getOthr().get(0).getId());
+			else if (null != ctReq.getDbtr().getId().getOrgId())
+				seedCreditTrn.setCrdtId(ctReq.getDbtr().getId().getOrgId().getOthr().get(0).getId());
+		}
 		
 		BISupplementaryDataEnvelope1 suppl = null;
 		if (null != ctReq.getSplmtryData())

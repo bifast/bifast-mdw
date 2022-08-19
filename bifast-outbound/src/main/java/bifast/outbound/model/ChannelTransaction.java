@@ -48,7 +48,7 @@ public class ChannelTransaction {
 	@Column(length=250)
 	private String errorMsg;
 	
-	@Column(length=1000)
+	@Column(length=2000)
 	private String textMessage;
 	
 //	public Long getId() {
