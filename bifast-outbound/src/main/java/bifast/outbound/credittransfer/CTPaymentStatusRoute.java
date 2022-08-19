@@ -2,7 +2,6 @@ package bifast.outbound.credittransfer;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,14 +68,12 @@ public class CTPaymentStatusRoute extends RouteBuilder{
 		
 		from("direct:fwd_settlement").routeId("komi.psr.fwd_settlement")
 			.setProperty("pr_tmpbody", simple("${body}"))
-			.process(new Processor() {
-				public void process(Exchange exchange) throws Exception {
+			.process(exchange -> {
 					ResponseMessageCollection rmc = exchange.getProperty("prop_response_list", ResponseMessageCollection.class);
 					exchange.getMessage().setBody(rmc.getCihubResponse(), BusinessMessage.class);
-				}
 			})
 			.marshal(businessMessageJDF)
-//			.log("kirim settlement ${body}")
+			.removeHeader(Exchange.HTTP_URI)
 			.to("rest:post:?host={{komi.url.inbound}}")
 			.setBody(simple("${exchangeProperty.pr_tmpbody}"))
 		;
