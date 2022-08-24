@@ -40,14 +40,13 @@ public class SaveReversalCTProc implements Processor {
 		ct.setCreditorAccountNumber(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getId().getOthr().getId());
 		ct.setCreditorAccountType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtrAcct().getTp().getPrtry());
 
-		if (creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().size() > 0) {
-			if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp())
-				ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getCdtr().getTp());
-			
-			if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr())
-				if (null != creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp())
-					ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getSplmtryData().get(0).getEnvlp().getDtl().getDbtr().getTp());
-		}
+		if (null != creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId())
+			if (null != creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId())
+				ct.setCreditorType(creditTransferReq.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).getId());
+		
+		if (null != creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId())
+			if (null != creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId())
+				ct.setDebtorType(creditTransferReq.getCdtTrfTxInf().get(0).getDbtr().getId().getOrgId().getOthr().get(0).getId());
 		
 		ct.setCreateDt(creditTransferReq.getGrpHdr().getCreDtTm().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
 

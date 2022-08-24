@@ -195,7 +195,7 @@ public class Pacs008MsgService {
 		
 		pacs008.getCdtTrfTxInf().get(0).getDbtr().setId(new Party38Choice());
 
-		if (seed.getDbtrType().equals("01")) {
+		if ((seed.getDbtrType().equals("01")) || (seed.getDbtrType().isBlank())) {
 			pacs008.getCdtTrfTxInf().get(0).getDbtr().getId().setPrvtId(new PersonIdentification13());
 			pacs008.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().add(new GenericPersonIdentification1());
 			pacs008.getCdtTrfTxInf().get(0).getDbtr().getId().getPrvtId().getOthr().get(0).setId(seed.getDbtrId());
@@ -240,19 +240,16 @@ public class Pacs008MsgService {
 		if (!(seed.getCrdtId().isBlank())) {
 			pacs008.getCdtTrfTxInf().get(0).getCdtr().setId(new Party38Choice());
 		
-			if (null != seed.getCrdtType()) {
-				if (seed.getCrdtType().equals("01")) {
-					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().setPrvtId(new PersonIdentification13());
-					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().add(new GenericPersonIdentification1());
-					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).setId(seed.getCrdtId());
-				}
-				else {
-					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().setOrgId(new OrganisationIdentification29());
-					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().add(new GenericOrganisationIdentification1());
-					pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).setId(seed.getCrdtId());
-				} 
+			if ((seed.getCrdtType().equals("01")) || (seed.getCrdtType().isBlank())) {
+				pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().setPrvtId(new PersonIdentification13());
+				pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().add(new GenericPersonIdentification1());
+				pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getPrvtId().getOthr().get(0).setId(seed.getCrdtId());
 			}
-		
+			else {
+				pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().setOrgId(new OrganisationIdentification29());
+				pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().add(new GenericOrganisationIdentification1());
+				pacs008.getCdtTrfTxInf().get(0).getCdtr().getId().getOrgId().getOthr().get(0).setId(seed.getCrdtId());
+			} 
 		}
 		
 		// CdtTrfTxInf / CdtrAcct

@@ -101,7 +101,5 @@
 	<modules>
 		<module>bifast-lib</module>
 	    <module>bifast-outbound</module>
-	    <module>bifast-inbound</module>
- 	    <module>bifast-mock</module>
   </modules>
 </project>

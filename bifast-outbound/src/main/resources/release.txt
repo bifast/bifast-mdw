@@ -76,4 +76,4 @@ Bugfix:
 Bugfix:
 - gagal save channelTransaction karena payment info > 140
 - payment status request gagal forward settlement ke inbound
-
+- error revct karena dbtrPrvtId/dbtrOrgId is null
